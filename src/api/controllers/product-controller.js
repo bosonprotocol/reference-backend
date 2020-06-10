@@ -10,8 +10,11 @@ class ProductController {
 
     static async getProducts(req, res, next) {
         console.log('all the burgers');
-        
 
+        const r = await dbService.getAllProducts()
+
+
+        console.log(r);
 
         res.status(200).json({
             route: '/products',
@@ -20,9 +23,12 @@ class ProductController {
     }
 
     static async postProduct(req, res, next) {
-        const { type, price } = req.body;
+        const {
+            type,
+            price
+        } = req.body;
         await dbService.createProduct(type, price)
-        
+
 
         res.status(200).json({
             route: '/products',
