@@ -23,7 +23,7 @@ jobs:
         name: copy environment variables
         env:
           PROJECT_ID: ${{secrets.APP_ENGINE_PROJECT_ID}}
-		  APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG}}
+          APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG}}
           CLI: gsutil
         with:
           args: cp gs://env-variables-dev/.env .
@@ -31,6 +31,6 @@ jobs:
         name: deploy service
         env:
           PROJECT_ID: ${{secrets.APP_ENGINE_PROJECT_ID}}
-		  APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG}}
+          APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG}}
         with:
           args: app deploy
