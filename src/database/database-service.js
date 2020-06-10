@@ -12,7 +12,7 @@ class DatabaseService {
 
     }
 
-    static async createProduct(req, res, type, price) {
+    static async createProduct(type, price) {
         const dbClient = MongoClient.getInstance();
         const newProduct = new Product(type, price)
 
