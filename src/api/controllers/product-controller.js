@@ -1,4 +1,3 @@
-// here should be applied the business project 
 const dbService = require('../../database/database-service')
 class ProductController {
 
