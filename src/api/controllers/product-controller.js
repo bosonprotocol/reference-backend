@@ -22,7 +22,7 @@ class ProductController {
 
     static async postProduct(req, res, next) {
         const { type, price } = req.body;
-        await dbService.createProduct(req, res, type, price)
+        await dbService.createProduct(type, price)
         
 
         res.status(200).json({
