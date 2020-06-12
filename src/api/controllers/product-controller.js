@@ -9,10 +9,6 @@ class ProductController {
     }
 
     static async getProducts(req, res, next) {
-        console.log('all the burgers');
-        
-
-
         res.status(200).json({
             route: '/products',
             status: 200
@@ -21,6 +17,8 @@ class ProductController {
 
     static async postProduct(req, res, next) {
         const { type, price } = req.body;
+        
+        //this to go on another midlleware?
         await dbService.createProduct(type, price)
         
 

@@ -1,7 +1,10 @@
 class Authorization {
 
     static async authorize(req, res, next) {
-        next();
+
+        console.log('here should be the jwt');
+        
+        res.status(200)
     }
 
 }
