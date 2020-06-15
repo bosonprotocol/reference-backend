@@ -26,7 +26,7 @@ jobs:
           APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG}}
           CLI: gsutil
         with:
-          args: cp gs://env-variables-dev/.env .
+          args: cp gs://boson-variables-dev/.env .
       - uses: actions-hub/gcloud@master
         name: deploy service
         env:
