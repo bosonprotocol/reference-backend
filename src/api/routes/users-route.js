@@ -14,7 +14,7 @@ class UsersRouter {
 
         router.post('/:address/verify-signature', 
             ErrorHandlers.globalErrorHandler(dbService.getNonce),
-            ErrorHandlers.globalErrorHandler(usersController.verifySignature),
+            ErrorHandlers.globalErrorHandler(authMiddleware.verifySignature),
             ErrorHandlers.globalErrorHandler(authMiddleware.authorize))
 
         return router;
