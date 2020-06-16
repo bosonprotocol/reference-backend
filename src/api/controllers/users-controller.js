@@ -25,8 +25,8 @@ class UserController {
             return next(new APIError(401, 'Unauthorized.'))
         }
 
-        const autToken = Validator.generateAccessToken(address)        
-        res.status(200).send(autToken)
+        const authToken = Validator.generateAccessToken(address)        
+        res.status(200).send(authToken)
     }
 
     static async buy(req, res, next) {
