@@ -31,30 +31,26 @@ class DatabaseService {
         next();
     }
 
-    static async preserveNonce(req, res, next) {
+    static async preserveNonce(address, nonce) {
         const dbClient = MongoClient.getInstance();
         const userCollection = dbClient.collection(DATABASE_COLLECTION.USERS);
        
         let result = await userCollection.updateOne(
-            { address: res.locals.address },
-            { $set: { randomNonce: res.locals.randomNonce } }
+            { address: address },
+            { $set: { randomNonce: nonce } }
         )
             
         if (!result.modifiedCount) {
             await dbClient.collection(DATABASE_COLLECTION.USERS).insertOne({
-                address: res.locals.address,
-                randomNonce: res.locals.randomNonce
+                address: address,
+                randomNonce: nonce
             })
         } 
-
-        res.status(200).json(
-            res.locals.randomNonce
-        );
     }
 
 
-    static async buy(req, res, next) {
-        res.status(200).send();
+    static async buy() {
+        console.log('i bought this item product');
     }
 
 }

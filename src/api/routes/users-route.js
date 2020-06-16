@@ -10,8 +10,7 @@ class UsersRouter {
         let router = expressApp.Router();
 
         router.post('/:address', 
-            ErrorHandlers.globalErrorHandler(usersController.generateNonce),
-            ErrorHandlers.globalErrorHandler(dbService.preserveNonce));
+            ErrorHandlers.globalErrorHandler(usersController.generateNonce));
 
         router.post('/:address/verify-signature', 
             ErrorHandlers.globalErrorHandler(dbService.getNonce),
@@ -20,8 +19,7 @@ class UsersRouter {
 
         router.post('/:address/buy',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(usersController.buy),
-            ErrorHandlers.globalErrorHandler(dbService.buy))
+            ErrorHandlers.globalErrorHandler(usersController.buy))
 
         
         return router;

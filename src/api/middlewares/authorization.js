@@ -17,6 +17,10 @@ class Authorization {
         const msgHashBytes = utils.arrayify(msgHash);
         const recoveredAddress = utils.recoverAddress(msgHashBytes, signature);
 
+    
+        
+        
+
         if (address !== recoveredAddress) {
             return next(new APIError(401, 'Unauthorized.'))
         }
