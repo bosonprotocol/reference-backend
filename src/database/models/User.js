@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const USER = 'User'
 
 const userSchema = new Schema({
     address: {
@@ -18,6 +19,5 @@ const userSchema = new Schema({
     }
 })
 
-const User = mongoose.model('User', userSchema)
 
-module.exports = User
+module.exports = mongoose.model(USER, userSchema)

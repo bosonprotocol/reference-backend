@@ -1,53 +1,31 @@
-const MongooseClient = require('../clients/mongoose-client');
-
-const DATABASE_COLLECTION = require('./collections.json');
 const Product = require('./models/Product')
 const User = require('./models/User')
 
 class MongooseService {
 
-    static async getProductById() {
-
-    }
-
-    static async getAllProducts() {
-
-    }
-
-    static async createProduct(type, price) {
-        const dbClient = MongooseClient.getInstance();
-        const newProduct = new Product({type, price})
-
-        await dbClient.collection(DATABASE_COLLECTION.PRODUCTS).insertOne({
-            newProduct
-        })
+    static async createProduct(reqBody) {
+        const product = new Product(reqBody)
+        await product.save();
     }
 
     static async getNonce(address) {
-
-        const dbClient = MongooseClient.getInstance();
-        const userCollection = dbClient.collection(DATABASE_COLLECTION.USERS);
-
-        return (await userCollection.findOne({ address })).randomNonce;
+        let user = await User.findOne({ address })
+        return user.nonce;
     }
 
     static async preserveNonce(address, nonce) {
-        const dbClient = MongooseClient.getInstance();
-        const userCollection = dbClient.collection(DATABASE_COLLECTION.USERS);
 
-        let result = await userCollection.updateOne(
+        let result = await User.updateOne(
             { address: address },
-            { $set: { randomNonce: nonce } }
+            { nonce: nonce } 
         )
 
-        if (!result.modifiedCount) {
-            await dbClient.collection(DATABASE_COLLECTION.USERS).insertOne({
-                address: address,
-                randomNonce: nonce
-            })
+        if (!result.nModified) {
+            
+            let record = new User({address, nonce})
+            await record.save()
         }
     }
-
 
     static async buy() {
     }

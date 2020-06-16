@@ -1,6 +1,6 @@
 const nonceUtils = require('../../utils/nonceUtils')
-const DBService = require('../../database/database-service')
-const Validator = require('../services/validator')
+const mongoose = require('../../database/mongoose')
+const AuthValidator = require('../services/auth-validator')
 const APIError = require('../api-error')
 
 class UserController {
@@ -9,7 +9,7 @@ class UserController {
 
         const address = req.params.address;
         const randomNonce = nonceUtils.generateRandomNumber();
-        await DBService.preserveNonce(address, randomNonce)
+        await mongoose.preserveNonce(address, randomNonce)
         
         res.status(200).json(
             randomNonce
@@ -19,19 +19,19 @@ class UserController {
     static async verifySignature(req, res, next) {
 
         const address = req.params.address
-        const nonce = await DBService.getNonce(address)
+        const nonce = await mongoose.getNonce(address)
 
-        if (!await Validator.isSignatureVerified(address, nonce, req.body.signature)) {
+        if (!await AuthValidator.isSignatureVerified(address, nonce, req.body.signature)) {
             return next(new APIError(401, 'Unauthorized.'))
         }
 
-        const authToken = Validator.generateAccessToken(address)        
+        const authToken = AuthValidator.generateAccessToken(address)        
         res.status(200).send(authToken)
     }
 
     static async buy(req, res, next) {
         
-        await DBService.buy();
+        await mongoose.buy();
         res.status(200).send();
     }
 }
