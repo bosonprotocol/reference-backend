@@ -1,6 +1,6 @@
 const APIError = require('./../api-error');
 const jwt = require('jsonwebtoken');
-const utils = require('../../utils')
+const utils = require('ethers').utils
 
 class Validator {
 
@@ -42,7 +42,7 @@ class Validator {
             user: address
         }
 
-        return jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: '10s' });
+        return jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: '180d' });
     }
 
     static async verifyToken(token) {
