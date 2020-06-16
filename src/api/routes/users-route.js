@@ -2,6 +2,7 @@ const usersController = require('../controllers/users-controller');
 const ErrorHandlers = require('../middlewares/error-handler');
 const dbService = require('../../database/database-service') 
 const authMiddleware = require('../middlewares/authorization');
+const authenticationMiddleware = require('../middlewares/authentication');
 
 class UsersRouter {
 
@@ -18,7 +19,7 @@ class UsersRouter {
             ErrorHandlers.globalErrorHandler(authMiddleware.generateAccessToken))
 
         router.post('/:address/buy',
-            ErrorHandlers.globalErrorHandler(authMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(usersController.buy),
             ErrorHandlers.globalErrorHandler(dbService.buy))
 
