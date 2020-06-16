@@ -3,6 +3,7 @@ const MongoClient = require('../clients/mongo-client')
 const Product = require('./models/Product')
 
 class DatabaseService {
+
     static async getProductById() {
 
     }
