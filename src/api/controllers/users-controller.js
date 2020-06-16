@@ -1,6 +1,6 @@
 const utils = require('../../utils')
 
-class ProductController {
+class UserController {
 
     static async generateNonce(req, res, next) {
         const address = req.params.address
@@ -8,8 +8,14 @@ class ProductController {
         res.locals.address = req.params.address;
         res.locals.randomNonce = utils.generateRandomNumber();
         
-        next()
+        next();
+    }
+
+    static async buy(req, res, next) {
+        //TODO implement bussiness logic for the buy functionallity 
+        
+        next();
     }
 }
 
-module.exports = ProductController;
+module.exports = UserController;

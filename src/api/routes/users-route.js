@@ -15,8 +15,14 @@ class UsersRouter {
         router.post('/:address/verify-signature', 
             ErrorHandlers.globalErrorHandler(dbService.getNonce),
             ErrorHandlers.globalErrorHandler(authMiddleware.verifySignature),
-            ErrorHandlers.globalErrorHandler(authMiddleware.authorize))
+            ErrorHandlers.globalErrorHandler(authMiddleware.generateAccessToken))
 
+        router.post('/:address/buy',
+            ErrorHandlers.globalErrorHandler(authMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(usersController.buy),
+            ErrorHandlers.globalErrorHandler(dbService.buy))
+
+        
         return router;
     }
 }

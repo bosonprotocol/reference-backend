@@ -51,6 +51,11 @@ class DatabaseService {
         );
     }
 
+
+    static async buy(req, res, next) {
+        res.status(200).send();
+    }
+
 }
 
 module.exports = DatabaseService;

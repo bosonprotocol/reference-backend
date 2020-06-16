@@ -1,5 +1,5 @@
 {
-  "name": "template-api",
+  "name": "redeemeum-api",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
@@ -12,6 +12,7 @@
     "dotenv": "^8.2.0",
     "ethers": "^4.0.47",
     "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.8"
   }
 }
