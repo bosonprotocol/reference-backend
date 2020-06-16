@@ -21,14 +21,12 @@ class DatabaseService {
         })
     }
 
-    static async getNonce(req, res, next) {
+    static async getNonce(address) {
+
         const dbClient = MongoClient.getInstance();
         const userCollection = dbClient.collection(DATABASE_COLLECTION.USERS);
-        const address = req.params.address
-        let result = await userCollection.findOne({ address })
-
-        res.locals.randomNonce = result.randomNonce
-        next();
+        
+        return (await userCollection.findOne({ address })).randomNonce;
     }
 
     static async preserveNonce(address, nonce) {
@@ -50,7 +48,6 @@ class DatabaseService {
 
 
     static async buy() {
-        console.log('i bought this item product');
     }
 
 }

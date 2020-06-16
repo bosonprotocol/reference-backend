@@ -1,5 +1,5 @@
 const APIError = require('./../api-error');
-const jwt = require('jsonwebtoken');
+const Validator = require('../services/validator')
 
 class Authentication {
 
@@ -13,9 +13,8 @@ class Authentication {
         }
 
         try {
-            const user = await jwt.verify(token, process.env.TOKEN_SECRET)
+            const user = await Validator.verifyToken(token)
             res.locals.address = user
-
         } catch (error) {
             return next(new APIError(403, 'Forbidden.'))
         }

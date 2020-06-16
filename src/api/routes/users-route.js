@@ -1,7 +1,5 @@
 const usersController = require('../controllers/users-controller');
 const ErrorHandlers = require('../middlewares/error-handler');
-const dbService = require('../../database/database-service') 
-const authMiddleware = require('../middlewares/authorization');
 const authenticationMiddleware = require('../middlewares/authentication');
 
 class UsersRouter {
@@ -13,9 +11,7 @@ class UsersRouter {
             ErrorHandlers.globalErrorHandler(usersController.generateNonce));
 
         router.post('/:address/verify-signature', 
-            ErrorHandlers.globalErrorHandler(dbService.getNonce),
-            ErrorHandlers.globalErrorHandler(authMiddleware.verifySignature),
-            ErrorHandlers.globalErrorHandler(authMiddleware.generateAccessToken))
+            ErrorHandlers.globalErrorHandler(usersController.verifySignature))
 
         router.post('/:address/buy',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
