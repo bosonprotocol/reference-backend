@@ -9,7 +9,6 @@ const options = {
 
 let instance;
 
-
 module.exports = class MongoClient {
     static getInstance() {
         if (!instance) {
