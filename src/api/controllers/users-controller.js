@@ -1,4 +1,4 @@
-const utils = require('../../utils')
+const nonceUtils = require('../../utils/nonceUtils')
 const DBService = require('../../database/database-service')
 const Validator = require('../services/validator')
 const APIError = require('../api-error')
@@ -8,7 +8,7 @@ class UserController {
     static async generateNonce(req, res, next) {
 
         const address = req.params.address;
-        const randomNonce = utils.generateRandomNumber();
+        const randomNonce = nonceUtils.generateRandomNumber();
         await DBService.preserveNonce(address, randomNonce)
         
         res.status(200).json(
@@ -26,7 +26,7 @@ class UserController {
         }
 
         const autToken = Validator.generateAccessToken(address)        
-        res.send(autToken)
+        res.status(200).send(autToken)
     }
 
     static async buy(req, res, next) {
