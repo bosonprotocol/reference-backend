@@ -1,5 +1,5 @@
 const APIError = require('./../api-error');
-const AuthValidator = require('../services/auth-validator')
+const AuthService = require('../services/auth-service')
 
 class Authentication {
 
@@ -13,7 +13,7 @@ class Authentication {
         }
 
         try {
-            const user = await AuthValidator.verifyToken(token)
+            const user = await AuthService.verifyToken(token)
             res.locals.address = user
         } catch (error) {
             return next(new APIError(403, 'Forbidden.'))

@@ -15,16 +15,12 @@ class MongooseService {
 
     static async preserveNonce(address, nonce) {
 
-        let result = await User.updateOne(
-            { address: address },
-            { nonce: nonce } 
+        await User.findOneAndUpdate(
+            { address: address }, 
+            { address, nonce },
+            {  new: true, upsert: true }
         )
-
-        if (!result.nModified) {
-            
-            let record = new User({address, nonce})
-            await record.save()
-        }
+        
     }
 
     static async buy() {

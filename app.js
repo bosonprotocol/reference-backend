@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const Mongoose = require('./src/clients/mongoose-client')
+const MongooseClient = require('./src/clients/mongoose-client')
 
 const usersRouter = require('./src/api/routes/users-route')
 const productRouter = require('./src/api/routes/product-route')
@@ -23,7 +23,7 @@ app.use(ErrorHandler.apiErrorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
-    await Mongoose.getInstance();
+    await MongooseClient.getInstance();
     
     console.info(`App listening on: ` + PORT);
 });

@@ -1,4 +1,4 @@
-const Mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
 const url = process.env.DB_CONNECTION_STRING
 const options = {
@@ -9,17 +9,17 @@ const options = {
 
 let instance;
 
-module.exports = class MongoClient {
+module.exports = class MongooseClient {
     static getInstance() {
         if (!instance) {
-            instance = MongoClient.connectToMongo();
+            instance = MongooseClient.connect();
         }
 
         return instance;
     }
 
-    static connectToMongo() {
-        return Mongoose.connect(url, options)
+    static connect() {
+        return mongoose.connect(url, options)
     }
 
 }
