@@ -1,8 +1,8 @@
-const APIError = require('./../api-error');
+const APIError = require('../api-error');
 const jwt = require('jsonwebtoken');
 const utils = require('ethers').utils
 
-class Validator {
+class AuthService {
 
     static async authenticateToken(req, res, next) {
 
@@ -51,4 +51,4 @@ class Validator {
 
 }
 
-module.exports = Validator;
+module.exports = AuthService;

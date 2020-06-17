@@ -1,8 +1,9 @@
 require('dotenv').config();
 const express = require('express');
-const MongoClient = require('./src/clients/mongo-client')
+const MongooseClient = require('./src/clients/mongoose-client')
 
 const usersRouter = require('./src/api/routes/users-route')
+const productRouter = require('./src/api/routes/product-route')
 const ErrorHandler = require('./src/api/middlewares/error-handler');
 
 const cors = require('cors')
@@ -15,12 +16,14 @@ app.use(function (req, res, next) {
     next()
 })
 app.use(express.json());
+app.use('/', productRouter.route(express))
 app.use('/users', usersRouter.route(express))
 // Attach API Error handler
 app.use(ErrorHandler.apiErrorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, async () => {
-    await MongoClient.getInstance();
+    await MongooseClient.getInstance();
+    
     console.info(`App listening on: ` + PORT);
 });
