@@ -35,14 +35,10 @@ const voucherSchema = new Schema({
         type: String, // active || inactive
         default: false
     },
-    user: {
+    userAddress: {
         type: String,
         required: true
     }
-    // user: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: USER
-    // }
 })
 
 module.exports = mongoose.model(VOUCHER, voucherSchema)

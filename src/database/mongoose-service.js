@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const Product = require('./models/Product')
 const User = require('./models/User');
 const Voucher = require('./models/Voucher');
@@ -33,11 +35,33 @@ class MongooseService {
             expiryDate: new Date(metadata.expiryDate),
             description: metadata.description,
             status: metadata.status,
-            user: metadata.userAddress,
+            userAddress: metadata.userAddress,
             imageFiles: fileRefs
         });
         
         await voucher.save();
+    }
+
+    static async updateVoucher(id, metadata) {
+        
+        await Voucher.findByIdAndUpdate(id, {
+            title: metadata.title,
+            qty: metadata.qty,
+            category: metadata.category,
+            expiryDate: new Date(metadata.expiryDate),
+            description: metadata.description,
+            status: metadata.status,
+            userAddress: metadata.userAddress,
+        },      
+        { useFindAndModify: false, new: true, upsert: true,  }
+    )}
+
+    static async deleteVoucher(id) {
+        await Voucher.findByIdAndDelete(id)
+    }
+
+    static async getVoucher(id) {
+        return await Voucher.findById(id)
     }
 
     static async buy() {

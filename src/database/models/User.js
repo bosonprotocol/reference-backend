@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const collections = require('../collections.json');
@@ -18,11 +20,7 @@ const userSchema = new Schema({
                 throw new Error('Nonce must be a postive number')
             }
         }
-    },
-    // vouchers: [{
-    //     type: Schema.Types.ObjectId,
-    //     ref: VOUCHER
-    // }]
+    }
 })
 
 module.exports = mongoose.model(USER, userSchema)

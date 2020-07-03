@@ -24,7 +24,7 @@ class VoucherUtils {
             await bucket.file(storageDestination).makePublic();
 
             filesRefs.push({
-                link: `https://storage.googleapis.com/${BUCKET_NAME}/${storageDestination}`,
+                url: `https://storage.googleapis.com/${BUCKET_NAME}/${storageDestination}`,
                 type: req.files[i].mimetype === PDF_CONTENT_TYPE ? 'document' : 'image'
             });
         }

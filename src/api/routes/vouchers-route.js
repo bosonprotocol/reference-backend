@@ -24,19 +24,26 @@ class VouchersRouter {
             ErrorHandlers.globalErrorHandler(upload.array('fileToUpload', FILE_LIMIT)),
             ErrorHandlers.globalErrorHandler(vouchersController.createVoucher));
 
+        router.get('/:id',
+            // TODO Uncomment authentication
+            // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(vouchersController.getVoucher));
+
         router.patch('/:id',
             // TODO Uncomment authentication
             // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(upload.array('fileToUpload', FILE_LIMIT)),
             ErrorHandlers.globalErrorHandler(voucherValidator.ValidateVoucherExists),
+            ErrorHandlers.globalErrorHandler(voucherValidator.ValidateCanDeleteVoucher),
             ErrorHandlers.globalErrorHandler(vouchersController.updateVoucher));
-
-        router.patch('/:id',
+        
+        router.delete('/:id',
             // TODO Uncomment authentication
             // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(voucherValidator.ValidateVoucherExists),
             ErrorHandlers.globalErrorHandler(voucherValidator.ValidateCanDeleteVoucher),
             ErrorHandlers.globalErrorHandler(vouchersController.deleteVoucher));
-        
+
         return router;
     }
 }
