@@ -1,5 +1,6 @@
 const Product = require('./models/Product')
-const User = require('./models/User')
+const User = require('./models/User');
+const Voucher = require('./models/Voucher');
 
 class MongooseService {
 
@@ -21,6 +22,22 @@ class MongooseService {
             {  new: true, upsert: true }
         )
         
+    }
+
+    static async createVoucher(metadata, fileRefs) {
+
+        const voucher = new Voucher({
+            title: metadata.title,
+            qty: metadata.qty,
+            category: metadata.category,
+            expiryDate: new Date(metadata.expiryDate),
+            description: metadata.description,
+            status: metadata.status,
+            user: metadata.userAddress,
+            imageFiles: fileRefs
+        });
+        
+        await voucher.save();
     }
 
     static async buy() {
