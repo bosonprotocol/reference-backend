@@ -1,4 +1,4 @@
-const BUCKET_NAME = process.env.VOUCHERS_BUCKER;
+const BUCKET_NAME = process.env.VOUCHERS_BUCKET;
 
 class VoucherUtils {
     static async uploadFiles(req) {
