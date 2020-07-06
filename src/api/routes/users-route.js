@@ -7,7 +7,7 @@ class UsersRouter {
     static route(expressApp) {
         let router = expressApp.Router();
 
-        router.post('/:address', 
+        router.post('/:address',
             ErrorHandlers.globalErrorHandler(usersController.generateNonce));
 
         router.post('/:address/verify-signature', 
