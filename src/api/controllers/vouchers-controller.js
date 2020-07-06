@@ -28,8 +28,6 @@ class VouchersController {
         const fileRefs = await voucherUtils.uploadFiles(req);
 
         try {
-            console.log(req.body);
-            
             await mongooseService.createVoucher(req.body, fileRefs)
         } catch (error) {
             console.error(`An error occurred while user [${req.body.voucherOwner}] tried to create Voucher.`);
