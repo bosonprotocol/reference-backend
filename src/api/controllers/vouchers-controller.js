@@ -7,7 +7,8 @@ class VouchersController {
 
     static async getVoucher(req, res, next) {
         let voucher;
-        if (req.params.id === 'undefined') {
+
+        if (typeof req.params.id === 'undefined') {
             console.error(`An error occurred while tried to fetch Voucher.`);
             return next(new APIError(400, 'No VoucherID was presented'));
         }
@@ -15,7 +16,7 @@ class VouchersController {
         try {
             voucher = await mongooseService.getVoucher(req.params.id)
         } catch (error) {
-            console.log(error.message);
+            return next(new APIError(400, `${error.message}`));
         }
 
         res.status(200).send({
@@ -34,7 +35,7 @@ class VouchersController {
             return next(new APIError(400, 'Invalid voucher model'));
         }
     
-        res.status(200).send();
+        res.status(200).send({ success: true });
     }
 
     static async updateVoucher(req, res, next) {
@@ -47,7 +48,7 @@ class VouchersController {
             return next(new APIError(400, 'Invalid voucher model'));
         }
 
-        res.status(200).send();
+        res.status(200).send({ success: true });
     }
 
     static async deleteVoucher(req, res, next) {
@@ -60,7 +61,7 @@ class VouchersController {
             return next(new APIError(400, 'Invalid operation'));
         }
 
-        res.status(200).send();
+        res.status(200).send({ success: true });
     }
 
     static async deleteImage(req, res, next) {
@@ -74,14 +75,14 @@ class VouchersController {
             return next(new APIError(400, 'Invalid operation'));
         }
 
-        res.status(200).send();
+        res.status(200).send({ success: true });
     }
 
 
     static async buy(req, res, next) {
         
         await mongooseService.buy();
-        res.status(200).send();
+        res.status(200).send({ success: true });
     }
 }
 
