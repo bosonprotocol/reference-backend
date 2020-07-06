@@ -35,7 +35,7 @@ const voucherSchema = new Schema({
         type: String, // active || inactive
         default: false
     },
-    userAddress: {
+    voucherOwner: {
         type: String,
         required: true
     }

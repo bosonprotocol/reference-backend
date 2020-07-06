@@ -44,6 +44,12 @@ class VouchersRouter {
             ErrorHandlers.globalErrorHandler(voucherValidator.ValidateCanDeleteVoucher),
             ErrorHandlers.globalErrorHandler(vouchersController.deleteVoucher));
 
+        router.delete(
+            '/:id/image',
+            // TODO Uncomment authentication
+            // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(vouchersController.deleteImage));
+
         return router;
     }
 }
