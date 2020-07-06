@@ -27,12 +27,21 @@ class MongooseService {
     }
 
     static async createVoucher(metadata, fileRefs) {
-
+        console.log('create metadata');
+        console.log(metadata);
+        
+        
+        
         const voucher = new Voucher({
             title: metadata.title,
             qty: metadata.qty,
             category: metadata.category,
+            startDate: metadata.startDate,
             expiryDate: metadata.expiryDate,
+            offeredDate: metadata.offeredDate,
+            price: metadata.price,
+            buyerDeposit: metadata.buyerDeposit,
+            sellerDeposit: metadata.sellerDeposit,
             description: metadata.description,
             status: metadata.status,
             voucherOwner: metadata.voucherOwner,
@@ -43,6 +52,8 @@ class MongooseService {
     }
 
     static async updateVoucher(id, metadata, fileRefs) {
+        console.log('update metadata');
+        console.log(metadata);
         const voucher = await this.getVoucher(id);
         const currentImages = voucher.imageFiles;
         const updatedImages = [...currentImages, ...fileRefs]
@@ -51,7 +62,11 @@ class MongooseService {
                 title: metadata.title,
                 qty: metadata.qty,
                 category: metadata.category,
+                startDate: metadata.startDate,
                 expiryDate: metadata.expiryDate,
+                price: metadata.price,
+                buyerDeposit: metadata.buyerDeposit,
+                sellerDeposit: metadata.sellerDeposit,
                 description: metadata.description,
                 status: metadata.status,
                 voucherOwner: metadata.voucherOwner,
