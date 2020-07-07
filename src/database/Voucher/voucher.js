@@ -1,29 +1,13 @@
-// @ts-nocheck
+//@ts-nocheck
+const Voucher = require('../models/Voucher')
 
-const Product = require('./models/Product')
-const User = require('./models/User');
-const Voucher = require('./models/Voucher');
-
-class MongooseService {
-
-    static async createProduct(reqBody) {
-        const product = new Product(reqBody)
-        await product.save();
+class VoucherService {
+    static async getVouchersByOwner(voucherOwner) {
+        return await Voucher.where('voucherOwner').equals(voucherOwner.toLowerCase()).lean()
     }
 
-    static async getNonce(address) {
-        let user = await User.findOne({ address })
-        return user.nonce;
-    }
-
-    static async preserveNonce(address, nonce) {
-
-        await User.findOneAndUpdate(
-            { address: address }, 
-            { address, nonce },
-            {  new: true, upsert: true }
-        )
-        
+    static async getVouchersByBuyer(voucherOwner) {
+        return await Voucher.where('voucherOwner').ne(voucherOwner.toLowerCase()).lean()
     }
 
     static async createVoucher(metadata, fileRefs) {
@@ -38,7 +22,7 @@ class MongooseService {
             voucherOwner: metadata.voucherOwner,
             imageFiles: fileRefs
         });
-        
+
         await voucher.save();
     }
 
@@ -48,17 +32,18 @@ class MongooseService {
         const updatedImages = [...currentImages, ...fileRefs]
 
         await Voucher.findByIdAndUpdate(id, {
-                title: metadata.title,
-                qty: metadata.qty,
-                category: metadata.category,
-                expiryDate: metadata.expiryDate,
-                description: metadata.description,
-                status: metadata.status,
-                voucherOwner: metadata.voucherOwner,
-                imageFiles: updatedImages
-            },      
-            { useFindAndModify: false, new: true, upsert: true,  }
-        )}
+            title: metadata.title,
+            qty: metadata.qty,
+            category: metadata.category,
+            expiryDate: metadata.expiryDate,
+            description: metadata.description,
+            status: metadata.status,
+            voucherOwner: metadata.voucherOwner,
+            imageFiles: updatedImages
+        },
+            { useFindAndModify: false, new: true, upsert: true, }
+        )
+    }
 
     static async deleteVoucher(id) {
         await Voucher.findByIdAndDelete(id)
@@ -68,7 +53,7 @@ class MongooseService {
         const voucher = await this.getVoucher(id);
         const currentImages = voucher.imageFiles;
         const updatedImages = currentImages.filter(image => image.url != imageUrl);
-        
+
         await Voucher.findByIdAndUpdate(id, {
             imageFiles: updatedImages
         },
@@ -79,10 +64,6 @@ class MongooseService {
     static async getVoucher(id) {
         return await Voucher.findById(id)
     }
-
-    static async buy() {
-    }
-
 }
 
-module.exports = MongooseService;
+module.exports = VoucherService;

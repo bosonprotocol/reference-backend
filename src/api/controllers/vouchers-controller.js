@@ -1,4 +1,4 @@
-const mongooseService = require('../../database/mongoose-service')
+const mongooseService = require('../../database/index.js')
 const AuthValidator = require('../services/auth-service')
 const APIError = require('../api-error')
 const voucherUtils = require('../../utils/voucherUtils')
@@ -22,6 +22,34 @@ class VouchersController {
         res.status(200).send({
             voucher
         });
+    }
+
+    static async getSellVouchers(req, res, next) {
+        let vouchers;
+        const owner = req.query.voucherOwner;
+        
+        try {
+            vouchers = await mongooseService.getVouchersByOwner(owner)
+        } catch (error) {
+            console.error(`An error occurred while user [${owner}] tried to fetch Vouchers.`);
+            return next(new APIError(400, 'Invalid operation'));
+        }
+
+        res.status(200).send({ vouchers });
+    }
+
+    static async getBuyVouchers(req, res, next) {
+        let vouchers;
+        const buyer = req.query.voucherOwner;
+
+        try {
+            vouchers = await mongooseService.getVouchersByBuyer(buyer)
+        } catch (error) {
+            console.error(`An error occurred while user [${buyer}] tried to fetch Vouchers.`);
+            return next(new APIError(400, 'Invalid operation'));
+        }
+
+        res.status(200).send({ vouchers });
     }
 
     static async createVoucher(req, res, next) {

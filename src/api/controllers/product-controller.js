@@ -1,4 +1,4 @@
-const mongooseService = require('../../database/mongoose-service')
+const mongooseService = require('../../database/index.js')
 class ProductController {
 
     static async getProducts(req, res, next) {
