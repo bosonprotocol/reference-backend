@@ -15,7 +15,6 @@ class UserService {
             { address, nonce },
             { new: true, upsert: true }
         )
-
     }
 
     static async getMyVouchers(address) {
