@@ -18,7 +18,6 @@ class ProductRouter {
         router.post('/products', ErrorHandlers.globalErrorHandler(productController.postProduct));
         router.get('/products', ErrorHandlers.globalErrorHandler(productController.getProducts));
 
-
         return router;
     }
 }

@@ -17,7 +17,9 @@ class UsersRouter {
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(usersController.buy))
 
-        
+        router.get('/my-vouchers/:address',
+            ErrorHandlers.globalErrorHandler(usersController.getMyVouchers));
+
         return router;
     }
 }

@@ -20,6 +20,9 @@ const userSchema = new Schema({
                 throw new Error('Nonce must be a postive number')
             }
         }
+    },
+    vouchers: {
+        type: Array,
     }
 })
 
