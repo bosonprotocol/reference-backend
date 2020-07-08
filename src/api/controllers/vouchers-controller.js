@@ -26,7 +26,7 @@ class VouchersController {
 
     static async getSellVouchers(req, res, next) {
         let vouchers;
-        const owner = req.query.voucherOwner;
+        const owner = req.params.address.toLowerCase();
         
         try {
             vouchers = await mongooseService.getVouchersByOwner(owner)
@@ -40,8 +40,8 @@ class VouchersController {
 
     static async getBuyVouchers(req, res, next) {
         let vouchers;
-        const buyer = req.query.voucherOwner;
-
+        const buyer = req.params.address.toLowerCase();
+        
         try {
             vouchers = await mongooseService.getVouchersByBuyer(buyer)
         } catch (error) {

@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 const Product = require('./Product/product')
 const Voucher = require('./Voucher/voucher')
 const User = require('./User/user')
@@ -8,6 +6,7 @@ const MongooseService = {
     createProduct: Product.createProduct,
     getNonce: User.getNonce,
     preserveNonce: User.preserveNonce,
+    getMyVouchers: User.getMyVouchers,
     getVoucher: Voucher.getVoucher,
     getVouchersByOwner: Voucher.getVouchersByOwner,
     getVouchersByBuyer: Voucher.getVouchersByBuyer,

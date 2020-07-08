@@ -1,5 +1,6 @@
 // @ts-nocheck
 const User = require('../models/User')
+const Voucher = require('../models/Voucher')
 
 class UserService {
     static async getNonce(address) {
@@ -10,11 +11,17 @@ class UserService {
     static async preserveNonce(address, nonce) {
 
         await User.findOneAndUpdate(
-            { address: address },
+            { address: address},
             { address, nonce },
             { new: true, upsert: true }
         )
 
+    }
+
+    static async getMyVouchers(address) {
+        const voucherIDs = (await User.findOne({ address })).vouchers
+
+        return await Voucher.where('_id').in(voucherIDs).select(['title', 'description', 'price', 'imagefiles'])
     }
 }
 

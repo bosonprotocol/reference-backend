@@ -47,13 +47,13 @@ const voucherSchema = new Schema({
         type: String,
         required: false
     },
-    imageFiles: {
+    imagefiles: {
         type: Array,
         required: true
     },
     status: {
         type: String, // active || inactive
-        default: false
+        default: 'inactive'
     },
     voucherOwner: {
         type: String,

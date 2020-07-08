@@ -3,11 +3,11 @@ const Voucher = require('../models/Voucher')
 
 class VoucherService {
     static async getVouchersByOwner(voucherOwner) {
-        return await Voucher.where('voucherOwner').equals(voucherOwner.toLowerCase()).lean()
+        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles']).lean()
     }
 
     static async getVouchersByBuyer(voucherOwner) {
-        return await Voucher.where('voucherOwner').ne(voucherOwner.toLowerCase()).lean()
+        return await Voucher.where('voucherOwner').ne(voucherOwner).select(['title', 'price', 'description', 'imagefiles']).lean()
     }
 
     static async createVoucher(metadata, fileRefs) {
@@ -16,11 +16,16 @@ class VoucherService {
             title: metadata.title,
             qty: metadata.qty,
             category: metadata.category,
+            startDate: metadata.startDate,
             expiryDate: metadata.expiryDate,
+            offeredDate: metadata.offeredDate,
+            price: metadata.price,
+            buyerDeposit: metadata.buyerDeposit,
+            sellerDeposit: metadata.sellerDeposit,
             description: metadata.description,
             status: metadata.status,
             voucherOwner: metadata.voucherOwner,
-            imageFiles: fileRefs
+            imagefiles: fileRefs
         });
 
         await voucher.save();
@@ -28,18 +33,23 @@ class VoucherService {
 
     static async updateVoucher(id, metadata, fileRefs) {
         const voucher = await this.getVoucher(id);
-        const currentImages = voucher.imageFiles;
+        const currentImages = voucher.imagefiles;
         const updatedImages = [...currentImages, ...fileRefs]
 
         await Voucher.findByIdAndUpdate(id, {
             title: metadata.title,
             qty: metadata.qty,
             category: metadata.category,
+            startDate: metadata.startDate,
             expiryDate: metadata.expiryDate,
+            offeredDate: metadata.offeredDate,
+            price: metadata.price,
+            buyerDeposit: metadata.buyerDeposit,
+            sellerDeposit: metadata.sellerDeposit,
             description: metadata.description,
             status: metadata.status,
             voucherOwner: metadata.voucherOwner,
-            imageFiles: updatedImages
+            imagefiles: updatedImages
         },
             { useFindAndModify: false, new: true, upsert: true, }
         )
@@ -51,11 +61,11 @@ class VoucherService {
 
     static async deleteImage(id, imageUrl) {
         const voucher = await this.getVoucher(id);
-        const currentImages = voucher.imageFiles;
+        const currentImages = voucher.imagefiles;
         const updatedImages = currentImages.filter(image => image.url != imageUrl);
 
         await Voucher.findByIdAndUpdate(id, {
-            imageFiles: updatedImages
+            imagefiles: updatedImages
         },
             { useFindAndModify: false, new: true, upsert: true, }
         );
