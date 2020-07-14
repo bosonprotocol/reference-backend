@@ -25,7 +25,11 @@ class VoucherService {
             description: metadata.description,
             status: metadata.status,
             voucherOwner: metadata.voucherOwner,
-            imagefiles: fileRefs
+            txHash: metadata.txHash,
+            _tokenIdSupply: metadata._tokenIdSupply,
+            _promiseId: metadata._promiseId,
+            imagefiles: fileRefs,
+            
         });
 
         await voucher.save();
@@ -73,6 +77,27 @@ class VoucherService {
 
     static async getVoucher(id) {
         return await Voucher.findById(id)
+    }
+
+    static async getVouchersDetails(myVoucherDocument, voucherData) {
+        const voucherDetailsDocument = await VoucherService.getVoucher(myVoucherDocument.voucherID)
+
+        const voucher = {
+            _id: myVoucherDocument.id,
+            buyerStatus: myVoucherDocument._doc.status,
+            voucherID: voucherDetailsDocument.id,
+            voucherStatus: voucherDetailsDocument._doc.status,
+            title: voucherDetailsDocument._doc.title,
+            qty: voucherDetailsDocument._doc.qty,
+            description: voucherDetailsDocument._doc.description,
+            imagefiles: voucherDetailsDocument._doc.imagefiles,
+            category: voucherDetailsDocument._doc.category,
+            price: voucherDetailsDocument._doc.price,
+        }
+
+        voucherData.push(
+            voucher
+        )
     }
 }
 

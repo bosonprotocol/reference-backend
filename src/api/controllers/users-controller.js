@@ -28,15 +28,17 @@ class UserController {
         res.status(200).send(authToken)
     }
 
-    static async getMyVouchers(req, res, next) {
-        const address = req.params.address.toLowerCase();
-        const vouchers = await mongooseService.getMyVouchers(address)
-        res.status(200).send({ vouchers })
-    }
+    static async commitToBuy(req, res, next) {
+        const metadata = req.body;
+        const buyer = req.params.address
 
-    static async buy(req, res, next) {
-        
-        await mongooseService.buy();
+        try {
+            await mongooseService.commitToBuy(buyer, metadata);
+            await mongooseService.createUserVoucher(metadata);
+        } catch (error) {
+            return next(new APIError(400, `Buy operation for voucher id: ${metadata.voucherID} could not be completed.`))
+        }
+
         res.status(200).send();
     }
 }

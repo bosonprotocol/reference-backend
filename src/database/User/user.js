@@ -17,10 +17,20 @@ class UserService {
         )
     }
 
-    static async getMyVouchers(address) {
-        const voucherIDs = (await User.findOne({ address })).vouchers
+    static async commitToBuy(address, metadata) {
+        //TODO should first validate if we have enought qty // да питам жорката дали във валидатора мога да си викна монгуса да си взема ваучер-а, за qty-to
 
-        return await Voucher.where('_id').in(voucherIDs).select(['title', 'description', 'price', 'imagefiles'])
+        const user = await User.findOne({ address })
+        const oldVouchers = user.vouchers
+        const updatedVouchers = [...oldVouchers, metadata._tokenIdVoucher]
+        
+        await User.findOneAndUpdate(
+            { address: address },
+            { vouchers: updatedVouchers },
+            { new: true, upsert: true }
+        )
+
+        //after this update we have to update voucher qty as well
     }
 }
 

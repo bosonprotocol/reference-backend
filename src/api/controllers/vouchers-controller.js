@@ -53,7 +53,6 @@ class VouchersController {
     }
 
     static async createVoucher(req, res, next) {
-        
         const fileRefs = await voucherUtils.uploadFiles(req);
 
         try {

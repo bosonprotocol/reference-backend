@@ -58,7 +58,19 @@ const voucherSchema = new Schema({
     voucherOwner: {
         type: String,
         required: true
-    }
+    },
+    txHash: {
+        type: String,
+        required: true,
+    },
+    _tokenIdSupply: {
+        type: String,
+        required: true,
+    },
+    _promiseId: {
+        type: String,
+        required: true,
+    },
 })
 
 module.exports = mongoose.model(VOUCHER, voucherSchema)

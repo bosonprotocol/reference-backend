@@ -14,11 +14,8 @@ class UsersRouter {
             ErrorHandlers.globalErrorHandler(usersController.verifySignature))
 
         router.post('/:address/buy',
-            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(usersController.buy))
-
-        router.get('/my-vouchers/:address',
-            ErrorHandlers.globalErrorHandler(usersController.getMyVouchers));
+            // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(usersController.commitToBuy))
 
         return router;
     }
