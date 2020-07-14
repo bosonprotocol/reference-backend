@@ -84,8 +84,6 @@ class VoucherService {
 
         const voucher = {
             _id: myVoucherDocument.id,
-            buyerStatus: myVoucherDocument._doc.status,
-            voucherID: voucherDetailsDocument.id,
             voucherStatus: voucherDetailsDocument._doc.status,
             title: voucherDetailsDocument._doc.title,
             qty: voucherDetailsDocument._doc.qty,
