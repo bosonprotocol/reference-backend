@@ -7,6 +7,7 @@ const MongooseService = {
     createProduct: Product.createProduct,
     getNonce: User.getNonce,
     preserveNonce: User.preserveNonce,
+    isUserRegistered: User.isUserRegistered,
     commitToBuy: User.commitToBuy,
     getVoucher: Voucher.getVoucher,
     getVouchersByOwner: Voucher.getVouchersByOwner,

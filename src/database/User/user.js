@@ -3,6 +3,12 @@ const User = require('../models/User')
 const Voucher = require('../models/Voucher')
 
 class UserService {
+
+    static async isUserRegistered(address) {
+        let user = await User.findOne({ address })
+        return user ? true : false;
+    }
+
     static async getNonce(address) {
         let user = await User.findOne({ address })
         return user.nonce;
