@@ -24,7 +24,7 @@ class UserService {
     }
 
     static async commitToBuy(address, metadata) {
-        //TODO should first validate if we have enought qty // да питам жорката дали във валидатора мога да си викна монгуса да си взема ваучер-а, за qty-to
+        //TODO should first validate if we have enought qty
 
         const user = await User.findOne({ address })
         const oldVouchers = user.vouchers
@@ -35,8 +35,6 @@ class UserService {
             { vouchers: updatedVouchers },
             { new: true, upsert: true }
         )
-
-        //after this update we have to update voucher qty as well
     }
 }
 

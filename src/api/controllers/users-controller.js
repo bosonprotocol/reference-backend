@@ -10,7 +10,6 @@ class UserController {
         const isRegistered = await mongooseService.isUserRegistered(address);
 
         res.status(200).json({ isRegistered });
-
     }
 
     static async generateNonce(req, res, next) {
