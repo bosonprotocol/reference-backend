@@ -2,6 +2,8 @@
 
 const mongooseService = require('../../database/index.js')
 const APIError = require('../api-error')
+const statuses = require('../../utils/userVoucherStatus');
+const ApiError = require('../api-error');
 
 class UserVoucherController {
     
@@ -50,6 +52,26 @@ class UserVoucherController {
 
         res.status(200).send({ voucher })
     } 
+
+    static async updateMyVoucher(req, res, next) {
+        const userVoucherID = req.body._id
+        const voucherID = req.body.voucherID
+        const status = req.body.status
+
+        try {
+
+            if (status == statuses.REDEEMED) {
+                const myVoucherDocument = await mongooseService.updateVoucherQty(voucherID)
+            }
+
+            const myVoucherDocument = await mongooseService.updateMyVoucherStatus(userVoucherID, status)
+        
+        } catch (error) {
+            return next(new APIError(400, `Redeem operation for user voucher id: ${userVoucherID} could not be completed.`))
+        }
+
+        res.status(200).send({ updated: true })
+    }
 }
 
 module.exports = UserVoucherController;

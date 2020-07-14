@@ -59,6 +59,16 @@ class VoucherService {
         )
     }
 
+    static async updateVoucherQty(voucherID) {
+        const voucher = await this.getVoucher(voucherID);
+
+        return await Voucher.findByIdAndUpdate(voucherID, {
+            qty: --voucher.qty,
+        },
+            { useFindAndModify: false, new: true, upsert: true, }
+        )
+    }
+
     static async deleteVoucher(id) {
         await Voucher.findByIdAndDelete(id)
     }

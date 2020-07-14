@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 const mongoose = require('mongoose');
 const { base64 } = require('ethers/utils');
 const { Schema } = mongoose;
@@ -13,7 +15,12 @@ const voucherSchema = new Schema({
     },
     qty: {
         type: Number,
-        required: true
+        required: true,
+        validate(value) {
+            if (value < 0) {
+                throw new Error('Qty must be a postive number')
+            }
+        }
     },
     price: {
         type: Number,

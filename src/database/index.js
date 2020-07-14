@@ -14,12 +14,14 @@ const MongooseService = {
     getVouchersByBuyer: Voucher.getVouchersByBuyer,
     createVoucher: Voucher.createVoucher,
     updateVoucher: Voucher.updateVoucher,
+    updateVoucherQty: Voucher.updateVoucherQty,
     deleteVoucher: Voucher.deleteVoucher,
     deleteImage: Voucher.deleteImage,
     getVouchersDetails: Voucher.getVouchersDetails,
     createUserVoucher: UserVoucher.createUserVoucher,
     getMyVouchers: UserVoucher.getMyVouchers,
     getMyVoucherByID: UserVoucher.getMyVoucherByID,
+    updateMyVoucherStatus: UserVoucher.updateMyVoucherStatus
 
 }
 

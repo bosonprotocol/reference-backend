@@ -13,6 +13,9 @@ class UserVoucherController {
         router.get('/:voucherID/voucher-details',
             ErrorHandlers.globalErrorHandler(userVoucherController.getVoucherDetails));
 
+        router.patch('/update',
+            ErrorHandlers.globalErrorHandler(userVoucherController.updateMyVoucher));
+
         return router;
     }
 }
