@@ -1,11 +1,11 @@
 const UserVoucher = require('../models/UserVoucher')
 const status = require('../../utils/userVoucherStatus')
 class UserVoucherService {
-    static async createUserVoucher(metadata) {
+    static async createUserVoucher(metadata, voucherID) {
         await UserVoucher.findOneAndUpdate(
             { _tokenIdVoucher: metadata._tokenIdVoucher },
             { 
-                voucherID: metadata.voucherID,
+                voucherID: voucherID,
                 txHash: metadata.txHash,
                 _holder: metadata._holder.toLowerCase(),
                 _promiseId: metadata._promiseId,
@@ -24,6 +24,10 @@ class UserVoucherService {
 
     static async getMyVoucherByID(voucherID) {
         return  await UserVoucher.findById(voucherID)
+    }
+
+    static async findUserVoucherById(myVoucherId) {
+        return await UserVoucher.findById(myVoucherId)
     }
 
     static async updateMyVoucherStatus(voucherID, status) {

@@ -9,7 +9,7 @@ class UserVoucherController {
     
     static async getMyVouchers(req, res, next) {
         const voucherData = []
-        const address = req.params.address.toLowerCase();
+        const address = res.locals.address;
         
         const userVouchersDocuments = await mongooseService.getMyVouchers(address)
 
@@ -54,18 +54,11 @@ class UserVoucherController {
     } 
 
     static async updateMyVoucher(req, res, next) {
-        const userVoucherID = req.body._id
-        const voucherID = req.body.voucherID
+        const userVoucherID = res.locals.userVoucher.id;
         const status = req.body.status
-
-        try {
-
-            if (status == statuses.REDEEMED) {
-                const myVoucherDocument = await mongooseService.updateVoucherQty(voucherID)
-            }
-
-            const myVoucherDocument = await mongooseService.updateMyVoucherStatus(userVoucherID, status)
         
+        try {
+            const myVoucherDocument = await mongooseService.updateMyVoucherStatus(userVoucherID, status)
         } catch (error) {
             return next(new APIError(400, `Redeem operation for user voucher id: ${userVoucherID} could not be completed.`))
         }

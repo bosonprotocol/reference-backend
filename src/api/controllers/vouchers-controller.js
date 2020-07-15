@@ -54,11 +54,12 @@ class VouchersController {
 
     static async createVoucher(req, res, next) {
         const fileRefs = await voucherUtils.uploadFiles(req);
-
+        const voucherOwner = res.locals.address;
+        
         try {
-            await mongooseService.createVoucher(req.body, fileRefs)
+            await mongooseService.createVoucher(req.body, fileRefs, voucherOwner)
         } catch (error) {
-            console.error(`An error occurred while user [${req.body.voucherOwner}] tried to create Voucher.`);
+            console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
             return next(new APIError(400, 'Invalid voucher model'));
         }
     
@@ -67,11 +68,13 @@ class VouchersController {
 
     static async updateVoucher(req, res, next) {
         const fileRefs = await voucherUtils.uploadFiles(req);
-
+        const voucherOwner = res.locals.address;
+        const voucher = res.locals.voucher
+        
         try {
-            await mongooseService.updateVoucher(req.params.id, req.body, fileRefs)
+            await mongooseService.updateVoucher(voucher, req.body, fileRefs)
         } catch (error) {
-            console.error(`An error occurred while user [${req.body.voucherOwner}] tried to update Voucher.`);
+            console.error(`An error occurred while user [${voucherOwner}] tried to update Voucher.`);
             return next(new APIError(400, 'Invalid voucher model'));
         }
 
@@ -79,10 +82,10 @@ class VouchersController {
     }
 
     static async deleteVoucher(req, res, next) {
+        const voucher = res.locals.voucher
 
         try {
-            //TODO validate voucher exists
-            await mongooseService.deleteVoucher(req.params.id);
+            await mongooseService.deleteVoucher(voucher.id);
         } catch (error) {
             console.error(`An error occurred while user [${req.body.voucherOwner}] tried to delete Voucher.`);
             return next(new APIError(400, 'Invalid operation'));
@@ -92,11 +95,12 @@ class VouchersController {
     }
 
     static async deleteImage(req, res, next) {
+        const voucher = res.locals.voucher
         const imageUrl = req.query.imageUrl;
         
         try {
             //TODO validate voucher exists
-            await mongooseService.deleteImage(req.params.id, imageUrl);
+            await mongooseService.deleteImage(voucher.id, imageUrl);
         } catch (error) {
             console.error(`An error occurred while image frpm document [${req.params.id}] was tried to be deleted.`);
             return next(new APIError(400, 'Invalid operation'));

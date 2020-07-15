@@ -23,7 +23,7 @@ class UserService {
         )
     }
 
-    static async commitToBuy(address, metadata) {
+    static async updateUserCollection(address, metadata) {
         //TODO should first validate if we have enought qty
 
         const user = await User.findOne({ address })
