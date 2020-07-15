@@ -1,0 +1,6 @@
+module.exports = {
+    COMMITTED: "COMMITTED",
+    REDEEMED: "REDEEMED",
+    REFUNDED: "REFUNDED",
+    COMPlAINED: "COMPLAINED",
+}

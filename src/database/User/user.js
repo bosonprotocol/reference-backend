@@ -3,6 +3,12 @@ const User = require('../models/User')
 const Voucher = require('../models/Voucher')
 
 class UserService {
+
+    static async isUserRegistered(address) {
+        let user = await User.findOne({ address })
+        return user ? true : false;
+    }
+
     static async getNonce(address) {
         let user = await User.findOne({ address })
         return user.nonce;
@@ -17,10 +23,18 @@ class UserService {
         )
     }
 
-    static async getMyVouchers(address) {
-        const voucherIDs = (await User.findOne({ address })).vouchers
+    static async updateUserCollection(address, metadata) {
+        //TODO should first validate if we have enought qty
 
-        return await Voucher.where('_id').in(voucherIDs).select(['title', 'description', 'price', 'imagefiles'])
+        const user = await User.findOne({ address })
+        const oldVouchers = user.vouchers
+        const updatedVouchers = [...oldVouchers, metadata._tokenIdVoucher]
+        
+        await User.findOneAndUpdate(
+            { address: address },
+            { vouchers: updatedVouchers },
+            { new: true, upsert: true }
+        )
     }
 }
 

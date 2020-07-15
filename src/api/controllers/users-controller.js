@@ -5,6 +5,13 @@ const APIError = require('../api-error')
 
 class UserController {
 
+    static async isUserRegistered(req, res, next) {
+        const address = req.params.address.toLowerCase()
+        const isRegistered = await mongooseService.isUserRegistered(address);
+
+        res.status(200).json({ isRegistered });
+    }
+
     static async generateNonce(req, res, next) {
 
         const address = req.params.address;
@@ -28,15 +35,22 @@ class UserController {
         res.status(200).send(authToken)
     }
 
-    static async getMyVouchers(req, res, next) {
-        const address = req.params.address.toLowerCase();
-        const vouchers = await mongooseService.getMyVouchers(address)
-        res.status(200).send({ vouchers })
-    }
-
-    static async buy(req, res, next) {
+    static async commitToBuy(req, res, next) {
+        const voucherID = req.params.voucherID
+        const metadata = req.body;
+        const buyer = res.locals.address
         
-        await mongooseService.buy();
+        res.status(200).send();
+
+        try {
+            await mongooseService.updateUserCollection(buyer, metadata);
+            await mongooseService.createUserVoucher(metadata, voucherID);
+            await mongooseService.updateVoucherQty(voucherID);
+            
+        } catch (error) {
+            return next(new APIError(400, `Buy operation for voucher id: ${metadata.voucherID} could not be completed.`))
+        }
+
         res.status(200).send();
     }
 }
