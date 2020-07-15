@@ -3,7 +3,6 @@
 const mongooseService = require('../../database/index.js')
 const APIError = require('../api-error')
 const statuses = require('../../utils/userVoucherStatus');
-const ApiError = require('../api-error');
 
 class UserVoucherController {
     
