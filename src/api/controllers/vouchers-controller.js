@@ -18,8 +18,8 @@ class VouchersController {
 
         try {
             voucher = await mongooseService.getVoucher(req.params.id)
-            const voucherStatus = VoucherUtils.calcVoucherStatus(voucher.startDate, voucher.expiryDate, voucher.qty )
            
+            const voucherStatus = VoucherUtils.calcVoucherStatus(voucher.startDate, voucher.expiryDate, voucher.qty )
             voucher.voucherStatus = voucherStatus
         } catch (error) {
             return next(new APIError(400, `${error.message}`));
