@@ -26,10 +26,6 @@ class UserVoucherController {
         const myVoucherID = req.params.voucherID
         
         const myVoucherDocument = await mongooseService.getMyVoucherByID(myVoucherID)
-
-        // res.status.send({ myVoucherDocument })
-
-
         const voucherDetailsDocument = await mongooseService.getVoucher(myVoucherDocument.voucherID)
 
         const voucher = {
