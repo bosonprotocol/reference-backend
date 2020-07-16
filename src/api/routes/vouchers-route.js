@@ -22,6 +22,10 @@ class VouchersRouter {
         router.get('/:id',
             ErrorHandlers.globalErrorHandler(vouchersController.getVoucher));
 
+        router.get('/seller-vouchers/status',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(vouchersController.getVouchersStatus));
+
         router.get('/sell/:address',
             ErrorHandlers.globalErrorHandler(vouchersController.getSellVouchers));
         

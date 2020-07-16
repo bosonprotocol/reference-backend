@@ -13,7 +13,7 @@ class UserVoucherController {
             ErrorHandlers.globalErrorHandler(userVoucherController.getMyVouchers));
 
         router.get('/:voucherID/voucher-details',
-            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+            // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userVoucherController.getVoucherDetails));
 
         router.patch('/update',

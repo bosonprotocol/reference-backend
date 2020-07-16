@@ -12,18 +12,19 @@ class UserVoucherService {
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _tokenIdVoucher: metadata._tokenIdVoucher,
                 status: status.COMMITTED,
-                voucherOwner: metadata._issuer.toLowerCase()
+                voucherOwner: metadata._issuer.toLowerCase(),
+                actionDate: new Date().getTime()
             },
             { new: true, upsert: true }
         )
     }
    
     static async getMyVouchers(userAddress) {
-        return await UserVoucher.find({ _holder: userAddress})
+        return await UserVoucher.find({ _holder: userAddress }).sort({ actionDate: 'desc' })
     }
 
     static async getMyVoucherByID(voucherID) {
-        return  await UserVoucher.findById(voucherID)
+        return await UserVoucher.findById(voucherID)
     }
 
     static async findUserVoucherById(myVoucherId) {
@@ -33,7 +34,10 @@ class UserVoucherService {
     static async updateMyVoucherStatus(voucherID, status) {
         const myVoucher =  await UserVoucher.findById(voucherID)
         return await UserVoucher.findByIdAndUpdate(voucherID, 
-            { status },
+            { 
+                status: status,
+                actionDate: new Date().getTime() 
+            },
             { useFindAndModify: false, new: true, upsert: true, }
         )
     }

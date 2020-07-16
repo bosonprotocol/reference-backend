@@ -2,12 +2,45 @@
 const Voucher = require('../models/Voucher')
 
 class VoucherService {
+
     static async getVouchersByOwner(voucherOwner) {
-        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles']).lean()
+        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles']).sort({ offeredDate: 'desc' }).lean()
     }
 
     static async getVouchersByBuyer(voucherOwner) {
-        return await Voucher.where('voucherOwner').ne(voucherOwner).select(['title', 'price', 'description', 'imagefiles']).lean()
+        const today = new Date(Date.now())
+
+        return await Voucher.where('voucherOwner')
+            .ne(voucherOwner)
+            .where('startDate').lte(today)
+            .where('expiryDate').gte(today)
+            .where('qty').gt(0)
+            .select(['title', 'price', 'description', 'imagefiles'])
+            .sort({ offeredDate: 'desc' }).lean()
+    }
+
+    static async getActiveVouchers(address) {
+        const today = new Date(Date.now())
+
+        return await Voucher
+            .where('voucherOwner').equals(address.toLowerCase())
+            .where('startDate').lte(today)
+            .where('expiryDate').gte(today)
+            .where('qty').gt(0)
+            .select(['title', 'price', 'voucherOwner','qty', 'description', 'imagefiles', 'startDate', 'expiryDate']).sort({ offeredDate: 'desc' }).lean()
+    }
+
+    static async getInactiveVouchers(address) {
+        const today = new Date(Date.now())
+
+        return await Voucher
+            .where('voucherOwner').equals(address.toLowerCase())
+            .or([
+                { startDate: { $gte: today } }, 
+                { expiryDate: { $lte: today }},
+                { qty: { $lte: 0 } }
+            ])
+            .select(['title', 'price', 'voucherOwner', 'description', 'imagefiles', 'startDate', 'expiryDate']).sort({ offeredDate: 'desc' }).lean()
     }
 
     static async createVoucher(metadata, fileRefs, voucherOwner) {

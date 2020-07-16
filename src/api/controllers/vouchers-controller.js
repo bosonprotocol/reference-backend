@@ -1,3 +1,5 @@
+//@ts-nocheck
+
 const mongooseService = require('../../database/index.js')
 const AuthValidator = require('../services/auth-service')
 const APIError = require('../api-error')
@@ -50,6 +52,20 @@ class VouchersController {
         }
 
         res.status(200).send({ vouchers });
+    }
+
+    static async getVouchersStatus(req, res, next) {
+        let active, inactive = [];
+        const address = res.locals.address;
+
+        try {
+            active = await mongooseService.getActiveVouchers(address)
+            inactive = await mongooseService.getInactiveVouchers(address)
+        } catch (error) {
+            return next(new APIError(400, 'Bad request.'));
+        }
+
+        res.status(200).send({ active: active.length, inactive: inactive.length });
     }
 
     static async createVoucher(req, res, next) {

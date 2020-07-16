@@ -31,7 +31,11 @@ const userSchema = new Schema({
     status: {
         type: String,
         required: true
-    }
+    },
+    actionDate: {
+        type: Date,
+        required: false
+    },
 })
 
 module.exports = mongoose.model(USER_VOUCHER, userSchema)
