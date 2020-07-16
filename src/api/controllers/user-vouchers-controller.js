@@ -2,6 +2,7 @@
 
 const mongooseService = require('../../database/index.js')
 const APIError = require('../api-error')
+const voucherUtils = require('../../utils/voucherUtils')
 const statuses = require('../../utils/userVoucherStatus');
 
 class UserVoucherController {
@@ -27,9 +28,6 @@ class UserVoucherController {
         
         const myVoucherDocument = await mongooseService.getMyVoucherByID(myVoucherID)
 
-        // res.status.send({ myVoucherDocument })
-
-
         const voucherDetailsDocument = await mongooseService.getVoucher(myVoucherDocument.voucherID)
 
         const voucher = {
@@ -39,7 +37,7 @@ class UserVoucherController {
             _tokenIdSupply: myVoucherDocument._tokenIdSupply,
             buyerStatus: myVoucherDocument.status,
             voucherID: voucherDetailsDocument.id,
-            voucherStatus: voucherDetailsDocument.status,
+            voucherStatus: voucherUtils.calcVoucherStatus(voucherDetailsDocument.startDate, voucherDetailsDocument.expiryDate, voucherDetailsDocument.qty),
             title: voucherDetailsDocument.title,
             qty: voucherDetailsDocument.qty,
             description: voucherDetailsDocument.description,
@@ -52,6 +50,10 @@ class UserVoucherController {
             sellerDeposit: voucherDetailsDocument.sellerDeposit,
             voucherOwner: voucherDetailsDocument.voucherOwner,
         }
+
+        console.log('====== voucher ========');
+        console.log(voucher);
+        
 
         res.status(200).send({ voucher })
     } 

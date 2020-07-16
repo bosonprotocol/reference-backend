@@ -58,7 +58,7 @@ const voucherSchema = new Schema({
         type: Array,
         required: true
     },
-    status: {
+    voucherStatus: {
         type: String, // active || inactive
         default: 'inactive'
     },
