@@ -4,7 +4,6 @@ const mongooseService = require('../../database/index.js')
 const AuthValidator = require('../services/auth-service')
 const APIError = require('../api-error')
 const voucherUtils = require('../../utils/voucherUtils');
-const VoucherUtils = require('../../utils/voucherUtils');
 
 class VouchersController {
 
@@ -19,7 +18,7 @@ class VouchersController {
         try {
             voucher = await mongooseService.getVoucher(req.params.id)
            
-            const voucherStatus = VoucherUtils.calcVoucherStatus(voucher.startDate, voucher.expiryDate, voucher.qty )
+            const voucherStatus = voucherUtils.calcVoucherStatus(voucher.startDate, voucher.expiryDate, voucher.qty )
             voucher.voucherStatus = voucherStatus
         } catch (error) {
             return next(new APIError(400, `${error.message}`));
