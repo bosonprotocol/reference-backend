@@ -51,10 +51,6 @@ class UserVoucherController {
             voucherOwner: voucherDetailsDocument.voucherOwner,
         }
 
-        console.log('====== voucher ========');
-        console.log(voucher);
-        
-
         res.status(200).send({ voucher })
     } 
 
