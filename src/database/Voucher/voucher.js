@@ -4,7 +4,7 @@ const Voucher = require('../models/Voucher')
 class VoucherService {
 
     static async getVouchersByOwner(voucherOwner) {
-        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles']).sort({ offeredDate: 'desc' }).lean()
+        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles', 'expiryDate']).sort({ offeredDate: 'desc' }).lean()
     }
 
     static async getVouchersByBuyer(voucherOwner) {
@@ -15,7 +15,7 @@ class VoucherService {
             .where('startDate').lte(today)
             .where('expiryDate').gte(today)
             .where('qty').gt(0)
-            .select(['title', 'price', 'description', 'imagefiles'])
+            .select(['title', 'price', 'description', 'imagefiles', 'expiryDate'])
             .sort({ offeredDate: 'desc' }).lean()
     }
 
@@ -129,6 +129,7 @@ class VoucherService {
             imagefiles: voucherDetailsDocument._doc.imagefiles,
             category: voucherDetailsDocument._doc.category,
             price: voucherDetailsDocument._doc.price,
+            expiryDate: voucherDetailsDocument._doc.expiryDate,
         }
 
         voucherData.push(
