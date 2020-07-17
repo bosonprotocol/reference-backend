@@ -1,3 +1,4 @@
+const VOUCHER_STATUS = require('./voucherStatus')
 const BUCKET_NAME = process.env.VOUCHERS_BUCKET;
 
 class VoucherUtils {
@@ -30,6 +31,19 @@ class VoucherUtils {
         }
 
         return filesRefs;
+    }
+
+    static calcVoucherStatus(startDate, expiryDate, qty) {
+        const isActive = true;
+        const todayToMillis = new Date(Date.now()).getTime();
+        const startToMillis = new Date(startDate).getTime();
+        const expiryTomillis = new Date(expiryDate).getTime();
+
+        if (todayToMillis < startDate || todayToMillis > expiryTomillis || qty <= 0) {
+            return VOUCHER_STATUS.INACTIVE
+        }
+
+        return VOUCHER_STATUS.ACTIVE
     }
 }
 

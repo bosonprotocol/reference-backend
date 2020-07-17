@@ -58,13 +58,12 @@ const voucherSchema = new Schema({
         type: Array,
         required: true
     },
-    status: {
-        type: String, // active || inactive
-        default: 'inactive'
-    },
     voucherOwner: {
         type: String,
         required: true
+    },
+    voucherStatus: {
+        type: String
     },
     txHash: {
         type: String,

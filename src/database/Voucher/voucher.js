@@ -56,7 +56,6 @@ class VoucherService {
             buyerDeposit: metadata.buyerDeposit,
             sellerDeposit: metadata.sellerDeposit,
             description: metadata.description,
-            status: metadata.status,
             voucherOwner: voucherOwner,
             txHash: metadata.txHash,
             _tokenIdSupply: metadata._tokenIdSupply,
@@ -73,18 +72,17 @@ class VoucherService {
         const updatedImages = [...currentImages, ...fileRefs]
         
         await Voucher.findByIdAndUpdate(voucher.id, {
-               title: metadata.title,
-               qty: metadata.qty,
-               category: metadata.category,
-               startDate: metadata.startDate,
-               expiryDate: metadata.expiryDate,
-               offeredDate: metadata.offeredDate,
-               price: metadata.price,
-               buyerDeposit: metadata.buyerDeposit,
-               sellerDeposit: metadata.sellerDeposit,
-               description: metadata.description,
-               status: metadata.status,
-               imagefiles: updatedImages
+            title: metadata.title,
+            qty: metadata.qty,
+            category: metadata.category,
+            startDate: metadata.startDate,
+            expiryDate: metadata.expiryDate,
+            offeredDate: metadata.offeredDate,
+            price: metadata.price,
+            buyerDeposit: metadata.buyerDeposit,
+            sellerDeposit: metadata.sellerDeposit,
+            description: metadata.description,
+            imagefiles: updatedImages
             },
             { useFindAndModify: false, new: true, upsert: true, }
         )
