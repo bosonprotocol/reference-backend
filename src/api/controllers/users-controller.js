@@ -1,15 +1,22 @@
 const nonceUtils = require('../../utils/nonceUtils')
-const DBService = require('../../database/database-service')
-const Validator = require('../services/validator')
+const mongooseService = require('../../database/index.js')
+const AuthValidator = require('../services/auth-service')
 const APIError = require('../api-error')
 
 class UserController {
+
+    static async isUserRegistered(req, res, next) {
+        const address = req.params.address.toLowerCase()
+        const isRegistered = await mongooseService.isUserRegistered(address);
+
+        res.status(200).json({ isRegistered });
+    }
 
     static async generateNonce(req, res, next) {
 
         const address = req.params.address;
         const randomNonce = nonceUtils.generateRandomNumber();
-        await DBService.preserveNonce(address, randomNonce)
+        await mongooseService.preserveNonce(address.toLowerCase(), randomNonce)
         
         res.status(200).json(
             randomNonce
@@ -17,21 +24,33 @@ class UserController {
     }
 
     static async verifySignature(req, res, next) {
-
         const address = req.params.address
-        const nonce = await DBService.getNonce(address)
+        const nonce = await mongooseService.getNonce(address.toLowerCase())
 
-        if (!await Validator.isSignatureVerified(address, nonce, req.body.signature)) {
+        if (!await AuthValidator.isSignatureVerified(address, nonce, req.body.signature)) {
             return next(new APIError(401, 'Unauthorized.'))
         }
 
-        const authToken = Validator.generateAccessToken(address)        
+        const authToken = AuthValidator.generateAccessToken(address)        
         res.status(200).send(authToken)
     }
 
-    static async buy(req, res, next) {
+    static async commitToBuy(req, res, next) {
+        const voucherID = req.params.voucherID
+        const metadata = req.body;
+        const buyer = res.locals.address
         
-        await DBService.buy();
+        res.status(200).send();
+
+        try {
+            await mongooseService.updateUserCollection(buyer, metadata);
+            await mongooseService.createUserVoucher(metadata, voucherID);
+            await mongooseService.updateVoucherQty(voucherID);
+            
+        } catch (error) {
+            return next(new APIError(400, `Buy operation for voucher id: ${metadata.voucherID} could not be completed.`))
+        }
+
         res.status(200).send();
     }
 }

@@ -1,4 +1,6 @@
 {
     "PRODUCTS": "products",
-    "USERS": "users"
+    "USER": "User",
+    "VOUCHER": "Voucher",
+    "USER_VOUCHER": "UserVoucher"
 }
