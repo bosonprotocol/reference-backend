@@ -60,6 +60,7 @@ class UserVoucherController {
         try {
             const myVoucherDocument = await mongooseService.updateMyVoucherStatus(userVoucherID, status)
         } catch (error) {
+            console.error(error)
             return next(new APIError(400, `Redeem operation for user voucher id: ${userVoucherID} could not be completed.`))
         }
 
