@@ -48,6 +48,7 @@ class UserController {
             await mongooseService.updateVoucherQty(voucherID);
             
         } catch (error) {
+            console.error(error)
             return next(new APIError(400, `Buy operation for voucher id: ${metadata.voucherID} could not be completed.`))
         }
 

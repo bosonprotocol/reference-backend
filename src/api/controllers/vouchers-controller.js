@@ -21,6 +21,7 @@ class VouchersController {
             const voucherStatus = voucherUtils.calcVoucherStatus(voucher.startDate, voucher.expiryDate, voucher.qty )
             voucher.voucherStatus = voucherStatus
         } catch (error) {
+            console.error(error)
             return next(new APIError(400, `${error.message}`));
         }
 
@@ -51,6 +52,7 @@ class VouchersController {
             vouchers = await mongooseService.getVouchersByBuyer(buyer)
         } catch (error) {
             console.error(`An error occurred while user [${buyer}] tried to fetch Vouchers.`);
+            console.error(error)
             return next(new APIError(400, 'Invalid operation'));
         }
 
@@ -79,6 +81,7 @@ class VouchersController {
             await mongooseService.createVoucher(req.body, fileRefs, voucherOwner)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
+            console.error(error)
             return next(new APIError(400, 'Invalid voucher model'));
         }
     
@@ -94,6 +97,7 @@ class VouchersController {
             await mongooseService.updateVoucher(voucher, req.body, fileRefs)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to update Voucher.`);
+            console.error(error)
             return next(new APIError(400, 'Invalid voucher model'));
         }
 
@@ -122,6 +126,7 @@ class VouchersController {
             await mongooseService.deleteImage(voucher.id, imageUrl);
         } catch (error) {
             console.error(`An error occurred while image frpm document [${req.params.id}] was tried to be deleted.`);
+            console.error(error)
             return next(new APIError(400, 'Invalid operation'));
         }
 
