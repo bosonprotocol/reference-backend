@@ -36,6 +36,12 @@ class VouchersController {
         
         try {
             vouchers = await mongooseService.getVouchersByOwner(owner)
+
+            vouchers.forEach(voucher => {
+                const voucherStatus = voucherUtils.calcVoucherStatus(voucher.startDate, voucher.expiryDate, voucher.qty)
+                voucher.voucherStatus = voucherStatus
+            })
+            
         } catch (error) {
             console.error(`An error occurred while user [${owner}] tried to fetch Vouchers.`);
             return next(new APIError(400, 'Invalid operation'));
@@ -71,6 +77,36 @@ class VouchersController {
         }
 
         res.status(200).send({ active: active.length, inactive: inactive.length });
+    }
+
+    static async getAllActiveVouchers(req, res, next) {
+        let active = [];
+        const address = res.locals.address;
+
+        try {
+            active = await mongooseService.getActiveVouchers(address)
+        } catch (error) {
+            return next(new APIError(400, 'Bad request.'));
+        }
+
+        res.status(200).send({
+            vouchers: active
+        })
+    }
+
+    static async getAllInactiveVouchers(req, res, next) {
+        let inActive = [];
+        const address = res.locals.address;
+
+        try {
+            inActive = await mongooseService.getInactiveVouchers(address)
+        } catch (error) {
+            return next(new APIError(400, 'Bad request.'));
+        }
+
+        res.status(200).send({
+            vouchers: inActive
+        })
     }
 
     static async createVoucher(req, res, next) {
