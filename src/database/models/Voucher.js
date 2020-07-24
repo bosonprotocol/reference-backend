@@ -54,6 +54,21 @@ const voucherSchema = new Schema({
         type: String,
         required: false
     },
+    location: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    contact: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    conditions: {
+        type: String,
+        required: true,
+        trim: true
+    },
     imagefiles: {
         type: Array,
         required: true
