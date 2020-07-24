@@ -2,7 +2,7 @@ const UserVoucher = require('../models/UserVoucher')
 const status = require('../../utils/userVoucherStatus')
 class UserVoucherService {
     static async createUserVoucher(metadata, voucherID) {
-        await UserVoucher.findOneAndUpdate(
+        return await UserVoucher.findOneAndUpdate(
             { _tokenIdVoucher: metadata._tokenIdVoucher },
             { 
                 voucherID: voucherID,

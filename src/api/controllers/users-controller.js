@@ -39,20 +39,19 @@ class UserController {
         const voucherID = req.params.voucherID
         const metadata = req.body;
         const buyer = res.locals.address
+        let userVoucher;
         
-        res.status(200).send();
-
         try {
             await mongooseService.updateUserCollection(buyer, metadata);
-            await mongooseService.createUserVoucher(metadata, voucherID);
+            userVoucher = await mongooseService.createUserVoucher(metadata, voucherID);
             await mongooseService.updateVoucherQty(voucherID);
-            
+
         } catch (error) {
             console.error(error)
             return next(new APIError(400, `Buy operation for voucher id: ${metadata.voucherID} could not be completed.`))
         }
 
-        res.status(200).send();
+        res.status(200).send({ userVoucherID: userVoucher.id});
     }
 }
 
