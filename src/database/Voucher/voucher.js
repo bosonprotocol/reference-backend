@@ -56,6 +56,9 @@ class VoucherService {
             buyerDeposit: metadata.buyerDeposit,
             sellerDeposit: metadata.sellerDeposit,
             description: metadata.description,
+            location: metadata.location,
+            contact: metadata.contact,
+            conditions: metadata.conditions,
             voucherOwner: voucherOwner,
             txHash: metadata.txHash,
             _tokenIdSupply: metadata._tokenIdSupply,
@@ -82,6 +85,9 @@ class VoucherService {
             buyerDeposit: metadata.buyerDeposit,
             sellerDeposit: metadata.sellerDeposit,
             description: metadata.description,
+            location: metadata.location,
+            contact: metadata.contact,
+            conditions: metadata.conditions,
             imagefiles: updatedImages
             },
             { useFindAndModify: false, new: true, upsert: true, }
