@@ -4,7 +4,7 @@ const Voucher = require('../models/Voucher')
 class VoucherService {
 
     static async getVouchersByOwner(voucherOwner) {
-        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'startDate']).sort({ offeredDate: 'desc' }).lean()
+        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'startDate', 'qty']).sort({ offeredDate: 'desc' }).lean()
     }
 
     static async getVouchersByBuyer(voucherOwner) {
