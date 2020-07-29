@@ -32,6 +32,26 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    COMMITTED: {
+        type: Date,
+        required: false
+    },
+    REDEEMED: {
+        type: Date,
+        required: false
+    },
+    REFUNDED: {
+        type: Date,
+        required: false
+    },
+    COMPLAINED: {
+        type: Date,
+        required: false
+    },
+    CANCELLED: {
+        type: Date,
+        required: false
+    },
     actionDate: {
         type: Date,
         required: false

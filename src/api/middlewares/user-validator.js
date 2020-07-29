@@ -18,7 +18,7 @@ class UserValidator {
     static async ValidateVoucherHolder(req, res, next) {
         const userVoucher = await mongooseService.findUserVoucherById(req.body._id)
         
-        if (userVoucher._holder != res.locals.address) {
+        if (userVoucher._holder != res.locals.address && userVoucher.voucherOwner != res.locals.address) {
             return next(new APIError(403, 'Forbidden.'))
         }
 

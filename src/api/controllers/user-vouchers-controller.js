@@ -23,6 +23,19 @@ class UserVoucherController {
         res.status(200).send({ voucherData })
     }
 
+    static async getBuyersByVoucherID(req, res, next) {
+        const owner = res.locals.address
+        const voucherID = req.params.voucherID
+        let vouchers = {};
+        try {
+            vouchers = await mongooseService.findAllUsersByVoucherID(voucherID, owner)
+        } catch (error) {
+            console.error(error.message);
+
+        }
+        res.status(200).send({vouchers});
+    }
+
     static async getVoucherDetails(req, res, next) {
         const myVoucherID = req.params.voucherID
         
@@ -35,6 +48,11 @@ class UserVoucherController {
             _holder: myVoucherDocument._holder,
             _tokenIdSupply: myVoucherDocument._tokenIdSupply,
             buyerStatus: myVoucherDocument.status,
+            CANCELLED: myVoucherDocument.CANCELLED,
+            COMMITTED: myVoucherDocument.COMMITTED,
+            COMPLAINED: myVoucherDocument.COMPLAINED,
+            REDEEMED: myVoucherDocument.REDEEMED,
+            REFUNDED: myVoucherDocument.REFUNDED,
             voucherID: voucherDetailsDocument.id,
             voucherStatus: voucherUtils.calcVoucherStatus(voucherDetailsDocument.startDate, voucherDetailsDocument.expiryDate, voucherDetailsDocument.qty),
             title: voucherDetailsDocument.title,
