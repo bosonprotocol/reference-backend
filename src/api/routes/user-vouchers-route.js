@@ -16,6 +16,10 @@ class UserVoucherController {
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userVoucherController.getVoucherDetails));
 
+        router.get('/buyers/:voucherID',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(userVoucherController.getBuyersByVoucherID));
+
         router.patch('/update',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),

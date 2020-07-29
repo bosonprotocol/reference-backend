@@ -11,7 +11,11 @@ class UserVoucherService {
                 _promiseId: metadata._promiseId,
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _tokenIdVoucher: metadata._tokenIdVoucher,
-                status: status.COMMITTED,
+                [status.COMMITTED]: new Date().getTime(),
+                [status.CANCELLED]: '',
+                [status.COMPLAINED]: '',
+                [status.REDEEMED]: '',
+                [status.REFUNDED]: '',
                 voucherOwner: metadata._issuer.toLowerCase(),
                 actionDate: new Date().getTime()
             },
@@ -31,12 +35,17 @@ class UserVoucherService {
         return await UserVoucher.findById(myVoucherId)
     }
 
+    static async findAllUsersByVoucherID(voucherID, owner) {
+        return  await UserVoucher
+            .where('voucherID').equals(voucherID)
+            .where('voucherOwner').equals(owner)
+            .where(status.CANCELLED).equals('')
+    }
+
     static async updateMyVoucherStatus(voucherID, status) {
-        const myVoucher =  await UserVoucher.findById(voucherID)
         return await UserVoucher.findByIdAndUpdate(voucherID, 
             { 
-                status: status,
-                actionDate: new Date().getTime() 
+                [status]: new Date().getTime()
             },
             { useFindAndModify: false, new: true, upsert: true, }
         )
