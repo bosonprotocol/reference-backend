@@ -23,15 +23,15 @@ const voucherSchema = new Schema({
         }
     },
     price: {
-        type: Number,
+        type: Schema.Types.Decimal128,
         required: true
     },
     buyerDeposit: {
-        type: Number,
+        type: Schema.Types.Decimal128,
         required: true
     },
     sellerDeposit: {
-        type: Number,
+        type: Schema.Types.Decimal128,
         required: true
     },
     category: {
@@ -48,7 +48,7 @@ const voucherSchema = new Schema({
     },
     offeredDate: {
         type: Date,
-        required: false 
+        required: false
     },
     description: {
         type: String,
