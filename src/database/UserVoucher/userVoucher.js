@@ -16,6 +16,7 @@ class UserVoucherService {
                 [status.COMPLAINED]: '',
                 [status.REDEEMED]: '',
                 [status.REFUNDED]: '',
+                [status.FINALIZED]: '',
                 voucherOwner: metadata._issuer.toLowerCase(),
                 actionDate: new Date().getTime()
             },
@@ -45,6 +46,15 @@ class UserVoucherService {
     static async updateMyVoucherStatus(voucherID, status) {
         return await UserVoucher.findByIdAndUpdate(voucherID, 
             { 
+                [status]: new Date().getTime()
+            },
+            { useFindAndModify: false, new: true, upsert: true, }
+        )
+    }
+
+    static async finalizeVoucher(tokenID, status) {
+        return await UserVoucher.findOneAndUpdate({ _tokenIdVoucher: tokenID},
+            {
                 [status]: new Date().getTime()
             },
             { useFindAndModify: false, new: true, upsert: true, }

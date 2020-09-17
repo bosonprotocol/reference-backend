@@ -23,6 +23,30 @@ class Authentication {
         next();
     }
 
+    static async authenticateGCLOUDService(req, res, next) {
+        
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(' ')[1]
+        if (token == null) {
+            return next(new APIError(401, 'Unauthorized.'))
+        }
+
+        try {
+            const payload = await AuthService.verifyToken(token)
+            if (payload.token != process.env.GCLOUD_SECRET) {
+                return next(new APIError(403, 'Forbidden.'))
+            }
+
+            res.locals.events = req.body;
+
+        } catch (error) {
+            console.log(error);
+            return next(new APIError(403, 'Forbidden.'))
+        }
+
+        next();
+    }
+
 }
 
 module.exports = Authentication;

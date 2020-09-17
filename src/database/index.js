@@ -25,7 +25,8 @@ const MongooseService = {
     getMyVouchers: UserVoucher.getMyVouchers,
     getMyVoucherByID: UserVoucher.getMyVoucherByID,
     updateMyVoucherStatus: UserVoucher.updateMyVoucherStatus,
-    findAllUsersByVoucherID: UserVoucher.findAllUsersByVoucherID
+    findAllUsersByVoucherID: UserVoucher.findAllUsersByVoucherID,
+    finalizeVoucher: UserVoucher.finalizeVoucher
 
 }
 

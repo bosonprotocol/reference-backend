@@ -25,6 +25,10 @@ class UserVoucherController {
             ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),
             ErrorHandlers.globalErrorHandler(userVoucherController.updateMyVoucher));
 
+        router.patch('/finalize',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(userVoucherController.finalizeVoucher));
+
         return router;
     }
 }
