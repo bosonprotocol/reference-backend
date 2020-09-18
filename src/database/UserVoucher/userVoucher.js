@@ -4,7 +4,7 @@ class UserVoucherService {
     static async createUserVoucher(metadata, voucherID) {
         return await UserVoucher.findOneAndUpdate(
             { _tokenIdVoucher: metadata._tokenIdVoucher },
-            { 
+            {
                 voucherID: voucherID,
                 txHash: metadata.txHash,
                 _holder: metadata._holder.toLowerCase(),
@@ -23,7 +23,7 @@ class UserVoucherService {
             { new: true, upsert: true }
         )
     }
-   
+
     static async getMyVouchers(userAddress) {
         return await UserVoucher.find({ _holder: userAddress }).sort({ actionDate: 'desc' })
     }
@@ -37,15 +37,16 @@ class UserVoucherService {
     }
 
     static async findAllUsersByVoucherID(voucherID, owner) {
-        return  await UserVoucher
+        return await UserVoucher
             .where('voucherID').equals(voucherID)
             .where('voucherOwner').equals(owner)
-            .where(status.CANCELLED).equals('')
+        // removed for POC to be able to show table with statuses when cancel or fault is executed
+        // .where(status.CANCELLED).equals('')
     }
 
     static async updateMyVoucherStatus(voucherID, status) {
-        return await UserVoucher.findByIdAndUpdate(voucherID, 
-            { 
+        return await UserVoucher.findByIdAndUpdate(voucherID,
+            {
                 [status]: new Date().getTime()
             },
             { useFindAndModify: false, new: true, upsert: true, }
@@ -53,7 +54,7 @@ class UserVoucherService {
     }
 
     static async finalizeVoucher(tokenID, status) {
-        return await UserVoucher.findOneAndUpdate({ _tokenIdVoucher: tokenID},
+        return await UserVoucher.findOneAndUpdate({ _tokenIdVoucher: tokenID },
             {
                 [status]: new Date().getTime()
             },
