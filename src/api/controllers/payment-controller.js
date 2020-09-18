@@ -32,7 +32,7 @@ class UserController {
 
         } catch (error) {
             console.error(error)
-            return next(new APIError(400, `Get payment actors for voucher id: ${_tokenIdVoucher} could not be completed.`))
+            return next(new APIError(400, `Get payment actors for voucher id: ${userVoucher._tokenIdVoucher} could not be completed.`))
         }
 
         res.status(200).send({ actors });
