@@ -22,11 +22,11 @@ class UserController {
 
             for (const key in payments) {
                 if (payments[key]._payee.toLowerCase() == buyer) {
-                    actors.buyer = payments[key]._payment
+                    actors.buyer = payments[key]._payment.toString()
                 } else if (payments[key]._payee.toLowerCase() == seller) {
-                    actors.seller = payments[key]._payment
+                    actors.seller = payments[key]._payment.toString()
                 } else {
-                    actors.escrow = payments[key]._payment
+                    actors.escrow = payments[key]._payment.toString()
                 }
             }
 
