@@ -53,6 +53,7 @@ class UserVoucherController {
             COMPLAINED: myVoucherDocument.COMPLAINED,
             REDEEMED: myVoucherDocument.REDEEMED,
             REFUNDED: myVoucherDocument.REFUNDED,
+            FINALIZED: myVoucherDocument.FINALIZED,
             voucherID: voucherDetailsDocument.id,
             voucherStatus: voucherUtils.calcVoucherStatus(voucherDetailsDocument.startDate, voucherDetailsDocument.expiryDate, voucherDetailsDocument.qty),
             title: voucherDetailsDocument.title,
@@ -87,6 +88,21 @@ class UserVoucherController {
 
         res.status(200).send({ updated: true })
     }
+
+    static async finalizeVoucher(req, res, next) {
+        const tokenIdVoucher = res.locals.events[0]._tokenIdVoucher;
+        const status = res.locals.events[0].status
+
+        try {
+            await mongooseService.finalizeVoucher(tokenIdVoucher, status)
+        } catch (error) {
+            console.error(error)
+            return next(new APIError(400, `Finalize operation for token voucher id: ${userVoucherID} could not be completed.`))
+        }
+
+        res.status(200).send({ updated: true })
+    }
+
 }
 
 module.exports = UserVoucherController;
