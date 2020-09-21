@@ -2,6 +2,7 @@ const Product = require('./Product/product')
 const Voucher = require('./Voucher/voucher')
 const User = require('./User/user')
 const UserVoucher = require('./UserVoucher/userVoucher')
+const Payment = require('./Payment/payment')
 
 const MongooseService = {
     createProduct: Product.createProduct,
@@ -25,8 +26,10 @@ const MongooseService = {
     getMyVouchers: UserVoucher.getMyVouchers,
     getMyVoucherByID: UserVoucher.getMyVoucherByID,
     updateMyVoucherStatus: UserVoucher.updateMyVoucherStatus,
-    findAllUsersByVoucherID: UserVoucher.findAllUsersByVoucherID
-
+    findAllUsersByVoucherID: UserVoucher.findAllUsersByVoucherID,
+    finalizeVoucher: UserVoucher.finalizeVoucher,
+    createPayment: Payment.createPayment,
+    getPaymentsByVoucherID: Payment.getPaymentsByVoucherID
 }
 
 module.exports = MongooseService;
