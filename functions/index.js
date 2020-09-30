@@ -48,7 +48,7 @@ const WITHDRAWAL_BLACKLISTED_VOUCHER_IDS = [
     "57896044618658097711785492504343953942968545945025328265970773160681438969857"
 ];
 
-exports.scheduledKeepers = functions.https.onRequest(async (request, response) => {
+exports.scheduledKeepersNew = functions.https.onRequest(async (request, response) => {
     // Expiration process
     await triggerExirations();
 
@@ -131,7 +131,7 @@ async function triggerFinalizations() {
         } catch (e) {
             console.error(`Error while triggering finalization of the voucher. Error: ${ e }`);
         }
-        let parsedEvent = await findEventByName(receipt, 'LogFinalizeVoucher', '_tokenIdVoucher', '_triggeredBy')
+        let parsedEvent = await findEventByName(receipt, 'LogFinalizeVoucher', '_tokenIdVoucher', '_triggeredBy');
 
         if (parsedEvent && parsedEvent[0]) {
             parsedEvent[0]._tokenIdVoucher = voucherID;
