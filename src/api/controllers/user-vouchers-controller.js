@@ -6,11 +6,11 @@ const voucherUtils = require('../../utils/voucherUtils')
 const statuses = require('../../utils/userVoucherStatus');
 
 class UserVoucherController {
-    
+
     static async getMyVouchers(req, res, next) {
         const voucherData = []
         const address = res.locals.address;
-        
+
         const userVouchersDocuments = await mongooseService.getMyVouchers(address)
 
         const promises = []
@@ -38,7 +38,7 @@ class UserVoucherController {
 
     static async getVoucherDetails(req, res, next) {
         const myVoucherID = req.params.voucherID
-        
+
         const myVoucherDocument = await mongooseService.getMyVoucherByID(myVoucherID)
         const voucherDetailsDocument = await mongooseService.getVoucher(myVoucherDocument.voucherID)
 
@@ -73,12 +73,12 @@ class UserVoucherController {
         }
 
         res.status(200).send({ voucher })
-    } 
+    }
 
     static async updateMyVoucher(req, res, next) {
         const userVoucherID = res.locals.userVoucher.id;
         const status = req.body.status
-        
+
         try {
             const myVoucherDocument = await mongooseService.updateMyVoucherStatus(userVoucherID, status)
         } catch (error) {
@@ -101,6 +101,12 @@ class UserVoucherController {
         }
 
         res.status(200).send({ updated: true })
+    }
+
+    static async getAllVouchers(req, res, next) {
+        const vouchersDocuments = await mongooseService.getAllVouchers();
+
+        res.status(200).send({ vouchersDocuments })
     }
 
 }

@@ -20,6 +20,10 @@ class UserVoucherController {
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userVoucherController.getBuyersByVoucherID));
 
+        router.get('/all',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(userVoucherController.getAllVouchers));
+
         router.patch('/update',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),

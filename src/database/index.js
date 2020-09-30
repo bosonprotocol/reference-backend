@@ -29,7 +29,8 @@ const MongooseService = {
     findAllUsersByVoucherID: UserVoucher.findAllUsersByVoucherID,
     finalizeVoucher: UserVoucher.finalizeVoucher,
     createPayment: Payment.createPayment,
-    getPaymentsByVoucherID: Payment.getPaymentsByVoucherID
+    getPaymentsByVoucherID: Payment.getPaymentsByVoucherID,
+    getAllVouchers: UserVoucher.getAllVouchers
 }
 
 module.exports = MongooseService;

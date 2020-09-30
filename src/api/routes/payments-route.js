@@ -6,9 +6,12 @@ class UserVoucherController {
 
     static route(expressApp) {
         let router = expressApp.Router();
+        router.get('/check-payment/:tokenIdVoucher',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(paymentsController.getPaymentsByVoucherID));
 
         router.get('/:voucherID',
-            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken), 
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(paymentsController.getPaymentActors));
 
         router.post('/create-payment',

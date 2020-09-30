@@ -6,7 +6,7 @@ class UserController {
 
     static async getPaymentActors(req, res, next) {
         const objectId = req.params.voucherID
-        
+
 
         let actors = {
             buyer: 0,
@@ -32,7 +32,7 @@ class UserController {
 
         } catch (error) {
             console.error(error)
-            return next(new APIError(400, `Get payment actors for voucher id: ${userVoucher._tokenIdVoucher} could not be completed.`))
+            return next(new APIError(400, `Get payment actors for voucher id: ${ userVoucher._tokenIdVoucher } could not be completed.`))
         }
 
         res.status(200).send({ actors });
@@ -51,10 +51,18 @@ class UserController {
 
         } catch (error) {
             console.error(error)
-            return next(new APIError(400, `Create payment operation for voucher id: ${events[0]._tokenIdVoucher} could not be completed.`))
+            return next(new APIError(400, `Create payment operation for voucher id: ${ events[0]._tokenIdVoucher } could not be completed.`))
         }
 
         res.status(200).send({ updated: true });
+    }
+
+    static async getPaymentsByVoucherID(req, res, next) {
+        const tokenIdVoucher = req.params.tokenIdVoucher;
+
+        const payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
+
+        res.status(200).send({ payments })
     }
 
 }

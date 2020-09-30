@@ -1,5 +1,6 @@
 const UserVoucher = require('../models/UserVoucher')
 const status = require('../../utils/userVoucherStatus')
+
 class UserVoucherService {
     static async createUserVoucher(metadata, voucherID) {
         return await UserVoucher.findOneAndUpdate(
@@ -60,6 +61,10 @@ class UserVoucherService {
             },
             { useFindAndModify: false, new: true, upsert: true, }
         )
+    }
+
+    static async getAllVouchers() {
+        return UserVoucher.find({});
     }
 }
 

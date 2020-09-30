@@ -10,7 +10,7 @@ class PaymentService {
             _payee: metadata._payee,
             _payment: metadata._payment,
             txHash: metadata.txHash
-        }) 
+        })
 
         await payment.save();
     }
@@ -19,7 +19,7 @@ class PaymentService {
         return await Payment
             .where('_tokenIdVoucher').equals(_tokenIdVoucher)
     }
-  
+
 }
 
 module.exports = PaymentService
