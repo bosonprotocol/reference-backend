@@ -131,7 +131,7 @@ async function triggerFinalizations() {
         } catch (e) {
             console.error(`Error while triggering finalization of the voucher. Error: ${ e }`);
         }
-        let parsedEvent = await findEventByName(receipt, 'LogFinalizeVoucher', '_tokenIdVoucher', '_triggeredBy')
+        let parsedEvent = await findEventByName(receipt, 'LogFinalizeVoucher', '_tokenIdVoucher', '_triggeredBy');
 
         if (parsedEvent && parsedEvent[0]) {
             parsedEvent[0]._tokenIdVoucher = voucherID;
