@@ -8,7 +8,7 @@ class Authentication {
 
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1]
-        
+
         if (token == null) {
             return next(new APIError(401, 'Unauthorized.'))
         }
@@ -19,7 +19,7 @@ class Authentication {
         } catch (error) {
             return next(new APIError(403, 'Forbidden.'))
         }
-        
+
         next();
     }
 
@@ -38,7 +38,7 @@ class Authentication {
         //         return next(new APIError(403, 'Forbidden.'))
         //     }
 
-            res.locals.events = req.body;
+        res.locals.events = req.body;
 
         // } catch (error) {
         //     console.log(error);
