@@ -48,7 +48,7 @@ const WITHDRAWAL_BLACKLISTED_VOUCHER_IDS = [
     "57896044618658097711785492504343953942968545945025328265970773160681438969857"
 ];
 
-exports.scheduledKeepersNew = functions.https.onRequest(async (request, response) => {
+exports.scheduledKeepers = functions.https.onRequest(async (request, response) => {
     // Expiration process
     await triggerExirations();
 
