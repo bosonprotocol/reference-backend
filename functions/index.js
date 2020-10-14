@@ -158,6 +158,7 @@ async function triggerFinalizations() {
 
 async function triggerWithdrawals() {
     let cashierContractExecutor = new ethers.Contract(CASHIER_ADDRESS, Cashier.abi, executor);
+    let voucherKernelContractExecutor = new ethers.Contract(VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
     let vouchers;
 
     try {
@@ -169,16 +170,18 @@ async function triggerWithdrawals() {
     for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
         let voucher = vouchers.data.vouchersDocuments[i];
         let voucherID = voucher._tokenIdVoucher;
-        let paymentsCheck;
+        let isPaymentAndDepositsReleased;
 
         try {
-            paymentsCheck = await axios.get(`${ CHECK_PAYMENTS_BY_VOUCHER_URL }/${ voucherID }`);
+            let voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(voucherID); // (vouchersStatus[_tokenIdVoucher].status, vouchersStatus[_tokenIdVoucher].isPaymentReleased, vouchersStatus[_tokenIdVoucher].isDepositsReleased)
+            isPaymentAndDepositsReleased = voucherStatus[1] && voucherStatus[2];
+
         } catch (e) {
             console.error(`Error while checking existing payments for a voucher from the DB. Error: ${ e }`);
         }
 
-        if (paymentsCheck.data.payments.length > 0 || WITHDRAWAL_BLACKLISTED_VOUCHER_IDS.includes(voucherID)) {
-            console.log(`Voucher: ${ voucherID } has ${ paymentsCheck.data.payments.length } payments`);
+        if (isPaymentAndDepositsReleased || WITHDRAWAL_BLACKLISTED_VOUCHER_IDS.includes(voucherID)) {
+            console.log(`Voucher: ${ voucherID } - a payment and deposits withdrawal completed `);
             continue;
         }
 
