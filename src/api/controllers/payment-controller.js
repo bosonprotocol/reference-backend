@@ -1,18 +1,16 @@
 const { mongo } = require('mongoose');
 const mongooseService = require('../../database/index.js')
 const APIError = require('../api-error')
+const ethers = require('ethers');
 
 class UserController {
 
     static async getPaymentActors(req, res, next) {
         const objectId = req.params.voucherID
 
-
-        let actors = {
-            buyer: 0,
-            seller: 0,
-            escrow: 0
-        }
+        let buyerAmount = ethers.BigNumber.from(0);
+        let sellerAmount = ethers.BigNumber.from(0);
+        let escrowAmount = ethers.BigNumber.from(0);
 
         try {
             const userVoucher = await mongooseService.getMyVoucherByID(objectId)
@@ -22,17 +20,23 @@ class UserController {
 
             for (const key in payments) {
                 if (payments[key]._payee.toLowerCase() == buyer) {
-                    actors.buyer = payments[key]._payment.toString()
+                    buyerAmount = ethers.BigNumber.from(buyerAmount.toString()).add(payments[key]._payment.toString())
                 } else if (payments[key]._payee.toLowerCase() == seller) {
-                    actors.seller = payments[key]._payment.toString()
+                    sellerAmount = ethers.BigNumber.from(sellerAmount.toString()).add(payments[key]._payment.toString())
                 } else {
-                    actors.escrow = payments[key]._payment.toString()
+                    escrowAmount = ethers.BigNumber.from(escrowAmount.toString()).add(payments[key]._payment.toString())
                 }
             }
 
         } catch (error) {
             console.error(error)
             return next(new APIError(400, `Get payment actors for voucher id: ${ userVoucher._tokenIdVoucher } could not be completed.`))
+        }
+
+        const actors = {
+            buyer: buyerAmount.toString(),
+            seller: sellerAmount.toString(),
+            escrow: escrowAmount.toString(),
         }
 
         res.status(200).send({ actors });
