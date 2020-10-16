@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 const mongoose = require('mongoose');
-const { base64 } = require('ethers/utils');
 const { Schema } = mongoose;
 const collections = require('../collections.json');
 const USER = collections.USER;
