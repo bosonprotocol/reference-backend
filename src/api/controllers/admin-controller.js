@@ -19,10 +19,17 @@ class AdminController {
 
     static async makeAdmin(req, res, next) {
         const address = req.params.address.toLowerCase();
-        
+
         if (!ethers.utils.isAddress(address)) {
             return next(new ApiError(400, `Provided address: ${address} is not a valid ETH address!`))
         }
+
+        const user = await mongooseService.getUser(address)
+
+        if (!user) {
+            return next(new ApiError(400, `Provided user does not exist in the DB!`))
+        }
+
         await mongooseService.makeAdmin(address);
 
         res.status(200).send({updated: true})
