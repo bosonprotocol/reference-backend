@@ -7,8 +7,9 @@ class PaymentService {
 
         const payment = new Payment({
             _tokenIdVoucher: metadata._tokenIdVoucher,
-            _payee: metadata._payee,
+            _to: metadata._to,
             _payment: metadata._payment,
+            _type: metadata._type,
             txHash: metadata.txHash
         })
 
