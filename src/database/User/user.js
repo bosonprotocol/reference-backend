@@ -23,19 +23,6 @@ class UserService {
         )
     }
 
-    static async updateUserCollection(address, metadata) {
-        //TODO should first validate if we have enought qty
-
-        const user = await User.findOne({ address })
-        const oldVouchers = user.vouchers
-        const updatedVouchers = [...oldVouchers, metadata._tokenIdVoucher]
-        
-        await User.findOneAndUpdate(
-            { address: address },
-            { vouchers: updatedVouchers },
-            { new: true, upsert: true }
-        )
-    }
 }
 
 module.exports = UserService
