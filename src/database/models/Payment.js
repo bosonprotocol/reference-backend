@@ -16,13 +16,19 @@ const paymentSchema = new Schema({
         required: true
        
     },
-    _payee: {
+    _to: {
         type: String,
         required: true
     },
     txHash: {
         type: String,
         required: true
+    },
+    // _type: 0 - Payment, 1 - Seller Deposit, 2 - Buyer Deposit
+    _type: {
+        type: Number,
+        required: true,
+        trim: true
     }
 })
 

@@ -201,10 +201,6 @@ async function triggerWithdrawals() {
 
         let events = await findEventByName(receipt, 'LogWithdrawal', '_caller', '_payee', '_payment')
 
-        for (const key in events) {
-            events[key]._tokenIdVoucher = voucherID;
-        }
-
         try {
             await sendPayments(events);
         } catch (e) {
