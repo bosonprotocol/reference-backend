@@ -79,6 +79,10 @@ const voucherSchema = new Schema({
     voucherStatus: {
         type: String
     },
+    visible: {
+        type: Boolean,
+        required: true
+    },
     txHash: {
         type: String,
         required: true,

@@ -42,7 +42,6 @@ class UserController {
         let userVoucher;
         
         try {
-            await mongooseService.updateUserCollection(buyer, metadata);
             userVoucher = await mongooseService.createUserVoucher(metadata, voucherID);
             await mongooseService.updateVoucherQty(voucherID);
 
