@@ -1,1 +1,8 @@
+# Node / NPM
 node_modules/
+
+# IntelliJ IDEA
+*.iml
+*.iws
+*.ipr
+.idea/
