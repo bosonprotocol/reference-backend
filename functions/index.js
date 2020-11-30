@@ -87,7 +87,7 @@ async function triggerExirations() {
         console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
     }
 
-    if (!vouchers.hasOwnProperty('data')) return;
+    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
 
     for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
         let voucher = vouchers.data.vouchersDocuments[i];
@@ -134,7 +134,7 @@ async function triggerFinalizations() {
         return;
     }
 
-    if (!vouchers.hasOwnProperty('data')) return;
+    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
 
     for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
         let voucher = vouchers.data.vouchersDocuments[i];
@@ -200,7 +200,7 @@ async function triggerWithdrawals() {
         console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
     }
 
-    if (!vouchers.hasOwnProperty('data')) return;
+    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
 
     for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
         let voucher = vouchers.data.vouchersDocuments[i];
