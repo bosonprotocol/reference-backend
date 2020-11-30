@@ -1,4 +1,3 @@
-  
 name: Develop Branch Backend Build and Deploy to GCE
 on:
   push:
@@ -22,15 +21,15 @@ jobs:
       - uses: actions-hub/gcloud@master
         name: copy environment variables
         env:
-          PROJECT_ID: ${{secrets.PROD_APP_ENGINE_PROJECT_ID}}
-          APPLICATION_CREDENTIALS: ${{secrets.PROD_APP_ENGINE_CONFIG}}
+          PROJECT_ID: ${{secrets.APP_ENGINE_PROJECT_ID}}
+          APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG_PROD}}
           CLI: gsutil
         with:
           args: cp gs://boson-variables-test/.env .
       - uses: actions-hub/gcloud@master
         name: deploy service
         env:
-          PROJECT_ID: ${{secrets.PROD_APP_ENGINE_PROJECT_ID}}
-          APPLICATION_CREDENTIALS: ${{secrets.PROD_APP_ENGINE_CONFIG}}
+          PROJECT_ID: ${{secrets.APP_ENGINE_PROJECT_ID}}
+          APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG_PROD}}
         with:
           args: app deploy
