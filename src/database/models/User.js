@@ -21,8 +21,10 @@ const userSchema = new Schema({
             }
         }
     },
-    vouchers: {
-        type: Array,
+    role: {
+        type: String,
+        required: true,
+        trim: true
     }
 })
 

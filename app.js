@@ -6,6 +6,7 @@ const usersRouter = require('./src/api/routes/users-route');
 const voucherRouter = require('./src/api/routes/vouchers-route');
 const usersVoucherRouter = require('./src/api/routes/user-vouchers-route');
 const paymentRouter = require('./src/api/routes/payments-route');
+const adminRouter = require('./src/api/routes/admin-route')
 const ErrorHandler = require('./src/api/middlewares/error-handler');
 
 const cors = require('cors');
@@ -23,6 +24,8 @@ app.use('/users', usersRouter.route(express));
 app.use('/vouchers', voucherRouter.route(express));
 app.use('/user-vouchers', usersVoucherRouter.route(express));
 app.use('/payments', paymentRouter.route(express));
+app.use('/admin', adminRouter.route(express))
+
 // Attach API Error handler
 app.use(ErrorHandler.apiErrorHandler);
 

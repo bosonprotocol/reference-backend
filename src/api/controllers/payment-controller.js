@@ -3,14 +3,34 @@ const mongooseService = require('../../database/index.js')
 const APIError = require('../api-error')
 const ethers = require('ethers');
 
-class UserController {
+const actors = {
+    BUYER: 'buyer',
+    SELLER: 'seller',
+    ESCROW: 'escrow'
+}
+
+class PaymentController {
 
     static async getPaymentActors(req, res, next) {
         const objectId = req.params.voucherID
 
-        let buyerAmount = ethers.BigNumber.from(0);
-        let sellerAmount = ethers.BigNumber.from(0);
-        let escrowAmount = ethers.BigNumber.from(0);
+        const distributedAmounts = {
+            payment: {
+                buyer: ethers.BigNumber.from(0),
+                seller: ethers.BigNumber.from(0),
+                escrow: ethers.BigNumber.from(0)
+            },
+            sellerDeposit: {
+                buyer: ethers.BigNumber.from(0),
+                seller: ethers.BigNumber.from(0),
+                escrow: ethers.BigNumber.from(0)
+            },
+            buyerDeposit: {
+                buyer: ethers.BigNumber.from(0),
+                seller: ethers.BigNumber.from(0),
+                escrow: ethers.BigNumber.from(0)
+            }
+        }
 
         try {
             const userVoucher = await mongooseService.getMyVoucherByID(objectId)
@@ -19,12 +39,12 @@ class UserController {
             const payments = await mongooseService.getPaymentsByVoucherID(userVoucher._tokenIdVoucher);
 
             for (const key in payments) {
-                if (payments[key]._payee.toLowerCase() == buyer) {
-                    buyerAmount = ethers.BigNumber.from(buyerAmount.toString()).add(payments[key]._payment.toString())
-                } else if (payments[key]._payee.toLowerCase() == seller) {
-                    sellerAmount = ethers.BigNumber.from(sellerAmount.toString()).add(payments[key]._payment.toString())
+                if (payments[key]._to.toLowerCase() == buyer) {
+                    PaymentController.addPayment(payments[key], actors.BUYER, distributedAmounts)
+                } else if (payments[key]._to.toLowerCase() == seller) {
+                    PaymentController.addPayment(payments[key], actors.SELLER, distributedAmounts)
                 } else {
-                    escrowAmount = ethers.BigNumber.from(escrowAmount.toString()).add(payments[key]._payment.toString())
+                    PaymentController.addPayment(payments[key], actors.ESCROW, distributedAmounts)
                 }
             }
 
@@ -33,13 +53,18 @@ class UserController {
             return next(new APIError(400, `Get payment actors for voucher id: ${ userVoucher._tokenIdVoucher } could not be completed.`))
         }
 
-        const actors = {
-            buyer: buyerAmount.toString(),
-            seller: sellerAmount.toString(),
-            escrow: escrowAmount.toString(),
-        }
+        res.status(200).send({ distributedAmounts });
+    }
 
-        res.status(200).send({ actors });
+    static addPayment(paymentDetails, actor, distributedAmounts) {
+        // _type:  0 - Payment, 1 - Seller Deposit, 2 - Buyer Deposit
+        if (paymentDetails._type == 0) {
+            distributedAmounts.payment[actor] = ethers.BigNumber.from(distributedAmounts.payment[actor].toString()).add(paymentDetails._payment.toString())
+        } else if (paymentDetails._type == 1) {
+            distributedAmounts.sellerDeposit[actor] = ethers.BigNumber.from(distributedAmounts.sellerDeposit[actor].toString()).add(paymentDetails._payment.toString())
+        } else if (paymentDetails._type == 2){
+            distributedAmounts.buyerDeposit[actor] = ethers.BigNumber.from(distributedAmounts.buyerDeposit[actor].toString()).add(paymentDetails._payment.toString())
+        }
     }
 
     static async createPayments(req, res, next) {
@@ -71,4 +96,4 @@ class UserController {
 
 }
 
-module.exports = UserController;
+module.exports = PaymentController;

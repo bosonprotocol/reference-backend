@@ -27,6 +27,7 @@ const FINALIZE_VOUCHER_URL = `${ API_URL }/user-vouchers/finalize`;
 const WITHDRAW_VOUCHER_URL = `${ API_URL }/payments/create-payment`;
 
 const COMMIT_IDX = 7; // usingHelpers contract
+const GAS_LIMIT = '300000';
 
 const EXPIRATION_BLACKLISTED_VOUCHER_IDS = [
     "57896044618658097711785492504343953937183745707369374387093404834341379375105",
@@ -125,7 +126,7 @@ async function triggerFinalizations() {
         let receipt;
 
         try {
-            txOrder = await voucherKernelContractExecutor.triggerFinalizeVoucher(voucherID);
+            txOrder = await voucherKernelContractExecutor.triggerFinalizeVoucher(voucherID, { gasLimit: GAS_LIMIT });
 
             receipt = await txOrder.wait();
         } catch (e) {
@@ -191,7 +192,7 @@ async function triggerWithdrawals() {
         let receipt;
 
         try {
-            txOrder = await cashierContractExecutor.withdraw([voucherID]);
+            txOrder = await cashierContractExecutor.withdraw([voucherID], { gasLimit: GAS_LIMIT });
             receipt = await txOrder.wait();
         } catch (e) {
             console.error(`Error while executing withdraw process. Error: ${ e }`);
@@ -200,10 +201,6 @@ async function triggerWithdrawals() {
         console.log(`Voucher: ${ voucherID }. The withdraw process finished`);
 
         let events = await findEventByName(receipt, 'LogWithdrawal', '_caller', '_payee', '_payment')
-
-        for (const key in events) {
-            events[key]._tokenIdVoucher = voucherID;
-        }
 
         try {
             await sendPayments(events);
