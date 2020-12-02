@@ -1,0 +1,6 @@
+module.exports = {
+    SECONDS_IN_DAY: 86400,
+    SELLER_PK: '0x3c44ecd6f273704bd6413db879ffff4c7157a5619e40e0d14da55e88a8b2443c',
+    CashierContractAddress: "0x6E3B2416199a15cAa4558c28f8c1B315F2F21D72"
+
+}
