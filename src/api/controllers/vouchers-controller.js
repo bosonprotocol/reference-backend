@@ -117,7 +117,7 @@ class VouchersController {
             await mongooseService.createVoucher(req.body, fileRefs, voucherOwner)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
-            console.error(error)
+            console.error(error.errors)
             return next(new APIError(400, 'Invalid voucher model'));
         }
     
