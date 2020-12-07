@@ -1,4 +1,4 @@
-const Voucher = require('./Voucher/voucher')
+const VoucherSupply = require('./VoucherSupply/VoucherSupply')
 const User = require('./User/user')
 const UserVoucher = require('./UserVoucher/userVoucher')
 const Payment = require('./Payment/payment')
@@ -8,18 +8,18 @@ const MongooseService = {
     preserveNonce: User.preserveNonce,
     getUser: User.getUser,
     makeAdmin: User.setUserToAdmin,
-    getVoucher: Voucher.getVoucher,
-    getVouchersByOwner: Voucher.getVouchersByOwner,
-    getVouchersByBuyer: Voucher.getVouchersByBuyer,
-    createVoucher: Voucher.createVoucher,
-    updateVoucher: Voucher.updateVoucher,
-    updateVoucherQty: Voucher.updateVoucherQty,
-    updateVoucherVisibilityStatus: Voucher.updateVoucherVisibilityStatus,
-    deleteVoucher: Voucher.deleteVoucher,
-    deleteImage: Voucher.deleteImage,
-    getVouchersDetails: Voucher.getVouchersDetails,
-    getActiveVouchers: Voucher.getActiveVouchers,
-    getInactiveVouchers: Voucher.getInactiveVouchers,
+    getVoucherSupply: VoucherSupply.getVoucherSupply,
+    getVouchersByOwner: VoucherSupply.getVouchersByOwner,
+    getVouchersByBuyer: VoucherSupply.getVouchersByBuyer,
+    createVoucherSupply: VoucherSupply.createVoucherSupply,
+    updateVoucherSupply: VoucherSupply.updateVoucherSupply,
+    updateVoucherQty: VoucherSupply.updateVoucherQty,
+    updateVoucherVisibilityStatus: VoucherSupply.updateVoucherVisibilityStatus,
+    deleteVoucherSupply: VoucherSupply.deleteVoucherSupply,
+    deleteImage: VoucherSupply.deleteImage,
+    getVouchersDetails: VoucherSupply.getVouchersDetails,
+    getActiveSupplies: VoucherSupply.getActiveSupplies,
+    getInactiveSupplies: VoucherSupply.getInactiveSupplies,
     findUserVoucherById: UserVoucher.findUserVoucherById,
     createUserVoucher: UserVoucher.createUserVoucher,
     getMyVouchers: UserVoucher.getMyVouchers,

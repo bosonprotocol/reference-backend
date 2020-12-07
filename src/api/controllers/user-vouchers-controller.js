@@ -47,7 +47,7 @@ class UserVoucherController {
         let voucher;
         try {
             const myVoucherDocument = await mongooseService.getMyVoucherByID(myVoucherID)
-            const voucherDetailsDocument = await mongooseService.getVoucher(myVoucherDocument.voucherID)
+            const voucherDetailsDocument = await mongooseService.getVoucherSupply(myVoucherDocument.voucherID)
 
             voucher = {
                 _id: myVoucherDocument.id,

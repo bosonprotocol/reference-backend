@@ -3,8 +3,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const collections = require('../collections.json');
-const USER = collections.USER;
-const VOUCHER = collections.VOUCHER;
+const VOUCHER_SUPPLY = collections.VOUCHER_SUPPLY;
 
 const voucherSchema = new Schema({
     title: {
@@ -97,4 +96,4 @@ const voucherSchema = new Schema({
     },
 })
 
-module.exports = mongoose.model(VOUCHER, voucherSchema)
+module.exports = mongoose.model(VOUCHER_SUPPLY, voucherSchema)

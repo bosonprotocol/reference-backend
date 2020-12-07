@@ -1,14 +1,13 @@
 //@ts-nocheck
 
 const mongooseService = require('../../database/index.js')
-const AuthValidator = require('../services/auth-service')
 const APIError = require('../api-error')
 const voucherUtils = require('../../utils/voucherUtils');
 
-class VouchersController {
+class VoucherSuppliesController {
 
-    static async getVoucher(req, res, next) {
-        let voucher;
+    static async getVoucherSupply(req, res, next) {
+        let voucherSupply;
 
         if (typeof req.params.id === 'undefined') {
             console.error(`An error occurred while tried to fetch Voucher.`);
@@ -16,30 +15,30 @@ class VouchersController {
         }
 
         try {
-            voucher = await mongooseService.getVoucher(req.params.id)
+            voucherSupply = await mongooseService.getVoucherSupply(req.params.id)
            
-            const voucherStatus = voucherUtils.calcVoucherStatus(voucher.startDate, voucher.expiryDate, voucher.qty )
-            voucher.voucherStatus = voucherStatus
+            const voucherStatus = voucherUtils.calcVoucherStatus(voucherSupply.startDate, voucherSupply.expiryDate, voucherSupply.qty )
+            voucherSupply.voucherStatus = voucherStatus
         } catch (error) {
             console.error(error)
             return next(new APIError(400, `Could not get voucher with ID: ${req.params.id}`));
         }
 
         res.status(200).send({
-            voucher
+            voucherSupply
         });
     }
 
-    static async getSellVouchers(req, res, next) {
-        let vouchers;
+    static async getSuppliesForSeller(req, res, next) {
+        let voucherSupplies;
         const owner = req.params.address.toLowerCase();
         
         try {
-            vouchers = await mongooseService.getVouchersByOwner(owner)
+            voucherSupplies = await mongooseService.getVouchersByOwner(owner)
 
-            vouchers.forEach(voucher => {
-                const voucherStatus = voucherUtils.calcVoucherStatus(voucher.startDate, voucher.expiryDate, voucher.qty)
-                voucher.voucherStatus = voucherStatus
+            voucherSupplies.forEach(supply => {
+                const voucherStatus = voucherUtils.calcVoucherStatus(supply.startDate, supply.expiryDate, supply.qty)
+                supply.voucherStatus = voucherStatus
             })
             
         } catch (error) {
@@ -47,31 +46,31 @@ class VouchersController {
             return next(new APIError(400, 'Invalid operation'));
         }
 
-        res.status(200).send({ vouchers });
+        res.status(200).send({ voucherSupplies });
     }
 
-    static async getBuyVouchers(req, res, next) {
-        let vouchers;
+    static async getSuppliesForBuyer(req, res, next) {
+        let voucherSupplies;
         const buyer = req.params.address.toLowerCase();
         
         try {
-            vouchers = await mongooseService.getVouchersByBuyer(buyer)
+            voucherSupplies = await mongooseService.getVouchersByBuyer(buyer)
         } catch (error) {
             console.error(`An error occurred while user [${buyer}] tried to fetch Vouchers.`);
             console.error(error)
             return next(new APIError(400, 'Invalid operation'));
         }
 
-        res.status(200).send({ vouchers });
+        res.status(200).send({ voucherSupplies });
     }
 
-    static async getVouchersStatus(req, res, next) {
+    static async getSupplyStatuses(req, res, next) {
         let active, inactive = [];
         const address = res.locals.address;
 
         try {
-            active = await mongooseService.getActiveVouchers(address)
-            inactive = await mongooseService.getInactiveVouchers(address)
+            active = await mongooseService.getActiveSupplies(address)
+            inactive = await mongooseService.getInactiveSupplies(address)
         } catch (error) {
             return next(new APIError(400, 'Bad request.'));
         }
@@ -79,42 +78,42 @@ class VouchersController {
         res.status(200).send({ active: active.length, inactive: inactive.length });
     }
 
-    static async getAllActiveVouchers(req, res, next) {
+    static async getActiveSupplies(req, res, next) {
         let active = [];
         const address = res.locals.address;
 
         try {
-            active = await mongooseService.getActiveVouchers(address)
+            active = await mongooseService.getActiveSupplies(address)
         } catch (error) {
             return next(new APIError(400, 'Bad request.'));
         }
 
         res.status(200).send({
-            vouchers: active
+            voucherSupplies: active
         })
     }
 
-    static async getAllInactiveVouchers(req, res, next) {
+    static async getInactiveSupplies(req, res, next) {
         let inActive = [];
         const address = res.locals.address;
 
         try {
-            inActive = await mongooseService.getInactiveVouchers(address)
+            inActive = await mongooseService.getInactiveSupplies(address)
         } catch (error) {
             return next(new APIError(400, 'Bad request.'));
         }
 
         res.status(200).send({
-            vouchers: inActive
+            voucherSupplies: inActive
         })
     }
 
-    static async createVoucher(req, res, next) {
+    static async createVoucherSupply(req, res, next) {
         const fileRefs = await voucherUtils.uploadFiles(req);
         const voucherOwner = res.locals.address;
         
         try {
-            await mongooseService.createVoucher(req.body, fileRefs, voucherOwner)
+            await mongooseService.createVoucherSupply(req.body, fileRefs, voucherOwner)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
             console.error(error.errors)
@@ -124,13 +123,13 @@ class VouchersController {
         res.status(200).send({ success: true });
     }
 
-    static async updateVoucher(req, res, next) {
+    static async updateVoucherSupply(req, res, next) {
         const fileRefs = await voucherUtils.uploadFiles(req);
         const voucherOwner = res.locals.address;
-        const voucher = res.locals.voucher
+        const voucher = res.locals.voucherSupply
         
         try {
-            await mongooseService.updateVoucher(voucher, req.body, fileRefs)
+            await mongooseService.updateVoucherSupply(voucher, req.body, fileRefs)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to update Voucher.`);
             console.error(error)
@@ -140,11 +139,11 @@ class VouchersController {
         res.status(200).send({ success: true });
     }
 
-    static async deleteVoucher(req, res, next) {
-        const voucher = res.locals.voucher
+    static async deleteVoucherSupply(req, res, next) {
+        const voucherSupply = res.locals.voucherSupply
 
         try {
-            await mongooseService.deleteVoucher(voucher.id);
+            await mongooseService.deleteVoucherSupply(voucherSupply.id);
         } catch (error) {
             console.error(`An error occurred while user [${req.body.voucherOwner}] tried to delete Voucher.`);
             return next(new APIError(400, 'Invalid operation'));
@@ -154,12 +153,11 @@ class VouchersController {
     }
 
     static async deleteImage(req, res, next) {
-        const voucher = res.locals.voucher
+        const voucherSupply = res.locals.voucherSupply
         const imageUrl = req.query.imageUrl;
         
         try {
-            //TODO validate voucher exists
-            await mongooseService.deleteImage(voucher.id, imageUrl);
+            await mongooseService.deleteImage(voucherSupply.id, imageUrl);
         } catch (error) {
             console.error(`An error occurred while image frpm document [${req.params.id}] was tried to be deleted.`);
             console.error(error)
@@ -171,4 +169,4 @@ class VouchersController {
    
 }
 
-module.exports = VouchersController;
+module.exports = VoucherSuppliesController;

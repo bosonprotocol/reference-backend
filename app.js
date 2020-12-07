@@ -3,7 +3,7 @@ const express = require('express');
 const MongooseClient = require('./src/clients/mongoose-client');
 
 const usersRouter = require('./src/api/routes/users-route');
-const voucherRouter = require('./src/api/routes/vouchers-route');
+const voucherSuppliesRouter = require('./src/api/routes/supplies-route');
 const usersVoucherRouter = require('./src/api/routes/user-vouchers-route');
 const paymentRouter = require('./src/api/routes/payments-route');
 const adminRouter = require('./src/api/routes/admin-route')
@@ -21,7 +21,7 @@ app.use(function (req, res, next) {
 app.use(express.json());
 
 app.use('/users', usersRouter.route(express));
-app.use('/vouchers', voucherRouter.route(express));
+app.use('/supplies', voucherSuppliesRouter.route(express));
 app.use('/user-vouchers', usersVoucherRouter.route(express));
 app.use('/payments', paymentRouter.route(express));
 app.use('/admin', adminRouter.route(express))

@@ -1,16 +1,16 @@
 //@ts-nocheck
-const Voucher = require('../models/Voucher')
+const VoucherSupply = require('../models/VoucherSupply')
 
-class VoucherService {
+class VoucherSupplyService {
 
     static async getVouchersByOwner(voucherOwner) {
-        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'startDate', 'qty', 'visible']).sort({ offeredDate: 'desc' }).lean()
+        return await VoucherSupply.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'startDate', 'qty', 'visible']).sort({ offeredDate: 'desc' }).lean()
     }
 
     static async getVouchersByBuyer(voucherOwner) {
         const today = new Date(Date.now())
 
-        return await Voucher.where('voucherOwner')
+        return await VoucherSupply.where('voucherOwner')
             .ne(voucherOwner)
             .where('startDate').lte(today)
             .where('expiryDate').gte(today)
@@ -19,10 +19,10 @@ class VoucherService {
             .sort({ offeredDate: 'desc' }).lean()
     }
 
-    static async getActiveVouchers(address) {
+    static async getActiveSupplies(address) {
         const today = new Date(Date.now())
 
-        return await Voucher
+        return await VoucherSupply
             .where('voucherOwner').equals(address.toLowerCase())
             .where('startDate').lte(today)
             .where('expiryDate').gte(today)
@@ -30,10 +30,10 @@ class VoucherService {
             .select(['title', 'price', 'voucherOwner','qty', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible']).sort({ offeredDate: 'desc' }).lean()
     }
 
-    static async getInactiveVouchers(address) {
+    static async getInactiveSupplies(address) {
         const today = new Date(Date.now())
 
-        return await Voucher
+        return await VoucherSupply
             .where('voucherOwner').equals(address.toLowerCase())
             .or([
                 { startDate: { $gte: today } }, 
@@ -43,9 +43,9 @@ class VoucherService {
             .select(['title', 'price', 'voucherOwner', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible']).sort({ offeredDate: 'desc' }).lean()
     }
 
-    static async createVoucher(metadata, fileRefs, voucherOwner) {
+    static async createVoucherSupply(metadata, fileRefs, voucherOwner) {
 
-        const voucher = new Voucher({
+        const voucherSupply = new VoucherSupply({
             title: metadata.title,
             qty: metadata.qty,
             category: metadata.category,
@@ -67,14 +67,14 @@ class VoucherService {
             imagefiles: fileRefs,
         });
 
-        await voucher.save();
+        await voucherSupply.save();
     }
 
-    static async updateVoucher(voucher, metadata, fileRefs) {
+    static async updateVoucherSupply(voucher, metadata, fileRefs) {
         const currentImages = voucher.imagefiles;
         const updatedImages = [...currentImages, ...fileRefs]
         
-        await Voucher.findByIdAndUpdate(voucher.id, {
+        await VoucherSupply.findByIdAndUpdate(voucher.id, {
             title: metadata.title,
             qty: metadata.qty,
             category: metadata.category,
@@ -95,9 +95,9 @@ class VoucherService {
     }
 
     static async updateVoucherQty(voucherID) {
-        const voucher = await this.getVoucher(voucherID);
+        const voucherSupply = await this.getVoucherSupply(voucherID);
 
-        return await Voucher.findByIdAndUpdate(voucherID, {
+        return await VoucherSupply.findByIdAndUpdate(voucherID, {
             qty: --voucher.qty,
         },
             { useFindAndModify: false, new: true, upsert: true, }
@@ -105,39 +105,39 @@ class VoucherService {
     }
 
     static async updateVoucherVisibilityStatus(voucherID) {
-        const voucher = await this.getVoucher(voucherID);
+        const voucherSupply = await this.getVoucherSupply(voucherID);
 
-        return await Voucher.findByIdAndUpdate(voucherID, {
+        return await VoucherSupply.findByIdAndUpdate(voucherID, {
             visible: voucher.visible ? false : true
         },
             { useFindAndModify: false, new: true, upsert: true, }
         )
     }
 
-    static async deleteVoucher(id) {
-        await Voucher.findByIdAndDelete(id)
+    static async deleteVoucherSupply(id) {
+        await VoucherSupply.findByIdAndDelete(id)
     }
 
     static async deleteImage(id, imageUrl) {
-        const voucher = await this.getVoucher(id);
-        const currentImages = voucher.imagefiles;
+        const voucherSupply = await this.getVoucherSupply(id);
+        const currentImages = voucherSupply.imagefiles;
         const updatedImages = currentImages.filter(image => image.url != imageUrl);
 
-        await Voucher.findByIdAndUpdate(id, {
+        await VoucherSupply.findByIdAndUpdate(id, {
             imagefiles: updatedImages
         },
             { useFindAndModify: false, new: true, upsert: true, }
         );
     }
 
-    static async getVoucher(id) {
-        return await Voucher.findById(id)
+    static async getVoucherSupply(id) {
+        return await VoucherSupply.findById(id)
     }
 
     static async getVouchersDetails(myVoucherDocument, voucherData) {
-        const voucherDetailsDocument = await VoucherService.getVoucher(myVoucherDocument.voucherID)
+        const voucherDetailsDocument = await VoucherService.getVoucherSupply(myVoucherDocument.voucherID)
 
-        const voucher = {
+        const voucherSupply = {
             _id: myVoucherDocument.id,
             title: voucherDetailsDocument._doc.title,
             qty: voucherDetailsDocument._doc.qty,
@@ -150,9 +150,9 @@ class VoucherService {
         }
 
         voucherData.push(
-            voucher
+            voucherSupply
         )
     }
 }
 
-module.exports = VoucherService;
+module.exports = VoucherSupplyService;

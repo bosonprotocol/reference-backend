@@ -5,16 +5,16 @@ class AdminController {
 
     static async changeTokenSupplyIDVisibility(req, res, next) {
         const voucherID = req.params.voucherID;
-        let voucher;
+        let voucherSupply;
 
         try {
-            voucher = await mongooseService.getVoucher(voucherID)
+            voucherSupply = await mongooseService.getVoucherSupply(voucherID)
         } catch (error) {
             return next(new ApiError(400, `Voucher with ID: ${voucherID} does not exist!`))
         }
 
-        const updatedVoucher = await mongooseService.updateVoucherVisibilityStatus(voucher.id);
-        res.status(200).send({ visible: updatedVoucher.visible });
+        const updatedVoucherSupply = await mongooseService.updateVoucherVisibilityStatus(voucherSupply.id);
+        res.status(200).send({ visible: updatedVoucherSupply.visible });
     }
 
     static async makeAdmin(req, res, next) {
