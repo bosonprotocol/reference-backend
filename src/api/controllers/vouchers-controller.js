@@ -22,7 +22,7 @@ class VouchersController {
             voucher.voucherStatus = voucherStatus
         } catch (error) {
             console.error(error)
-            return next(new APIError(400, `${error.message}`));
+            return next(new APIError(400, `Could not get voucher with ID: ${req.params.id}`));
         }
 
         res.status(200).send({
@@ -117,7 +117,7 @@ class VouchersController {
             await mongooseService.createVoucher(req.body, fileRefs, voucherOwner)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
-            console.error(error)
+            console.error(error.errors)
             return next(new APIError(400, 'Invalid voucher model'));
         }
     
@@ -168,13 +168,7 @@ class VouchersController {
 
         res.status(200).send({ success: true });
     }
-
-
-    static async buy(req, res, next) {
-        
-        await mongooseService.buy();
-        res.status(200).send({ success: true });
-    }
+   
 }
 
 module.exports = VouchersController;

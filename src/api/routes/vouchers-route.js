@@ -17,6 +17,7 @@ class VouchersRouter {
         router.post('/',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(upload.array('fileToUpload', FILE_LIMIT)),
+            ErrorHandlers.globalErrorHandler(voucherValidator.ValidateDates),
             ErrorHandlers.globalErrorHandler(vouchersController.createVoucher));
 
         router.get('/:id',
