@@ -89,14 +89,7 @@ class PaymentController {
     static async getPaymentsByVoucherID(req, res, next) {
         const tokenIdVoucher = req.params.tokenIdVoucher;
 
-        let payments; 
-
-        try {
-            payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Get payment for voucher id: ${ tokenIdVoucher } could not be completed.`))
-        }
+        const payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
 
         res.status(200).send({ payments })
     }

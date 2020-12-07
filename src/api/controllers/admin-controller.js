@@ -24,18 +24,13 @@ class AdminController {
             return next(new ApiError(400, `Provided address: ${address} is not a valid ETH address!`))
         }
 
-        try {
-            const user = await mongooseService.getUser(address)
+        const user = await mongooseService.getUser(address)
 
-            if (!user) {
-                return next(new ApiError(400, `Provided user does not exist in the DB!`))
-            }
-
-            await mongooseService.makeAdmin(address);
-
-        } catch (error) {
-            return next(new ApiError(400, `Provided address: ${address} was not set as admin!`))
+        if (!user) {
+            return next(new ApiError(400, `Provided user does not exist in the DB!`))
         }
+
+        await mongooseService.makeAdmin(address);
 
         res.status(200).send({updated: true})
     }

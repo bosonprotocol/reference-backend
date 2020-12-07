@@ -4,6 +4,6 @@
 package-lock.json
 .DS_Store
 yarn.lock
-/local
+/tests
 
 .idea

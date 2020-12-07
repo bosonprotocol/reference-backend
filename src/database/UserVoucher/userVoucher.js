@@ -22,7 +22,7 @@ class UserVoucherService {
                 actionDate: new Date().getTime()
             },
             { new: true, upsert: true }
-        )       
+        )
     }
 
     static async getMyVouchers(userAddress) {
