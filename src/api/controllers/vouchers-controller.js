@@ -22,7 +22,7 @@ class VouchersController {
             voucher.voucherStatus = voucherStatus
         } catch (error) {
             console.error(error)
-            return next(new APIError(400, `${error.message}`));
+            return next(new APIError(400, `Could not get voucher with ID: ${req.params.id}`));
         }
 
         res.status(200).send({
@@ -168,13 +168,7 @@ class VouchersController {
 
         res.status(200).send({ success: true });
     }
-
-
-    static async buy(req, res, next) {
-        
-        await mongooseService.buy();
-        res.status(200).send({ success: true });
-    }
+   
 }
 
 module.exports = VouchersController;
