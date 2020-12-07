@@ -4,6 +4,11 @@ const userRoles = require('./user-roles');
 
 class UserService {
 
+    static async isUserRegistered(address) {
+        let user = await User.findOne({ address })
+        return user ? true : false;
+    }
+
     static async getNonce(address) {
         let user = await User.findOne({ address })
         return user.nonce;
