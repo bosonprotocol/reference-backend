@@ -1,18 +1,18 @@
 const functions = require('firebase-functions');
 const axios = require('axios').default;
 
-const VOUCHER_KERNEL_ADDRESS = functions.config().scheduledkeepers.voucherkerneladdress;
-const CASHIER_ADDRESS = functions.config().scheduledkeepers.cashieraddress;
+const VOUCHER_KERNEL_ADDRESS = functions.config().poc1.voucherkerneladdress;
+const CASHIER_ADDRESS = functions.config().poc1.cashieraddress;
 
 const VoucherKernel = require("./abis/VoucherKernel.json");
 const Cashier = require("./abis/Cashier.json");
 
 const ethers = require('ethers');
 
-const EXECUTOR_PRIVATE_KEY = functions.config().scheduledkeepers.executorsecret;
-const NETWORK_NAME = functions.config().scheduledkeepers.networkname;
-const ETHERSCAN_API_KEY = functions.config().scheduledkeepers.etherscanapikey;
-const INFURA_API_KEY = functions.config().scheduledkeepers.infuraapikey;
+const EXECUTOR_PRIVATE_KEY = functions.config().poc1.executorsecret;
+const NETWORK_NAME = functions.config().poc1.networkname;
+const ETHERSCAN_API_KEY = functions.config().poc1.etherscanapikey;
+const INFURA_API_KEY = functions.config().poc1.infuraapikey;
 
 const provider = ethers.getDefaultProvider(NETWORK_NAME, {
     etherscan: ETHERSCAN_API_KEY,
@@ -20,11 +20,11 @@ const provider = ethers.getDefaultProvider(NETWORK_NAME, {
 });
 const executor = new ethers.Wallet(EXECUTOR_PRIVATE_KEY, provider);
 
-const API_URL = functions.config().scheduledkeepers.apiurl;
-const ALL_VOUCHERS_URL = `${ API_URL }/user-vouchers/all`;
-const CHECK_PAYMENTS_BY_VOUCHER_URL = `${ API_URL }/payments/check-payment`;
-const FINALIZE_VOUCHER_URL = `${ API_URL }/user-vouchers/finalize`;
-const WITHDRAW_VOUCHER_URL = `${ API_URL }/payments/create-payment`;
+const API_URL = functions.config().poc1.apiurl;
+const ALL_VOUCHERS_URL = `${API_URL}/user-vouchers/all`;
+const CHECK_PAYMENTS_BY_VOUCHER_URL = `${API_URL}/payments/check-payment`;
+const FINALIZE_VOUCHER_URL = `${API_URL}/user-vouchers/finalize`;
+const WITHDRAW_VOUCHER_URL = `${API_URL}/payments/create-payment`;
 
 const COMMIT_IDX = 7; // usingHelpers contract
 const GAS_LIMIT = '300000';
@@ -62,15 +62,32 @@ exports.scheduledKeepers = functions.https.onRequest(async (request, response) =
     response.send("Аll keepers were executed successfully!");
 });
 
+exports.scheduledKeepersDev = functions.https.onRequest(async (request, response) => {
+    // Expiration process
+    await triggerExirations();
+
+    // Finalization process
+    await triggerFinalizations();
+
+    // Withdrawal process
+    await triggerWithdrawals();
+
+    response.send("Аll keepers were executed successfully!");
+});
+
 async function triggerExirations() {
+    let hasErrors = false;
     let voucherKernelContractExecutor = new ethers.Contract(VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
     let vouchers;
 
     try {
         vouchers = await axios.get(ALL_VOUCHERS_URL);
     } catch (e) {
-        console.error(`Error while getting all vouchers from the DB. Error: ${ e }`);
+        hasErrors = true;
+        console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
     }
+
+    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
 
     for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
         let voucher = vouchers.data.vouchersDocuments[i];
@@ -81,46 +98,54 @@ async function triggerExirations() {
             let voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(voucherID);
             isStatusCommit = voucherStatus[0] == (0 | 1 << COMMIT_IDX); // condition is borrowed from helper contract
         } catch (e) {
-            console.error(`Error while checking voucher status toward the contract. Error: ${ e }`);
+            hasErrors = true;
+            console.error(`Error while checking voucher status toward the contract. Error: ${e}`);
         }
 
         if (!isStatusCommit || EXPIRATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)) {
             continue;
         }
 
-        console.log(`Voucher: ${ voucherID } is with commit status. The expiration is triggered.`);
+        console.log(`Voucher: ${voucherID} is with commit status. The expiration is triggered.`);
 
         try {
             let txOrder = await voucherKernelContractExecutor.triggerExpiration(voucherID);
             await txOrder.wait();
         } catch (e) {
-            console.error(`Error while triggering expiration of the voucher. Error: ${ e }`);
+            hasErrors = true;
+            console.error(`Error while triggering expiration of the voucher. Error: ${e}`);
         }
     }
 
-    console.info(`triggerExirations function finished successfully`);
+    let infoMsg = hasErrors ? 'triggerExirations function finished with errors' : 'triggerExirations function finished successfully'
+
+    console.info(infoMsg);
 }
 
 async function triggerFinalizations() {
+    let hasErrors = false;
     let voucherKernelContractExecutor = new ethers.Contract(VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
     let vouchers;
 
     try {
         vouchers = await axios.get(ALL_VOUCHERS_URL);
     } catch (e) {
-        console.error(`Error while getting all vouchers from the DB. Error: ${ e }`);
+        console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
+        return;
     }
+
+    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
 
     for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
         let voucher = vouchers.data.vouchersDocuments[i];
         let voucherID = voucher._tokenIdVoucher;
 
         if (voucher.FINALIZED || FINALIZATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)) {
-            console.log(`Voucher: ${ voucherID } is already finalized`);
+            console.log(`Voucher: ${voucherID} is already finalized`);
             continue;
         }
 
-        console.log(`Voucher: ${ voucherID }. The finalization has started.`);
+        console.log(`Voucher: ${voucherID}. The finalization has started.`);
 
         let txOrder;
         let receipt;
@@ -130,7 +155,9 @@ async function triggerFinalizations() {
 
             receipt = await txOrder.wait();
         } catch (e) {
-            console.error(`Error while triggering finalization of the voucher. Error: ${ e }`);
+            hasErrors = true;
+            console.error(`Error while triggering finalization of the voucher. Error: ${e}`);
+            continue;
         }
         let parsedEvent = await findEventByName(receipt, 'LogFinalizeVoucher', '_tokenIdVoucher', '_triggeredBy');
 
@@ -141,23 +168,28 @@ async function triggerFinalizations() {
                 status: "FINALIZED"
             }];
 
-            console.log(`Voucher: ${ voucherID }. The finalization finished.`);
+            console.log(`Voucher: ${voucherID}. The finalization finished.`);
 
             try {
                 await axios.patch(FINALIZE_VOUCHER_URL, payload);
 
-                console.log(`Voucher: ${ voucherID }. Database updated.`);
+                console.log(`Voucher: ${voucherID}. Database updated.`);
             } catch (e) {
+                hasErrors = true;
                 console.log(e);
-                console.error(`Error while updating the DB related to finalization of the voucher. Error: ${ e }`);
+                console.error(`Error while updating the DB related to finalization of the voucher. Error: ${e}`);
+                continue;
             }
         }
     }
 
-    console.info(`triggerFinalizations function finished successfully`);
+    let infoMsg = hasErrors ? 'triggerFinalizations function finished with errors' : 'triggerFinalizations function finished successfully'
+
+    console.info(infoMsg);
 }
 
 async function triggerWithdrawals() {
+    let hasErrors = false;
     let cashierContractExecutor = new ethers.Contract(CASHIER_ADDRESS, Cashier.abi, executor);
     let voucherKernelContractExecutor = new ethers.Contract(VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
     let vouchers;
@@ -165,8 +197,10 @@ async function triggerWithdrawals() {
     try {
         vouchers = await axios.get(ALL_VOUCHERS_URL);
     } catch (e) {
-        console.error(`Error while getting all vouchers from the DB. Error: ${ e }`);
+        console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
     }
+
+    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
 
     for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
         let voucher = vouchers.data.vouchersDocuments[i];
@@ -178,15 +212,17 @@ async function triggerWithdrawals() {
             isPaymentAndDepositsReleased = voucherStatus[1] && voucherStatus[2];
 
         } catch (e) {
-            console.error(`Error while checking existing payments for a voucher from the DB. Error: ${ e }`);
-        }
-
-        if (isPaymentAndDepositsReleased || WITHDRAWAL_BLACKLISTED_VOUCHER_IDS.includes(voucherID)) {
-            console.log(`Voucher: ${ voucherID } - a payment and deposits withdrawal completed `);
+            hasErrors = true;
+            console.error(`Error while checking existing payments for a voucher from the DB. Error: ${e}`);
             continue;
         }
 
-        console.log(`Voucher: ${ voucherID }. The withdraw process has started`);
+        if (isPaymentAndDepositsReleased || WITHDRAWAL_BLACKLISTED_VOUCHER_IDS.includes(voucherID)) {
+            console.log(`Voucher: ${voucherID} - a payment and deposits withdrawal completed `);
+            continue;
+        }
+
+        console.log(`Voucher: ${voucherID}. The withdraw process has started`);
 
         let txOrder;
         let receipt;
@@ -195,26 +231,37 @@ async function triggerWithdrawals() {
             txOrder = await cashierContractExecutor.withdraw([voucherID], { gasLimit: GAS_LIMIT });
             receipt = await txOrder.wait();
         } catch (e) {
-            console.error(`Error while executing withdraw process. Error: ${ e }`);
+            hasErrors = true;
+            console.error(`Error while executing withdraw process. Error: ${e}`);
+            continue;
         }
 
-        console.log(`Voucher: ${ voucherID }. The withdraw process finished`);
+        console.log(`Voucher: ${voucherID}. The withdraw process finished`);
 
         let events = await findEventByName(receipt, 'LogWithdrawal', '_caller', '_payee', '_payment')
 
         try {
-            await sendPayments(events);
+            if (Array.isArray(events)
+                && typeof events[0] === 'object'
+                && events[0].hasOwnProperty('_tokenIdVoucher')) {
+                await sendPayments(events);
+            }
         } catch (e) {
-            console.error(`Error while executing a create payment call to the backend . Error: ${ e }`);
+            hasErrors = true;
+            console.error(`Error while executing a create payment call to the backend . Error: ${e}`);
         }
 
-        console.log(`Voucher: ${ voucherID }. Database updated`);
+        console.log(`Voucher: ${voucherID}. Database updated`);
     }
 
-    console.info(`triggerWithdrawals function finished successfully`);
+    let infoMsg = hasErrors ? 'triggerWithdrawals function finished with errors' : 'triggerWithdrawals function finished successfully'
+
+    console.info(infoMsg);
 }
 
 async function findEventByName(txReceipt, eventName, ...eventFields) {
+    if (typeof txReceipt !== 'object' && txReceipt !== null) return
+
     let eventsArr = [];
 
     for (const key in txReceipt.events) {

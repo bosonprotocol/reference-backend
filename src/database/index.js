@@ -6,7 +6,6 @@ const Payment = require('./Payment/payment')
 const MongooseService = {
     getNonce: User.getNonce,
     preserveNonce: User.preserveNonce,
-    isUserRegistered: User.isUserRegistered,
     getUser: User.getUser,
     makeAdmin: User.setUserToAdmin,
     getVoucher: Voucher.getVoucher,

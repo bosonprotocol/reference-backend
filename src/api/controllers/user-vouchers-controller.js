@@ -11,14 +11,19 @@ class UserVoucherController {
         const voucherData = []
         const address = res.locals.address;
 
-        const userVouchersDocuments = await mongooseService.getMyVouchers(address)
+        try {
+            const promises = []
+            const userVouchersDocuments = await mongooseService.getMyVouchers(address)
 
-        const promises = []
-        userVouchersDocuments.forEach(e => {
-            promises.push(mongooseService.getVouchersDetails(e, voucherData))
-        })
+            userVouchersDocuments.forEach(e => {
+                promises.push(mongooseService.getVouchersDetails(e, voucherData))
+            })
 
-        await Promise.all(promises)
+            await Promise.all(promises)
+        } catch (error) {
+            console.error(error.message);
+            return next(`Error processing User Vouchers for user: ${address}`);
+        }
 
         res.status(200).send({ voucherData })
     }
@@ -31,7 +36,7 @@ class UserVoucherController {
             vouchers = await mongooseService.findAllUsersByVoucherID(voucherID, owner)
         } catch (error) {
             console.error(error.message);
-
+            return next(`Error fetching all buyers for Voucher: ${voucherID}`);
         }
         res.status(200).send({vouchers});
     }
@@ -39,38 +44,46 @@ class UserVoucherController {
     static async getVoucherDetails(req, res, next) {
         const myVoucherID = req.params.voucherID
 
-        const myVoucherDocument = await mongooseService.getMyVoucherByID(myVoucherID)
-        const voucherDetailsDocument = await mongooseService.getVoucher(myVoucherDocument.voucherID)
+        let voucher;
+        try {
+            const myVoucherDocument = await mongooseService.getMyVoucherByID(myVoucherID)
+            const voucherDetailsDocument = await mongooseService.getVoucher(myVoucherDocument.voucherID)
 
-        const voucher = {
-            _id: myVoucherDocument.id,
-            _tokenIdVoucher: myVoucherDocument._tokenIdVoucher,
-            _holder: myVoucherDocument._holder,
-            _tokenIdSupply: myVoucherDocument._tokenIdSupply,
-            buyerStatus: myVoucherDocument.status,
-            CANCELLED: myVoucherDocument.CANCELLED,
-            COMMITTED: myVoucherDocument.COMMITTED,
-            COMPLAINED: myVoucherDocument.COMPLAINED,
-            REDEEMED: myVoucherDocument.REDEEMED,
-            REFUNDED: myVoucherDocument.REFUNDED,
-            FINALIZED: myVoucherDocument.FINALIZED,
-            voucherID: voucherDetailsDocument.id,
-            voucherStatus: voucherUtils.calcVoucherStatus(voucherDetailsDocument.startDate, voucherDetailsDocument.expiryDate, voucherDetailsDocument.qty),
-            title: voucherDetailsDocument.title,
-            qty: voucherDetailsDocument.qty,
-            description: voucherDetailsDocument.description,
-            location: voucherDetailsDocument.location,
-            contact: voucherDetailsDocument.contact,
-            conditions: voucherDetailsDocument.conditions,
-            imagefiles: voucherDetailsDocument.imagefiles,
-            category: voucherDetailsDocument.category,
-            startDate: voucherDetailsDocument.startDate,
-            expiryDate: voucherDetailsDocument.expiryDate,
-            price: voucherDetailsDocument.price,
-            buyerDeposit: voucherDetailsDocument.buyerDeposit,
-            sellerDeposit: voucherDetailsDocument.sellerDeposit,
-            voucherOwner: voucherDetailsDocument.voucherOwner,
+            voucher = {
+                _id: myVoucherDocument.id,
+                _tokenIdVoucher: myVoucherDocument._tokenIdVoucher,
+                _holder: myVoucherDocument._holder,
+                _tokenIdSupply: myVoucherDocument._tokenIdSupply,
+                buyerStatus: myVoucherDocument.status,
+                CANCELLED: myVoucherDocument.CANCELLED,
+                COMMITTED: myVoucherDocument.COMMITTED,
+                COMPLAINED: myVoucherDocument.COMPLAINED,
+                REDEEMED: myVoucherDocument.REDEEMED,
+                REFUNDED: myVoucherDocument.REFUNDED,
+                FINALIZED: myVoucherDocument.FINALIZED,
+                voucherID: voucherDetailsDocument.id,
+                voucherStatus: voucherUtils.calcVoucherStatus(voucherDetailsDocument.startDate, voucherDetailsDocument.expiryDate, voucherDetailsDocument.qty),
+                title: voucherDetailsDocument.title,
+                qty: voucherDetailsDocument.qty,
+                description: voucherDetailsDocument.description,
+                location: voucherDetailsDocument.location,
+                contact: voucherDetailsDocument.contact,
+                conditions: voucherDetailsDocument.conditions,
+                imagefiles: voucherDetailsDocument.imagefiles,
+                category: voucherDetailsDocument.category,
+                startDate: voucherDetailsDocument.startDate,
+                expiryDate: voucherDetailsDocument.expiryDate,
+                price: voucherDetailsDocument.price,
+                buyerDeposit: voucherDetailsDocument.buyerDeposit,
+                sellerDeposit: voucherDetailsDocument.sellerDeposit,
+                voucherOwner: voucherDetailsDocument.voucherOwner,
+            }
+        } catch (error) {
+            console.error(error.message);
+            return next(`Error fetching Voucher Details for voucher: ${ myVoucherID }`);
         }
+
+        
 
         res.status(200).send({ voucher })
     }
@@ -104,7 +117,14 @@ class UserVoucherController {
     }
 
     static async getAllVouchers(req, res, next) {
-        const vouchersDocuments = await mongooseService.getAllVouchers();
+        let vouchersDocuments;
+        
+        try {
+            vouchersDocuments = await mongooseService.getAllVouchers();
+        } catch (error) {
+            console.error(error)
+            return next(new APIError(400, `Error fetching all vouchers.`))  
+        }
 
         res.status(200).send({ vouchersDocuments })
     }

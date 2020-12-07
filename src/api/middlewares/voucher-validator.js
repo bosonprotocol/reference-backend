@@ -32,6 +32,21 @@ class VoucherValidator {
         next();
     }
 
+    static async ValidateDates(req, res, next) {
+        const start = new Date();
+        start.setHours(0,0,0,0);
+        const today = new Date(start).getTime()
+        const startDateToMillis = new Date(req.body.startDate).getTime()
+        const endDateToMillis = new Date(req.body.expiryDate).getTime()
+
+
+        if (startDateToMillis < today || endDateToMillis < startDateToMillis) {
+            return next(new APIError(400, 'Invalid Dates.'))
+        }
+
+        next();
+    }
+
 }
 
 module.exports = VoucherValidator;

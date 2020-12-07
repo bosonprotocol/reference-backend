@@ -8,9 +8,6 @@ class UsersRouter {
     static route(expressApp) {
         let router = expressApp.Router();
 
-        router.get('/:address/is-registered',
-            ErrorHandlers.globalErrorHandler(usersController.isUserRegistered));
-
         router.post('/:address',
             ErrorHandlers.globalErrorHandler(usersController.generateNonce));
 
