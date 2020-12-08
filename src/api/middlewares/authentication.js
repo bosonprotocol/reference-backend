@@ -24,26 +24,25 @@ class Authentication {
     }
 
     static async authenticateGCLOUDService(req, res, next) {
-        //TODO add process.env.GCLOUD_SECRET in the GCP, otherwise this will always revert
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(' ')[1]
+        
+        if (token == null) {
+            return next(new APIError(401, 'Unauthorized.'))
+        }
 
-        // const authHeader = req.headers['authorization']
-        // const token = authHeader && authHeader.split(' ')[1]
-        // if (token == null) {
-        //     return next(new APIError(401, 'Unauthorized.'))
-        // }
+        try {
+            const payload = await AuthService.verifyToken(token)
+            if (payload.token != process.env.GCLOUD_SECRET) {
+                return next(new APIError(403, 'Forbidden.'))
+            }
 
-        // try {
-        //     const payload = await AuthService.verifyToken(token)
-        //     if (payload.token != process.env.GCLOUD_SECRET) {
-        //         return next(new APIError(403, 'Forbidden.'))
-        //     }
+            res.locals.events = req.body;
 
-        res.locals.events = req.body;
-
-        // } catch (error) {
-        //     console.log(error);
-        //     return next(new APIError(403, 'Forbidden.'))
-        // }
+        } catch (error) {
+            console.log(error);
+            return next(new APIError(403, 'Forbidden.'))
+        }
 
         next();
     }

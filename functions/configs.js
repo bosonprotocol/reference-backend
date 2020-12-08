@@ -33,5 +33,4 @@ function getConfigParams(version) {
     return configs[version];
 }
 
-
 module.exports = getConfigParams

@@ -51,7 +51,6 @@ class VoucherController {
             const userVoucher = await mongooseService.getVoucherByID(voucherID)
             const voucherSupply = await mongooseService.getVoucherSupply(userVoucher.supplyID)
 
-            
             voucher = {
                 _id: userVoucher.id,
                 _tokenIdVoucher: userVoucher._tokenIdVoucher,
@@ -81,6 +80,7 @@ class VoucherController {
                 sellerDeposit: voucherSupply.sellerDeposit,
                 voucherOwner: voucherSupply.voucherOwner,
             }
+            
         } catch (error) {
             console.error(`An error occurred while tried to fetch voucher details with ID: [${voucherID}]!`);
             console.error(error.message);

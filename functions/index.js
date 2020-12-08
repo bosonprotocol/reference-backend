@@ -44,6 +44,7 @@ const WITHDRAWAL_BLACKLISTED_VOUCHER_IDS = [
     "57896044618658097711785492504343953942968545945025328265970773160681438969857"
 ];
 
+//POC1
 exports.scheduledKeepers = functions.https.onRequest(async (request, response) => {
     const poc1 = configs('poc1')
     const provider = ethers.getDefaultProvider(poc1.NETWORK_NAME, {
@@ -59,12 +60,17 @@ exports.scheduledKeepers = functions.https.onRequest(async (request, response) =
     await triggerFinalizations(executor, poc1);
 
     // Withdrawal process
-    await triggerWithdrawals(executor, poc1);
+    await triggerWithdrawalsPOC1(executor, poc1);
 
     response.send("Аll keepers were executed successfully!");
 });
 
 exports.scheduledKeepersDev = functions.https.onRequest(async (request, response) => {
+    //TODO 
+    // addresses to new deployed contracts should be set
+    // network should be changed
+    // parsing for withdrawals is done a little bit differently. Event that should be looked at is: 'LogAmountDistribution'
+    return
     const dev = configs('dev')
     const provider = ethers.getDefaultProvider(dev.NETWORK_NAME, {
         etherscan: dev.ETHERSCAN_API_KEY,
@@ -261,11 +267,92 @@ async function triggerWithdrawals(executor, config) {
             if (Array.isArray(events)
                 && typeof events[0] === 'object'
                 && events[0].hasOwnProperty('_tokenIdVoucher')) {
+
+                for (const key in events) {
+                    events[key]._tokenIdVoucher = voucherID;
+                }
+
                 await sendPayments(config, events);
             }
         } catch (e) {
             hasErrors = true;
             console.error(`Error while executing a create payment call to the backend . Error: ${e}`);
+            console.error(e);
+        }
+
+        console.log(`Voucher: ${voucherID}. Database updated`);
+    }
+
+    let infoMsg = hasErrors ? 'triggerWithdrawals function finished with errors' : 'triggerWithdrawals function finished successfully'
+
+    console.info(infoMsg);
+}
+
+async function triggerWithdrawalsPOC1(executor, config) {
+    let hasErrors = false;
+    let cashierContractExecutor = new ethers.Contract(config.CASHIER_ADDRESS, Cashier.abi, executor);
+    let voucherKernelContractExecutor = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
+    let vouchers;
+
+    try {
+        vouchers = await axios.get(config.ALL_VOUCHERS_URL);
+    } catch (e) {
+        console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
+    }
+
+    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
+
+    for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
+        let voucher = vouchers.data.vouchersDocuments[i];
+        let voucherID = voucher._tokenIdVoucher;
+        let isPaymentAndDepositsReleased;
+
+        try {
+            let voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(voucherID); // (vouchersStatus[_tokenIdVoucher].status, vouchersStatus[_tokenIdVoucher].isPaymentReleased, vouchersStatus[_tokenIdVoucher].isDepositsReleased)
+            isPaymentAndDepositsReleased = voucherStatus[1] && voucherStatus[2];
+
+        } catch (e) {
+            hasErrors = true;
+            console.error(`Error while checking existing payments for a voucher from the DB. Error: ${e}`);
+            continue;
+        }
+
+        if (isPaymentAndDepositsReleased || WITHDRAWAL_BLACKLISTED_VOUCHER_IDS.includes(voucherID)) {
+            console.log(`Voucher: ${voucherID} - a payment and deposits withdrawal completed `);
+            continue;
+        }
+
+        console.log(`Voucher: ${voucherID}. The withdraw process has started`);
+
+        let txOrder;
+        let receipt;
+
+        try {
+            txOrder = await cashierContractExecutor.withdraw([voucherID], { gasLimit: GAS_LIMIT });
+            receipt = await txOrder.wait();
+        } catch (e) {
+            hasErrors = true;
+            console.error(`Error while executing withdraw process. Error: ${e}`);
+            continue;
+        }
+
+        console.log(`Voucher: ${voucherID}. The withdraw process finished`);
+
+        let events = await findEventByName(receipt, 'LogWithdrawal', '_caller', '_payee', '_payment')
+
+        try {
+            if (Array.isArray(events)
+                && typeof events[0] === 'object') {
+                for (const key in events) {
+                    events[key]._tokenIdVoucher = voucherID;
+                }
+
+                await sendPayments(config, events);
+            }
+        } catch (e) {
+            hasErrors = true;
+            console.error(`Error while executing a create payment call to the backend . Error: ${e}`);
+            console.error(e);
         }
 
         console.log(`Voucher: ${voucherID}. Database updated`);
