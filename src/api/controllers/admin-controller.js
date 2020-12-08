@@ -3,14 +3,15 @@ const ApiError = require('../api-error');
 const ethers = require('ethers')
 class AdminController {
 
-    static async changeTokenSupplyIDVisibility(req, res, next) {
-        const voucherID = req.params.voucherID;
+    static async changeVoucherSupplyVisibility(req, res, next) {
+        const supplyID = req.params.supplyID;
         let voucherSupply;
 
         try {
-            voucherSupply = await mongooseService.getVoucherSupply(voucherID)
+            voucherSupply = await mongooseService.getVoucherSupply(supplyID)
         } catch (error) {
-            return next(new ApiError(400, `Voucher with ID: ${voucherID} does not exist!`))
+            console.error(error);
+            return next(new ApiError(400, `Voucher with ID: ${supplyID} does not exist!`))
         }
 
         const updatedVoucherSupply = await mongooseService.updateVoucherVisibilityStatus(voucherSupply.id);
@@ -34,6 +35,7 @@ class AdminController {
             await mongooseService.makeAdmin(address);
 
         } catch (error) {
+            console.error(error);
             return next(new ApiError(400, `Provided address: ${address} was not set as admin!`))
         }
 

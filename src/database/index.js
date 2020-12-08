@@ -1,6 +1,6 @@
-const VoucherSupply = require('./VoucherSupply/VoucherSupply')
+const VoucherSupply = require('./VoucherSupply/voucherSupply')
 const User = require('./User/user')
-const UserVoucher = require('./UserVoucher/userVoucher')
+const Voucher = require('./Voucher/voucher')
 const Payment = require('./Payment/payment')
 
 const MongooseService = {
@@ -9,27 +9,27 @@ const MongooseService = {
     getUser: User.getUser,
     makeAdmin: User.setUserToAdmin,
     getVoucherSupply: VoucherSupply.getVoucherSupply,
-    getVouchersByOwner: VoucherSupply.getVouchersByOwner,
-    getVouchersByBuyer: VoucherSupply.getVouchersByBuyer,
+    getVoucherSuppliesByOwner: VoucherSupply.getVoucherSuppliesByOwner,
+    getVoucherSuppliesByBuyer: VoucherSupply.getVoucherSuppliesByBuyer,
     createVoucherSupply: VoucherSupply.createVoucherSupply,
     updateVoucherSupply: VoucherSupply.updateVoucherSupply,
     updateVoucherQty: VoucherSupply.updateVoucherQty,
     updateVoucherVisibilityStatus: VoucherSupply.updateVoucherVisibilityStatus,
     deleteVoucherSupply: VoucherSupply.deleteVoucherSupply,
     deleteImage: VoucherSupply.deleteImage,
-    getVouchersDetails: VoucherSupply.getVouchersDetails,
+    getVouchersSupplyDetails: VoucherSupply.getVouchersSupplyDetails,
     getActiveSupplies: VoucherSupply.getActiveSupplies,
     getInactiveSupplies: VoucherSupply.getInactiveSupplies,
-    findUserVoucherById: UserVoucher.findUserVoucherById,
-    createUserVoucher: UserVoucher.createUserVoucher,
-    getMyVouchers: UserVoucher.getMyVouchers,
-    getMyVoucherByID: UserVoucher.getMyVoucherByID,
-    updateMyVoucherStatus: UserVoucher.updateMyVoucherStatus,
-    findAllUsersByVoucherID: UserVoucher.findAllUsersByVoucherID,
-    finalizeVoucher: UserVoucher.finalizeVoucher,
+    findVoucherById: Voucher.findVoucherById,
+    createVoucher: Voucher.createVoucher,
+    getUserVouchers: Voucher.getUserVouchers,
+    getVoucherByID: Voucher.getVoucherByID,
+    updateVoucherStatus: Voucher.updateVoucherStatus,
+    findAllVouchersByVoucherSupplyID: Voucher.findAllVouchersByVoucherSupplyID,
+    finalizeVoucher: Voucher.finalizeVoucher,
     createPayment: Payment.createPayment,
     getPaymentsByVoucherID: Payment.getPaymentsByVoucherID,
-    getAllVouchers: UserVoucher.getAllVouchers
+    getAllVouchers: Voucher.getAllVouchers
 }
 
 module.exports = MongooseService;

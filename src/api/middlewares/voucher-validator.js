@@ -9,7 +9,7 @@ class VoucherValidator {
         const voucherSupply = await mongooseService.getVoucherSupply(req.params.id);
         
         if (!voucherSupply) {
-            return next(new APIError(`Voucher with ID: ${req.params.id} does not exist!`))
+            return next(new APIError(400, `Voucher with ID: ${req.params.id} does not exist!`))
         }
 
         res.locals.voucherSupply = voucherSupply

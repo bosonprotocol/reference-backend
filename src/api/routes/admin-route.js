@@ -11,9 +11,9 @@ class UserVoucherController {
             ErrorHandlers.globalErrorHandler(AdminAuth.validateAdminAccess),
             ErrorHandlers.globalErrorHandler(AdminController.makeAdmin));
 
-        router.patch('/updateVisibleStatus/:voucherID',
+        router.patch('/updateVisibleStatus/:supplyID',
             ErrorHandlers.globalErrorHandler(AdminAuth.validateAdminAccess),
-            ErrorHandlers.globalErrorHandler(AdminController.changeTokenSupplyIDVisibility));
+            ErrorHandlers.globalErrorHandler(AdminController.changeVoucherSupplyVisibility));
 
         return router;
     }

@@ -1,12 +1,12 @@
-const UserVoucher = require('../models/UserVoucher')
+const Voucher = require('../models/Voucher')
 const status = require('../../utils/userVoucherStatus')
 
-class UserVoucherService {
-    static async createUserVoucher(metadata, voucherID) {
-        return await UserVoucher.findOneAndUpdate(
+class VouchersService {
+    static async createVoucher(metadata, supplyID) {
+        return await Voucher.findOneAndUpdate(
             { _tokenIdVoucher: metadata._tokenIdVoucher },
             {
-                voucherID: voucherID,
+                supplyID: supplyID,
                 txHash: metadata.txHash,
                 _holder: metadata._holder.toLowerCase(),
                 _promiseId: metadata._promiseId,
@@ -25,28 +25,28 @@ class UserVoucherService {
         )       
     }
 
-    static async getMyVouchers(userAddress) {
-        return await UserVoucher.find({ _holder: userAddress }).sort({ actionDate: 'desc' })
+    static async getUserVouchers(userAddress) {
+        return await Voucher.find({ _holder: userAddress }).sort({ actionDate: 'desc' })
     }
 
-    static async getMyVoucherByID(voucherID) {
-        return await UserVoucher.findById(voucherID)
+    static async getVoucherByID(voucherID) {
+        return await Voucher.findById(voucherID)
     }
 
-    static async findUserVoucherById(myVoucherId) {
-        return await UserVoucher.findById(myVoucherId)
+    static async findVoucherById(myVoucherId) {
+        return await Voucher.findById(myVoucherId)
     }
 
-    static async findAllUsersByVoucherID(voucherID, owner) {
-        return await UserVoucher
-            .where('voucherID').equals(voucherID)
+    static async findAllVouchersByVoucherSupplyID(supplyID, owner) {
+        return await Voucher
+            .where('supplyID').equals(supplyID)
             .where('voucherOwner').equals(owner)
         // removed for POC to be able to show table with statuses when cancel or fault is executed
         // .where(status.CANCELLED).equals('')
     }
 
-    static async updateMyVoucherStatus(voucherID, status) {
-        return await UserVoucher.findByIdAndUpdate(voucherID,
+    static async updateVoucherStatus(voucherID, status) {
+        return await Voucher.findByIdAndUpdate(voucherID,
             {
                 [status]: new Date().getTime()
             },
@@ -55,7 +55,7 @@ class UserVoucherService {
     }
 
     static async finalizeVoucher(tokenID, status) {
-        return await UserVoucher.findOneAndUpdate({ _tokenIdVoucher: tokenID },
+        return await Voucher.findOneAndUpdate({ _tokenIdVoucher: tokenID },
             {
                 [status]: new Date().getTime()
             },
@@ -64,8 +64,8 @@ class UserVoucherService {
     }
 
     static async getAllVouchers() {
-        return UserVoucher.find({});
+        return Voucher.find({});
     }
 }
 
-module.exports = UserVoucherService;
+module.exports = VouchersService;

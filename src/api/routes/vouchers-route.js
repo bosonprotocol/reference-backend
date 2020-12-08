@@ -1,24 +1,24 @@
-const userVoucherController = require('../controllers/user-vouchers-controller');
+const userVoucherController = require('../controllers/vouchers-controller');
 const ErrorHandlers = require('../middlewares/error-handler');
 const userValidator = require('../middlewares/user-validator')
 const authenticationMiddleware = require('../middlewares/authentication');
 
-class UserVoucherController {
+class VouchersController {
 
     static route(expressApp) {
         let router = expressApp.Router();
 
         router.get('/',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(userVoucherController.getMyVouchers));
+            ErrorHandlers.globalErrorHandler(userVoucherController.getVouchers));
 
         router.get('/:voucherID/voucher-details',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userVoucherController.getVoucherDetails));
 
-        router.get('/buyers/:voucherID',
+        router.get('/buyers/:supplyID',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(userVoucherController.getBuyersByVoucherID));
+            ErrorHandlers.globalErrorHandler(userVoucherController.getBoughtVouchersForSupply));
 
         router.get('/all',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
@@ -27,7 +27,7 @@ class UserVoucherController {
         router.patch('/update',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),
-            ErrorHandlers.globalErrorHandler(userVoucherController.updateMyVoucher));
+            ErrorHandlers.globalErrorHandler(userVoucherController.updateVoucher));
 
         router.patch('/finalize',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
@@ -37,4 +37,4 @@ class UserVoucherController {
     }
 }
 
-module.exports = UserVoucherController;
+module.exports = VouchersController;

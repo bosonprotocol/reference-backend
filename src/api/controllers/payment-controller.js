@@ -33,7 +33,7 @@ class PaymentController {
         }
 
         try {
-            const userVoucher = await mongooseService.getMyVoucherByID(objectId)
+            const userVoucher = await mongooseService.getVoucherByID(objectId)
             const buyer = userVoucher._holder;
             const seller = userVoucher.voucherOwner
             const payments = await mongooseService.getPaymentsByVoucherID(userVoucher._tokenIdVoucher);
@@ -87,15 +87,15 @@ class PaymentController {
     }
 
     static async getPaymentsByVoucherID(req, res, next) {
-        const tokenIdVoucher = req.params.tokenIdVoucher;
+        const voucherID = req.params.voucherID;
 
         let payments; 
 
         try {
-            payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
+            payments = await mongooseService.getPaymentsByVoucherID(voucherID);
         } catch (error) {
             console.error(error)
-            return next(new APIError(400, `Get payment for voucher id: ${ tokenIdVoucher } could not be completed.`))
+            return next(new APIError(400, `Get payment for voucher id: ${ voucherID } could not be completed.`))
         }
 
         res.status(200).send({ payments })

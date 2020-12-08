@@ -3,11 +3,11 @@ const VoucherSupply = require('../models/VoucherSupply')
 
 class VoucherSupplyService {
 
-    static async getVouchersByOwner(voucherOwner) {
+    static async getVoucherSuppliesByOwner(voucherOwner) {
         return await VoucherSupply.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'startDate', 'qty', 'visible']).sort({ offeredDate: 'desc' }).lean()
     }
 
-    static async getVouchersByBuyer(voucherOwner) {
+    static async getVoucherSuppliesByBuyer(voucherOwner) {
         const today = new Date(Date.now())
 
         return await VoucherSupply.where('voucherOwner')
@@ -94,21 +94,21 @@ class VoucherSupplyService {
         )
     }
 
-    static async updateVoucherQty(voucherID) {
-        const voucherSupply = await this.getVoucherSupply(voucherID);
+    static async updateVoucherQty(supplyID) {
+        const voucherSupply = await this.getVoucherSupply(supplyID);
 
-        return await VoucherSupply.findByIdAndUpdate(voucherID, {
-            qty: --voucher.qty,
+        return await VoucherSupply.findByIdAndUpdate(supplyID, {
+            qty: --voucherSupply.qty,
         },
             { useFindAndModify: false, new: true, upsert: true, }
         )
     }
 
-    static async updateVoucherVisibilityStatus(voucherID) {
-        const voucherSupply = await this.getVoucherSupply(voucherID);
+    static async updateVoucherVisibilityStatus(supplyID) {
+        const voucherSupply = await this.getVoucherSupply(supplyID);
 
-        return await VoucherSupply.findByIdAndUpdate(voucherID, {
-            visible: voucher.visible ? false : true
+        return await VoucherSupply.findByIdAndUpdate(supplyID, {
+            visible: voucherSupply.visible ? false : true
         },
             { useFindAndModify: false, new: true, upsert: true, }
         )
@@ -134,19 +134,19 @@ class VoucherSupplyService {
         return await VoucherSupply.findById(id)
     }
 
-    static async getVouchersDetails(myVoucherDocument, voucherData) {
-        const voucherDetailsDocument = await VoucherService.getVoucherSupply(myVoucherDocument.voucherID)
+    static async getVouchersSupplyDetails(userVoucher, voucherData) {
+        const voucherSupplyDetails = await this.getVoucherSupply(userVoucher.supplyID)
 
         const voucherSupply = {
-            _id: myVoucherDocument.id,
-            title: voucherDetailsDocument._doc.title,
-            qty: voucherDetailsDocument._doc.qty,
-            description: voucherDetailsDocument._doc.description,
-            imagefiles: voucherDetailsDocument._doc.imagefiles,
-            category: voucherDetailsDocument._doc.category,
-            price: voucherDetailsDocument._doc.price,
-            expiryDate: voucherDetailsDocument._doc.expiryDate,
-            visible: voucherDetailsDocument._doc.visible
+            _id: userVoucher.id,
+            title: voucherSupplyDetails._doc.title,
+            qty: voucherSupplyDetails._doc.qty,
+            description: voucherSupplyDetails._doc.description,
+            imagefiles: voucherSupplyDetails._doc.imagefiles,
+            category: voucherSupplyDetails._doc.category,
+            price: voucherSupplyDetails._doc.price,
+            expiryDate: voucherSupplyDetails._doc.expiryDate,
+            visible: voucherSupplyDetails._doc.visible
         }
 
         voucherData.push(

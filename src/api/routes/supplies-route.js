@@ -36,10 +36,10 @@ class VoucherSuppliesRouter {
             ErrorHandlers.globalErrorHandler(voucherSuppliesController.getInactiveSupplies));
 
         router.get('/sell/:address',
-            ErrorHandlers.globalErrorHandler(voucherSuppliesController.getSuppliesForSeller));
+            ErrorHandlers.globalErrorHandler(voucherSuppliesController.getSellerSupplies));
         
         router.get('/buy/:address',
-            ErrorHandlers.globalErrorHandler(voucherSuppliesController.getSuppliesForBuyer));
+            ErrorHandlers.globalErrorHandler(voucherSuppliesController.getBuyerSupplies));
 
         router.patch('/:id',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),

@@ -3,11 +3,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const collections = require('../collections.json');
-const USER = collections.USER;
-const USER_VOUCHER = collections.USER_VOUCHER;
+const VOUCHER = collections.VOUCHER;
 
 const userSchema = new Schema({
-    voucherID: {
+    supplyID: {
         type: String,
         required: true,
         trim: true
@@ -62,4 +61,4 @@ const userSchema = new Schema({
     },
 })
 
-module.exports = mongoose.model(USER_VOUCHER, userSchema)
+module.exports = mongoose.model(VOUCHER, userSchema)
