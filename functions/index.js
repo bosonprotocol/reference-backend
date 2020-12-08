@@ -3,23 +3,8 @@ const axios = require('axios').default;
 const ethers = require('ethers');
 const configs = require('./configs')
 
-
-// const VOUCHER_KERNEL_ADDRESS = functions.config().poc1.voucherkerneladdress;
-// const CASHIER_ADDRESS = functions.config().poc1.cashieraddress;
-
 const VoucherKernel = require("./abis/VoucherKernel.json");
 const Cashier = require("./abis/Cashier.json");
-
-// const EXECUTOR_PRIVATE_KEY = functions.config().poc1.executorsecret;
-// const NETWORK_NAME = functions.config().poc1.networkname;
-// const ETHERSCAN_API_KEY = functions.config().poc1.etherscanapikey;
-// const INFURA_API_KEY = functions.config().poc1.infuraapikey;
-
-// const API_URL = functions.config().poc1.apiurl;
-// const ALL_VOUCHERS_URL = `${API_URL}/user-vouchers/all`;
-// const CHECK_PAYMENTS_BY_VOUCHER_URL = `${API_URL}/payments/check-payment`;
-// const FINALIZE_VOUCHER_URL = `${API_URL}/user-vouchers/finalize`;
-// const WITHDRAW_VOUCHER_URL = `${API_URL}/payments/create-payment`;
 
 const COMMIT_IDX = 7; // usingHelpers contract
 const GAS_LIMIT = '300000';
