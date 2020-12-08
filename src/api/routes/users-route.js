@@ -14,7 +14,7 @@ class UsersRouter {
         router.post('/:address/verify-signature', 
             ErrorHandlers.globalErrorHandler(usersController.verifySignature))
 
-        router.post('/:voucherID/buy',
+        router.post('/:supplyID/buy',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(UserValidator.ValidateMetadata),
             ErrorHandlers.globalErrorHandler(usersController.commitToBuy))
