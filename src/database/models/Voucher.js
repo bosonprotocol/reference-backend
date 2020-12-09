@@ -51,6 +51,10 @@ const userSchema = new Schema({
         type: Date,
         required: false
     },
+    _tokenIdSupply: {
+        type: String,
+        required: true,
+    },
     FINALIZED: {
         type: Date,
         required: false

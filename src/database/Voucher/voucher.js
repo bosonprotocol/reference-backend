@@ -9,7 +9,6 @@ class VouchersService {
                 supplyID: supplyID,
                 txHash: metadata.txHash,
                 _holder: metadata._holder.toLowerCase(),
-                _promiseId: metadata._promiseId,
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _tokenIdVoucher: metadata._tokenIdVoucher,
                 [status.COMMITTED]: new Date().getTime(),
@@ -35,6 +34,10 @@ class VouchersService {
 
     static async findVoucherById(myVoucherId) {
         return await Voucher.findById(myVoucherId)
+    }
+
+    static async findVoucherByTokenIdVoucher(id) {
+        return await Voucher.findOne({_tokenIdVoucher: id})
     }
 
     static async findAllVouchersByVoucherSupplyID(supplyID, owner) {
