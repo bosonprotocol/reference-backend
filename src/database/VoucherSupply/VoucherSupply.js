@@ -1,5 +1,5 @@
 //@ts-nocheck
-const VoucherSupply = require('../models/VoucherSupply')
+const VoucherSupply = require('../models/VoucherSupply');
 
 class VoucherSupplyService {
 
