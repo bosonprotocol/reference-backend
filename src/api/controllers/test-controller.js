@@ -104,7 +104,6 @@ class TestController {
         const supplyID = req.params.supplyID;
 
         let data;
-        let voucher;
 
         const voucherSupply = await mongooseService.getVoucherSupplyBySupplyID(supplyID);
 
@@ -174,7 +173,7 @@ class TestController {
         let cashierContractSeller = new ethers.Contract(constants.CashierContractAddress, Cashier.abi, sellerWallet)
         const startDate = body.startDate / 1000
         const endDate = body.expiryDate / 100
-        
+
         let dataArr = [
             startDate,
             endDate,
