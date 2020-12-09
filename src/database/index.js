@@ -1,7 +1,7 @@
-const VoucherSupply = require('./VoucherSupply/voucherSupply')
-const User = require('./User/user')
-const Voucher = require('./Voucher/voucher')
-const Payment = require('./Payment/payment')
+const VoucherSupply = require('./VoucherSupply/VoucherSupply')
+const User = require('./User/User')
+const Voucher = require('./Voucher/Voucher')
+const Payment = require('./Payment/Payment')
 
 const MongooseService = {
     getNonce: User.getNonce,
