@@ -9,7 +9,6 @@ class VouchersService {
                 supplyID: supplyID,
                 txHash: metadata.txHash,
                 _holder: metadata._holder.toLowerCase(),
-                _promiseId: metadata._promiseId,
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _tokenIdVoucher: metadata._tokenIdVoucher,
                 [status.COMMITTED]: new Date().getTime(),
@@ -37,35 +36,8 @@ class VouchersService {
         return await Voucher.findById(myVoucherId)
     }
 
-    static async createVoucher(metadata, fileRefs, voucherOwner) {
-
-        try {
-            const voucher = new Voucher({
-                title: metadata.title,
-                qty: metadata.qty,
-                category: metadata.category,
-                startDate: metadata.startDate,
-                expiryDate: metadata.expiryDate,
-                offeredDate: metadata.offeredDate,
-                price: metadata.price,
-                buyerDeposit: metadata.buyerDeposit,
-                sellerDeposit: metadata.sellerDeposit,
-                description: metadata.description,
-                location: metadata.location,
-                contact: metadata.contact,
-                conditions: metadata.conditions,
-                voucherOwner: voucherOwner,
-                visible: true,
-                txHash: metadata.txHash,
-                _tokenIdSupply: metadata._tokenIdSupply,
-                imagefiles: fileRefs,
-            });
-
-            return await voucher.save();
-        } catch (error) {
-            throw new Error(error.message)
-        }
-    
+    static async findVoucherByTokenIdVoucher(id) {
+        return await Voucher.findOne({_tokenIdVoucher: id})
     }
 
     static async findAllVouchersByVoucherSupplyID(supplyID, owner) {

@@ -63,11 +63,10 @@ class VoucherSupplyService {
             visible: true,
             txHash: metadata.txHash,
             _tokenIdSupply: metadata._tokenIdSupply,
-            _promiseId: metadata._promiseId,
             imagefiles: fileRefs,
         });
 
-        await voucherSupply.save();
+        return await voucherSupply.save();
     }
 
     static async updateVoucherSupply(voucher, metadata, fileRefs) {
@@ -132,6 +131,10 @@ class VoucherSupplyService {
 
     static async getVoucherSupply(id) {
         return await VoucherSupply.findById(id)
+    }
+
+    static async getVoucherSupplyBySupplyID(supplyID) {
+        return await VoucherSupply.findOne({_tokenIdSupply: supplyID})
     }
 
     static async getVouchersSupplyDetails(userVoucher, voucherData) {

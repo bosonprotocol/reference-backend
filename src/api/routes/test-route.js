@@ -7,7 +7,13 @@ class TestRouter {
         let router = expressApp.Router();
 
         router.post('/createBatch',
+            ErrorHandlers.globalErrorHandler(testController.createVoucherSupply));
+
+        router.post('/commitToBuy/:supplyID',
             ErrorHandlers.globalErrorHandler(testController.createVoucher));
+
+        router.post('/redeem/:voucherID',
+            ErrorHandlers.globalErrorHandler(testController.redeem));
     
         return router;
     }
