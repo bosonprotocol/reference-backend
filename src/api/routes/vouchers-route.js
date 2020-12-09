@@ -1,67 +1,40 @@
-const vouchersController = require('../controllers/vouchers-controller');
+const userVoucherController = require('../controllers/vouchers-controller');
 const ErrorHandlers = require('../middlewares/error-handler');
+const userValidator = require('../middlewares/user-validator')
 const authenticationMiddleware = require('../middlewares/authentication');
-const voucherValidator = require('../middlewares/voucher-validator')
 
-const os = require('os');
-const multer = require('multer');
-const storage = multer.diskStorage({});
-const FILE_LIMIT = 10;
-const upload = multer({ storage });
-
-class VouchersRouter {
+class VouchersController {
 
     static route(expressApp) {
         let router = expressApp.Router();
 
-        router.post('/',
+        router.get('/',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(upload.array('fileToUpload', FILE_LIMIT)),
-            ErrorHandlers.globalErrorHandler(vouchersController.createVoucher));
+            ErrorHandlers.globalErrorHandler(userVoucherController.getVouchers));
 
-        router.get('/:id',
-            ErrorHandlers.globalErrorHandler(vouchersController.getVoucher));
-
-        router.get('/seller-vouchers/status',
+        router.get('/:voucherID/voucher-details',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(vouchersController.getVouchersStatus));
+            ErrorHandlers.globalErrorHandler(userVoucherController.getVoucherDetails));
 
-        router.get('/seller-vouchers/active',
+        router.get('/buyers/:supplyID',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(vouchersController.getAllActiveVouchers));
+            ErrorHandlers.globalErrorHandler(userVoucherController.getBoughtVouchersForSupply));
 
-        router.get('/seller-vouchers/inactive',
-            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(vouchersController.getAllInactiveVouchers));
+        router.get('/all',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(userVoucherController.getAllVouchers));
 
-        router.get('/sell/:address',
-            ErrorHandlers.globalErrorHandler(vouchersController.getSellVouchers));
-        
-        router.get('/buy/:address',
-            ErrorHandlers.globalErrorHandler(vouchersController.getBuyVouchers));
+        router.patch('/update',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+            ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),
+            ErrorHandlers.globalErrorHandler(userVoucherController.updateVoucher));
 
-        router.patch('/:id',
-            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(upload.array('fileToUpload', FILE_LIMIT)),
-            ErrorHandlers.globalErrorHandler(voucherValidator.ValidateVoucherExists),
-            ErrorHandlers.globalErrorHandler(voucherValidator.ValidateCanUpdateVoucher),
-            ErrorHandlers.globalErrorHandler(vouchersController.updateVoucher));
-        
-        router.delete('/:id',
-            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(voucherValidator.ValidateVoucherExists),
-            ErrorHandlers.globalErrorHandler(voucherValidator.ValidateCanDelete),
-            ErrorHandlers.globalErrorHandler(vouchersController.deleteVoucher));
-
-        router.delete(
-            '/:id/image',
-            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            ErrorHandlers.globalErrorHandler(voucherValidator.ValidateVoucherExists),
-            ErrorHandlers.globalErrorHandler(voucherValidator.ValidateCanDelete),
-            ErrorHandlers.globalErrorHandler(vouchersController.deleteImage));
+        router.patch('/finalize',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(userVoucherController.finalizeVoucher));
 
         return router;
     }
 }
 
-module.exports = VouchersRouter;
+module.exports = VouchersController;
