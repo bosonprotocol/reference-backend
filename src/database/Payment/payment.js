@@ -1,5 +1,5 @@
 // @ts-nocheck
-const Payment = require('../models/Payment')
+const Payment = require('../models/Payment');
 
 class PaymentService {
 

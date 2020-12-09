@@ -1,5 +1,5 @@
-const Voucher = require('../models/Voucher')
-const status = require('../../utils/userVoucherStatus')
+const Voucher = require('../models/Voucher');
+const status = require('../../utils/userVoucherStatus');
 
 class VouchersService {
     static async createVoucher(metadata, supplyID) {
