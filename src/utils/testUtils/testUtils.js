@@ -30,35 +30,6 @@ class TestUtils {
 
         return block.timestamp
     }
-
-    prepareMetaDataForVoucherBatchCreation(data, event) {
-        /**
-         * title: metadata.title,
-            qty: metadata.qty,
-            category: metadata.category,
-            startDate: metadata.startDate,
-            expiryDate: metadata.expiryDate,
-            offeredDate: metadata.offeredDate,
-            price: metadata.price,
-            buyerDeposit: metadata.buyerDeposit,
-            sellerDeposit: metadata.sellerDeposit,
-            description: metadata.description,
-            location: metadata.location,
-            contact: metadata.contact,
-            conditions: metadata.conditions,
-            voucherOwner: voucherOwner,
-            visible: true,
-            txHash: metadata.txHash,
-            _tokenIdSupply: metadata._tokenIdSupply,
-            _promiseId: metadata._promiseId,
-            imagefiles: fileRefs,
-         */
-
-         return {
-             title: data.title,
-             
-         }
-    }
 }
 
 module.exports = TestUtils;
