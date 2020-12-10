@@ -75,8 +75,7 @@ class TestController {
             tx = await TestController.createVoucherBatch(req.body);
             receipt = await tx.wait();
 
-            parsedEvent = await utils.findEventByName(receipt, 'LogOrderCreated', '_tokenIdSupply', '_seller', '_quantity')
-
+            parsedEvent = await utils.findEventByName(receipt, 'LogOrderCreated', '_tokenIdSupply', '_seller', '_quantity', '_paymentType')
         } catch (error) {
             
             console.error(error.error);
