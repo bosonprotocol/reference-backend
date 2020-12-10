@@ -120,7 +120,7 @@ class TestController {
 
             let encodedTopic = await getEncodedTopic(receipt, VoucherKernel.abi, 'LogVoucherDelivered');
             data = await decodeData(receipt, encodedTopic, ['uint256', 'address', 'address', 'bytes32']);
-            voucher = data[0].toString()
+            
         } catch (error) {
             console.error(error);
             return next(new APIError(400, `Transaction failed! TxHash: ${tx.hash}`))
