@@ -63,6 +63,12 @@
           "internalType": "uint256",
           "name": "_quantity",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "_paymentType",
+          "type": "uint8"
         }
       ],
       "name": "LogOrderCreated",
@@ -113,6 +119,32 @@
       "type": "event"
     },
     {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Paused",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "Unpaused",
+      "type": "event"
+    },
+    {
       "inputs": [
         {
           "internalType": "address",
@@ -129,7 +161,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -142,7 +175,22 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
+    },
+    {
+      "inputs": [],
+      "name": "paused",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -165,6 +213,20 @@
       "type": "function"
     },
     {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "unpause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
       "inputs": [
         {
           "internalType": "uint256[]",
@@ -175,7 +237,8 @@
       "name": "requestCreateOrder_ETH_ETH",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -223,7 +286,8 @@
       "name": "requestCreateOrder_TKN_TKN_WithPermit",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -266,7 +330,8 @@
       "name": "requestCreateOrder_ETH_TKN_WithPermit",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -281,10 +346,11 @@
           "type": "uint256[]"
         }
       ],
-      "name": "requestCreateOrder_TKN_ETH_WithPermit",
+      "name": "requestCreateOrder_TKN_ETH",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -302,7 +368,8 @@
       "name": "requestVoucher_ETH_ETH",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -360,7 +427,8 @@
       "name": "requestVoucher_TKN_TKN_WithPermit",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -403,7 +471,8 @@
       "name": "requestVoucher_ETH_TKN_WithPermit",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -446,7 +515,8 @@
       "name": "requestVoucher_TKN_ETH_WithPermit",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -457,6 +527,32 @@
         }
       ],
       "name": "withdraw",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenIdVoucher",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawWhenPaused",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenIdSupply",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdrawDeposits",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -485,7 +581,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ]
 }
