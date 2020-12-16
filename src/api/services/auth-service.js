@@ -1,6 +1,6 @@
 const APIError = require('../api-error');
 const jwt = require('jsonwebtoken');
-const utils = require('ethers').utils
+const utils = require('ethers').utils;
 
 class AuthService {
 
@@ -24,23 +24,16 @@ class AuthService {
         next();
     }
 
-    static async isSignatureVerified(address, nonce, signature) {
-        const msg = '\x19Ethereum Signed Message:\n' + nonce
-        const msgHash = utils.hashMessage(msg);
-        const msgHashBytes = utils.arrayify(msgHash);
-        const recoveredAddress = utils.recoverAddress(msgHashBytes, signature);
+    static async isSignatureVerified(address, domain, types, message, signature) {
+        const verifiedWalletAddress = utils.verifyTypedData(domain, types, message, signature);
 
-        if (address !== recoveredAddress) {
-            return false
-        }
-
-        return true
+        return address === verifiedWalletAddress;
     }
 
     static generateAccessToken(address) {
         const payload = {
             user: address
-        }
+        };
 
         return jwt.sign(payload, process.env.TOKEN_SECRET, { expiresIn: '180d' });
     }
