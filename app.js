@@ -22,7 +22,7 @@ app.use(function (req, res, next) {
 app.use(express.json());
 
 app.use('/users', usersRouter.route(express));
-app.use('/supplies', voucherSuppliesRouter.route(express));
+app.use('/voucher-sets', voucherSuppliesRouter.route(express));
 app.use('/vouchers', vouchers.route(express));
 app.use('/payments', paymentRouter.route(express));
 app.use('/admin', adminRouter.route(express))
