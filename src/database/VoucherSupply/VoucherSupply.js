@@ -27,7 +27,7 @@ class VoucherSupplyService {
             .where('startDate').lte(today)
             .where('expiryDate').gte(today)
             .where('qty').gt(0)
-            .select(['title', 'price', 'voucherOwner','qty', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible']).sort({ offeredDate: 'desc' }).lean()
+            .select(['title', 'price', 'voucherOwner', 'qty', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible']).sort({ offeredDate: 'desc' }).lean()
     }
 
     static async getInactiveSupplies(address) {
@@ -36,8 +36,8 @@ class VoucherSupplyService {
         return await VoucherSupply
             .where('voucherOwner').equals(address.toLowerCase())
             .or([
-                { startDate: { $gte: today } }, 
-                { expiryDate: { $lte: today }},
+                { startDate: { $gte: today } },
+                { expiryDate: { $lte: today } },
                 { qty: { $lte: 0 } }
             ])
             .select(['title', 'price', 'voucherOwner', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible']).sort({ offeredDate: 'desc' }).lean()
@@ -72,22 +72,22 @@ class VoucherSupplyService {
     static async updateVoucherSupply(voucher, metadata, fileRefs) {
         const currentImages = voucher.imagefiles;
         const updatedImages = [...currentImages, ...fileRefs]
-        
+
         await VoucherSupply.findByIdAndUpdate(voucher.id, {
-            title: metadata.title,
-            qty: metadata.qty,
-            category: metadata.category,
-            startDate: metadata.startDate,
-            expiryDate: metadata.expiryDate,
-            offeredDate: metadata.offeredDate,
-            price: metadata.price,
-            buyerDeposit: metadata.buyerDeposit,
-            sellerDeposit: metadata.sellerDeposit,
-            description: metadata.description,
-            location: metadata.location,
-            contact: metadata.contact,
-            conditions: metadata.conditions,
-            imagefiles: updatedImages
+                title: metadata.title,
+                qty: metadata.qty,
+                category: metadata.category,
+                startDate: metadata.startDate,
+                expiryDate: metadata.expiryDate,
+                offeredDate: metadata.offeredDate,
+                price: metadata.price,
+                buyerDeposit: metadata.buyerDeposit,
+                sellerDeposit: metadata.sellerDeposit,
+                description: metadata.description,
+                location: metadata.location,
+                contact: metadata.contact,
+                conditions: metadata.conditions,
+                imagefiles: updatedImages
             },
             { useFindAndModify: false, new: true, upsert: true, }
         )
@@ -97,8 +97,8 @@ class VoucherSupplyService {
         const voucherSupply = await this.getVoucherSupply(supplyID);
 
         return await VoucherSupply.findByIdAndUpdate(supplyID, {
-            qty: --voucherSupply.qty,
-        },
+                qty: --voucherSupply.qty,
+            },
             { useFindAndModify: false, new: true, upsert: true, }
         )
     }
@@ -107,8 +107,8 @@ class VoucherSupplyService {
         const voucherSupply = await this.getVoucherSupply(supplyID);
 
         return await VoucherSupply.findByIdAndUpdate(supplyID, {
-            visible: voucherSupply.visible ? false : true
-        },
+                visible: voucherSupply.visible ? false : true
+            },
             { useFindAndModify: false, new: true, upsert: true, }
         )
     }
@@ -123,8 +123,8 @@ class VoucherSupplyService {
         const updatedImages = currentImages.filter(image => image.url != imageUrl);
 
         await VoucherSupply.findByIdAndUpdate(id, {
-            imagefiles: updatedImages
-        },
+                imagefiles: updatedImages
+            },
             { useFindAndModify: false, new: true, upsert: true, }
         );
     }
@@ -133,8 +133,12 @@ class VoucherSupplyService {
         return await VoucherSupply.findById(id)
     }
 
+    static async getAllVoucherSupplies() {
+        return VoucherSupply.find({});
+    }
+
     static async getVoucherSupplyBySupplyID(supplyID) {
-        return await VoucherSupply.findOne({_tokenIdSupply: supplyID})
+        return await VoucherSupply.findOne({ _tokenIdSupply: supplyID })
     }
 
     static async getVouchersSupplyDetails(userVoucher, voucherData) {

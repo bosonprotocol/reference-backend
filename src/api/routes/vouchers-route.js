@@ -24,6 +24,9 @@ class VouchersController {
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
             ErrorHandlers.globalErrorHandler(userVoucherController.getAllVouchers));
 
+        router.get('/public',
+            ErrorHandlers.globalErrorHandler(userVoucherController.getAllVouchers));
+
         router.patch('/update',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),
