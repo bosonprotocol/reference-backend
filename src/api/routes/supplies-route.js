@@ -23,6 +23,9 @@ class VoucherSuppliesRouter {
         router.get('/:id',
             ErrorHandlers.globalErrorHandler(voucherSuppliesController.getVoucherSupply));
 
+        router.get('/',
+            ErrorHandlers.globalErrorHandler(voucherSuppliesController.getAllVoucherSupplies));
+
         router.get('/status/all',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(voucherSuppliesController.getSupplyStatuses));
@@ -37,7 +40,7 @@ class VoucherSuppliesRouter {
 
         router.get('/sell/:address',
             ErrorHandlers.globalErrorHandler(voucherSuppliesController.getSellerSupplies));
-        
+
         router.get('/buy/:address',
             ErrorHandlers.globalErrorHandler(voucherSuppliesController.getBuyerSupplies));
 
@@ -47,7 +50,7 @@ class VoucherSuppliesRouter {
             ErrorHandlers.globalErrorHandler(voucherValidator.ValidateVoucherSupplyExists),
             ErrorHandlers.globalErrorHandler(voucherValidator.ValidateCanUpdateVoucherSupply),
             ErrorHandlers.globalErrorHandler(voucherSuppliesController.updateVoucherSupply));
-        
+
         router.delete('/:id',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(voucherValidator.ValidateVoucherSupplyExists),

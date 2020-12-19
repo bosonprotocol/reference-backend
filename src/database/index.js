@@ -9,6 +9,7 @@ const MongooseService = {
     getUser: User.getUser,
     makeAdmin: User.setUserToAdmin,
     getVoucherSupply: VoucherSupply.getVoucherSupply,
+    getAllVoucherSupplies: VoucherSupply.getAllVoucherSupplies,
     getVoucherSupplyBySupplyID: VoucherSupply.getVoucherSupplyBySupplyID,
     getVoucherSuppliesByOwner: VoucherSupply.getVoucherSuppliesByOwner,
     getVoucherSuppliesByBuyer: VoucherSupply.getVoucherSuppliesByBuyer,

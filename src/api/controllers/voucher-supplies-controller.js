@@ -16,13 +16,13 @@ class VoucherSuppliesController {
 
         try {
             voucherSupply = await mongooseService.getVoucherSupply(req.params.id)
-           
-            const voucherStatus = voucherUtils.calcVoucherSupplyStatus(voucherSupply.startDate, voucherSupply.expiryDate, voucherSupply.qty )
+
+            const voucherStatus = voucherUtils.calcVoucherSupplyStatus(voucherSupply.startDate, voucherSupply.expiryDate, voucherSupply.qty)
             voucherSupply.voucherStatus = voucherStatus
         } catch (error) {
-            console.error(`An error occurred while tried to fetch Voucher Supply with ID: [${req.params.id}].`);
+            console.error(`An error occurred while tried to fetch Voucher Supply with ID: [${ req.params.id }].`);
             console.error(error)
-            return next(new APIError(400, `Could not get voucher with ID: ${req.params.id}`));
+            return next(new APIError(400, `Could not get voucher with ID: ${ req.params.id }`));
         }
 
         res.status(200).send({
@@ -30,10 +30,24 @@ class VoucherSuppliesController {
         });
     }
 
+    static async getAllVoucherSupplies(req, res, next) {
+        let voucherSupplies;
+
+        try {
+            voucherSupplies = await mongooseService.getAllVoucherSupplies();
+        } catch (error) {
+            console.error(`An error occurred while tried to fetch all voucher supplies!`);
+            console.error(error)
+            return next(new APIError(400, `Error fetching all voucher supplies.`))
+        }
+
+        res.status(200).send({ voucherSupplies })
+    }
+
     static async getSellerSupplies(req, res, next) {
         let voucherSupplies;
         const owner = req.params.address.toLowerCase();
-        
+
         try {
             voucherSupplies = await mongooseService.getVoucherSuppliesByOwner(owner)
 
@@ -41,9 +55,9 @@ class VoucherSuppliesController {
                 const voucherStatus = voucherUtils.calcVoucherSupplyStatus(supply.startDate, supply.expiryDate, supply.qty)
                 supply.voucherStatus = voucherStatus
             })
-            
+
         } catch (error) {
-            console.error(`An error occurred while user [${owner}] tried to fetch Vouchers.`);
+            console.error(`An error occurred while user [${ owner }] tried to fetch Vouchers.`);
             console.error(error);
             return next(new APIError(400, 'Invalid operation'));
         }
@@ -54,11 +68,11 @@ class VoucherSuppliesController {
     static async getBuyerSupplies(req, res, next) {
         let voucherSupplies;
         const buyer = req.params.address.toLowerCase();
-        
+
         try {
             voucherSupplies = await mongooseService.getVoucherSuppliesByBuyer(buyer)
         } catch (error) {
-            console.error(`An error occurred while user [${buyer}] tried to fetch Vouchers.`);
+            console.error(`An error occurred while user [${ buyer }] tried to fetch Vouchers.`);
             console.error(error)
             return next(new APIError(400, 'Invalid operation'));
         }
@@ -118,15 +132,15 @@ class VoucherSuppliesController {
     static async createVoucherSupply(req, res, next) {
         const fileRefs = await voucherUtils.uploadFiles(req);
         const voucherOwner = res.locals.address;
-        
+
         try {
             await mongooseService.createVoucherSupply(req.body, fileRefs, voucherOwner)
         } catch (error) {
-            console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
+            console.error(`An error occurred while user [${ voucherOwner }] tried to create Voucher.`);
             console.error(error.errors)
             return next(new APIError(400, 'Invalid voucher model'));
         }
-    
+
         res.status(200).send({ success: true });
     }
 
@@ -134,11 +148,11 @@ class VoucherSuppliesController {
         const fileRefs = await voucherUtils.uploadFiles(req);
         const voucherOwner = res.locals.address;
         const voucher = res.locals.voucherSupply
-        
+
         try {
             await mongooseService.updateVoucherSupply(voucher, req.body, fileRefs)
         } catch (error) {
-            console.error(`An error occurred while user [${voucherOwner}] tried to update Voucher.`);
+            console.error(`An error occurred while user [${ voucherOwner }] tried to update Voucher.`);
             console.error(error)
             return next(new APIError(400, 'Invalid voucher model'));
         }
@@ -152,7 +166,7 @@ class VoucherSuppliesController {
         try {
             await mongooseService.deleteVoucherSupply(voucherSupply.id);
         } catch (error) {
-            console.error(`An error occurred while user [${req.body.voucherOwner}] tried to delete Voucher.`);
+            console.error(`An error occurred while user [${ req.body.voucherOwner }] tried to delete Voucher.`);
             return next(new APIError(400, 'Invalid operation'));
         }
 
@@ -162,18 +176,18 @@ class VoucherSuppliesController {
     static async deleteImage(req, res, next) {
         const voucherSupply = res.locals.voucherSupply
         const imageUrl = req.query.imageUrl;
-        
+
         try {
             await mongooseService.deleteImage(voucherSupply.id, imageUrl);
         } catch (error) {
-            console.error(`An error occurred while image from document [${req.params.id}] was tried to be deleted.`);
+            console.error(`An error occurred while image from document [${ req.params.id }] was tried to be deleted.`);
             console.error(error)
             return next(new APIError(400, 'Invalid operation'));
         }
 
         res.status(200).send({ success: true });
     }
-   
+
 }
 
 module.exports = VoucherSuppliesController;
