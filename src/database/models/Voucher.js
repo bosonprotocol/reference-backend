@@ -85,16 +85,24 @@ const voucherSchema = new Schema({
     },
     txHash: {
         type: String,
-        required: true,
+        required: false,
     },
     _tokenIdSupply: {
         type: String,
-        required: true,
+        required: false,
     },
     _promiseId: {
         type: String,
-        required: true,
+        required: false,
     },
+    _nonce: {
+        type: Number,
+        required: false
+    },
+    _paymentType: {
+        type: Number,
+        required: false
+    }
 })
 
 module.exports = mongoose.model(VOUCHER, voucherSchema)

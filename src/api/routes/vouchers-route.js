@@ -40,6 +40,11 @@ class VouchersRouter {
         router.get('/buy/:address',
             ErrorHandlers.globalErrorHandler(vouchersController.getBuyVouchers));
 
+        router.patch('/updateVoucherFromEvent',
+        // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken), // TODO GCLOUD AUTH
+        // might think for some validation of existence
+        ErrorHandlers.globalErrorHandler(vouchersController.updateVoucherFromEvent));
+        
         router.patch('/:id',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(upload.array('fileToUpload', FILE_LIMIT)),

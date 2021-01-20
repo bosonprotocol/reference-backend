@@ -7,6 +7,39 @@ const statuses = require('../../utils/userVoucherStatus');
 
 class UserVoucherController {
 
+    static async commitToBuy(req, res, next) {
+        const voucherID = req.params.voucherID //dbID
+        const metadata = req.body;
+        let userVoucher;
+        
+        try {
+            userVoucher = await mongooseService.createUserVoucher(metadata, voucherID);
+            await mongooseService.updateVoucherQty(voucherID);
+
+        } catch (error) {
+            console.error(error)
+            return next(new APIError(400, `Buy operation for voucher id: ${metadata.voucherID} could not be completed.`))
+        }
+
+        res.status(200).send({ userVoucherID: userVoucher.id});
+    }
+
+    /**
+     * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
+     */
+    static async updateVoucherDelivered(req, res, next) {
+        let userVoucher;
+        try {
+            userVoucher = await mongooseService.updateVoucherDelivered(req.body);
+        } catch (error) {
+            console.error(error)
+            console.log(error);
+            return next(new APIError(400, `Updated operation for voucher id: ${metadata.voucherID} could not be completed.`))
+        }
+
+        res.status(200).send({ userVoucherID: userVoucher.id});
+    }
+
     static async getMyVouchers(req, res, next) {
         const voucherData = []
         const address = res.locals.address;

@@ -3,25 +3,59 @@ const status = require('../../utils/userVoucherStatus')
 
 class UserVoucherService {
     static async createUserVoucher(metadata, voucherID) {
+
+        console.log(metadata);
+        const userVoucher = new UserVoucher({
+                    voucherID: voucherID, //supply
+                    // txHash: metadata.txHash,
+                    _holder: metadata._holder.toLowerCase(),
+                    // _promiseId: metadata._promiseId,
+                    _tokenIdSupply: metadata._tokenIdSupply,
+                    // _tokenIdVoucher: metadata._tokenIdVoucher,
+                    _nonce: metadata._nonce,
+                    [status.COMMITTED]: new Date().getTime(),
+                    [status.CANCELLED]: '',
+                    [status.COMPLAINED]: '',
+                    [status.REDEEMED]: '',
+                    [status.REFUNDED]: '',
+                    [status.FINALIZED]: '',
+                    voucherOwner: metadata._issuer.toLowerCase(),
+                    actionDate: new Date().getTime()
+        })
+
+        return await userVoucher.save();
+
+
+
+        // return await UserVoucher.findOneAndUpdate(
+        //     { _tokenIdVoucher: metadata._tokenIdVoucher },
+        //     {
+        //         voucherID: voucherID, //supply
+        //         // txHash: metadata.txHash,
+        //         _holder: metadata._holder.toLowerCase(),
+        //         _promiseId: metadata._promiseId,
+        //         _tokenIdSupply: metadata._tokenIdSupply,
+        //         _tokenIdVoucher: metadata._tokenIdVoucher,
+        //         [status.COMMITTED]: new Date().getTime(),
+        //         [status.CANCELLED]: '',
+        //         [status.COMPLAINED]: '',
+        //         [status.REDEEMED]: '',
+        //         [status.REFUNDED]: '',
+        //         [status.FINALIZED]: '',
+        //         voucherOwner: metadata._issuer.toLowerCase(),
+        //         actionDate: new Date().getTime()
+        //     },
+        //     { new: true, upsert: true }
+        // )
+    }
+
+    static async updateVoucherDelivered(metadata) {
+        console.log(metadata);
+
         return await UserVoucher.findOneAndUpdate(
+            { _nonce: metadata._nonce, _holder: metadata._holder.toLowerCase() },
             { _tokenIdVoucher: metadata._tokenIdVoucher },
-            {
-                voucherID: voucherID,
-                txHash: metadata.txHash,
-                _holder: metadata._holder.toLowerCase(),
-                _promiseId: metadata._promiseId,
-                _tokenIdSupply: metadata._tokenIdSupply,
-                _tokenIdVoucher: metadata._tokenIdVoucher,
-                [status.COMMITTED]: new Date().getTime(),
-                [status.CANCELLED]: '',
-                [status.COMPLAINED]: '',
-                [status.REDEEMED]: '',
-                [status.REFUNDED]: '',
-                [status.FINALIZED]: '',
-                voucherOwner: metadata._issuer.toLowerCase(),
-                actionDate: new Date().getTime()
-            },
-            { new: true, upsert: true }
+            { new: true, upsert: true, }
         )
     }
 

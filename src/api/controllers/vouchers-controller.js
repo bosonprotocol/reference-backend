@@ -113,15 +113,17 @@ class VouchersController {
         const fileRefs = await voucherUtils.uploadFiles(req);
         const voucherOwner = res.locals.address;
         
+        let voucher
+
         try {
-            await mongooseService.createVoucher(req.body, fileRefs, voucherOwner)
+            voucher = await mongooseService.createVoucher(req.body, fileRefs, voucherOwner)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
             console.error(error)
             return next(new APIError(400, 'Invalid voucher model'));
         }
     
-        res.status(200).send({ success: true });
+        res.status(200).send({ voucher });
     }
 
     static async updateVoucher(req, res, next) {
@@ -131,6 +133,22 @@ class VouchersController {
         
         try {
             await mongooseService.updateVoucher(voucher, req.body, fileRefs)
+        } catch (error) {
+            console.error(`An error occurred while user [${voucherOwner}] tried to update Voucher.`);
+            console.error(error)
+            return next(new APIError(400, 'Invalid voucher model'));
+        }
+
+        res.status(200).send({ success: true });
+    }
+
+    /**
+     * @notice This function is triggered while event 'LogOrderCreated' is emitted
+     */
+    static async updateVoucherFromEvent(req, res, next) {
+        
+        try {
+            await mongooseService.updateVoucherFromEvent(req.body)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to update Voucher.`);
             console.error(error)

@@ -64,10 +64,11 @@ class VoucherService {
             txHash: metadata.txHash,
             _tokenIdSupply: metadata._tokenIdSupply,
             _promiseId: metadata._promiseId,
+            _nonce: metadata._nonce,
             imagefiles: fileRefs,
         });
 
-        await voucher.save();
+        return await voucher.save();
     }
 
     static async updateVoucher(voucher, metadata, fileRefs) {
@@ -92,6 +93,27 @@ class VoucherService {
             },
             { useFindAndModify: false, new: true, upsert: true, }
         )
+    }
+
+    static async updateVoucherFromEvent(metadata) {
+        //find voucher from seller address and its nonce
+        console.log(metadata);
+
+        let test =  await Voucher.findOneAndUpdate(
+            {
+                voucherOwner: metadata._seller,
+                _nonce: metadata._nonce
+            },
+            { _tokenIdSupply: metadata._tokenIdSupply,
+                // _seller: '0x5af2b312ec207d78c4de4e078270f0d8700c01e2',
+                // _quantity: 1,
+                _paymentType: metadata._paymentType,
+                _nonce: metadata._nonce },
+            { new: true, upsert: true }
+        )
+
+        console.log('test');
+        console.log(test);
     }
 
     static async updateVoucherQty(voucherID) {

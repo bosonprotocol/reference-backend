@@ -35,23 +35,7 @@ class UserController {
         res.status(200).send(authToken)
     }
 
-    static async commitToBuy(req, res, next) {
-        const voucherID = req.params.voucherID
-        const metadata = req.body;
-        const buyer = res.locals.address
-        let userVoucher;
-        
-        try {
-            userVoucher = await mongooseService.createUserVoucher(metadata, voucherID);
-            await mongooseService.updateVoucherQty(voucherID);
-
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Buy operation for voucher id: ${metadata.voucherID} could not be completed.`))
-        }
-
-        res.status(200).send({ userVoucherID: userVoucher.id});
-    }
+    
 }
 
 module.exports = UserController;

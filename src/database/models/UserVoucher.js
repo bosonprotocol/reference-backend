@@ -12,10 +12,10 @@ const userSchema = new Schema({
         required: true,
         trim: true
     },
-    txHash: {
-        type: String,
-        required: true,
-    },
+    // txHash: {
+    //     type: String,
+    //     required: false,
+    // },
     _holder: {
         type: String,
     },
@@ -27,10 +27,6 @@ const userSchema = new Schema({
     },
     voucherOwner: {
         type: String
-    },
-    status: {
-        type: String,
-        required: true
     },
     COMMITTED: {
         type: Date,
@@ -60,6 +56,10 @@ const userSchema = new Schema({
         type: Date,
         required: false
     },
+    _nonce: {
+        type: Number,
+        required: false
+    }
 })
 
 module.exports = mongoose.model(USER_VOUCHER, userSchema)

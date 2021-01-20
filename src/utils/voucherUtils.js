@@ -3,8 +3,9 @@ const BUCKET_NAME = process.env.VOUCHERS_BUCKET;
 
 class VoucherUtils {
     static async uploadFiles(req) {
-        const { Storage } = require('@google-cloud/storage');
+        if (!req.files) return [];
 
+        const { Storage } = require('@google-cloud/storage');
         const PDF_CONTENT_TYPE = 'application/pdf';
         const gcs = new Storage();
         const bucket = gcs.bucket(BUCKET_NAME);
