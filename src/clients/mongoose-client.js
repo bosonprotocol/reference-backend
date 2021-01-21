@@ -4,7 +4,8 @@ const url = process.env.DB_CONNECTION_STRING
 const options = {
     useUnifiedTopology: true,
     useNewUrlParser: true,
-    useCreateIndex: true
+    useCreateIndex: true,
+    useFindAndModify: false
 }
 
 let instance;

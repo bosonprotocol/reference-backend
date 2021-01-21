@@ -91,48 +91,60 @@ class VoucherService {
             conditions: metadata.conditions,
             imagefiles: updatedImages
             },
-            { useFindAndModify: false, new: true, upsert: true, }
+            { new: true, upsert: true, }
         )
     }
 
-    static async updateVoucherFromEvent(metadata) {
-        //find voucher from seller address and its nonce
-        console.log(metadata);
+    static async setVoucherSupplyMeta(metadata) {
 
-        let test =  await Voucher.findOneAndUpdate(
+        return await Voucher.findOneAndUpdate(
             {
                 voucherOwner: metadata._seller,
                 _nonce: metadata._nonce
             },
-            { _tokenIdSupply: metadata._tokenIdSupply,
-                // _seller: '0x5af2b312ec207d78c4de4e078270f0d8700c01e2',
-                // _quantity: 1,
+            { 
+                _tokenIdSupply: metadata._tokenIdSupply,
                 _paymentType: metadata._paymentType,
-                _nonce: metadata._nonce },
+                _nonce: metadata._nonce,
+                qty: metadata.qty
+            },
             { new: true, upsert: true }
         )
+    }
 
-        console.log('test');
-        console.log(test);
+    static async updateSupplyOnTransfer(metadata) {
+
+        return await Voucher.findOneAndUpdate(
+            {
+                _tokenIdSupply: metadata._tokenIdSupply
+            },
+            { 
+                voucherOwner: metadata.voucherOwner.toLowerCase(),
+                qty: metadata.qty
+            },
+            { new: true, upsert: true }
+        )
     }
 
     static async updateVoucherQty(voucherID) {
         const voucher = await this.getVoucher(voucherID);
 
-        return await Voucher.findByIdAndUpdate(voucherID, {
-            qty: --voucher.qty,
-        },
-            { useFindAndModify: false, new: true, upsert: true, }
+        return await Voucher.findByIdAndUpdate(voucherID, 
+            {
+                qty: --voucher.qty,
+            },
+            { new: true, upsert: true, }
         )
     }
 
     static async updateVoucherVisibilityStatus(voucherID) {
         const voucher = await this.getVoucher(voucherID);
 
-        return await Voucher.findByIdAndUpdate(voucherID, {
-            visible: voucher.visible ? false : true
-        },
-            { useFindAndModify: false, new: true, upsert: true, }
+        return await Voucher.findByIdAndUpdate(voucherID, 
+            {
+                visible: voucher.visible ? false : true
+            },
+            { new: true, upsert: true, }
         )
     }
 
@@ -145,10 +157,11 @@ class VoucherService {
         const currentImages = voucher.imagefiles;
         const updatedImages = currentImages.filter(image => image.url != imageUrl);
 
-        await Voucher.findByIdAndUpdate(id, {
-            imagefiles: updatedImages
-        },
-            { useFindAndModify: false, new: true, upsert: true, }
+        await Voucher.findByIdAndUpdate(id, 
+            {
+                imagefiles: updatedImages
+            },
+            { new: true, upsert: true, }
         );
     }
 

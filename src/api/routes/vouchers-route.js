@@ -40,10 +40,14 @@ class VouchersRouter {
         router.get('/buy/:address',
             ErrorHandlers.globalErrorHandler(vouchersController.getBuyVouchers));
 
-        router.patch('/updateVoucherFromEvent',
-        // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken), // TODO GCLOUD AUTH
-        // might think for some validation of existence
-        ErrorHandlers.globalErrorHandler(vouchersController.updateVoucherFromEvent));
+        //TODO GCLOUD AUTH && validate if actually there is anything in the body
+        router.patch('/set-supply-meta',
+            ErrorHandlers.globalErrorHandler(vouchersController.setSupplyMetaOnOrderCreated));
+
+        //TODO GCLOUD AUTH && validate if actually there is anything in the body.
+        router.patch('/update-supply-ontransfer',
+            // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken), // TODO GCLOUD AUTH
+            ErrorHandlers.globalErrorHandler(vouchersController.updateSupplyOnTransfer));
         
         router.patch('/:id',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),

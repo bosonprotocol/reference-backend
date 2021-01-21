@@ -14,8 +14,6 @@ class UserVoucherController {
         
         try {
             userVoucher = await mongooseService.createUserVoucher(metadata, voucherID);
-            await mongooseService.updateVoucherQty(voucherID);
-
         } catch (error) {
             console.error(error)
             return next(new APIError(400, `Buy operation for voucher id: ${metadata.voucherID} could not be completed.`))
@@ -29,8 +27,14 @@ class UserVoucherController {
      */
     static async updateVoucherDelivered(req, res, next) {
         let userVoucher;
+
+        console.log(`=== Update from event: [${req.body.event}] started! ===`);
+
         try {
             userVoucher = await mongooseService.updateVoucherDelivered(req.body);
+
+            await mongooseService.updateVoucherQty(userVoucher.voucherID);
+
         } catch (error) {
             console.error(error)
             console.log(error);
@@ -108,15 +112,30 @@ class UserVoucherController {
         res.status(200).send({ voucher })
     }
 
+     /**
+     * @notice This function is triggered while some of the following events is emitted
+     *  LogVoucherRedeemed
+     *  LogVoucherRefunded
+     *  LogVoucherComplain
+     *  LogVoucherFaultCancel
+     *  Transfer (e.g ERC-721)
+     */
     static async updateMyVoucher(req, res, next) {
-        const userVoucherID = res.locals.userVoucher.id;
-        const status = req.body.status
+        let userVoucher
+
+        console.log(`=== Update from event: [${req.body.event}] started! ===`);
 
         try {
-            const myVoucherDocument = await mongooseService.updateMyVoucherStatus(userVoucherID, status)
+            const userVoucher = await mongooseService.findUserVoucherByTokenIdVoucher(req.body._tokenIdVoucher)
+            
+            if (!userVoucher) { 
+                return next(new APIError(404, `User Voucher with voucherTokenId ${req.body._tokenIdVoucher} not found!`))
+            }
+            
+            await mongooseService.updateMyVoucherStatus(userVoucher.id, req.body)
         } catch (error) {
             console.error(error)
-            return next(new APIError(400, `Redeem operation for user voucher id: ${userVoucherID} could not be completed.`))
+            return next(new APIError(400, `Update operation for user voucher id: ${userVoucher.id} could not be completed.`))
         }
 
         res.status(200).send({ updated: true })

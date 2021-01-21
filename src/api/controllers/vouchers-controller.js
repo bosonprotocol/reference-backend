@@ -4,6 +4,7 @@ const mongooseService = require('../../database/index.js')
 const AuthValidator = require('../services/auth-service')
 const APIError = require('../api-error')
 const voucherUtils = require('../../utils/voucherUtils');
+const {BigNumber} = require('ethers')
 
 class VouchersController {
 
@@ -145,12 +146,51 @@ class VouchersController {
     /**
      * @notice This function is triggered while event 'LogOrderCreated' is emitted
      */
-    static async updateVoucherFromEvent(req, res, next) {
+    static async setSupplyMetaOnOrderCreated(req, res, next) {
         
+        console.log(`=== Update from event: [${req.body.event}] started! ===`);
+
+
         try {
-            await mongooseService.updateVoucherFromEvent(req.body)
+            await mongooseService.setVoucherSupplyMeta(req.body)
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to update Voucher.`);
+            console.error(error)
+            return next(new APIError(400, 'Invalid voucher model'));
+        }
+
+        res.status(200).send({ success: true });
+    }
+
+     /**
+     * @notice This function is triggered while one of the following events is emitted
+     *  TransferSingle
+     *  TransferBatch
+     */
+    static async updateSupplyOnTransfer(req, res, next) {
+        let promises = [];
+        let vouchersSupplies = req.body.voucherSupplies
+        let quantities = req.body.quantities
+
+        console.log(`=== Update from event: [${req.body.event}] started! ===`);
+    
+        try {
+
+            for (let i = 0; i < vouchersSupplies.length; i++) {
+
+                const metadata = {
+                    voucherOwner: req.body.voucherOwner.toLowerCase(),
+                    _tokenIdSupply: BigNumber.from(vouchersSupplies[i]).toString(),
+                    qty: BigNumber.from(quantities[i]).toString()
+                };
+
+                promises.push(mongooseService.updateSupplyOnTransfer(metadata))
+            }
+
+            await Promise.all(promises)
+            
+        } catch (error) {
+            console.error(`An error occurred while trying to update a voucher from event [${req.body.event}].`);
             console.error(error)
             return next(new APIError(400, 'Invalid voucher model'));
         }
