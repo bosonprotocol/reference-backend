@@ -8,7 +8,7 @@ class UserVoucherService {
                     voucherID: voucherID, //TODO to be rename to voucherSetRefID
                     _holder: metadata._holder.toLowerCase(),
                     _tokenIdSupply: metadata._tokenIdSupply,
-                    _nonce: metadata._nonce,
+                    _transactionID: metadata._transactionID,
                     [status.COMMITTED]: new Date().getTime(),
                     [status.CANCELLED]: '',
                     [status.COMPLAINED]: '',
@@ -25,7 +25,7 @@ class UserVoucherService {
     static async updateVoucherDelivered(metadata) {
 
         return await UserVoucher.findOneAndUpdate(
-            { _nonce: metadata._nonce, _holder: metadata._holder.toLowerCase() },
+            { _transactionID: metadata._transactionID, _holder: metadata._holder.toLowerCase() },
             { _tokenIdVoucher: metadata._tokenIdVoucher },
             { new: true, upsert: true, }
         )

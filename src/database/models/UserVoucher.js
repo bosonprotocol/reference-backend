@@ -12,10 +12,6 @@ const userSchema = new Schema({
         required: true,
         trim: true
     },
-    // txHash: {
-    //     type: String,
-    //     required: false,
-    // },
     _holder: {
         type: String,
     },
@@ -56,7 +52,7 @@ const userSchema = new Schema({
         type: Date,
         required: false
     },
-    _nonce: {
+    _transactionID: {
         type: Number,
         required: false
     }

@@ -64,7 +64,7 @@ class VoucherService {
             txHash: metadata.txHash,
             _tokenIdSupply: metadata._tokenIdSupply,
             _promiseId: metadata._promiseId,
-            _nonce: metadata._nonce,
+            _transactionID: metadata._transactionID,
             imagefiles: fileRefs,
         });
 
@@ -100,12 +100,12 @@ class VoucherService {
         return await Voucher.findOneAndUpdate(
             {
                 voucherOwner: metadata._seller,
-                _nonce: metadata._nonce
+                _transactionID: metadata._transactionID
             },
             { 
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _paymentType: metadata._paymentType,
-                _nonce: metadata._nonce,
+                _transactionID: metadata._transactionID,
                 qty: metadata.qty
             },
             { new: true, upsert: true }

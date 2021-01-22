@@ -28,7 +28,6 @@ class UserVoucherController {
     static async updateVoucherDelivered(req, res, next) {
         let userVoucher;
 
-
         try {
             userVoucher = await mongooseService.updateVoucherDelivered(req.body);
 

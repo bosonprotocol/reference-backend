@@ -95,7 +95,7 @@ const voucherSchema = new Schema({
         type: String,
         required: false,
     },
-    _nonce: {
+    _transactionID: {
         type: Number,
         required: false
     },
