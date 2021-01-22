@@ -27,7 +27,7 @@ class AdminAuth {
             res.locals.address = ethAddress;
 
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return next(new APIError(403, 'Forbidden.'))
         }
 

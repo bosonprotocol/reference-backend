@@ -36,7 +36,6 @@ class UserVoucherController {
 
         } catch (error) {
             console.error(error)
-            console.log(error);
             return next(new APIError(400, `Updated operation for voucher id: ${metadata.voucherID} could not be completed.`))
         }
 

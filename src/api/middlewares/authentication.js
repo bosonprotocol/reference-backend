@@ -39,7 +39,7 @@ class Authentication {
             }
 
         } catch (error) {
-            console.log(error);
+            console.error(error);
             return next(new APIError(403, 'Forbidden.'))
         }
 
