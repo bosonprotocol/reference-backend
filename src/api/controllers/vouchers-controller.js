@@ -1,7 +1,6 @@
 //@ts-nocheck
 
 const mongooseService = require('../../database/index.js')
-const AuthValidator = require('../services/auth-service')
 const APIError = require('../api-error')
 const voucherUtils = require('../../utils/voucherUtils');
 const {BigNumber} = require('ethers')
@@ -148,9 +147,6 @@ class VouchersController {
      */
     static async setSupplyMetaOnOrderCreated(req, res, next) {
         
-        console.log(`=== Update from event: [${req.body.event}] started! ===`);
-
-
         try {
             await mongooseService.setVoucherSupplyMeta(req.body)
         } catch (error) {
@@ -172,23 +168,28 @@ class VouchersController {
         let vouchersSupplies = req.body.voucherSupplies
         let quantities = req.body.quantities
 
-        console.log(`=== Update from event: [${req.body.event}] started! ===`);
-    
         try {
 
             for (let i = 0; i < vouchersSupplies.length; i++) {
 
-                const metadata = {
-                    voucherOwner: req.body.voucherOwner.toLowerCase(),
-                    _tokenIdSupply: BigNumber.from(vouchersSupplies[i]).toString(),
-                    qty: BigNumber.from(quantities[i]).toString()
-                };
-
+                let metadata;
+                try {
+                    metadata = {
+                        voucherOwner: req.body.voucherOwner.toLowerCase(),
+                        _tokenIdSupply: BigNumber.from(vouchersSupplies[i]).toString(),
+                        qty: BigNumber.from(quantities[i]).toString()
+                    };
+    
+                } catch (error) {
+                    console.error(`Error while trying to convert vouchersSupply: ${JSON.stringify(vouchersSupplies[i])} or quantity: ${JSON.stringify(quantities[i])} from BigNumber!`);
+                    continue;
+                }
+                
                 promises.push(mongooseService.updateSupplyOnTransfer(metadata))
             }
 
             await Promise.all(promises)
-            
+
         } catch (error) {
             console.error(`An error occurred while trying to update a voucher from event [${req.body.event}].`);
             console.error(error)
@@ -216,7 +217,6 @@ class VouchersController {
         const imageUrl = req.query.imageUrl;
         
         try {
-            //TODO validate voucher exists
             await mongooseService.deleteImage(voucher.id, imageUrl);
         } catch (error) {
             console.error(`An error occurred while image frpm document [${req.params.id}] was tried to be deleted.`);

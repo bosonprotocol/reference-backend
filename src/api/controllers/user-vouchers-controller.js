@@ -28,7 +28,6 @@ class UserVoucherController {
     static async updateVoucherDelivered(req, res, next) {
         let userVoucher;
 
-        console.log(`=== Update from event: [${req.body.event}] started! ===`);
 
         try {
             userVoucher = await mongooseService.updateVoucherDelivered(req.body);
@@ -120,10 +119,8 @@ class UserVoucherController {
      *  LogVoucherFaultCancel
      *  Transfer (e.g ERC-721)
      */
-    static async updateMyVoucher(req, res, next) {
+    static async updateMyVoucherOnCommonEvent(req, res, next) {
         let userVoucher
-
-        console.log(`=== Update from event: [${req.body.event}] started! ===`);
 
         try {
             const userVoucher = await mongooseService.findUserVoucherByTokenIdVoucher(req.body._tokenIdVoucher)
@@ -132,7 +129,7 @@ class UserVoucherController {
                 return next(new APIError(404, `User Voucher with voucherTokenId ${req.body._tokenIdVoucher} not found!`))
             }
             
-            await mongooseService.updateMyVoucherStatus(userVoucher.id, req.body)
+            await mongooseService.updateMyVoucherOnCommonEvent(userVoucher.id, req.body)
         } catch (error) {
             console.error(error)
             return next(new APIError(400, `Update operation for user voucher id: ${userVoucher.id} could not be completed.`))
@@ -142,8 +139,8 @@ class UserVoucherController {
     }
 
     static async finalizeVoucher(req, res, next) {
-        const tokenIdVoucher = res.locals.events[0]._tokenIdVoucher;
-        const status = res.locals.events[0].status
+        const tokenIdVoucher = req.body[0]._tokenIdVoucher;
+        const status = req.body[0].status
 
         try {
             await mongooseService.finalizeVoucher(tokenIdVoucher, status)

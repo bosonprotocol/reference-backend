@@ -1,4 +1,3 @@
-const { mongo } = require('mongoose');
 const mongooseService = require('../../database/index.js')
 const APIError = require('../api-error')
 const ethers = require('ethers');
@@ -68,7 +67,7 @@ class PaymentController {
     }
 
     static async createPayments(req, res, next) {
-        const events = res.locals.events
+        const events = req.body
         let promises = []
 
         try {

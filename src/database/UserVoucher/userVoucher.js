@@ -55,7 +55,7 @@ class UserVoucherService {
         // .where(status.CANCELLED).equals('')
     }
 
-    static async updateMyVoucherStatus(voucherID, metadata) {
+    static async updateMyVoucherOnCommonEvent(voucherID, metadata) {
 
         return await UserVoucher.findByIdAndUpdate(voucherID,
             {

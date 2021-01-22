@@ -1,6 +1,6 @@
 const userVoucherController = require('../controllers/user-vouchers-controller');
 const ErrorHandlers = require('../middlewares/error-handler');
-const voucherValidator = require('../middlewares/voucher-validator')
+const eventValidator = require('../middlewares/event-validator')
 const authenticationMiddleware = require('../middlewares/authentication');
 
 class UserVoucherController {
@@ -8,21 +8,19 @@ class UserVoucherController {
     static route(expressApp) {
         let router = expressApp.Router();
 
-        //TODO GCLOUD AUTH && validate if actually there is anything in the body
         router.post('/commitToBuy/:voucherID',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(userVoucherController.commitToBuy));
 
-        //TODO GCLOUD AUTH && validate if actually there is anything in the body
-        router.patch('/voucher-delivered',
-            // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
+        router.patch('/update-voucher-delivered',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(eventValidator.ValidateUserVoucherMetadata),
             ErrorHandlers.globalErrorHandler(userVoucherController.updateVoucherDelivered))
 
-        //TODO GCLOUD AUTH && validate if actually there is anything in the body
-        router.patch('/update-status',
-            // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
-            // ErrorHandlers.globalErrorHandler(voucherValidator.ValidateVoucherHolder),
-            ErrorHandlers.globalErrorHandler(userVoucherController.updateMyVoucher));
+        router.patch('/update-from-common-event',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(eventValidator.ValidateUserVoucherMetadata),
+            ErrorHandlers.globalErrorHandler(userVoucherController.updateMyVoucherOnCommonEvent));
 
         router.patch('/finalize',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),

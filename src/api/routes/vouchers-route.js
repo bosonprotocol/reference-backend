@@ -2,6 +2,7 @@ const vouchersController = require('../controllers/vouchers-controller');
 const ErrorHandlers = require('../middlewares/error-handler');
 const authenticationMiddleware = require('../middlewares/authentication');
 const voucherValidator = require('../middlewares/voucher-validator')
+const eventValidator = require('../middlewares/event-validator')
 
 const os = require('os');
 const multer = require('multer');
@@ -40,13 +41,14 @@ class VouchersRouter {
         router.get('/buy/:address',
             ErrorHandlers.globalErrorHandler(vouchersController.getBuyVouchers));
 
-        //TODO GCLOUD AUTH && validate if actually there is anything in the body
         router.patch('/set-supply-meta',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(eventValidator.ValidateVoucherMetadata),
             ErrorHandlers.globalErrorHandler(vouchersController.setSupplyMetaOnOrderCreated));
 
-        //TODO GCLOUD AUTH && validate if actually there is anything in the body.
         router.patch('/update-supply-ontransfer',
-            // ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken), // TODO GCLOUD AUTH
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(eventValidator.ValidateVoucherMetadataOnTransfer),
             ErrorHandlers.globalErrorHandler(vouchersController.updateSupplyOnTransfer));
         
         router.patch('/:id',

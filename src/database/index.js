@@ -29,7 +29,7 @@ const MongooseService = {
     updateVoucherDelivered: UserVoucher.updateVoucherDelivered,
     getMyVouchers: UserVoucher.getMyVouchers,
     getMyVoucherByID: UserVoucher.getMyVoucherByID,
-    updateMyVoucherStatus: UserVoucher.updateMyVoucherStatus,
+    updateMyVoucherOnCommonEvent: UserVoucher.updateMyVoucherOnCommonEvent,
     findAllUsersByVoucherID: UserVoucher.findAllUsersByVoucherID,
     finalizeVoucher: UserVoucher.finalizeVoucher,
     createPayment: Payment.createPayment,
