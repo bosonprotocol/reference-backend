@@ -7,3 +7,4 @@ yarn.lock
 /tests
 
 .idea
+.vscode

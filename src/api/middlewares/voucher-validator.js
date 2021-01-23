@@ -1,44 +1,48 @@
 const APIError = require('./../api-error');
+const AuthService = require('../services/auth-service')
 const mongooseService = require('../../database/index.js');
+const { mongo } = require('mongoose');
 
-//TODO to be renamed to VoucherSetValidator
 class VoucherValidator {
 
-    static async ValidateVoucherExists(req, res, next) {
-        const voucher = await mongooseService.getVoucher(req.params.id);
+    static async ValidateVoucherSupplyExists(req, res, next) {
+        const voucherSupply = await mongooseService.getVoucherSupply(req.params.id);
         
-        if (!voucher) {
-            return next(new APIError(`Voucher with ID: ${req.params.id} does not exist!`))
+        if (!voucherSupply) {
+            return next(new APIError(400, `Voucher with ID: ${req.params.id} does not exist!`))
         }
 
-        res.locals.voucher = voucher
+        res.locals.voucherSupply = voucherSupply
 
         next();
     }
 
     static async ValidateCanDelete(req, res, next) {
-        if (res.locals.voucher.voucherOwner != res.locals.address) {
+        if (res.locals.voucherSupply.voucherOwner != res.locals.address) {
             return next(new APIError(401, 'Unauthorized.'))
         }
         next();
     }
 
-    static async ValidateCanUpdateVoucher(req, res, next) {
-        if (res.locals.voucher.voucherOwner != res.locals.address) {
+    static async ValidateCanUpdateVoucherSupply(req, res, next) {
+        if (res.locals.voucherSupply.voucherOwner != res.locals.address) {
             return next(new APIError(401, 'Unauthorized.'))
         }
 
         next();
     }
 
-    static async ValidateVoucherHolder(req, res, next) {
-        const userVoucher = await mongooseService.findUserVoucherByTokenIdVoucher(req.body._tokenIdVoucher)
+    static async ValidateDates(req, res, next) {
+        const start = new Date();
+        start.setHours(0,0,0,0);
 
-        if (userVoucher._holder != req.body._holder) {
-            return next(new APIError(403, 'Forbidden.'))
+        const today = new Date(start).getTime()
+        const startDateToMillis = new Date(req.body.startDate).getTime()
+        const endDateToMillis = new Date(req.body.expiryDate).getTime()
+
+        if (startDateToMillis < today || endDateToMillis < startDateToMillis) {
+            return next(new APIError(400, 'Invalid Dates.'))
         }
-
-        res.locals.userVoucher = userVoucher;
 
         next();
     }

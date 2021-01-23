@@ -1,193 +1,90 @@
-//@ts-nocheck
-const Voucher = require('../models/Voucher')
+const Voucher = require('../models/Voucher');
+const status = require('../../utils/userVoucherStatus');
 
-class VoucherService {
-
-    static async getVouchersByOwner(voucherOwner) {
-        return await Voucher.where('voucherOwner').equals(voucherOwner).select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'startDate', 'qty', 'visible']).sort({ offeredDate: 'desc' }).lean()
-    }
-
-    static async getVouchersByBuyer(voucherOwner) {
-        const today = new Date(Date.now())
-
-        return await Voucher.where('voucherOwner')
-            .ne(voucherOwner)
-            .where('startDate').lte(today)
-            .where('expiryDate').gte(today)
-            .where('qty').gt(0)
-            .select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'visible'])
-            .sort({ offeredDate: 'desc' }).lean()
-    }
-
-    static async getActiveVouchers(address) {
-        const today = new Date(Date.now())
-
-        return await Voucher
-            .where('voucherOwner').equals(address.toLowerCase())
-            .where('startDate').lte(today)
-            .where('expiryDate').gte(today)
-            .where('qty').gt(0)
-            .select(['title', 'price', 'voucherOwner','qty', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible']).sort({ offeredDate: 'desc' }).lean()
-    }
-
-    static async getInactiveVouchers(address) {
-        const today = new Date(Date.now())
-
-        return await Voucher
-            .where('voucherOwner').equals(address.toLowerCase())
-            .or([
-                { startDate: { $gte: today } }, 
-                { expiryDate: { $lte: today }},
-                { qty: { $lte: 0 } }
-            ])
-            .select(['title', 'price', 'voucherOwner', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible']).sort({ offeredDate: 'desc' }).lean()
-    }
-
-    static async createVoucher(metadata, fileRefs, voucherOwner) {
-
-        const voucher = new Voucher({
-            title: metadata.title,
-            qty: metadata.qty,
-            category: metadata.category,
-            startDate: metadata.startDate,
-            expiryDate: metadata.expiryDate,
-            offeredDate: metadata.offeredDate,
-            price: metadata.price,
-            buyerDeposit: metadata.buyerDeposit,
-            sellerDeposit: metadata.sellerDeposit,
-            description: metadata.description,
-            location: metadata.location,
-            contact: metadata.contact,
-            conditions: metadata.conditions,
-            voucherOwner: voucherOwner,
-            visible: true,
-            txHash: metadata.txHash,
-            _tokenIdSupply: metadata._tokenIdSupply,
-            _promiseId: metadata._promiseId,
-            _transactionID: metadata._transactionID,
-            imagefiles: fileRefs,
-        });
-
-        return await voucher.save();
-    }
-
-    static async updateVoucher(voucher, metadata, fileRefs) {
-        const currentImages = voucher.imagefiles;
-        const updatedImages = [...currentImages, ...fileRefs]
-        
-        await Voucher.findByIdAndUpdate(voucher.id, {
-            title: metadata.title,
-            qty: metadata.qty,
-            category: metadata.category,
-            startDate: metadata.startDate,
-            expiryDate: metadata.expiryDate,
-            offeredDate: metadata.offeredDate,
-            price: metadata.price,
-            buyerDeposit: metadata.buyerDeposit,
-            sellerDeposit: metadata.sellerDeposit,
-            description: metadata.description,
-            location: metadata.location,
-            contact: metadata.contact,
-            conditions: metadata.conditions,
-            imagefiles: updatedImages
-            },
-            { new: true, upsert: true, }
-        )
-    }
-
-    static async setVoucherSupplyMeta(metadata) {
-
+class VouchersService {
+    static async createVoucher(metadata, supplyID) {
         return await Voucher.findOneAndUpdate(
+            { _tokenIdVoucher: metadata._tokenIdVoucher },
             {
-                voucherOwner: metadata._seller,
-                _transactionID: metadata._transactionID
-            },
-            { 
+                supplyID: supplyID,
+                _holder: metadata._holder.toLowerCase(),
                 _tokenIdSupply: metadata._tokenIdSupply,
-                _paymentType: metadata._paymentType,
+                _tokenIdVoucher: metadata._tokenIdVoucher,
                 _transactionID: metadata._transactionID,
-                qty: metadata.qty
+                [status.COMMITTED]: new Date().getTime(),
+                [status.CANCELLED]: '',
+                [status.COMPLAINED]: '',
+                [status.REDEEMED]: '',
+                [status.REFUNDED]: '',
+                [status.FINALIZED]: '',
+                voucherOwner: metadata._issuer.toLowerCase(),
+                actionDate: new Date().getTime()
             },
             { new: true, upsert: true }
-        )
+        )       
     }
 
-    static async updateSupplyOnTransfer(metadata) {
+    static async updateVoucherDelivered(metadata) {
 
         return await Voucher.findOneAndUpdate(
-            {
-                _tokenIdSupply: metadata._tokenIdSupply
-            },
-            { 
-                voucherOwner: metadata.voucherOwner.toLowerCase(),
-                qty: metadata.qty
-            },
-            { new: true, upsert: true }
-        )
-    }
-
-    static async updateVoucherQty(voucherID) {
-        const voucher = await this.getVoucher(voucherID);
-
-        return await Voucher.findByIdAndUpdate(voucherID, 
-            {
-                qty: --voucher.qty,
-            },
+            { _transactionID: metadata._transactionID, _holder: metadata._holder.toLowerCase() },
+            { _tokenIdVoucher: metadata._tokenIdVoucher },
             { new: true, upsert: true, }
         )
     }
 
-    static async updateVoucherVisibilityStatus(voucherID) {
-        const voucher = await this.getVoucher(voucherID);
-
-        return await Voucher.findByIdAndUpdate(voucherID, 
-            {
-                visible: voucher.visible ? false : true
-            },
-            { new: true, upsert: true, }
-        )
+    static async getUserVouchers(userAddress) {
+        return await Voucher.find({ _holder: userAddress }).sort({ actionDate: 'desc' })
     }
 
-    static async deleteVoucher(id) {
-        await Voucher.findByIdAndDelete(id)
+    static async getVoucherByID(voucherID) {
+        return await Voucher.findById(voucherID)
     }
 
-    static async deleteImage(id, imageUrl) {
-        const voucher = await this.getVoucher(id);
-        const currentImages = voucher.imagefiles;
-        const updatedImages = currentImages.filter(image => image.url != imageUrl);
-
-        await Voucher.findByIdAndUpdate(id, 
-            {
-                imagefiles: updatedImages
-            },
-            { new: true, upsert: true, }
-        );
+    static async findVoucherById(myVoucherId) {
+        return await Voucher.findById(myVoucherId)
     }
+
 
     static async getVoucher(id) {
         return await Voucher.findById(id)
     }
 
-    static async getVouchersDetails(myVoucherDocument, voucherData) {
-        const voucherDetailsDocument = await VoucherService.getVoucher(myVoucherDocument.voucherID)
+  
+    static async findVoucherByTokenIdVoucher(id) {
+        return await Voucher.findOne({_tokenIdVoucher: id})
+    }
 
-        const voucher = {
-            _id: myVoucherDocument.id,
-            title: voucherDetailsDocument._doc.title,
-            qty: voucherDetailsDocument._doc.qty,
-            description: voucherDetailsDocument._doc.description,
-            imagefiles: voucherDetailsDocument._doc.imagefiles,
-            category: voucherDetailsDocument._doc.category,
-            price: voucherDetailsDocument._doc.price,
-            expiryDate: voucherDetailsDocument._doc.expiryDate,
-            visible: voucherDetailsDocument._doc.visible
-        }
+    static async findAllVouchersByVoucherSupplyID(supplyID, owner) {
+        return await Voucher
+            .where('supplyID').equals(supplyID)
+            .where('voucherOwner').equals(owner)
+        // removed for POC to be able to show table with statuses when cancel or fault is executed
+        // .where(status.CANCELLED).equals('')
+    }
 
-        voucherData.push(
-            voucher
+    static async updateVoucherOnCommonEvent(voucherID, metadata) {
+
+        return await Voucher.findByIdAndUpdate(voucherID,
+            {
+                ...metadata
+            },
+            {  new: true, upsert: true, }
         )
+    }
+
+    static async finalizeVoucher(tokenID, status) {
+        return await Voucher.findOneAndUpdate({ _tokenIdVoucher: tokenID },
+            {
+                [status]: new Date().getTime()
+            },
+            { useFindAndModify: false, new: true, upsert: true, }
+        )
+    }
+
+    static async getAllVouchers() {
+        return Voucher.find({});
     }
 }
 
-module.exports = VoucherService;
+module.exports = VouchersService;

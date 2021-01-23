@@ -24,7 +24,7 @@ class Authentication {
     }
 
     static async authenticateGCLOUDService(req, res, next) {
-
+        
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1]
         
@@ -38,8 +38,10 @@ class Authentication {
                 return next(new APIError(403, 'Forbidden.'))
             }
 
+            res.locals.events = req.body;
+
         } catch (error) {
-            console.error(error);
+            console.log(error);
             return next(new APIError(403, 'Forbidden.'))
         }
 

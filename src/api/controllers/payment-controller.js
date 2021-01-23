@@ -32,7 +32,7 @@ class PaymentController {
         }
 
         try {
-            const userVoucher = await mongooseService.getMyVoucherByID(objectId)
+            const userVoucher = await mongooseService.getVoucherByID(objectId)
             const buyer = userVoucher._holder;
             const seller = userVoucher.voucherOwner // TODO this must come from the voucher, not voucher owner as, the voucher might be transferred and we do not want to update every single possible userVoucher with the newly owner from that supply
             const payments = await mongooseService.getPaymentsByVoucherID(userVoucher._tokenIdVoucher);
@@ -86,9 +86,16 @@ class PaymentController {
     }
 
     static async getPaymentsByVoucherID(req, res, next) {
-        const tokenIdVoucher = req.params.tokenIdVoucher;
+        const voucherID = req.params.voucherID;
 
-        const payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
+        let payments; 
+
+        try {
+            payments = await mongooseService.getPaymentsByVoucherID(voucherID);
+        } catch (error) {
+            console.error(error)
+            return next(new APIError(400, `Get payment for voucher id: ${ voucherID } could not be completed.`))
+        }
 
         res.status(200).send({ payments })
     }

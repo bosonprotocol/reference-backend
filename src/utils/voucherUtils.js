@@ -34,7 +34,7 @@ class VoucherUtils {
         return filesRefs;
     }
 
-    static calcVoucherStatus(startDate, expiryDate, qty) {
+    static calcVoucherSupplyStatus(startDate, expiryDate, qty) {
         const isActive = true;
         const todayToMillis = new Date(Date.now()).getTime();
         const startToMillis = new Date(startDate).getTime();

@@ -31,7 +31,8 @@ class UserVoucherController {
         try {
             userVoucher = await mongooseService.updateVoucherDelivered(req.body);
 
-            await mongooseService.updateVoucherQty(userVoucher.voucherID);
+            //TODO This function might not be necessary
+            await mongooseService.updateSupplyQty(userVoucher.voucherID);
 
         } catch (error) {
             console.error(error)

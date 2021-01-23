@@ -1,12 +1,13 @@
 const paymentsController = require('../controllers/payment-controller');
 const ErrorHandlers = require('../middlewares/error-handler');
 const authenticationMiddleware = require('../middlewares/authentication');
+const paymentValidator = require('../middlewares/payment-validator')
 
 class UserVoucherController {
 
     static route(expressApp) {
         let router = expressApp.Router();
-        router.get('/check-payment/:tokenIdVoucher',
+        router.get('/check-payment/:voucherID',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
             ErrorHandlers.globalErrorHandler(paymentsController.getPaymentsByVoucherID));
 
@@ -16,6 +17,7 @@ class UserVoucherController {
 
         router.post('/create-payment',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(paymentValidator.ValidatePaymentData),
             ErrorHandlers.globalErrorHandler(paymentsController.createPayments));
 
 
