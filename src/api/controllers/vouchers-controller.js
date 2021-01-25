@@ -93,16 +93,16 @@ class VoucherController {
     static async commitToBuy(req, res, next) {
         const supplyID = req.params.supplyID
         const metadata = req.body;
-        let userVoucher;
+        let voucher;
 
         try {
-            userVoucher = await mongooseService.createVoucher(metadata, supplyID);
+            voucher = await mongooseService.createVoucher(metadata, supplyID);
         } catch (error) {
             console.error(error)
             return next(new APIError(400, `Buy operation for Supply id: ${ supplyID } could not be completed.`))
         }
 
-        res.status(200).send({ userVoucherID: userVoucher.id });
+        res.status(200).send({ voucherID: voucher.id });
     }
 
     /**

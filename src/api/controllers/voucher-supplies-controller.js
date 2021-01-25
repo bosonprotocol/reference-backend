@@ -175,14 +175,18 @@ class VoucherSuppliesController {
 
         try {
 
+            const startTxId = req.body._transactionID - vouchersSupplies.length
+
             for (let i = 0; i < vouchersSupplies.length; i++) {
 
                 let metadata;
+
                 try {
                     metadata = {
                         voucherOwner: req.body.voucherOwner.toLowerCase(),
                         _tokenIdSupply: BigNumber.from(vouchersSupplies[i]).toString(),
-                        qty: BigNumber.from(quantities[i]).toString()
+                        qty: BigNumber.from(quantities[i]).toString(),
+                        _transactionID: startTxId + i
                     };
     
                 } catch (error) {

@@ -132,7 +132,8 @@ class VoucherSupplyService {
             },
             { 
                 voucherOwner: metadata.voucherOwner.toLowerCase(),
-                qty: metadata.qty
+                qty: metadata.qty,
+                _transactionID: metadata._transactionID
             },
             { new: true, upsert: true }
         )

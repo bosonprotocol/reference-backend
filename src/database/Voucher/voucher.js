@@ -27,7 +27,7 @@ class VouchersService {
     static async updateVoucherDelivered(metadata) {
 
         return await Voucher.findOneAndUpdate(
-            { _transactionID: metadata._transactionID, _holder: metadata._holder.toLowerCase() },
+            { _transactionID: metadata._transactionID, _holder: metadata._holder.toLowerCase(), _tokenIdSupply: metadata._tokenIdSupply },
             { _tokenIdVoucher: metadata._tokenIdVoucher },
             { new: true, upsert: true, }
         )

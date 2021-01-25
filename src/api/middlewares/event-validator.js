@@ -31,7 +31,19 @@ class EventValidator {
             console.error('Does not have voucherSupplies to update');
             return next(new APIError(400, 'Bad request.'))
         }
-    
+
+        if (!metadata.hasOwnProperty('_transactionID')) {
+            console.error('Does not have _transactionID to update');
+            return next(new APIError(400, 'Bad request.'))
+        }
+
+        try {
+            BigNumber.from(metadata._transactionID)
+        } catch (error) {
+            console.error('Tx ID cannot be casted to BN!');
+            return next(new APIError(400, 'Bad request.'))
+        }
+
         next();
     }
 
