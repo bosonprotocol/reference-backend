@@ -11,10 +11,6 @@ const userSchema = new Schema({
         required: true,
         trim: true
     },
-    txHash: {
-        type: String,
-        required: true,
-    },
     _holder: {
         type: String,
     },

@@ -82,10 +82,6 @@ const voucherSchema = new Schema({
         type: Boolean,
         required: true
     },
-    txHash: {
-        type: String,
-        required: true,
-    },
     _tokenIdSupply: {
         type: String,
         required: true,

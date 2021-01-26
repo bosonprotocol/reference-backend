@@ -106,8 +106,8 @@ class VoucherController {
     }
 
     static async finalizeVoucher(req, res, next) {
-        const tokenIdVoucher = res.locals.events[0]._tokenIdVoucher;
-        const status = res.locals.events[0].status
+        const tokenIdVoucher = req.body[0]._tokenIdVoucher;
+        const status = req.body[0].status
 
         try {
             await mongooseService.finalizeVoucher(tokenIdVoucher, status)
