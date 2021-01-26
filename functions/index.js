@@ -31,6 +31,11 @@ const WITHDRAWAL_BLACKLISTED_VOUCHER_IDS = [
 
 //POC1
 exports.scheduledKeepers = functions.https.onRequest(async (request, response) => {
+    /**
+     * ! This keeper might have to be deprecated
+     */
+    return
+
     const poc1 = configs('poc1')
     const provider = ethers.getDefaultProvider(poc1.NETWORK_NAME, {
         etherscan: poc1.ETHERSCAN_API_KEY,
@@ -39,7 +44,7 @@ exports.scheduledKeepers = functions.https.onRequest(async (request, response) =
     const executor = new ethers.Wallet(poc1.EXECUTOR_PRIVATE_KEY, provider);
 
     // Expiration process
-    await triggerExirations(executor, poc1);
+    await triggerExpirations(executor, poc1);
 
     // Finalization process
     await triggerFinalizations(executor, poc1);
@@ -51,11 +56,6 @@ exports.scheduledKeepers = functions.https.onRequest(async (request, response) =
 });
 
 exports.scheduledKeepersDev = functions.https.onRequest(async (request, response) => {
-    //TODO 
-    // addresses to new deployed contracts should be set
-    // network should be changed
-    // parsing for withdrawals is done a little bit differently. Event that should be looked at is: 'LogAmountDistribution'
-    return
     const dev = configs('dev')
     const provider = ethers.getDefaultProvider(dev.NETWORK_NAME, {
         etherscan: dev.ETHERSCAN_API_KEY,
@@ -64,7 +64,7 @@ exports.scheduledKeepersDev = functions.https.onRequest(async (request, response
     const executor = new ethers.Wallet(dev.EXECUTOR_PRIVATE_KEY, provider);
 
     // Expiration process
-    await triggerExirations(executor, dev);
+    await triggerExpirations(executor, dev);
 
     // Finalization process
     await triggerFinalizations(executor, dev);
@@ -75,7 +75,7 @@ exports.scheduledKeepersDev = functions.https.onRequest(async (request, response
     response.send("Аll keepers were executed successfully!");
 });
 
-async function triggerExirations(executor, config) {
+async function triggerExpirations(executor, config) {
     let hasErrors = false;
     let voucherKernelContractExecutor = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
     let vouchers;
@@ -117,7 +117,7 @@ async function triggerExirations(executor, config) {
         }
     }
 
-    let infoMsg = hasErrors ? 'triggerExirations function finished with errors' : 'triggerExirations function finished successfully'
+    let infoMsg = hasErrors ? 'triggerExpirations function finished with errors' : 'triggerExpirations function finished successfully'
 
     console.info(infoMsg);
 }
@@ -236,7 +236,7 @@ async function triggerWithdrawals(executor, config) {
         let receipt;
 
         try {
-            txOrder = await cashierContractExecutor.withdraw([voucherID], { gasLimit: GAS_LIMIT });
+            txOrder = await cashierContractExecutor.withdraw(voucherID, { gasLimit: GAS_LIMIT });
             receipt = await txOrder.wait();
         } catch (e) {
             hasErrors = true;
@@ -246,16 +246,12 @@ async function triggerWithdrawals(executor, config) {
 
         console.log(`Voucher: ${voucherID}. The withdraw process finished`);
 
-        let events = await findEventByName(receipt, 'LogWithdrawal', '_caller', '_payee', '_payment')
+        let events = await findEventByName(receipt, 'LogAmountDistribution', '_tokenIdVoucher', '_to', '_payment', '_type')
 
         try {
             if (Array.isArray(events)
                 && typeof events[0] === 'object'
                 && events[0].hasOwnProperty('_tokenIdVoucher')) {
-
-                for (const key in events) {
-                    events[key]._tokenIdVoucher = voucherID;
-                }
 
                 await sendPayments(config, events);
             }
