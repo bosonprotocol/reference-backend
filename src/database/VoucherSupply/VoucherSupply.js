@@ -61,7 +61,6 @@ class VoucherSupplyService {
             conditions: metadata.conditions,
             voucherOwner: voucherOwner,
             visible: true,
-            txHash: metadata.txHash,
             _tokenIdSupply: metadata._tokenIdSupply,
             imagefiles: fileRefs,
         });

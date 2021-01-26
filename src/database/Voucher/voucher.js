@@ -7,7 +7,6 @@ class VouchersService {
             { _tokenIdVoucher: metadata._tokenIdVoucher },
             {
                 supplyID: supplyID,
-                txHash: metadata.txHash,
                 _holder: metadata._holder.toLowerCase(),
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _tokenIdVoucher: metadata._tokenIdVoucher,
