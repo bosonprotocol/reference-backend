@@ -29,39 +29,18 @@ const WITHDRAWAL_BLACKLISTED_VOUCHER_IDS = [
     "57896044618658097711785492504343953942968545945025328265970773160681438969857"
 ];
 
-//POC1
-exports.scheduledKeepers = functions.https.onRequest(async (request, response) => {
-    /**
-     * ! This keeper might have to be deprecated
-     */
-    return
-
-    const poc1 = configs('poc1')
-    const provider = ethers.getDefaultProvider(poc1.NETWORK_NAME, {
-        etherscan: poc1.ETHERSCAN_API_KEY,
-        infura: poc1.INFURA_API_KEY
-    });
-    const executor = new ethers.Wallet(poc1.EXECUTOR_PRIVATE_KEY, provider);
-
-    // Expiration process
-    await triggerExpirations(executor, poc1);
-
-    // Finalization process
-    await triggerFinalizations(executor, poc1);
-
-    // Withdrawal process
-    await triggerWithdrawalsPOC1(executor, poc1);
-
-    response.send("Аll keepers were executed successfully!");
-});
-
 exports.scheduledKeepersDev = functions.https.onRequest(async (request, response) => {
     const dev = configs('dev')
     const provider = ethers.getDefaultProvider(dev.NETWORK_NAME, {
         etherscan: dev.ETHERSCAN_API_KEY,
         infura: dev.INFURA_API_KEY
     });
+
     const executor = new ethers.Wallet(dev.EXECUTOR_PRIVATE_KEY, provider);
+
+    axios.defaults.headers.common = {
+        Authorization: `Bearer ${dev.GCLOUD_SECRET}`
+    }
 
     // Expiration process
     await triggerExpirations(executor, dev);
@@ -78,19 +57,19 @@ exports.scheduledKeepersDev = functions.https.onRequest(async (request, response
 async function triggerExpirations(executor, config) {
     let hasErrors = false;
     let voucherKernelContractExecutor = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
-    let vouchers;
+    let res
 
     try {
-        vouchers = await axios.get(config.ALL_VOUCHERS_URL);
+        res = await axios.get(config.ALL_VOUCHERS_URL);
     } catch (e) {
         hasErrors = true;
         console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
     }
 
-    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
+    if (typeof res === 'undefined' || !res.hasOwnProperty('data')) return;
 
-    for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
-        let voucher = vouchers.data.vouchersDocuments[i];
+    for (let i = 0; i < res.data.vouchers.length; i++) {
+        let voucher = res.data.vouchers[i];
         let voucherID = voucher._tokenIdVoucher;
         let isStatusCommit = false;
 
@@ -125,19 +104,19 @@ async function triggerExpirations(executor, config) {
 async function triggerFinalizations(executor, config) {
     let hasErrors = false;
     let voucherKernelContractExecutor = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
-    let vouchers;
+    let res;
 
     try {
-        vouchers = await axios.get(config.ALL_VOUCHERS_URL);
+        res = await axios.get(config.ALL_VOUCHERS_URL);
     } catch (e) {
         console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
         return;
     }
 
-    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
+    if (typeof res === 'undefined' || !res.hasOwnProperty('data')) return;
 
-    for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
-        let voucher = vouchers.data.vouchersDocuments[i];
+    for (let i = 0; i < res.data.vouchers.length; i++) {
+        let voucher = res.data.vouchers[i];
         let voucherID = voucher._tokenIdVoucher;
 
         if (voucher.FINALIZED || FINALIZATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)) {
@@ -173,12 +152,7 @@ async function triggerFinalizations(executor, config) {
             try {
                 await axios.patch(
                     config.FINALIZE_VOUCHER_URL,
-                    payload,
-                    {
-                        headers: {
-                            'authorization': `Bearer ${config.GCLOUD_SECRET}`
-                        }
-                    }
+                    payload
                 );
 
                 console.log(`Voucher: ${voucherID}. Database updated.`);
@@ -200,18 +174,18 @@ async function triggerWithdrawals(executor, config) {
     let hasErrors = false;
     let cashierContractExecutor = new ethers.Contract(config.CASHIER_ADDRESS, Cashier.abi, executor);
     let voucherKernelContractExecutor = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor);
-    let vouchers;
+    let res;
 
     try {
-        vouchers = await axios.get(config.ALL_VOUCHERS_URL);
+        res = await axios.get(config.ALL_VOUCHERS_URL);
     } catch (e) {
         console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
     }
 
-    if (typeof vouchers === 'undefined' || !vouchers.hasOwnProperty('data')) return;
+    if (typeof res === 'undefined' || !res.hasOwnProperty('data')) return;
 
-    for (let i = 0; i < vouchers.data.vouchersDocuments.length; i++) {
-        let voucher = vouchers.data.vouchersDocuments[i];
+    for (let i = 0; i < res.data.vouchers.length; i++) {
+        let voucher = res.data.vouchers[i];
         let voucherID = voucher._tokenIdVoucher;
         let isPaymentAndDepositsReleased;
 
@@ -372,11 +346,6 @@ async function sendPayments(config, events) {
         await axios.post(
             config.WITHDRAW_VOUCHER_URL, 
             events, 
-            {
-                headers: {
-                    authorization: `Bearer ${config.GCLOUD_SECRET}`,
-                }
-            }
         )
     } catch (error) {
         console.log(error);
