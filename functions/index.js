@@ -152,12 +152,7 @@ async function triggerFinalizations(executor, config) {
             try {
                 await axios.patch(
                     config.FINALIZE_VOUCHER_URL,
-                    payload,
-                    {
-                        headers: {
-                            'authorization': `Bearer ${config.GCLOUD_SECRET}`
-                        }
-                    }
+                    payload
                 );
 
                 console.log(`Voucher: ${voucherID}. Database updated.`);
@@ -351,11 +346,6 @@ async function sendPayments(config, events) {
         await axios.post(
             config.WITHDRAW_VOUCHER_URL, 
             events, 
-            {
-                headers: {
-                    authorization: `Bearer ${config.GCLOUD_SECRET}`,
-                }
-            }
         )
     } catch (error) {
         console.log(error);
