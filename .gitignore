@@ -26,8 +26,5 @@ node_modules
 # Test Coverage
 coverage*
 
-# OS
-.DS_Store
-
 # Personal Preferences
 .vscode
