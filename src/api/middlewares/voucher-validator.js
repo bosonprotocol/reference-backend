@@ -1,7 +1,5 @@
 const APIError = require("./../api-error");
-const AuthService = require("../services/auth-service");
 const mongooseService = require("../../database/index.js");
-const { mongo } = require("mongoose");
 
 class VoucherValidator {
   static async ValidateVoucherSupplyExists(req, res, next) {
@@ -19,14 +17,14 @@ class VoucherValidator {
   }
 
   static async ValidateCanDelete(req, res, next) {
-    if (res.locals.voucherSupply.voucherOwner != res.locals.address) {
+    if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
       return next(new APIError(401, "Unauthorized."));
     }
     next();
   }
 
   static async ValidateCanUpdateVoucherSupply(req, res, next) {
-    if (res.locals.voucherSupply.voucherOwner != res.locals.address) {
+    if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
       return next(new APIError(401, "Unauthorized."));
     }
 

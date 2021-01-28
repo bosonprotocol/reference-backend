@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const functions = require("firebase-functions");
 const axios = require("axios").default;
 const ethers = require("ethers");
@@ -55,7 +56,8 @@ async function triggerWithdrawals(executor, config) {
     console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
   }
 
-  if (typeof res === "undefined" || !res.hasOwnProperty("data")) return;
+  if (typeof res === "undefined" ||
+    !Object.prototype.hasOwnProperty.call(res, "data")) return;
 
   for (let i = 0; i < res.data.vouchers.length; i++) {
     let voucher = res.data.vouchers[i];
@@ -116,7 +118,7 @@ async function triggerWithdrawals(executor, config) {
       if (
         Array.isArray(events) &&
         typeof events[0] === "object" &&
-        events[0].hasOwnProperty("_tokenIdVoucher")
+        Object.prototype.hasOwnProperty.call(events[0], "_tokenIdVoucher")
       ) {
         await sendPayments(config, events);
       }

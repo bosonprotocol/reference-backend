@@ -3,7 +3,6 @@ const ErrorHandlers = require("../middlewares/error-handler");
 const authenticationMiddleware = require("../middlewares/authentication");
 const voucherValidator = require("../middlewares/voucher-validator");
 
-const os = require("os");
 const multer = require("multer");
 const storage = multer.diskStorage({});
 const FILE_LIMIT = 10;

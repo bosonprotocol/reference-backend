@@ -82,9 +82,8 @@ class TestController {
       return next(new APIError(400, `Transaction failed. TxHash: ${tx.hash} `));
     }
 
-    let batch;
     try {
-      batch = await mongooseService.createVoucherSupply(
+      await mongooseService.createVoucherSupply(
         {
           ...req.body,
           ...parsedEvent,
@@ -192,7 +191,7 @@ class TestController {
     res.status(200).send({ sucess: true });
   }
 
-  static async buy(req, res, next) {
+  static async buy(req, res) {
     await mongooseService.buy();
     res.status(200).send({ success: true });
   }

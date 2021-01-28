@@ -1,5 +1,3 @@
-const ethers = require("ethers");
-
 const MAX_NONCE = 1000000;
 
 class NonceUtils {

@@ -4,8 +4,12 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "app:lint": "eslint app.js \"src/**/*.js\"",
+    "app:lint-fix": "eslint --fix app.js \"src/**/*.js\"",
     "app:format": "prettier --list-different app.js \"src/**/*.js\"",
     "app:format-fix": "prettier --write app.js \"src/**/*.js\"",
+    "functions:lint": "eslint \"functions/**/*.js\"",
+    "functions:lint-fix": "eslint --fix \"functions/**/*.js\"",
     "functions:format": "prettier --list-different \"functions/**/*.js\"",
     "functions:format-fix": "prettier --write \"functions/**/*.js\""
   },
@@ -16,6 +20,8 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "eslint": "^7.18.0",
+    "eslint-config-prettier": "^7.2.0",
     "ethers": "^5.0.24",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",

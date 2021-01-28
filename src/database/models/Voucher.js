@@ -16,6 +16,7 @@ const userSchema = new Schema({
   },
   _tokenIdSupply: {
     type: String,
+    required: true,
   },
   _tokenIdVoucher: {
     type: String,
@@ -46,10 +47,6 @@ const userSchema = new Schema({
   CANCELLED: {
     type: Date,
     required: false,
-  },
-  _tokenIdSupply: {
-    type: String,
-    required: true,
   },
   FINALIZED: {
     type: Date,

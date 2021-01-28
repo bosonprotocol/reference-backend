@@ -8,7 +8,7 @@ class ErrorHandlers {
    * @param res
    * @param next
    */
-  static apiErrorHandler(err, req, res, next) {
+  static apiErrorHandler(err, req, res) {
     if (err instanceof APIError) {
       res.status(err.code).json(err.message);
     } else {

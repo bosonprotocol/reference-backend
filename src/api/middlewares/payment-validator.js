@@ -17,7 +17,7 @@ class VoucherValidator {
       );
     }
 
-    if (!payload[0].hasOwnProperty("_tokenIdVoucher")) {
+    if (!Object.prototype.hasOwnProperty.call(payload[0], "_tokenIdVoucher")) {
       return next(
         new APIError(400, `Payload is not set to specific Voucher ID!`)
       );

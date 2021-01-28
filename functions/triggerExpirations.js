@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const functions = require("firebase-functions");
 const axios = require("axios").default;
 const ethers = require("ethers");
@@ -50,7 +51,8 @@ async function triggerExpirations(executor, config) {
     console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
   }
 
-  if (typeof res === "undefined" || !res.hasOwnProperty("data")) return;
+  if (typeof res === "undefined" ||
+    !Object.prototype.hasOwnProperty.call(res, "data")) return;
 
   for (let i = 0; i < res.data.vouchers.length; i++) {
     let voucher = res.data.vouchers[i];
@@ -58,10 +60,11 @@ async function triggerExpirations(executor, config) {
     let isStatusCommit = false;
 
     try {
+      // eslint-disable-next-line no-await-in-loop
       let voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
         voucherID
       );
-      isStatusCommit = voucherStatus[0] == (0 | (1 << COMMIT_IDX)); // condition is borrowed from helper contract
+      isStatusCommit = voucherStatus[0] === (0 | (1 << COMMIT_IDX)); // condition is borrowed from helper contract
     } catch (e) {
       hasErrors = true;
       console.error(
@@ -81,9 +84,11 @@ async function triggerExpirations(executor, config) {
     );
 
     try {
+      // eslint-disable-next-line no-await-in-loop
       let txOrder = await voucherKernelContractExecutor.triggerExpiration(
         voucherID
       );
+      // eslint-disable-next-line no-await-in-loop
       await txOrder.wait();
     } catch (e) {
       hasErrors = true;

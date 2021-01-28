@@ -1,4 +1,3 @@
-const { mongo } = require("mongoose");
 const mongooseService = require("../../database/index.js");
 const APIError = require("../api-error");
 const ethers = require("ethers");
@@ -126,7 +125,7 @@ class PaymentController {
       return next(
         new APIError(
           400,
-          `Get payment for voucher id: ${voucherID} could not be completed.`
+          `Get payment for voucher id: ${tokenIdVoucher} could not be completed.`
         )
       );
     }

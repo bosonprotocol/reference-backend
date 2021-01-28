@@ -3,7 +3,6 @@
 const mongooseService = require("../../database/index.js");
 const APIError = require("../api-error");
 const voucherUtils = require("../../utils/voucherUtils");
-const statuses = require("../../utils/userVoucherStatus");
 
 class VoucherController {
   static async getVouchers(req, res, next) {
@@ -110,7 +109,7 @@ class VoucherController {
     const status = req.body.status;
 
     try {
-      const userVoucher = await mongooseService.updateVoucherStatus(
+      await mongooseService.updateVoucherStatus(
         voucherID,
         status
       );
@@ -144,7 +143,7 @@ class VoucherController {
       return next(
         new APIError(
           400,
-          `Finalize operation for token voucher id: ${userVoucherID} could not be completed.`
+          `Finalize operation for token voucher id: ${tokenIdVoucher} could not be completed.`
         )
       );
     }

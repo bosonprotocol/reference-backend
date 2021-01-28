@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const functions = require("firebase-functions");
 const axios = require("axios").default;
 const ethers = require("ethers");
@@ -51,7 +52,8 @@ async function triggerFinalizations(executor, config) {
     return;
   }
 
-  if (typeof res === "undefined" || !res.hasOwnProperty("data")) return;
+  if (typeof res === "undefined" ||
+    !Object.prototype.hasOwnProperty.call(res, "data")) return;
 
   for (let i = 0; i < res.data.vouchers.length; i++) {
     let voucher = res.data.vouchers[i];
@@ -112,7 +114,6 @@ async function triggerFinalizations(executor, config) {
         console.error(
           `Error while updating the DB related to finalization of the voucher. Error: ${e}`
         );
-        continue;
       }
     }
   }
