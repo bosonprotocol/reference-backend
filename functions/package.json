@@ -2,12 +2,15 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "lint": "eslint .",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "functions:lint": "eslint \"./**/*.js\"",
+    "functions:lint-fix": "eslint --fix \"./**/*.js\"",
+    "functions:format": "prettier --list-different \"./**/*.js\"",
+    "functions:format-fix": "prettier --write \"./**/*.js\""
   },
   "engines": {
     "node": "10"

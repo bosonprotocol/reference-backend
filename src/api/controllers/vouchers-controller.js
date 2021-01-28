@@ -109,10 +109,7 @@ class VoucherController {
     const status = req.body.status;
 
     try {
-      await mongooseService.updateVoucherStatus(
-        voucherID,
-        status
-      );
+      await mongooseService.updateVoucherStatus(voucherID, status);
     } catch (error) {
       console.error(
         `An error occurred while tried to update voucher with ID: [${voucherID}]!`

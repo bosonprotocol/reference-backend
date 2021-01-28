@@ -56,8 +56,11 @@ async function triggerWithdrawals(executor, config) {
     console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
   }
 
-  if (typeof res === "undefined" ||
-    !Object.prototype.hasOwnProperty.call(res, "data")) return;
+  if (
+    typeof res === "undefined" ||
+    !Object.prototype.hasOwnProperty.call(res, "data")
+  )
+    return;
 
   for (let i = 0; i < res.data.vouchers.length; i++) {
     let voucher = res.data.vouchers[i];
