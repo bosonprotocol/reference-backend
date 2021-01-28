@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "app:format": "prettier --list-different app.js \"src/**/*.js\"",
+    "app:format-fix": "prettier --write app.js \"src/**/*.js\"",
+    "functions:format": "prettier --list-different \"functions/**/*.js\"",
+    "functions:format-fix": "prettier --write \"functions/**/*.js\""
   },
   "license": "ISC",
   "dependencies": {
@@ -17,6 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.8",
     "mongoose": "^5.9.19",
-    "multer": "^1.4.2"
+    "multer": "^1.4.2",
+    "prettier": "^2.2.1"
   }
 }
