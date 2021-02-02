@@ -1,0 +1,4 @@
+---
+# General
+component: "reference-backend"
+deployment_identifier: "%{deployment_type}-%{deployment_label}"

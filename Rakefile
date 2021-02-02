@@ -1,3 +1,8 @@
+require 'rake_docker'
+require 'confidante'
+
+configuration = Confidante.configuration
+
 task :default => [
     :build_fix,
 ]
@@ -80,6 +85,25 @@ namespace :functions do
   task :format_fix => [:'dependencies:install'] do
     Dir.chdir('functions') do
       sh('npm', 'run', 'functions:format-fix')
+    end
+  end
+end
+
+namespace :database do
+  namespace :test do
+    RakeDocker.define_container_tasks(
+        container_name: 'reference-backend-test-database') do |t|
+      configuration = configuration
+          .for_scope(
+              deployment_type: 'local',
+              deployment_label: 'testing')
+
+      t.image = "mongo:#{configuration.database_version}"
+      t.ports = ["#{configuration.database_port}:27017"]
+      t.environment = [
+          "MONGO_INITDB_ROOT_USERNAME=#{configuration.database_username}",
+          "MONGO_INITDB_ROOT_PASSWORD=#{configuration.database_password}",
+      ]
     end
   end
 end
