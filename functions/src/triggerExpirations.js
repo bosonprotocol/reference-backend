@@ -4,7 +4,7 @@ const axios = require("axios").default;
 const ethers = require("ethers");
 const configs = require("./configs");
 
-const VoucherKernel = require("./abis/VoucherKernel.json");
+const VoucherKernel = require("../abis/VoucherKernel.json");
 
 const COMMIT_IDX = 7; // usingHelpers contract
 

@@ -1,10 +1,13 @@
 async function findEventByName(txReceipt, eventName, ...eventFields) {
-  if (typeof txReceipt !== "object" && txReceipt !== null) return;
+  if (typeof txReceipt !== "object" || txReceipt === null) return;
 
   let eventsArr = [];
 
   for (const key in txReceipt.events) {
-    if (txReceipt.events[key].event == eventName) {
+    if (
+      Object.prototype.hasOwnProperty.call(txReceipt.events, key) &&
+      txReceipt.events[key].event === eventName
+    ) {
       const event = txReceipt.events[key];
 
       const resultObj = {

@@ -7,10 +7,10 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "functions:lint": "eslint \"./**/*.js\"",
-    "functions:lint-fix": "eslint --fix \"./**/*.js\"",
-    "functions:format": "prettier --list-different \"./**/*.js\"",
-    "functions:format-fix": "prettier --write \"./**/*.js\""
+    "functions:lint": "eslint \"src/**/*.js\"",
+    "functions:lint-fix": "eslint --fix \"src/**/*.js\"",
+    "functions:format": "prettier --list-different \"src/**/*.js\"",
+    "functions:format-fix": "prettier --write \"src/**/*.js\""
   },
   "engines": {
     "node": "10"

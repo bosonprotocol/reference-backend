@@ -2,10 +2,11 @@
 const functions = require("firebase-functions");
 const axios = require("axios").default;
 const ethers = require("ethers");
+
 const configs = require("./configs");
 const utils = require("./utils");
 
-const VoucherKernel = require("./abis/VoucherKernel.json");
+const VoucherKernel = require("../abis/VoucherKernel.json");
 
 const FINALIZATION_BLACKLISTED_VOUCHER_IDS = [
   "57896044618658097711785492504343953936503180973527497460166655619477842952194",
