@@ -13,7 +13,7 @@
     "functions:format-fix": "prettier --write \"src/**/*.js\""
   },
   "engines": {
-    "node": "10"
+    "node": "12"
   },
   "dependencies": {
     "axios": "^0.20.0",
