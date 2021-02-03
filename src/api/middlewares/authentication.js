@@ -1,6 +1,12 @@
 //@ts-nocheck
 const APIError = require("./../api-error");
-const AuthService = require("../../services/auth-service");
+const ConfigurationService = require('../../services/configuration-service')
+const AuthenticationService = require("../../services/authentication-service");
+
+const configurationService = new ConfigurationService();
+const authenticationService = new AuthenticationService({
+  configurationService,
+});
 
 class Authentication {
   static async authenticateToken(req, res, next) {
@@ -12,7 +18,7 @@ class Authentication {
     }
 
     try {
-      const userObj = await AuthService.verifyToken(token);
+      const userObj = authenticationService.verifyToken(token);
       res.locals.address = userObj.user.toLowerCase();
     } catch (error) {
       return next(new APIError(403, "Forbidden."));
@@ -30,8 +36,8 @@ class Authentication {
     }
 
     try {
-      const payload = await AuthService.verifyToken(token);
-      if (payload.token !== process.env.GCLOUD_SECRET) {
+      const payload = authenticationService.verifyToken(token);
+      if (payload.token !== configurationService.gcloudSecret) {
         return next(new APIError(403, "Forbidden."));
       }
     } catch (error) {

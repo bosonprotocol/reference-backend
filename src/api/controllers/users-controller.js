@@ -1,7 +1,13 @@
 const nonceUtils = require("../../utils/nonceUtils");
 const mongooseService = require("../../database/index.js");
-const AuthValidator = require("../../services/auth-service");
+const ConfigurationService = require('../../services/configuration-service')
+const AuthenticationService = require("../../services/authentication-service");
 const APIError = require("../api-error");
+
+const configurationService = new ConfigurationService();
+const authenticationService = new AuthenticationService({
+  configurationService,
+});
 
 class UserController {
   static async generateNonce(req, res, next) {
@@ -31,7 +37,7 @@ class UserController {
         value: `Authentication message: ${nonce}`,
       };
 
-      const isSignatureVerified = await AuthValidator.isSignatureVerified(
+      const isSignatureVerified = await authenticationService.isSignatureVerified(
         address,
         req.body.domain,
         req.body.types,
@@ -47,7 +53,8 @@ class UserController {
       return next(new APIError(400, `Signature was not verified!`));
     }
 
-    const authToken = AuthValidator.generateAccessToken(address);
+    const authToken = authenticationService.generateToken(address);
+
     res.status(200).send(authToken);
   }
 
