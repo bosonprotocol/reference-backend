@@ -135,8 +135,6 @@ class VoucherSuppliesController {
         const voucherOwner = res.locals.address;
         let voucherSupply;
 
-        let voucherSupply;
-
         try {
             voucherSupply = await mongooseService.createVoucherSupply(req.body, fileRefs, voucherOwner)
         } catch (error) {
