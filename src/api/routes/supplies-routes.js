@@ -9,10 +9,8 @@ const storage = multer.diskStorage({});
 const FILE_LIMIT = 10;
 const upload = multer({ storage });
 
-class VoucherSuppliesRouter {
-  static route(expressApp) {
-    let router = expressApp.Router();
-
+class VoucherSuppliesRoutes {
+  addTo(router) {
     router.post(
       "/",
       ErrorHandlers.globalErrorHandler(
@@ -177,4 +175,4 @@ class VoucherSuppliesRouter {
   }
 }
 
-module.exports = VoucherSuppliesRouter;
+module.exports = VoucherSuppliesRoutes;

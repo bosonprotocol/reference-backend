@@ -1,10 +1,8 @@
 const testController = require("../controllers/test-controller");
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class TestRouter {
-  static route(expressApp) {
-    let router = expressApp.Router();
-
+class TestRoutes {
+  addTo(router) {
     router.post(
       "/createBatch",
       ErrorHandlers.globalErrorHandler(testController.createVoucherSupply)
@@ -24,4 +22,4 @@ class TestRouter {
   }
 }
 
-module.exports = TestRouter;
+module.exports = TestRoutes;

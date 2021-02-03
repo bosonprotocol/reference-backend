@@ -1,10 +1,8 @@
 const usersController = require("../controllers/users-controller");
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class UsersRouter {
-  static route(expressApp) {
-    let router = expressApp.Router();
-
+class UsersRoutes {
+  addTo(router) {
     router.post(
       "/:address",
       ErrorHandlers.globalErrorHandler(usersController.generateNonce)
@@ -19,4 +17,4 @@ class UsersRouter {
   }
 }
 
-module.exports = UsersRouter;
+module.exports = UsersRoutes;

@@ -2,10 +2,8 @@ const AdminController = require("../controllers/admin-controller");
 const ErrorHandlers = require("../middlewares/error-handler");
 const AdminAuth = require("../middlewares/admin-auth");
 
-class UserVoucherController {
-  static route(expressApp) {
-    let router = expressApp.Router();
-
+class UserVoucherRoutes {
+  addTo(router) {
     router.patch(
       "/:address",
       ErrorHandlers.globalErrorHandler(AdminAuth.validateAdminAccess),
@@ -24,4 +22,4 @@ class UserVoucherController {
   }
 }
 
-module.exports = UserVoucherController;
+module.exports = UserVoucherRoutes;

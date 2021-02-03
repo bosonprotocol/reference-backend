@@ -27,8 +27,9 @@ class Server {
     }
   }
 
-  withRouter(path, router) {
-    this.app.use(path, router.route(express));
+  withRoutes(path, routes) {
+    const router = express.Router();
+    this.app.use(path, routes.addTo(router));
     return this;
   }
 
