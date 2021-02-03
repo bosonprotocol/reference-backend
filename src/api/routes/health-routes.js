@@ -1,10 +1,8 @@
 const healthController = require("../controllers/health-controller");
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class HealthRouter {
-  static route(expressApp) {
-    let router = expressApp.Router();
-
+class HealthRoutes {
+  addTo(router) {
     router.get(
       "/",
       ErrorHandlers.globalErrorHandler(healthController.getHealth)
@@ -14,4 +12,4 @@ class HealthRouter {
   }
 }
 
-module.exports = HealthRouter;
+module.exports = HealthRoutes;

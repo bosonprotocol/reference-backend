@@ -3,10 +3,8 @@ const ErrorHandlers = require("../middlewares/error-handler");
 const UserValidator = require("../middlewares/user-validator");
 const authenticationMiddleware = require("../middlewares/authentication");
 
-class UsersRouter {
-  static route(expressApp) {
-    let router = expressApp.Router();
-
+class UsersRoutes {
+  addTo(router) {
     router.post(
       "/:address",
       ErrorHandlers.globalErrorHandler(usersController.generateNonce)
@@ -30,4 +28,4 @@ class UsersRouter {
   }
 }
 
-module.exports = UsersRouter;
+module.exports = UsersRoutes;

@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const request = require("superagent");
 
 const Server = require("../../src/server");
-const healthRouter = require("../../src/api/routes/health-route");
+const HealthRoutes = require("../../src/api/routes/health-routes");
 
 const Ports = require("../helpers/ports");
 
@@ -12,7 +12,7 @@ describe("Health Resource", () => {
   before(async () => {
     const port = await Ports.getAvailablePort();
 
-    server = new Server().withRouter("/health", healthRouter).start(port);
+    server = new Server().withRoutes("/health", new HealthRoutes()).start(port);
   });
 
   after(async () => {

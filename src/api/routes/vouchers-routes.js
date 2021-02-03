@@ -3,10 +3,8 @@ const ErrorHandlers = require("../middlewares/error-handler");
 const userValidator = require("../middlewares/user-validator");
 const authenticationMiddleware = require("../middlewares/authentication");
 
-class VouchersController {
-  static route(expressApp) {
-    let router = expressApp.Router();
-
+class VouchersRoutes {
+  addTo(router) {
     router.get(
       "/",
       ErrorHandlers.globalErrorHandler(
@@ -67,4 +65,4 @@ class VouchersController {
   }
 }
 
-module.exports = VouchersController;
+module.exports = VouchersRoutes;

@@ -3,9 +3,8 @@ const ErrorHandlers = require("../middlewares/error-handler");
 const authenticationMiddleware = require("../middlewares/authentication");
 const paymentValidator = require("../middlewares/payment-validator");
 
-class UserVoucherController {
-  static route(expressApp) {
-    let router = expressApp.Router();
+class UserVoucherRoutes {
+  addTo(router) {
     router.get(
       "/get-payment/:tokenIdVoucher",
       ErrorHandlers.globalErrorHandler(
@@ -32,4 +31,4 @@ class UserVoucherController {
   }
 }
 
-module.exports = UserVoucherController;
+module.exports = UserVoucherRoutes;
