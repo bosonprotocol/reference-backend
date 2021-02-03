@@ -62,6 +62,7 @@ class VoucherSupplyService {
             voucherOwner: voucherOwner,
             visible: true,
             _correlationId: metadata._correlationId,
+            _tokenIdSupply: metadata._tokenIdSupply,
             imagefiles: fileRefs,
         });
 

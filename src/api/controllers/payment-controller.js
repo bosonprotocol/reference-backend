@@ -12,6 +12,7 @@ class PaymentController {
 
     static async getPaymentActors(req, res, next) {
         const objectId = req.params.voucherID
+        let userVoucher;
 
         const distributedAmounts = {
             payment: {
@@ -32,7 +33,7 @@ class PaymentController {
         }
 
         try {
-            const userVoucher = await mongooseService.getVoucherByID(objectId)
+            userVoucher = await mongooseService.getVoucherByID(objectId)
             const buyer = userVoucher._holder;
             const seller = userVoucher.voucherOwner // TODO this must come from the voucher, not voucher owner as, the voucher might be transferred and we do not want to update every single possible userVoucher with the newly owner from that supply
             const payments = await mongooseService.getPaymentsByVoucherID(userVoucher._tokenIdVoucher);
@@ -86,12 +87,12 @@ class PaymentController {
     }
 
     static async getPaymentsByVoucherID(req, res, next) {
-        const voucherID = req.params.voucherID;
+        const tokenIdVoucher = req.params.tokenIdVoucher;
 
         let payments; 
 
         try {
-            payments = await mongooseService.getPaymentsByVoucherID(voucherID);
+            payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
         } catch (error) {
             console.error(error)
             return next(new APIError(400, `Get payment for voucher id: ${ voucherID } could not be completed.`))

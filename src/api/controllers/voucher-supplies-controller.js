@@ -133,6 +133,7 @@ class VoucherSuppliesController {
     static async createVoucherSupply(req, res, next) {
         const fileRefs = await voucherUtils.uploadFiles(req);
         const voucherOwner = res.locals.address;
+        let voucherSupply;
 
         let voucherSupply;
 
@@ -147,7 +148,23 @@ class VoucherSuppliesController {
         res.status(200).send({ voucherSupply });
     }
 
-     /**
+    static async updateVoucherSupply(req, res, next) {
+        const fileRefs = await voucherUtils.uploadFiles(req);
+        const voucherOwner = res.locals.address;
+        const voucher = res.locals.voucherSupply
+
+        try {
+            await mongooseService.updateVoucherSupply(voucher, req.body, fileRefs)
+        } catch (error) {
+            console.error(`An error occurred while user [${ voucherOwner }] tried to update Voucher.`);
+            console.error(error)
+            return next(new APIError(400, 'Invalid voucher model'));
+        }
+
+        res.status(200).send({ success: true });
+    }
+
+    /**
      * @notice This function is triggered while event 'LogOrderCreated' is emitted
      */
     static async setSupplyMetaOnOrderCreated(req, res, next) {
@@ -208,21 +225,7 @@ class VoucherSuppliesController {
         res.status(200).send({ success: true });
     }
 
-    static async updateVoucherSupply(req, res, next) {
-        const fileRefs = await voucherUtils.uploadFiles(req);
-        const voucherOwner = res.locals.address;
-        const voucher = res.locals.voucherSupply
 
-        try {
-            await mongooseService.updateVoucherSupply(voucher, req.body, fileRefs)
-        } catch (error) {
-            console.error(`An error occurred while user [${ voucherOwner }] tried to update Voucher.`);
-            console.error(error)
-            return next(new APIError(400, 'Invalid voucher model'));
-        }
-
-        res.status(200).send({ success: true });
-    }
 
     static async deleteVoucherSupply(req, res, next) {
         const voucherSupply = res.locals.voucherSupply

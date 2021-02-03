@@ -38,8 +38,6 @@ class Authentication {
                 return next(new APIError(403, 'Forbidden.'))
             }
 
-            res.locals.events = req.body;
-
         } catch (error) {
             console.log(error);
             return next(new APIError(403, 'Forbidden.'))
