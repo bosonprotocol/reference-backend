@@ -1,6 +1,6 @@
 const nonceUtils = require("../../utils/nonceUtils");
 const mongooseService = require("../../database/index.js");
-const AuthValidator = require("../services/auth-service");
+const AuthValidator = require("../../services/auth-service");
 const APIError = require("../api-error");
 
 class UserController {

@@ -1,6 +1,6 @@
 //@ts-nocheck
 const APIError = require("./../api-error");
-const AuthService = require("../services/auth-service");
+const AuthService = require("../../services/auth-service");
 
 class Authentication {
   static async authenticateToken(req, res, next) {
@@ -31,7 +31,7 @@ class Authentication {
 
     try {
       const payload = await AuthService.verifyToken(token);
-      if (payload.token != process.env.GCLOUD_SECRET) {
+      if (payload.token !== process.env.GCLOUD_SECRET) {
         return next(new APIError(403, "Forbidden."));
       }
     } catch (error) {
