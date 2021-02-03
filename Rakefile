@@ -5,6 +5,7 @@ configuration = Confidante.configuration
 
 task :default => [
     :build_fix,
+    :test
 ]
 
 task :build => [
@@ -19,6 +20,10 @@ task :build_fix => [
     :"app:format_fix",
     :"functions:lint_fix",
     :"functions:format_fix"
+]
+
+task :test => [
+    :'tests:app:component'
 ]
 
 namespace :app do
@@ -104,6 +109,15 @@ namespace :database do
           "MONGO_INITDB_ROOT_USERNAME=#{configuration.database_username}",
           "MONGO_INITDB_ROOT_PASSWORD=#{configuration.database_password}",
       ]
+    end
+  end
+end
+
+namespace :tests do
+  namespace :app do
+    desc "Run all component tests"
+    task :component do
+      sh('npm', 'run', 'tests:app:component')
     end
   end
 end
