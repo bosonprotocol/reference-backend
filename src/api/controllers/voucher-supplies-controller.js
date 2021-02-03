@@ -175,7 +175,7 @@ class VoucherSuppliesController {
 
         try {
 
-            const startTxId = req.body._transactionID - vouchersSupplies.length
+            const startCorrelationId = req.body._correlationId - vouchersSupplies.length
 
             for (let i = 0; i < vouchersSupplies.length; i++) {
 
@@ -186,7 +186,7 @@ class VoucherSuppliesController {
                         voucherOwner: req.body.voucherOwner.toLowerCase(),
                         _tokenIdSupply: BigNumber.from(vouchersSupplies[i]).toString(),
                         qty: BigNumber.from(quantities[i]).toString(),
-                        _transactionID: startTxId + i
+                        _correlationId: startCorrelationId + i
                     };
     
                 } catch (error) {
@@ -200,9 +200,9 @@ class VoucherSuppliesController {
             await Promise.all(promises)
 
         } catch (error) {
-            console.error(`An error occurred while trying to update a voucher from event [${req.body.event}].`);
-            console.error(error)
-            return next(new APIError(400, 'Invalid voucher model'));
+            console.error(`An error occurred while trying to update a voucher from Transfer event.`);
+            console.error(error.message)
+            return next(new APIError(404, 'Could not update the database from Transfer event!'));
         }
 
         res.status(200).send({ success: true });

@@ -61,7 +61,7 @@ class VoucherSupplyService {
             conditions: metadata.conditions,
             voucherOwner: voucherOwner,
             visible: true,
-            _transactionID: metadata._transactionID,
+            _correlationId: metadata._correlationId,
             imagefiles: fileRefs,
         });
 
@@ -112,13 +112,18 @@ class VoucherSupplyService {
         return await VoucherSupply.findOneAndUpdate(
             {
                 voucherOwner: metadata._voucherOwner,
-                _transactionID: metadata._transactionID
+                _correlationId: metadata._correlationId
             },
             { 
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _paymentType: metadata._paymentType,
-                _transactionID: metadata._transactionID,
-                qty: metadata.qty
+                _promiseId: metadata._promiseId,
+                qty: metadata.qty,
+                startDate: metadata.validFrom,
+                expiryDate: metadata.validTo,
+                price: metadata.price,
+                buyerDeposit: metadata.depositBu,
+                sellerDeposit: metadata.depositSe
             },
             { new: true, upsert: true }
         )
@@ -126,16 +131,23 @@ class VoucherSupplyService {
 
     static async updateSupplyOnTransfer(metadata) {
 
-        return await VoucherSupply.findOneAndUpdate(
+        const voucherSupply =  await VoucherSupply.findOne(
             {
                 _tokenIdSupply: metadata._tokenIdSupply
             },
-            { 
+            { new: true, upsert: true }
+        )
+
+        if (!voucherSupply) {
+            throw new Error(`Voucher for update with id: ${metadata._tokenIdSupply} not found!`)
+        }
+
+        return await VoucherSupply.findByIdAndUpdate(voucherSupply.id, 
+            {
                 voucherOwner: metadata.voucherOwner.toLowerCase(),
                 qty: metadata.qty,
-                _transactionID: metadata._transactionID
-            },
-            { new: true, upsert: true }
+                _correlationId: metadata._correlationId
+            }
         )
     }
 

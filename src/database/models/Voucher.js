@@ -55,9 +55,12 @@ const userSchema = new Schema({
         type: Date,
         required: false
     },
-    _transactionID: {
+    _correlationId: {
         type: Number,
         required: false
+    },
+    _promiseId: {
+        type: String
     }
 })
 

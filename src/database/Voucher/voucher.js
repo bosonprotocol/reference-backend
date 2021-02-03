@@ -10,7 +10,7 @@ class VouchersService {
                 _holder: metadata._holder.toLowerCase(),
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _tokenIdVoucher: metadata._tokenIdVoucher,
-                _transactionID: metadata._transactionID,
+                _correlationId: metadata._correlationId,
                 [status.COMMITTED]: new Date().getTime(),
                 [status.CANCELLED]: '',
                 [status.COMPLAINED]: '',
@@ -27,8 +27,16 @@ class VouchersService {
     static async updateVoucherDelivered(metadata) {
 
         return await Voucher.findOneAndUpdate(
-            { _transactionID: metadata._transactionID, _holder: metadata._holder.toLowerCase(), _tokenIdSupply: metadata._tokenIdSupply },
-            { _tokenIdVoucher: metadata._tokenIdVoucher },
+            { 
+                _correlationId: metadata._correlationId,
+                _holder: metadata._holder.toLowerCase(),
+                _tokenIdSupply: metadata._tokenIdSupply 
+            },
+            { 
+                _tokenIdVoucher: metadata._tokenIdVoucher,
+                _promiseId: metadata._promiseId,
+                voucherOwner: metadata._issuer
+            },
             { new: true, upsert: true, }
         )
     }

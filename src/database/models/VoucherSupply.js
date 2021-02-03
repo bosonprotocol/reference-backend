@@ -16,7 +16,7 @@ const voucherSchema = new Schema({
         required: true,
         validate(value) {
             if (value < 0) {
-                throw new Error('Qty must be a postive number')
+                throw new Error('Qty must be a positive number')
             }
         }
     },
@@ -86,14 +86,18 @@ const voucherSchema = new Schema({
         type: String,
         required: false,
     },
-    _transactionID: {
+    _correlationId: {
         type: Number,
         required: false
     },
     _paymentType: {
         type: Number,
         required: false
+    },
+    _promiseId: {
+        type: String
     }
+
 })
 
 module.exports = mongoose.model(VOUCHER_SUPPLY, voucherSchema)

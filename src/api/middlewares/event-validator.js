@@ -32,13 +32,13 @@ class EventValidator {
             return next(new APIError(400, 'Bad request.'))
         }
 
-        if (!metadata.hasOwnProperty('_transactionID')) {
-            console.error('Does not have _transactionID to update');
+        if (!metadata.hasOwnProperty('_correlationId')) {
+            console.error('Does not have _correlationId to update');
             return next(new APIError(400, 'Bad request.'))
         }
 
         try {
-            BigNumber.from(metadata._transactionID)
+            BigNumber.from(metadata._correlationId)
         } catch (error) {
             console.error('Tx ID cannot be casted to BN!');
             return next(new APIError(400, 'Bad request.'))
