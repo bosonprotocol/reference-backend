@@ -12,8 +12,7 @@ class AuthService {
     }
 
     try {
-      const user = await jwt.verify(token, process.env.TOKEN_SECRET);
-      res.locals.address = user;
+      res.locals.address = await jwt.verify(token, process.env.TOKEN_SECRET);
     } catch (error) {
       return next(new APIError(403, "Forbidden."));
     }

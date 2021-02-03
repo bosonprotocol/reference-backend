@@ -23,6 +23,7 @@ task :build_fix => [
 ]
 
 task :test => [
+    :'tests:app:unit',
     :'tests:app:component'
 ]
 
@@ -115,6 +116,11 @@ end
 
 namespace :tests do
   namespace :app do
+    desc "Run all component tests"
+    task :unit do
+      sh('npm', 'run', 'tests:app:unit')
+    end
+
     desc "Run all component tests"
     task :component do
       sh('npm', 'run', 'tests:app:component')

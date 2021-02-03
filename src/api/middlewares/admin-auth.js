@@ -1,6 +1,6 @@
 //@ts-nocheck
 const APIError = require("./../api-error");
-const AuthService = require("../services/auth-service");
+const AuthService = require("../../services/auth-service");
 const mongooseService = require("../../database/index.js");
 const roles = require("../../database/User/user-roles");
 
@@ -18,7 +18,7 @@ class AdminAuth {
       const ethAddress = userObj.user.toLowerCase();
       const user = await mongooseService.getUser(ethAddress);
 
-      if (user.role != roles.ADMIN) {
+      if (user.role !== roles.ADMIN) {
         return next(new APIError(403, "User is not admin!"));
       }
 
