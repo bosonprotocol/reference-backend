@@ -1,8 +1,14 @@
 //@ts-nocheck
 const APIError = require("./../api-error");
-const AuthService = require("../../services/auth-service");
+const ConfigurationService = require("../../services/configuration-service");
+const AuthenticationService = require("../../services/authentication-service");
 const mongooseService = require("../../database/index.js");
 const roles = require("../../database/User/user-roles");
+
+const configurationService = new ConfigurationService();
+const authenticationService = new AuthenticationService({
+  configurationService,
+});
 
 class AdminAuth {
   static async validateAdminAccess(req, res, next) {
@@ -14,7 +20,7 @@ class AdminAuth {
     }
 
     try {
-      const userObj = await AuthService.verifyToken(token);
+      const userObj = authenticationService.verifyToken(token);
       const ethAddress = userObj.user.toLowerCase();
       const user = await mongooseService.getUser(ethAddress);
 

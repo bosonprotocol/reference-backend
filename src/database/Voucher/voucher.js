@@ -19,7 +19,7 @@ class VouchersService {
         [status.EXPIRED]: "",
         voucherOwner: metadata._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
-        _correlationId: metadata._correlationId
+        _correlationId: metadata._correlationId,
       },
       { new: true, upsert: true }
     );

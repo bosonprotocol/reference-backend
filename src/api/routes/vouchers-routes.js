@@ -59,7 +59,9 @@ class VouchersRoutes {
         authenticationMiddleware.authenticateToken
       ),
       ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),
-      ErrorHandlers.globalErrorHandler(userVoucherController.updateVoucherStatus)
+      ErrorHandlers.globalErrorHandler(
+        userVoucherController.updateVoucherStatus
+      )
     );
 
     router.patch(
