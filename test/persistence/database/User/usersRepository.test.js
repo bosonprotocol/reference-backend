@@ -18,18 +18,20 @@ describe("Users Repository", () => {
     await mongoose.connect(databaseConnectionString, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
     });
   });
 
   afterEach(async () => {
-    await User.collection.deleteMany({})
+    await User.collection.deleteMany({});
   });
 
   after(async () => {
     await mongoose.disconnect();
   });
 
-  context("createUser", async () => {
+  context("createUser", () => {
     it("stores the user when valid", async () => {
       const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
       const nonce = 123456;
@@ -90,6 +92,152 @@ describe("Users Repository", () => {
       ).to.be.rejectedWith(
         "User validation failed: address: Path `address` is required."
       );
+    });
+  });
+
+  context("preserveNonce", () => {
+    it("creates a user and stores the nonce when user doesn't exist", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const nonce = 123456;
+
+      const usersRepository = new UsersRepository();
+      await usersRepository.preserveNonce(address, nonce);
+
+      const user = await User.findOne({ address });
+
+      expect(user.nonce).to.eql(nonce);
+    });
+
+    it("sets the nonce on a user when user already exists", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const nonce = 123456;
+
+      const usersRepository = new UsersRepository();
+      await usersRepository.createUser(address, undefined);
+
+      await usersRepository.preserveNonce(address, nonce);
+
+      const user = await User.findOne({ address });
+
+      expect(user.nonce).to.eql(nonce);
+    });
+
+    it("replaces the nonce on subsequent calls", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const firstNonce = 123456;
+      const secondNonce = 789123;
+
+      const usersRepository = new UsersRepository();
+      await usersRepository.preserveNonce(address, firstNonce);
+      await usersRepository.preserveNonce(address, secondNonce);
+
+      const user = await User.findOne({ address });
+
+      expect(user.nonce).to.eql(secondNonce);
+    });
+  });
+
+  context("getNonce", () => {
+    it("gets the nonce when the user exists", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const createdNonce = 123456;
+
+      const usersRepository = new UsersRepository();
+      await usersRepository.createUser(address, createdNonce);
+
+      const foundNonce = await usersRepository.getNonce(address);
+
+      expect(foundNonce).to.eql(createdNonce);
+    });
+
+    it("throws when there is no user for the address", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+
+      const usersRepository = new UsersRepository();
+
+      await expect(usersRepository.getNonce(address)).to.be.rejectedWith(
+        "Cannot read property 'nonce' of null"
+      );
+    });
+  });
+
+  context("getUser", () => {
+    it("returns the user when it exists", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const nonce = 123456;
+
+      await new User({
+        address,
+        nonce,
+        role: userRoles.USER,
+      }).save();
+
+      const usersRepository = new UsersRepository();
+
+      const user = await usersRepository.getUser(address);
+
+      expect(user.address).to.eql(address);
+      expect(user.nonce).to.eql(nonce);
+      expect(user.role).to.eql(userRoles.USER);
+    });
+
+    it("returns undefined when the user does not exist", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+
+      const usersRepository = new UsersRepository();
+
+      const user = await usersRepository.getUser(address);
+
+      expect(user).to.be.null;
+    });
+  });
+
+  context("setUserToAdmin", () => {
+    it("sets the role of an existing user to admin", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const nonce = 123456;
+
+      await new User({
+        address,
+        nonce,
+        role: userRoles.USER,
+      }).save();
+
+      const usersRepository = new UsersRepository();
+      await usersRepository.setUserToAdmin(address);
+
+      const user = await User.findOne({ address });
+
+      expect(user.role).to.eql(userRoles.ADMIN);
+    });
+
+    it("leaves the role of an existing admin as admin", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const nonce = 123456;
+
+      await new User({
+        address,
+        nonce,
+        role: userRoles.ADMIN,
+      }).save();
+
+      const usersRepository = new UsersRepository();
+      await usersRepository.setUserToAdmin(address);
+
+      const user = await User.findOne({ address });
+
+      expect(user.role).to.eql(userRoles.ADMIN);
+    });
+
+    it("creates the user as an admin if they don't exist", async () => {
+      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+
+      const usersRepository = new UsersRepository();
+      await usersRepository.setUserToAdmin(address);
+
+      const user = await User.findOne({ address });
+
+      expect(user.role).to.eql(userRoles.ADMIN);
     });
   });
 });
