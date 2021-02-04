@@ -24,6 +24,7 @@ task :build_fix => [
 
 task :test => [
     :'tests:app:unit',
+    :'tests:app:persistence',
     :'tests:app:component'
 ]
 
@@ -121,8 +122,13 @@ namespace :tests do
       sh('npm', 'run', 'tests:app:unit')
     end
 
+    desc "Run all persistence tests"
+    task :persistence => [:"database:test:provision"] do
+      sh('npm', 'run', 'tests:app:persistence')
+    end
+
     desc "Run all component tests"
-    task :component do
+    task :component => [:"database:test:provision"] do
       sh('npm', 'run', 'tests:app:component')
     end
   end
