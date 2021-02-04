@@ -1,3 +1,8 @@
+const coerceUndefined = (environmentVariableValue) =>
+  environmentVariableValue !== "undefined"
+    ? environmentVariableValue
+    : undefined;
+
 class ConfigurationService {
   constructor(overrides = {}) {
     this.overrides = overrides;
@@ -6,20 +11,27 @@ class ConfigurationService {
   get databaseConnectionString() {
     return (
       this.overrides.databaseConnectionString ||
-      process.env.DB_CONNECTION_STRING
+      coerceUndefined(process.env.DB_CONNECTION_STRING)
     );
   }
 
   get tokenSecret() {
-    return this.overrides.tokenSecret || process.env.TOKEN_SECRET;
+    return (
+      this.overrides.tokenSecret || coerceUndefined(process.env.TOKEN_SECRET)
+    );
   }
 
   get gcloudSecret() {
-    return this.overrides.gcloudSecret || process.env.GCLOUD_SECRET;
+    return (
+      this.overrides.gcloudSecret || coerceUndefined(process.env.GCLOUD_SECRET)
+    );
   }
 
   get vouchersBucket() {
-    return this.overrides.vouchersBucket || process.env.VOUCHERS_BUCKET;
+    return (
+      this.overrides.vouchersBucket ||
+      coerceUndefined(process.env.VOUCHERS_BUCKET)
+    );
   }
 }
 

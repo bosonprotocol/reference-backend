@@ -11,7 +11,7 @@ const withEnv = (name, value, fn) => {
 
 describe("ConfigurationService", () => {
   context("for database connection string", () => {
-    it("uses environment variable by default", () => {
+    it("uses environment variable when present", () => {
       withEnv("DB_CONNECTION_STRING", "mongodb://localhost:27017/api", () => {
         const configurationService = new ConfigurationService();
         expect(configurationService.databaseConnectionString).to.eql(
@@ -29,6 +29,12 @@ describe("ConfigurationService", () => {
           "mongodb://mongo.example.com:27017/api"
         );
       });
+    });
+
+    it("returns undefined when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.databaseConnectionString).to.be.undefined;
     });
   });
 
@@ -48,6 +54,12 @@ describe("ConfigurationService", () => {
         expect(configurationService.tokenSecret).to.eql("efgh456");
       });
     });
+
+    it("returns undefined when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.tokenSecret).to.be.undefined;
+    });
   });
 
   context("for gcloud secret", () => {
@@ -66,6 +78,12 @@ describe("ConfigurationService", () => {
         expect(configurationService.gcloudSecret).to.eql("efgh456");
       });
     });
+
+    it("returns undefined when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.gcloudSecret).to.be.undefined;
+    });
   });
 
   context("for vouchers bucket", () => {
@@ -83,6 +101,12 @@ describe("ConfigurationService", () => {
         });
         expect(configurationService.vouchersBucket).to.eql("some-other-bucket");
       });
+    });
+
+    it("returns undefined when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.vouchersBucket).to.be.undefined;
     });
   });
 });

@@ -2,13 +2,14 @@
 const APIError = require("./../api-error");
 const ConfigurationService = require("../../services/configuration-service");
 const AuthenticationService = require("../../services/authentication-service");
-const mongooseService = require("../../database/index.js");
-const roles = require("../../database/User/user-roles");
+const UsersRepository = require("../../database/User/users-repository");
+const userRoles = require("../../database/User/user-roles");
 
 const configurationService = new ConfigurationService();
 const authenticationService = new AuthenticationService({
   configurationService,
 });
+const usersRepository = new UsersRepository();
 
 class AdminAuth {
   static async validateAdminAccess(req, res, next) {
@@ -22,9 +23,9 @@ class AdminAuth {
     try {
       const userObj = authenticationService.verifyToken(token);
       const ethAddress = userObj.user.toLowerCase();
-      const user = await mongooseService.getUser(ethAddress);
+      const user = await usersRepository.getUser(ethAddress);
 
-      if (user.role !== roles.ADMIN) {
+      if (user.role !== userRoles.ADMIN) {
         return next(new APIError(403, "User is not admin!"));
       }
 

@@ -2,17 +2,17 @@
 const User = require("../models/User");
 const userRoles = require("./user-roles");
 
-class UserService {
-  static async getNonce(address) {
-    let user = await User.findOne({ address });
+class UsersRepository {
+  async getNonce(address) {
+    const user = await User.findOne({ address });
     return user.nonce;
   }
 
-  static async getUser(address) {
-    return await User.findOne({ address });
+  async getUser(address) {
+    return User.findOne({ address });
   }
 
-  static async createUser(address, nonce) {
+  async createUser(address, nonce) {
     const user = new User({
       address,
       nonce,
@@ -22,19 +22,19 @@ class UserService {
     await user.save();
   }
 
-  static async setUserToAdmin(address) {
-    return await User.findOneAndUpdate(
+  async setUserToAdmin(address) {
+    return User.findOneAndUpdate(
       { address: address },
       { role: userRoles.ADMIN },
       { new: true, upsert: true }
     );
   }
 
-  static async preserveNonce(address, nonce) {
+  async preserveNonce(address, nonce) {
     const user = await User.findOne({ address: address });
 
     if (!user) {
-      return await UserService.createUser(address, nonce);
+      return this.createUser(address, nonce);
     }
 
     await User.findOneAndUpdate(
@@ -48,4 +48,4 @@ class UserService {
   }
 }
 
-module.exports = UserService;
+module.exports = UsersRepository;

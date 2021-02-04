@@ -1,6 +1,9 @@
-const mongooseService = require("../../database/index.js");
-const ApiError = require("../api-error");
 const ethers = require("ethers");
+const ApiError = require("../api-error");
+const mongooseService = require("../../database/index.js");
+const UsersRepository = require("../../database/User/users-repository");
+
+const usersRepository = new UsersRepository();
 
 class AdminController {
   static async changeVoucherSupplyVisibility(req, res, next) {
@@ -35,7 +38,7 @@ class AdminController {
     }
 
     try {
-      const user = await mongooseService.getUser(address);
+      const user = await usersRepository.getUser(address);
 
       if (!user) {
         return next(
@@ -43,7 +46,7 @@ class AdminController {
         );
       }
 
-      await mongooseService.makeAdmin(address);
+      await usersRepository.setUserToAdmin(address);
     } catch (error) {
       console.error(error);
       return next(

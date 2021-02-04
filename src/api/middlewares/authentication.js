@@ -1,6 +1,6 @@
 //@ts-nocheck
 const APIError = require("./../api-error");
-const ConfigurationService = require('../../services/configuration-service')
+const ConfigurationService = require("../../services/configuration-service");
 const AuthenticationService = require("../../services/authentication-service");
 
 const configurationService = new ConfigurationService();
