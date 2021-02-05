@@ -1,68 +1,76 @@
-const nonceUtils = require('../../utils/nonceUtils')
-const mongooseService = require('../../database/index.js')
-const AuthValidator = require('../services/auth-service')
-const APIError = require('../api-error')
+const nonceUtils = require("../../utils/nonceUtils");
+const mongooseService = require("../../database/index.js");
+const AuthValidator = require("../services/auth-service");
+const APIError = require("../api-error");
 
 class UserController {
+  static async generateNonce(req, res, next) {
+    const address = req.params.address;
+    let randomNonce;
 
-    static async generateNonce(req, res, next) {
-        const address = req.params.address;
-        let randomNonce;
-
-        try {
-            randomNonce = nonceUtils.generateRandomNumber();
-            await mongooseService.preserveNonce(address.toLowerCase(), randomNonce)
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Could not preserve nonce for user: ${ address }.`))
-        }
-
-        res.status(200).json(
-            randomNonce
-        );
+    try {
+      randomNonce = nonceUtils.generateRandomNumber();
+      await mongooseService.preserveNonce(address.toLowerCase(), randomNonce);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(400, `Could not preserve nonce for user: ${address}.`)
+      );
     }
 
-    static async verifySignature(req, res, next) {
-        const address = req.params.address
+    res.status(200).json(randomNonce);
+  }
 
-        try {
-            const nonce = await mongooseService.getNonce(address.toLowerCase())
+  static async verifySignature(req, res, next) {
+    const address = req.params.address;
 
-            const message = {
-                value: `Authentication message: ${ nonce }`
-            }
+    try {
+      const nonce = await mongooseService.getNonce(address.toLowerCase());
 
-            const isSignatureVerified = await AuthValidator.isSignatureVerified(address, req.body.domain, req.body.types, message, req.body.signature)
+      const message = {
+        value: `Authentication message: ${nonce}`,
+      };
 
-            if (!isSignatureVerified && !req.body.isSmartWallet) {
-                return next(new APIError(401, 'Unauthorized.'))
-            }
+      const isSignatureVerified = await AuthValidator.isSignatureVerified(
+        address,
+        req.body.domain,
+        req.body.types,
+        message,
+        req.body.signature
+      );
 
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Signature was not verified!`))
-        }
-
-        const authToken = AuthValidator.generateAccessToken(address)
-        res.status(200).send(authToken)
+      if (!isSignatureVerified && !req.body.isSmartWallet) {
+        return next(new APIError(401, "Unauthorized."));
+      }
+    } catch (error) {
+      console.error(error);
+      return next(new APIError(400, `Signature was not verified!`));
     }
 
-    static async commitToBuy(req, res, next) {
-        const supplyID = req.params.supplyID
-        const metadata = req.body;
-        let userVoucher;
+    const authToken = AuthValidator.generateAccessToken(address);
+    res.status(200).send(authToken);
+  }
 
-        try {
-            userVoucher = await mongooseService.createVoucher(metadata, supplyID);
-            await mongooseService.updateVoucherQty(supplyID);
+  static async commitToBuy(req, res, next) {
+    const supplyID = req.params.supplyID;
+    const metadata = req.body;
+    let userVoucher;
 
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Buy operation for Supply id: ${ supplyID } could not be completed.`))
-        }
-
-        res.status(200).send({ userVoucherID: userVoucher.id });
+    try {
+      userVoucher = await mongooseService.createVoucher(metadata, supplyID);
+      await mongooseService.updateVoucherQty(supplyID);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `Buy operation for Supply id: ${supplyID} could not be completed.`
+        )
+      );
     }
+
+    res.status(200).send({ userVoucherID: userVoucher.id });
+  }
 }
 
 module.exports = UserController;
