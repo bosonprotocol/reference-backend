@@ -1,9 +1,10 @@
-//@ts-nocheck
-
-const mongooseService = require("../../database/index.js");
-const APIError = require("../api-error");
+// @ts-nocheck
 const ethers = require("ethers");
+
+const APIError = require("../api-error");
 const constants = require("../../utils/testUtils/constants");
+const mongooseService = require("../../database/index.js");
+const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
 
 const provider = new ethers.providers.InfuraProvider("rinkeby", [
   constants.INFURA_API_KEY,
@@ -11,12 +12,16 @@ const provider = new ethers.providers.InfuraProvider("rinkeby", [
 
 const sellerWallet = new ethers.Wallet(constants.SELLER_PK, provider);
 const buyerWallet = new ethers.Wallet(constants.BUYER_PK, provider);
+
 const Cashier = require("../../utils/testUtils/ABIS/Cashier.json");
 const VoucherKernel = require("../../utils/testUtils/ABIS/VoucherKernel.json");
 const TestUtils = require("../../utils/testUtils/testUtils");
+
 const utils = new TestUtils(provider);
 
 const { AbiCoder, Interface } = require("ethers").utils;
+
+const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
 async function getEncodedTopic(receipt, abi, eventName) {
   const interface = new Interface(abi);
@@ -29,7 +34,7 @@ async function getEncodedTopic(receipt, abi, eventName) {
         // CHECK IF  TOPIC CORRESPONDS TO THE EVENT GIVEN TO FN
         let event = await interface.getEvent(encodedTopic);
 
-        if (event.name == eventName) return encodedTopic;
+        if (event.name === eventName) return encodedTopic;
       } catch (error) {
         // breaks silently as we do not need to do anything if the there is not such an event
       }
@@ -83,7 +88,7 @@ class TestController {
     }
 
     try {
-      await mongooseService.createVoucherSupply(
+      await voucherSuppliesRepository.createVoucherSupply(
         {
           ...req.body,
           ...parsedEvent,
@@ -112,7 +117,7 @@ class TestController {
 
     let data;
 
-    const voucherSupply = await mongooseService.getVoucherSupplyBySupplyID(
+    const voucherSupply = await voucherSuppliesRepository.getVoucherSupplyBySupplyTokenID(
       supplyID
     );
 

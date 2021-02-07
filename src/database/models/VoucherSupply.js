@@ -16,7 +16,7 @@ const voucherSchema = new Schema({
     required: true,
     validate(value) {
       if (value < 0) {
-        throw new Error("Qty must be a postive number");
+        throw new Error("Qty must be a positive number");
       }
     },
   },

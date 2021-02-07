@@ -1,9 +1,10 @@
 const ethers = require("ethers");
 const ApiError = require("../api-error");
-const mongooseService = require("../../database/index.js");
 const UsersRepository = require("../../database/User/users-repository");
+const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
 
 const usersRepository = new UsersRepository();
+const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
 class AdminController {
   static async changeVoucherSupplyVisibility(req, res, next) {
@@ -11,7 +12,9 @@ class AdminController {
     let voucherSupply;
 
     try {
-      voucherSupply = await mongooseService.getVoucherSupply(supplyID);
+      voucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+        supplyID
+      );
     } catch (error) {
       console.error(error);
       return next(
@@ -19,7 +22,7 @@ class AdminController {
       );
     }
 
-    const updatedVoucherSupply = await mongooseService.updateVoucherVisibilityStatus(
+    const updatedVoucherSupply = await voucherSuppliesRepository.toggleVoucherSupplyVisibility(
       voucherSupply.id
     );
     res.status(200).send({ visible: updatedVoucherSupply.visible });
