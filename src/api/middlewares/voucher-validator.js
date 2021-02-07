@@ -1,12 +1,16 @@
 const APIError = require("./../api-error");
-const mongooseService = require("../../database/index.js");
+const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
+
+const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
 class VoucherValidator {
   static async ValidateVoucherSupplyExists(req, res, next) {
     let voucherSupply;
 
     try {
-      voucherSupply = await mongooseService.getVoucherSupply(req.params.id);
+      voucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+        req.params.id
+      );
     } catch (error) {
       return next(
         new APIError(

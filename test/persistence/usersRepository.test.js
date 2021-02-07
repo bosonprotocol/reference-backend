@@ -4,10 +4,12 @@ chai.use(require("chai-as-promised"));
 
 const expect = chai.expect;
 
-const ConfigurationService = require("../../../../src/services/configuration-service");
-const UsersRepository = require("../../../../src/database/User/users-repository");
-const User = require("../../../../src/database/models/User");
-const userRoles = require("../../../../src/database/User/user-roles");
+const ConfigurationService = require("../../src/services/configuration-service");
+const UsersRepository = require("../../src/database/User/users-repository");
+const User = require("../../src/database/models/User");
+const userRoles = require("../../src/database/User/user-roles");
+
+const Random = require("../helpers/random");
 
 describe("Users Repository", () => {
   before(async () => {
@@ -33,8 +35,8 @@ describe("Users Repository", () => {
 
   context("createUser", () => {
     it("stores the user when valid", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const nonce = 123456;
+      const address = Random.address();
+      const nonce = Random.nonce();
 
       const usersRepository = new UsersRepository();
       await usersRepository.createUser(address, nonce);
@@ -47,8 +49,8 @@ describe("Users Repository", () => {
     });
 
     it("fails if nonce is negative", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const nonce = -123456;
+      const address = Random.address();
+      const nonce = -167463;
 
       const usersRepository = new UsersRepository();
       await expect(
@@ -59,7 +61,7 @@ describe("Users Repository", () => {
     });
 
     it("fails if nonce is not a number", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const address = Random.address();
       const nonce = "not-a-number";
 
       const usersRepository = new UsersRepository();
@@ -71,7 +73,7 @@ describe("Users Repository", () => {
     });
 
     it("uses a nonce of zero when not provided", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const address = Random.address();
       const nonce = undefined;
 
       const usersRepository = new UsersRepository();
@@ -84,7 +86,7 @@ describe("Users Repository", () => {
 
     it("fails if address is not provided", async () => {
       const address = undefined;
-      const nonce = 123456;
+      const nonce = Random.nonce();
 
       const usersRepository = new UsersRepository();
       await expect(
@@ -97,8 +99,8 @@ describe("Users Repository", () => {
 
   context("preserveNonce", () => {
     it("creates a user and stores the nonce when user doesn't exist", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const nonce = 123456;
+      const address = Random.address();
+      const nonce = Random.nonce();
 
       const usersRepository = new UsersRepository();
       await usersRepository.preserveNonce(address, nonce);
@@ -109,8 +111,8 @@ describe("Users Repository", () => {
     });
 
     it("sets the nonce on a user when user already exists", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const nonce = 123456;
+      const address = Random.address();
+      const nonce = Random.nonce();
 
       const usersRepository = new UsersRepository();
       await usersRepository.createUser(address, undefined);
@@ -123,9 +125,9 @@ describe("Users Repository", () => {
     });
 
     it("replaces the nonce on subsequent calls", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const firstNonce = 123456;
-      const secondNonce = 789123;
+      const address = Random.address();
+      const firstNonce = Random.nonce();
+      const secondNonce = Random.nonce();
 
       const usersRepository = new UsersRepository();
       await usersRepository.preserveNonce(address, firstNonce);
@@ -139,8 +141,8 @@ describe("Users Repository", () => {
 
   context("getNonce", () => {
     it("gets the nonce when the user exists", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const createdNonce = 123456;
+      const address = Random.address();
+      const createdNonce = Random.nonce();
 
       const usersRepository = new UsersRepository();
       await usersRepository.createUser(address, createdNonce);
@@ -151,7 +153,7 @@ describe("Users Repository", () => {
     });
 
     it("throws when there is no user for the address", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const address = Random.address();
 
       const usersRepository = new UsersRepository();
 
@@ -163,8 +165,8 @@ describe("Users Repository", () => {
 
   context("getUser", () => {
     it("returns the user when it exists", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const nonce = 123456;
+      const address = Random.address();
+      const nonce = Random.nonce();
 
       await new User({
         address,
@@ -182,7 +184,7 @@ describe("Users Repository", () => {
     });
 
     it("returns undefined when the user does not exist", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const address = Random.address();
 
       const usersRepository = new UsersRepository();
 
@@ -194,8 +196,8 @@ describe("Users Repository", () => {
 
   context("setUserToAdmin", () => {
     it("sets the role of an existing user to admin", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const nonce = 123456;
+      const address = Random.address();
+      const nonce = Random.nonce();
 
       await new User({
         address,
@@ -212,8 +214,8 @@ describe("Users Repository", () => {
     });
 
     it("leaves the role of an existing admin as admin", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
-      const nonce = 123456;
+      const address = Random.address();
+      const nonce = Random.nonce();
 
       await new User({
         address,
@@ -230,7 +232,7 @@ describe("Users Repository", () => {
     });
 
     it("creates the user as an admin if they don't exist", async () => {
-      const address = "0x9b8B1ac5979991E72D61c8C4cB6a95Ecd2d6E706";
+      const address = Random.address();
 
       const usersRepository = new UsersRepository();
       await usersRepository.setUserToAdmin(address);

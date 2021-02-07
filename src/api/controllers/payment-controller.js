@@ -40,13 +40,13 @@ class PaymentController {
       );
 
       for (const key in payments) {
-        if (payments[key]._to.toLowerCase() == buyer) {
+        if (payments[key]._to.toLowerCase() === buyer) {
           PaymentController.addPayment(
             payments[key],
             actors.BUYER,
             distributedAmounts
           );
-        } else if (payments[key]._to.toLowerCase() == seller) {
+        } else if (payments[key]._to.toLowerCase() === seller) {
           PaymentController.addPayment(
             payments[key],
             actors.SELLER,

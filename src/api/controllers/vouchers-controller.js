@@ -1,8 +1,11 @@
-//@ts-nocheck
+// @ts-nocheck
 
-const mongooseService = require("../../database/index.js");
 const APIError = require("../api-error");
 const voucherUtils = require("../../utils/voucherUtils");
+const mongooseService = require("../../database/index.js");
+const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
+
+const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
 class VoucherController {
   static async getVouchers(req, res, next) {
@@ -15,7 +18,10 @@ class VoucherController {
 
       userVouchers.forEach((userVoucher) => {
         promises.push(
-          mongooseService.getVouchersSupplyDetails(userVoucher, voucherData)
+          voucherSuppliesRepository.getVoucherSupplyDetails(
+            userVoucher,
+            voucherData
+          )
         );
       });
 
@@ -56,7 +62,7 @@ class VoucherController {
     let voucher;
     try {
       const userVoucher = await mongooseService.getVoucherByID(voucherID);
-      const voucherSupply = await mongooseService.getVoucherSupply(
+      const voucherSupply = await voucherSuppliesRepository.getVoucherSupply(
         userVoucher.supplyID
       );
 
