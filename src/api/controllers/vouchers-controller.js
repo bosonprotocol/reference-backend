@@ -2,10 +2,11 @@
 
 const APIError = require("../api-error");
 const voucherUtils = require("../../utils/voucherUtils");
-const mongooseService = require("../../database/index.js");
 const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
+const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
 
 const voucherSuppliesRepository = new VoucherSuppliesRepository();
+const vouchersRepository = new VouchersRepository();
 
 class VoucherController {
   static async getVouchers(req, res, next) {
@@ -14,7 +15,9 @@ class VoucherController {
 
     try {
       const promises = [];
-      const userVouchers = await mongooseService.getUserVouchers(address);
+      const userVouchers = await vouchersRepository.getAllVouchersByHolder(
+        address
+      );
 
       userVouchers.forEach((userVoucher) => {
         promises.push(
@@ -42,7 +45,7 @@ class VoucherController {
     const supplyID = req.params.supplyID;
     let vouchers = {};
     try {
-      vouchers = await mongooseService.findAllVouchersByVoucherSupplyID(
+      vouchers = await vouchersRepository.getAllVouchersByVoucherSupplyIdAndOwner(
         supplyID,
         owner
       );
@@ -61,8 +64,8 @@ class VoucherController {
 
     let voucher;
     try {
-      const userVoucher = await mongooseService.getVoucherByID(voucherID);
-      const voucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+      const userVoucher = await vouchersRepository.getVoucherById(voucherID);
+      const voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
         userVoucher.supplyID
       );
 
@@ -116,7 +119,7 @@ class VoucherController {
     let voucher;
 
     try {
-      voucher = await mongooseService.createVoucher(metadata, supplyID);
+      voucher = await vouchersRepository.createVoucher(metadata, supplyID);
     } catch (error) {
       console.error(error);
       return next(
@@ -135,7 +138,7 @@ class VoucherController {
     const status = req.body.status;
 
     try {
-      await mongooseService.updateVoucherStatus(voucherID, status);
+      await vouchersRepository.updateVoucherStatus(voucherID, status);
     } catch (error) {
       console.error(
         `An error occurred while tried to update voucher with ID: [${voucherID}]!`
@@ -219,7 +222,7 @@ class VoucherController {
     const status = req.body[0].status;
 
     try {
-      await mongooseService.updateStatusFromKeepers(tokenIdVoucher, status);
+      await vouchersRepository.updateStatusFromKeepers(tokenIdVoucher, status);
     } catch (error) {
       console.error(
         `An error occurred while tried to finalize voucher with ID: [${tokenIdVoucher}]!`
@@ -240,7 +243,7 @@ class VoucherController {
     let vouchers;
 
     try {
-      vouchers = await mongooseService.getAllVouchers();
+      vouchers = await vouchersRepository.getAllVouchers();
     } catch (error) {
       console.error(`An error occurred while tried to fetch all vouchers!`);
       console.error(error);

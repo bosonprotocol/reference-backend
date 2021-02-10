@@ -13,7 +13,7 @@ class AdminController {
     let updatedVoucherSupply;
 
     try {
-      voucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+      voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
         supplyID
       );
       updatedVoucherSupply = await voucherSuppliesRepository.toggleVoucherSupplyVisibility(

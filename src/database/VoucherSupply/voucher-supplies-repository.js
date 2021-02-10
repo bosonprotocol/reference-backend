@@ -76,7 +76,7 @@ class VoucherSuppliesRepository {
   }
 
   async decrementVoucherSupplyQty(id) {
-    const voucherSupply = await this.getVoucherSupply(id);
+    const voucherSupply = await this.getVoucherSupplyById(id);
     if (!voucherSupply) {
       throw new Error("Voucher supply not found");
     }
@@ -131,7 +131,7 @@ class VoucherSuppliesRepository {
   }
 
   async toggleVoucherSupplyVisibility(id) {
-    const voucherSupply = await this.getVoucherSupply(id);
+    const voucherSupply = await this.getVoucherSupplyById(id);
     if (!voucherSupply) {
       throw new Error("Voucher supply not found");
     }
@@ -146,7 +146,7 @@ class VoucherSuppliesRepository {
   }
 
   async deleteVoucherSupply(id) {
-    const voucherSupply = await this.getVoucherSupply(id);
+    const voucherSupply = await this.getVoucherSupplyById(id);
     if (!voucherSupply) {
       throw new Error("Voucher supply not found");
     }
@@ -155,7 +155,7 @@ class VoucherSuppliesRepository {
   }
 
   async deleteVoucherSupplyImage(id, imageUrl) {
-    const voucherSupply = await this.getVoucherSupply(id);
+    const voucherSupply = await this.getVoucherSupplyById(id);
     if (!voucherSupply) {
       throw new Error("Voucher supply not found");
     }
@@ -174,11 +174,11 @@ class VoucherSuppliesRepository {
     );
   }
 
-  async getVoucherSupply(id) {
+  async getVoucherSupplyById(id) {
     return VoucherSupply.findById(id);
   }
 
-  async getVoucherSupplyBySupplyTokenID(supplyTokenId) {
+  async getVoucherSupplyBySupplyTokenId(supplyTokenId) {
     return VoucherSupply.findOne({ _tokenIdSupply: supplyTokenId });
   }
 
@@ -226,7 +226,7 @@ class VoucherSuppliesRepository {
   }
 
   async getVoucherSupplyDetails(voucher, voucherSupplyDetailsList) {
-    const voucherSupply = await this.getVoucherSupply(voucher.supplyID);
+    const voucherSupply = await this.getVoucherSupplyById(voucher.supplyID);
     if (!voucherSupply) {
       throw new Error("Voucher supply not found");
     }

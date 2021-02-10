@@ -255,6 +255,7 @@ describe("Voucher Supplies Repository", () => {
     });
   });
 
+  // TODO: test validations on update
   context("updateVoucherSupply", () => {
     it("updates the voucher supply metadata except token supply ID when valid", async () => {
       const voucherOwner = Random.address();
@@ -716,7 +717,7 @@ describe("Voucher Supplies Repository", () => {
     });
   });
 
-  context("getVoucherSupply", () => {
+  context("getVoucherSupplyById", () => {
     it("returns the voucher supply when it exists", async () => {
       const voucherOwner = Random.address();
       const fileRefs = [Random.fileRef(), Random.fileRef()];
@@ -734,7 +735,7 @@ describe("Voucher Supplies Repository", () => {
       });
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
-      const foundVoucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+      const foundVoucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
         savedVoucherSupply._id
       );
 
@@ -754,7 +755,7 @@ describe("Voucher Supplies Repository", () => {
       });
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
-      const foundVoucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+      const foundVoucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
         voucherSupply._id
       );
 
@@ -762,7 +763,7 @@ describe("Voucher Supplies Repository", () => {
     });
   });
 
-  context("getVoucherSupplyBySupplyTokenID", () => {
+  context("getVoucherSupplyBySupplyTokenId", () => {
     it("returns the voucher supply for the supply token ID when it exists", async () => {
       const voucherOwner = Random.address();
       const fileRefs = [Random.fileRef(), Random.fileRef()];
@@ -780,7 +781,7 @@ describe("Voucher Supplies Repository", () => {
       });
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
-      const foundVoucherSupply = await voucherSuppliesRepository.getVoucherSupplyBySupplyTokenID(
+      const foundVoucherSupply = await voucherSuppliesRepository.getVoucherSupplyBySupplyTokenId(
         metadata._tokenIdSupply
       );
 
@@ -793,7 +794,7 @@ describe("Voucher Supplies Repository", () => {
       const _tokenIdSupply = Random.uint256();
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
-      const foundVoucherSupply = await voucherSuppliesRepository.getVoucherSupplyBySupplyTokenID(
+      const foundVoucherSupply = await voucherSuppliesRepository.getVoucherSupplyBySupplyTokenId(
         _tokenIdSupply
       );
 

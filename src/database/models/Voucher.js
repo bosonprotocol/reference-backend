@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const collections = require("../collections.json");
 const VOUCHER = collections.VOUCHER;
 
-const userSchema = new Schema({
+// TODO: discuss whether action date is needed
+const voucherSchema = new Schema({
   supplyID: {
     type: String,
     required: true,
@@ -64,4 +65,4 @@ const userSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model(VOUCHER, userSchema);
+module.exports = mongoose.model(VOUCHER, voucherSchema);
