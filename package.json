@@ -34,6 +34,7 @@
     "faker": "^5.3.1",
     "firebase-tools": "^9.2.2",
     "freeport": "^1.0.5",
+    "keccak256": "^1.0.2",
     "keythereum": "^1.2.0",
     "mocha": "^8.2.1",
     "prettier": "^2.2.1",
