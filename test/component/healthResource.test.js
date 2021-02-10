@@ -19,10 +19,12 @@ describe("Health Resource", () => {
     server.stop();
   });
 
-  it("returns 200 and healthy body when healthy", async () => {
-    const response = await request.get(`${server.address}/health`);
+  context("on GET", () => {
+    it("returns 200 and healthy body", async () => {
+      const response = await request.get(`${server.address}/health`);
 
-    expect(response.statusCode).to.eql(200);
-    expect(response.body).to.eql({ healthy: true });
+      expect(response.statusCode).to.eql(200);
+      expect(response.body).to.eql({ healthy: true });
+    });
   });
 });
