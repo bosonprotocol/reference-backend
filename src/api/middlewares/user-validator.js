@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 const APIError = require("./../api-error");
-const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
+const VouchersRepository = require("../../database/Voucher/vouchers-repository");
 
 const vouchersRepository = new VouchersRepository();
 

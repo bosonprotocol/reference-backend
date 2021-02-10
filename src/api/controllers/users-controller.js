@@ -2,7 +2,7 @@ const APIError = require("../api-error");
 const nonceUtils = require("../../utils/nonceUtils");
 const UsersRepository = require("../../database/User/users-repository");
 const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
-const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
+const VouchersRepository = require("../../database/Voucher/vouchers-repository");
 const ConfigurationService = require("../../services/configuration-service");
 const AuthenticationService = require("../../services/authentication-service");
 
