@@ -5,6 +5,7 @@ const APIError = require("../api-error");
 const constants = require("../../utils/testUtils/constants");
 const mongooseService = require("../../database/index.js");
 const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
+const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
 
 const provider = new ethers.providers.InfuraProvider("rinkeby", [
   constants.INFURA_API_KEY,
@@ -22,6 +23,7 @@ const utils = new TestUtils(provider);
 const { AbiCoder, Interface } = require("ethers").utils;
 
 const voucherSuppliesRepository = new VoucherSuppliesRepository();
+const vouchersRepository = new VouchersRepository();
 
 async function getEncodedTopic(receipt, abi, eventName) {
   const interface = new Interface(abi);
@@ -117,7 +119,7 @@ class TestController {
 
     let data;
 
-    const voucherSupply = await voucherSuppliesRepository.getVoucherSupplyBySupplyTokenID(
+    const voucherSupply = await voucherSuppliesRepository.getVoucherSupplyBySupplyTokenId(
       supplyID
     );
 
@@ -164,7 +166,7 @@ class TestController {
     };
 
     try {
-      await mongooseService.createVoucher(metadata, voucherSupply.id);
+      await vouchersRepository.createVoucher(metadata, voucherSupply.id);
     } catch (error) {
       console.error(error);
       return next(new APIError(400, "Failed to store voucher in DB"));
@@ -180,14 +182,14 @@ class TestController {
       VoucherKernel.abi,
       buyerWallet
     );
-    const voucher = await mongooseService.findVoucherByTokenIdVoucher(
+    const voucher = await vouchersRepository.getVoucherByVoucherTokenId(
       voucherID
     );
     let tx;
     try {
       tx = await voucherKernel.redeem(voucherID, { gasLimit: "4000000" });
       await tx.wait();
-      await mongooseService.updateVoucherStatus(voucher.id, "REDEEMED");
+      await vouchersRepository.updateVoucherStatus(voucher.id, "REDEEMED");
     } catch (error) {
       console.error(error);
       return next(new APIError(400, `Tx failed! TxHash: ${tx.hash}`));

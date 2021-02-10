@@ -12,7 +12,7 @@ class AdminController {
     let voucherSupply;
 
     try {
-      voucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+      voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
         supplyID
       );
     } catch (error) {

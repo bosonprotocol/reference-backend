@@ -1,6 +1,10 @@
-const mongooseService = require("../../database/index.js");
-const APIError = require("../api-error");
 const ethers = require("ethers");
+
+const APIError = require("../api-error");
+const mongooseService = require("../../database/index.js");
+const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
+
+const vouchersRepository = new VouchersRepository();
 
 const actors = {
   BUYER: "buyer",
@@ -32,7 +36,7 @@ class PaymentController {
     };
 
     try {
-      userVoucher = await mongooseService.getVoucherByID(objectId);
+      userVoucher = await vouchersRepository.getVoucherById(objectId);
       const buyer = userVoucher._holder;
       const seller = userVoucher.voucherOwner;
       const payments = await mongooseService.getPaymentsByVoucherID(
@@ -75,15 +79,15 @@ class PaymentController {
 
   static addPayment(paymentDetails, actor, distributedAmounts) {
     // _type:  0 - Payment, 1 - Seller Deposit, 2 - Buyer Deposit
-    if (paymentDetails._type == 0) {
+    if (paymentDetails._type === 0) {
       distributedAmounts.payment[actor] = ethers.BigNumber.from(
         distributedAmounts.payment[actor].toString()
       ).add(paymentDetails._payment.toString());
-    } else if (paymentDetails._type == 1) {
+    } else if (paymentDetails._type === 1) {
       distributedAmounts.sellerDeposit[actor] = ethers.BigNumber.from(
         distributedAmounts.sellerDeposit[actor].toString()
       ).add(paymentDetails._payment.toString());
-    } else if (paymentDetails._type == 2) {
+    } else if (paymentDetails._type === 2) {
       distributedAmounts.buyerDeposit[actor] = ethers.BigNumber.from(
         distributedAmounts.buyerDeposit[actor].toString()
       ).add(paymentDetails._payment.toString());

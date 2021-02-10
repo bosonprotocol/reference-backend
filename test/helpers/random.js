@@ -3,6 +3,8 @@ const keythereum = require("keythereum");
 const ethers = require("ethers");
 const mongoose = require("mongoose");
 
+const status = require("../../src/utils/userVoucherStatus");
+
 const oneDayInMillis = 24 * 60 * 60 * 1000;
 const twoDaysInMillis = 2 * oneDayInMillis;
 
@@ -201,6 +203,37 @@ class Random {
       _tokenIdVoucher: Random.uint256(),
       _holder: Random.address(),
       _issuer: Random.address(),
+      ...overrides,
+    };
+  }
+
+  static voucherAttributes(overrides = {}) {
+    // Create happy path redeemed an finalized voucher by default
+    const finalizeUnixMillis = Random.pastDateUnixMillis();
+    const redeemUnixMillis = Random.pastDateUnixMillisBefore(
+      finalizeUnixMillis
+    );
+    const commitUnixMillis = Random.pastDateUnixMillisBefore(redeemUnixMillis);
+
+    // Allow voucher metadata to be passed as overrides and do the right thing
+    const voucherOwner =
+      overrides._issuer ||
+      Random.address().toLowerCase();
+    delete overrides._issuer;
+
+    return {
+      supplyID: Random.documentId().toString(),
+      _holder: Random.address().toLowerCase(),
+      _tokenIdSupply: Random.uint256(),
+      _tokenIdVoucher: Random.uint256(),
+      [status.COMMITTED]: commitUnixMillis,
+      [status.CANCELLED]: null,
+      [status.COMPLAINED]: null,
+      [status.REDEEMED]: redeemUnixMillis,
+      [status.REFUNDED]: null,
+      [status.FINALIZED]: finalizeUnixMillis,
+      voucherOwner,
+      actionDate: commitUnixMillis,
       ...overrides,
     };
   }

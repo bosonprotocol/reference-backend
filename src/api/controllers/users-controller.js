@@ -1,8 +1,8 @@
 const APIError = require("../api-error");
 const nonceUtils = require("../../utils/nonceUtils");
-const mongooseService = require("../../database/index.js");
 const UsersRepository = require("../../database/User/users-repository");
 const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
+const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
 const ConfigurationService = require("../../services/configuration-service");
 const AuthenticationService = require("../../services/authentication-service");
 
@@ -12,6 +12,7 @@ const authenticationService = new AuthenticationService({
 });
 const usersRepository = new UsersRepository();
 const voucherSuppliesRepository = new VoucherSuppliesRepository();
+const vouchersRepository = new VouchersRepository();
 
 class UserController {
   static async generateNonce(req, res, next) {
@@ -68,7 +69,7 @@ class UserController {
     let userVoucher;
 
     try {
-      userVoucher = await mongooseService.createVoucher(metadata, supplyID);
+      userVoucher = await vouchersRepository.createVoucher(metadata, supplyID);
       await voucherSuppliesRepository.decrementVoucherSupplyQty(supplyID);
     } catch (error) {
       console.error(error);

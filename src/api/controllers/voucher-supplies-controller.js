@@ -16,7 +16,7 @@ class VoucherSuppliesController {
     }
 
     try {
-      voucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+      voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
         req.params.id
       );
       voucherSupply.voucherStatus = voucherUtils.calcVoucherSupplyStatus(

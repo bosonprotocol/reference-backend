@@ -5,7 +5,7 @@ const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
 class VoucherValidator {
   static async ValidateVoucherSupplyExists(req, res, next) {
-    const voucherSupply = await voucherSuppliesRepository.getVoucherSupply(
+    const voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
       req.params.id
     );
 
