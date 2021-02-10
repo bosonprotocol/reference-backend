@@ -1,10 +1,11 @@
 const ethers = require("ethers");
 
 const APIError = require("../api-error");
-const mongooseService = require("../../database/index.js");
-const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
+const VouchersRepository = require("../../database/Voucher/vouchers-repository");
+const PaymentsRepository = require("../../database/Payment/payments-repository");
 
 const vouchersRepository = new VouchersRepository();
+const paymentsRepository = new PaymentsRepository();
 
 const actors = {
   BUYER: "buyer",
@@ -39,7 +40,7 @@ class PaymentController {
       userVoucher = await vouchersRepository.getVoucherById(objectId);
       const buyer = userVoucher._holder;
       const seller = userVoucher.voucherOwner;
-      const payments = await mongooseService.getPaymentsByVoucherID(
+      const payments = await paymentsRepository.getPaymentsByVoucherTokenId(
         userVoucher._tokenIdVoucher
       );
 
@@ -100,7 +101,7 @@ class PaymentController {
 
     try {
       for (const key in events) {
-        promises.push(mongooseService.createPayment(events[key]));
+        promises.push(paymentsRepository.createPayment(events[key]));
       }
 
       await Promise.all(promises);
@@ -123,7 +124,9 @@ class PaymentController {
     let payments;
 
     try {
-      payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
+      payments = await paymentsRepository.getPaymentsByVoucherTokenId(
+        tokenIdVoucher
+      );
     } catch (error) {
       console.error(error);
       return next(

@@ -2,6 +2,7 @@ const faker = require("faker");
 const keythereum = require("keythereum");
 const ethers = require("ethers");
 const mongoose = require("mongoose");
+const keccak256 = require("keccak256");
 
 const status = require("../../src/utils/userVoucherStatus");
 
@@ -18,6 +19,10 @@ class Random {
     const keyDetails = keythereum.create(params);
 
     return ethers.utils.computeAddress(keyDetails.privateKey);
+  }
+
+  static transactionHash() {
+    return `0x${keccak256(faker.random.alpha(64)).toString("hex")}`
   }
 
   static nonce() {
@@ -105,13 +110,13 @@ class Random {
     );
   }
 
-  static price() {
+  static monetaryAmount(options = {}) {
     return ethers.utils
       .parseEther(
         faker.random
           .float({
-            min: 0.00001,
-            max: 0.01,
+            min: options.min || 0.00001,
+            max: options.max || 0.01,
             precision: 0.0000000000001,
           })
           .toString()
@@ -119,18 +124,12 @@ class Random {
       .toString();
   }
 
+  static price() {
+    return Random.monetaryAmount({ min: 0.00001, max: 0.01 });
+  }
+
   static deposit() {
-    return ethers.utils
-      .parseEther(
-        faker.random
-          .float({
-            min: 0.000001,
-            max: 0.001,
-            precision: 0.0000000000001,
-          })
-          .toString()
-      )
-      .toString();
+    return Random.monetaryAmount({ min: 0.000001, max: 0.001 });
   }
 
   static location() {
@@ -216,9 +215,7 @@ class Random {
     const commitUnixMillis = Random.pastDateUnixMillisBefore(redeemUnixMillis);
 
     // Allow voucher metadata to be passed as overrides and do the right thing
-    const voucherOwner =
-      overrides._issuer ||
-      Random.address().toLowerCase();
+    const voucherOwner = overrides._issuer || Random.address().toLowerCase();
     delete overrides._issuer;
 
     return {
@@ -234,6 +231,21 @@ class Random {
       [status.FINALIZED]: finalizeUnixMillis,
       voucherOwner,
       actionDate: commitUnixMillis,
+      ...overrides,
+    };
+  }
+
+  static paymentType() {
+    return faker.random.number({ min: 0, max: 2 });
+  }
+
+  static paymentMetadata(overrides = {}) {
+    return {
+      _tokenIdVoucher: Random.uint256(),
+      _to: Random.address(),
+      _payment: Random.monetaryAmount(),
+      _type: Random.paymentType(),
+      txHash: Random.transactionHash(),
       ...overrides,
     };
   }
