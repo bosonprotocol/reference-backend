@@ -136,7 +136,7 @@ class VoucherController {
         let voucher
 
         try {
-            const voucher = await mongooseService.findVoucherByTokenIdVoucher(req.body._tokenIdVoucher)
+            voucher = await mongooseService.findVoucherByTokenIdVoucher(req.body._tokenIdVoucher)
             
             if (!voucher) { 
                 return next(new APIError(404, `User Voucher with voucherTokenId ${req.body._tokenIdVoucher} not found!`))
@@ -145,7 +145,7 @@ class VoucherController {
             await mongooseService.updateVoucherOnCommonEvent(voucher.id, req.body)
         } catch (error) {
             console.error(error)
-            return next(new APIError(400, `Update operation for user voucher id: ${voucher.id} could not be completed.`))
+            return next(new APIError(400, `Update operation for voucher id: ${voucher.id} could not be completed.`))
         }
 
         res.status(200).send({ updated: true })

@@ -130,8 +130,7 @@ class VoucherSupplyService {
         )
     }
 
-    static async updateSupplyOnTransfer(metadata) {
-
+    static async updateSupplyMeta(metadata) {
         const voucherSupply =  await VoucherSupply.findOne(
             {
                 _tokenIdSupply: metadata._tokenIdSupply
@@ -145,9 +144,7 @@ class VoucherSupplyService {
 
         return await VoucherSupply.findByIdAndUpdate(voucherSupply.id, 
             {
-                voucherOwner: metadata.voucherOwner.toLowerCase(),
-                qty: metadata.qty,
-                _correlationId: metadata._correlationId
+                ...metadata
             }
         )
     }

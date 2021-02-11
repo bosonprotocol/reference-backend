@@ -55,6 +55,11 @@ class VoucherSuppliesRouter {
             ErrorHandlers.globalErrorHandler(eventValidator.ValidateVoucherMetadataOnTransfer),
             ErrorHandlers.globalErrorHandler(voucherSuppliesController.updateSupplyOnTransfer));
 
+        router.patch('/update-supply-oncancel',
+            ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateGCLOUDService),
+            ErrorHandlers.globalErrorHandler(eventValidator.ValidateVoucherMetadata),
+            ErrorHandlers.globalErrorHandler(voucherSuppliesController.updateSupplyOnCancel));
+
         router.patch('/:id',
             ErrorHandlers.globalErrorHandler(authenticationMiddleware.authenticateToken),
             ErrorHandlers.globalErrorHandler(upload.array('fileToUpload', FILE_LIMIT)),

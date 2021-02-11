@@ -15,7 +15,7 @@ const MongooseService = {
     getVoucherSuppliesByBuyer: VoucherSupply.getVoucherSuppliesByBuyer,
     createVoucherSupply: VoucherSupply.createVoucherSupply,
     setVoucherSupplyMeta: VoucherSupply.setVoucherSupplyMeta,
-    updateSupplyOnTransfer: VoucherSupply.updateSupplyOnTransfer,
+    updateSupplyMeta: VoucherSupply.updateSupplyMeta,
     updateVoucherSupply: VoucherSupply.updateVoucherSupply,
     updateSupplyQty: VoucherSupply.updateSupplyQty,
     updateVoucherVisibilityStatus: VoucherSupply.updateVoucherVisibilityStatus,
