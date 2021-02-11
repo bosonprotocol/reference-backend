@@ -4,29 +4,54 @@ const ethers = require("ethers");
 const mongoose = require("mongoose");
 const keccak256 = require("keccak256");
 
-const status = require("../../src/utils/userVoucherStatus");
-
-const oneDayInMillis = 24 * 60 * 60 * 1000;
-const twoDaysInMillis = 2 * oneDayInMillis;
+const status = require("../../../src/utils/userVoucherStatus");
+const Time = require("./time");
 
 class Random {
   static documentId() {
     return new mongoose.Types.ObjectId();
   }
 
+  static account() {
+    const keyDetails = keythereum.create();
+    const privateKey = keyDetails.privateKey;
+    const address = ethers.utils.computeAddress(privateKey);
+
+    return {
+      address,
+      privateKey,
+    };
+  }
+
   static address() {
-    const params = { keyBytes: 32, ivBytes: 16 };
-    const keyDetails = keythereum.create(params);
+    const keyDetails = keythereum.create();
 
     return ethers.utils.computeAddress(keyDetails.privateKey);
   }
 
   static transactionHash() {
-    return `0x${keccak256(faker.random.alpha(64)).toString("hex")}`
+    return `0x${keccak256(faker.random.alpha(64)).toString("hex")}`;
   }
 
   static nonce() {
     return faker.random.number({ min: 0, max: 1000000 });
+  }
+
+  static chainId() {
+    return faker.random.number({ min: 1, max: 5 });
+  }
+
+  static signingDomain() {
+    return {
+      name: "Boson Protocol",
+      version: "1",
+      chainId: Random.chainId(),
+      verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+    };
+  }
+
+  static tokenSecret() {
+    return faker.random.hexaDecimal(128);
   }
 
   static title() {
@@ -59,16 +84,22 @@ class Random {
   static pastDateUnixMillis() {
     return (
       Date.now() -
-      twoDaysInMillis -
-      faker.random.number({ min: -oneDayInMillis, max: oneDayInMillis })
+      Time.daysInMilliseconds(2) -
+      faker.random.number({
+        min: -Time.oneDayInMilliseconds(),
+        max: Time.oneDayInMilliseconds(),
+      })
     );
   }
 
   static pastDateUnixMillisBefore(otherDateUnixMillis) {
     return (
       otherDateUnixMillis -
-      twoDaysInMillis +
-      faker.random.number({ min: -oneDayInMillis, max: oneDayInMillis })
+      Time.daysInMilliseconds(2) +
+      faker.random.number({
+        min: -Time.oneDayInMilliseconds(),
+        max: Time.oneDayInMilliseconds(),
+      })
     );
   }
 
@@ -88,8 +119,11 @@ class Random {
   static futureDateUnixMillis() {
     return (
       Date.now() +
-      twoDaysInMillis +
-      faker.random.number({ min: -oneDayInMillis, max: oneDayInMillis })
+      Time.daysInMilliseconds(2) +
+      faker.random.number({
+        min: -Time.oneDayInMilliseconds(),
+        max: Time.oneDayInMilliseconds(),
+      })
     );
   }
 
@@ -105,8 +139,11 @@ class Random {
   static futureDateUnixMillisAfter(otherDateUnixMillis) {
     return (
       otherDateUnixMillis +
-      twoDaysInMillis +
-      faker.random.number({ min: -oneDayInMillis, max: oneDayInMillis })
+      Time.daysInMilliseconds(2) +
+      faker.random.number({
+        min: -Time.oneDayInMilliseconds(),
+        max: Time.oneDayInMilliseconds(),
+      })
     );
   }
 

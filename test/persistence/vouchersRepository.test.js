@@ -9,8 +9,8 @@ const VouchersRepository = require("../../src/database/Voucher/vouchers-reposito
 const Voucher = require("../../src/database/models/Voucher");
 const statuses = require("../../src/utils/userVoucherStatus");
 
-const Random = require("../helpers/random");
-const Time = require("../helpers/time");
+const Random = require("../shared/helpers/random");
+const Time = require("../shared/helpers/time");
 
 describe("Vouchers Repository", () => {
   before(async () => {

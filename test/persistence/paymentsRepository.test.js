@@ -8,7 +8,7 @@ const ConfigurationService = require("../../src/services/configuration-service")
 const PaymentsRepository = require("../../src/database/Payment/payments-repository");
 const Payment = require("../../src/database/models/Payment");
 
-const Random = require("../helpers/random");
+const Random = require("../shared/helpers/random");
 
 describe("Payments Repository", () => {
   before(async () => {

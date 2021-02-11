@@ -20,11 +20,12 @@ class Server {
 
   get address() {
     const serverAddress = this.server.address();
-    if (serverAddress.family === "IPv6") {
-      return `http://[${serverAddress.address}]:${serverAddress.port}`;
-    } else {
-      return `http://${serverAddress.address}:${serverAddress.port}`;
-    }
+    const serverHost =
+      serverAddress.family === "IPv6"
+        ? `[${serverAddress.address}]`
+        : serverAddress.address;
+
+    return `http://${serverHost}:${serverAddress.port}`;
   }
 
   withRoutes(path, routes) {

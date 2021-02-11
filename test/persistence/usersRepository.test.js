@@ -9,7 +9,7 @@ const UsersRepository = require("../../src/database/User/users-repository");
 const User = require("../../src/database/models/User");
 const userRoles = require("../../src/database/User/user-roles");
 
-const Random = require("../helpers/random");
+const Random = require("../shared/helpers/random");
 
 describe("Users Repository", () => {
   before(async () => {

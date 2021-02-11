@@ -1,18 +1,15 @@
 const { expect } = require("chai");
-const request = require("superagent");
 
-const Server = require("../../src/server");
-const HealthRoutes = require("../../src/api/routes/health-routes");
-
-const Ports = require("../helpers/ports");
+const TestServer = require("./helpers/TestServer");
+const Client = require("./helpers/Client");
 
 describe("Health Resource", () => {
   let server;
+  let client;
 
   before(async () => {
-    const port = await Ports.getAvailablePort();
-
-    server = new Server().withRoutes("/health", new HealthRoutes()).start(port);
+    server = await new TestServer().onAnyPort().start();
+    client = new Client(server.address);
   });
 
   after(async () => {
@@ -21,7 +18,7 @@ describe("Health Resource", () => {
 
   context("on GET", () => {
     it("returns 200 and healthy body", async () => {
-      const response = await request.get(`${server.address}/health`);
+      const response = await client.getHealth();
 
       expect(response.statusCode).to.eql(200);
       expect(response.body).to.eql({ healthy: true });
