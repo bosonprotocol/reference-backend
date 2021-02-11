@@ -1,8 +1,9 @@
-const jwt = require("jsonwebtoken");
 const { expect } = require("chai");
 
 const ConfigurationService = require("../../../src/services/configuration-service");
 const AuthenticationService = require("../../../src/services/authentication-service");
+
+const Tokens = require("../../shared/helpers/tokens");
 
 describe("AuthenticationService", () => {
   context("generateToken", () => {
@@ -18,7 +19,7 @@ describe("AuthenticationService", () => {
 
       const token = authenticationService.generateToken(address);
 
-      const result = jwt.verify(token, tokenSecret);
+      const result = Tokens.verify(token, tokenSecret);
 
       expect(result.user).to.eql(address);
     });
@@ -35,7 +36,7 @@ describe("AuthenticationService", () => {
         configurationService,
       });
 
-      const token = jwt.sign({ user: address }, tokenSecret);
+      const token = Tokens.sign({ user: address }, tokenSecret);
 
       const result = authenticationService.verifyToken(token);
 
@@ -53,7 +54,7 @@ describe("AuthenticationService", () => {
         configurationService,
       });
 
-      const token = jwt.sign({ user: address }, signingTokenSecret);
+      const token = Tokens.sign({ user: address }, signingTokenSecret);
 
       expect(() => {
         authenticationService.verifyToken(token);

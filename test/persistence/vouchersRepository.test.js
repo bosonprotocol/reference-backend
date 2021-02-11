@@ -9,8 +9,8 @@ const VouchersRepository = require("../../src/database/Voucher/vouchers-reposito
 const Voucher = require("../../src/database/models/Voucher");
 const statuses = require("../../src/utils/userVoucherStatus");
 
-const Random = require("../helpers/random");
-const Time = require("../helpers/time");
+const Random = require("../shared/helpers/random");
+const Time = require("../shared/helpers/time");
 
 describe("Vouchers Repository", () => {
   before(async () => {
@@ -90,21 +90,6 @@ describe("Vouchers Repository", () => {
       });
 
       expect(voucher.supplyID).to.eql(voucherSupplyId);
-    });
-
-    it("fails when supply token ID is missing", async () => {
-      const voucherSupplyId = Random.documentId().toString();
-      const metadata = Random.voucherMetadata({
-        _tokenIdSupply: null,
-      });
-
-      const vouchersRepository = new VouchersRepository();
-
-      await expect(
-        vouchersRepository.createVoucher(metadata, voucherSupplyId)
-      ).to.be.rejectedWith(
-        "Validation failed: _tokenIdSupply: Path `_tokenIdSupply` is required."
-      );
     });
 
     it("updates the voucher when it already exists", async () => {

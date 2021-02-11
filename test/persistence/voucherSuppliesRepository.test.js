@@ -10,7 +10,7 @@ const VoucherSupply = require("../../src/database/models/VoucherSupply");
 const Voucher = require("../../src/database/models/Voucher");
 const voucherStatus = require("../../src/utils/userVoucherStatus");
 
-const Random = require("../helpers/random");
+const Random = require("../shared/helpers/random");
 
 describe("Voucher Supplies Repository", () => {
   before(async () => {

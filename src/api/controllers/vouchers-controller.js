@@ -162,9 +162,11 @@ class VoucherController {
     let voucher;
 
     try {
-      voucher = await mongooseService.updateVoucherDelivered(req.body);
+      voucher = await vouchersRepository.updateVoucherDelivered(req.body);
 
-      await mongooseService.updateSupplyQty(voucher.supplyID);
+      await voucherSuppliesRepository.decrementVoucherSupplyQty(
+        voucher.supplyID
+      );
     } catch (error) {
       console.error(error);
       return next(
@@ -190,7 +192,7 @@ class VoucherController {
     let voucher;
 
     try {
-      voucher = await mongooseService.findVoucherByTokenIdVoucher(
+      voucher = await vouchersRepository.getVoucherByVoucherTokenId(
         req.body._tokenIdVoucher
       );
 
@@ -203,7 +205,7 @@ class VoucherController {
         );
       }
 
-      await mongooseService.updateVoucherOnCommonEvent(voucher.id, req.body);
+      await vouchersRepository.updateVoucherOnCommonEvent(voucher.id, req.body);
     } catch (error) {
       console.error(error);
       return next(
