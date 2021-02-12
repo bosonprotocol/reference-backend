@@ -84,5 +84,24 @@ describe("User Signature Verification Resource", () => {
       expect(response.statusCode).to.eql(401);
       expect(response.body).to.eql("Unauthorized.");
     });
+
+    it("returns 400 when the signature is invalid", async () => {
+      const account = Random.account();
+      const domain = Random.signingDomain();
+      const address = account.address;
+
+      await client.createOrUpdateUser(address)
+
+      const signature = "not-a-signature";
+
+      const response = await client.verifyUserSignature(
+        address,
+        domain,
+        signature
+      );
+
+      expect(response.statusCode).to.eql(400);
+      expect(response.body).to.eql("Signature was not verified!");
+    });
   });
 });
