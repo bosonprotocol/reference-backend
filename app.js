@@ -16,7 +16,7 @@ const app = express();
 
 app.use(cors());
 app.use(function (req, res, next) {
-  console.log("Time:", Date.now());
+  console.log("Time: ", Date.now());
   next();
 });
 app.use(express.json());
