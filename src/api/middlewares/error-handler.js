@@ -8,7 +8,8 @@ class ErrorHandlers {
    * @param req
    * @param res
    */
-  static apiErrorHandler(err, req, res) {
+  // eslint-disable-next-line no-unused-vars
+  static apiErrorHandler(err, req, res, next) {
     if (err instanceof APIError) {
       res.status(err.code).json(err.message);
     } else {

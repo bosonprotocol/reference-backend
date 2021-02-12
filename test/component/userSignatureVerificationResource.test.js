@@ -60,5 +60,29 @@ describe("User Signature Verification Resource", () => {
       expect(tokenPayload.user).to.eql(address);
       expect(tokenValidityInDays).to.eql(180);
     });
+
+    it("returns 401 when the signature is incorrect", async () => {
+      const account = Random.account();
+      const domain = Random.signingDomain();
+      const address = account.address;
+
+      await client.createOrUpdateUser(address)
+
+      const nonce = Random.nonce();
+      const signature = await Signing.signAuthenticationMessage(
+        account,
+        nonce,
+        domain
+      );
+
+      const response = await client.verifyUserSignature(
+        address,
+        domain,
+        signature
+      );
+
+      expect(response.statusCode).to.eql(401);
+      expect(response.body).to.eql("Unauthorized.");
+    });
   });
 });
