@@ -6,13 +6,15 @@ class Client {
   constructor(serverAddress) {
     this.serverAddress = serverAddress;
   }
-  
+
   async getHealth() {
-    return request.get(`${this.serverAddress}/health`);
+    return request.get(`${this.serverAddress}/health`).ok(() => true);
   }
 
   async createOrUpdateUser(address) {
-    return request.post(`${this.serverAddress}/users/${address}`);
+    return request
+      .post(`${this.serverAddress}/users/${address}`)
+      .ok(() => true);
   }
 
   async verifyUserSignature(address, domain, signature) {
@@ -20,6 +22,7 @@ class Client {
 
     return request
       .post(`${this.serverAddress}/users/${address}/verify-signature`)
+      .ok(() => true)
       .send({ address, domain, types, signature });
   }
 }
