@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 
 const apiUrl = functions.config().dev.apiurl;
+const demoApiUrl = functions.config().demo.apiurl;
 
 const configs = {
   dev: {
@@ -17,6 +18,20 @@ const configs = {
     GCLOUD_SECRET: functions.config().dev.gcloudsecret,
     GAS_LIMIT: "3000000",
   },
+  demo: {
+    VOUCHER_KERNEL_ADDRESS: functions.config().demo.voucherkerneladdress,
+    CASHIER_ADDRESS: functions.config().demo.cashieraddress,
+    EXECUTOR_PRIVATE_KEY: functions.config().demo.executorsecret,
+    NETWORK_NAME: functions.config().demo.networkname,
+    ETHERSCAN_API_KEY: functions.config().demo.etherscanapikey,
+    INFURA_API_KEY: functions.config().demo.infuraapikey,
+    API_URL: demoApiUrl,
+    ALL_VOUCHERS_URL: `${demoApiUrl}/vouchers/all`,
+    FINALIZE_VOUCHER_URL: `${demoApiUrl}/vouchers/finalize`,
+    WITHDRAW_VOUCHER_URL: `${demoApiUrl}/payments/create-payment`,
+    GCLOUD_SECRET: functions.config().demo.gcloudsecret,
+    GAS_LIMIT: "3000000",
+  }
 };
 
 function getConfigParams(version) {

@@ -36,6 +36,27 @@ exports.scheduledKeepersWithdrawalsDev = functions.https.onRequest(
   }
 );
 
+exports.scheduledKeepersWithdrawalsDemo = functions.https.onRequest(
+    async (request, response) => {
+      const demo = configs("demo");
+      const provider = ethers.getDefaultProvider(demo.NETWORK_NAME, {
+        etherscan: demo.ETHERSCAN_API_KEY,
+        infura: demo.INFURA_API_KEY,
+      });
+
+      const executor = new ethers.Wallet(demo.EXECUTOR_PRIVATE_KEY, provider);
+
+      axios.defaults.headers.common = {
+        Authorization: `Bearer ${demo.GCLOUD_SECRET}`,
+      };
+
+      // Withdrawal process
+      await triggerWithdrawals(executor, demo);
+
+      response.send("Withdrawal process was executed successfully!");
+    }
+);
+
 async function triggerWithdrawals(executor, config) {
   let hasErrors = false;
   let cashierContractExecutor = new ethers.Contract(
