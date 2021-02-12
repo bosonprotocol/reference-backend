@@ -44,7 +44,7 @@ class UserController {
         value: `Authentication message: ${nonce}`,
       };
 
-      const isSignatureVerified = await this.authenticationService.isSignatureVerified(
+      const isSignatureVerified = this.authenticationService.isSignatureVerified(
         address,
         req.body.domain,
         req.body.types,
