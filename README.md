@@ -1,4 +1,7 @@
-## About this repository
+# Reference Backend
+
+[![Gitter chat](https://badges.gitter.im/bosonprotocol.png)](https://gitter.im/bosonprotocol/community)
+
 This repository is the backend for the MVP version of the Redeemeum service
 
 ## Running and Deployment
