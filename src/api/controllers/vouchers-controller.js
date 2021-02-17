@@ -1,27 +1,27 @@
 // @ts-nocheck
-
 const APIError = require("../api-error");
+
 const voucherUtils = require("../../utils/voucherUtils");
-const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
-const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
 
-const voucherSuppliesRepository = new VoucherSuppliesRepository();
-const vouchersRepository = new VouchersRepository();
+class VouchersController {
+  constructor(voucherSuppliesRepository, vouchersRepository) {
+    this.voucherSuppliesRepository = voucherSuppliesRepository;
+    this.vouchersRepository = vouchersRepository;
+  }
 
-class VoucherController {
-  static async getVouchers(req, res, next) {
+  async getVouchers(req, res, next) {
     const voucherData = [];
     const address = res.locals.address;
 
     try {
       const promises = [];
-      const userVouchers = await vouchersRepository.getAllVouchersByHolder(
+      const userVouchers = await this.vouchersRepository.getAllVouchersByHolder(
         address
       );
 
       userVouchers.forEach((userVoucher) => {
         promises.push(
-          voucherSuppliesRepository.getVoucherSupplyDetails(
+          this.voucherSuppliesRepository.getVoucherSupplyDetails(
             userVoucher,
             voucherData
           )
@@ -40,12 +40,12 @@ class VoucherController {
     res.status(200).send({ voucherData });
   }
 
-  static async getBoughtVouchersForSupply(req, res, next) {
+  async getBoughtVouchersForSupply(req, res, next) {
     const owner = res.locals.address;
     const supplyID = req.params.supplyID;
     let vouchers = {};
     try {
-      vouchers = await vouchersRepository.getAllVouchersByVoucherSupplyIdAndOwner(
+      vouchers = await this.vouchersRepository.getAllVouchersByVoucherSupplyIdAndOwner(
         supplyID,
         owner
       );
@@ -59,13 +59,15 @@ class VoucherController {
     res.status(200).send({ vouchers });
   }
 
-  static async getVoucherDetails(req, res, next) {
+  async getVoucherDetails(req, res, next) {
     const voucherID = req.params.voucherID;
 
     let voucher;
     try {
-      const userVoucher = await vouchersRepository.getVoucherById(voucherID);
-      const voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
+      const userVoucher = await this.vouchersRepository.getVoucherById(
+        voucherID
+      );
+      const voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
         userVoucher.supplyID
       );
 
@@ -113,13 +115,13 @@ class VoucherController {
     res.status(200).send({ voucher });
   }
 
-  static async commitToBuy(req, res, next) {
+  async commitToBuy(req, res, next) {
     const supplyID = req.params.supplyID;
     const metadata = req.body;
     let voucher;
 
     try {
-      voucher = await vouchersRepository.createVoucher(metadata, supplyID);
+      voucher = await this.vouchersRepository.createVoucher(metadata, supplyID);
     } catch (error) {
       console.error(error);
       return next(
@@ -133,12 +135,12 @@ class VoucherController {
     res.status(200).send({ voucherID: voucher.id });
   }
 
-  static async updateVoucherStatus(req, res, next) {
+  async updateVoucherStatus(req, res, next) {
     const voucherID = res.locals.userVoucher.id;
     const status = req.body.status;
 
     try {
-      await vouchersRepository.updateVoucherStatus(voucherID, status);
+      await this.vouchersRepository.updateVoucherStatus(voucherID, status);
     } catch (error) {
       console.error(
         `An error occurred while tried to update voucher with ID: [${voucherID}]!`
@@ -158,13 +160,13 @@ class VoucherController {
   /**
    * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
    */
-  static async updateVoucherDelivered(req, res, next) {
+  async updateVoucherDelivered(req, res, next) {
     let voucher;
 
     try {
-      voucher = await vouchersRepository.updateVoucherDelivered(req.body);
+      voucher = await this.vouchersRepository.updateVoucherDelivered(req.body);
 
-      await voucherSuppliesRepository.decrementVoucherSupplyQty(
+      await this.voucherSuppliesRepository.decrementVoucherSupplyQty(
         voucher.supplyID
       );
     } catch (error) {
@@ -188,11 +190,11 @@ class VoucherController {
    *  LogVoucherFaultCancel
    *  Transfer (e.g ERC-721)
    */
-  static async updateVoucherOnCommonEvent(req, res, next) {
+  async updateVoucherOnCommonEvent(req, res, next) {
     let voucher;
 
     try {
-      voucher = await vouchersRepository.getVoucherByVoucherTokenId(
+      voucher = await this.vouchersRepository.getVoucherByVoucherTokenId(
         req.body._tokenIdVoucher
       );
 
@@ -205,7 +207,10 @@ class VoucherController {
         );
       }
 
-      await vouchersRepository.updateVoucherOnCommonEvent(voucher.id, req.body);
+      await this.vouchersRepository.updateVoucherOnCommonEvent(
+        voucher.id,
+        req.body
+      );
     } catch (error) {
       console.error(error);
       return next(
@@ -219,12 +224,15 @@ class VoucherController {
     res.status(200).send({ updated: true });
   }
 
-  static async updateStatusFromKeepers(req, res, next) {
+  async updateStatusFromKeepers(req, res, next) {
     const tokenIdVoucher = req.body[0]._tokenIdVoucher;
     const status = req.body[0].status;
 
     try {
-      await vouchersRepository.updateStatusFromKeepers(tokenIdVoucher, status);
+      await this.vouchersRepository.updateStatusFromKeepers(
+        tokenIdVoucher,
+        status
+      );
     } catch (error) {
       console.error(
         `An error occurred while tried to finalize voucher with ID: [${tokenIdVoucher}]!`
@@ -241,11 +249,11 @@ class VoucherController {
     res.status(200).send({ updated: true });
   }
 
-  static async getAllVouchers(req, res, next) {
+  async getAllVouchers(req, res, next) {
     let vouchers;
 
     try {
-      vouchers = await vouchersRepository.getAllVouchers();
+      vouchers = await this.vouchersRepository.getAllVouchers();
     } catch (error) {
       console.error(`An error occurred while tried to fetch all vouchers!`);
       console.error(error);
@@ -256,4 +264,4 @@ class VoucherController {
   }
 }
 
-module.exports = VoucherController;
+module.exports = VouchersController;

@@ -1,12 +1,12 @@
 // @ts-nocheck
-
 const APIError = require("./../api-error");
-const VouchersRepository = require("../../database/Voucher/vouchers-repository");
-
-const vouchersRepository = new VouchersRepository();
 
 class UserValidator {
-  static async ValidateMetadata(req, res, next) {
+  constructor(vouchersRepository) {
+    this.vouchersRepository = vouchersRepository;
+  }
+
+  async validateMetadata(req, res, next) {
     const voucherHolder = req.body._holder;
 
     if (voucherHolder.toLowerCase() !== res.locals.address) {
@@ -16,11 +16,11 @@ class UserValidator {
     next();
   }
 
-  static async ValidateVoucherHolder(req, res, next) {
+  async validateVoucherHolder(req, res, next) {
     let userVoucher;
 
     try {
-      userVoucher = await vouchersRepository.getVoucherById(req.body._id);
+      userVoucher = await this.vouchersRepository.getVoucherById(req.body._id);
     } catch (error) {
       return next(new APIError(404, "Voucher not found!"));
     }

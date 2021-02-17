@@ -1,11 +1,6 @@
 const ethers = require("ethers");
 
 const APIError = require("../api-error");
-const VouchersRepository = require("../../database/Voucher/vouchers-repository");
-const PaymentsRepository = require("../../database/Payment/payments-repository");
-
-const vouchersRepository = new VouchersRepository();
-const paymentsRepository = new PaymentsRepository();
 
 const actors = {
   BUYER: "buyer",
@@ -13,8 +8,13 @@ const actors = {
   ESCROW: "escrow",
 };
 
-class PaymentController {
-  static async getPaymentActors(req, res, next) {
+class PaymentsController {
+  constructor(vouchersRepository, paymentsRepository) {
+    this.vouchersRepository = vouchersRepository;
+    this.paymentsRepository = paymentsRepository;
+  }
+
+  async getPaymentActors(req, res, next) {
     const objectId = req.params.voucherID;
     let userVoucher;
 
@@ -37,36 +37,24 @@ class PaymentController {
     };
 
     try {
-      userVoucher = await vouchersRepository.getVoucherById(objectId);
+      userVoucher = await this.vouchersRepository.getVoucherById(objectId);
       const buyer = userVoucher._holder;
 
       // TODO this must come from the voucher, not voucher owner as, the voucher
       //      might be transferred and we do not want to update every single
       //     possible userVoucher with the newly owner from that supply
       const seller = userVoucher.voucherOwner;
-      const payments = await paymentsRepository.getPaymentsByVoucherTokenId(
+      const payments = await this.paymentsRepository.getPaymentsByVoucherTokenId(
         userVoucher._tokenIdVoucher
       );
 
       for (const key in payments) {
         if (payments[key]._to.toLowerCase() === buyer) {
-          PaymentController.addPayment(
-            payments[key],
-            actors.BUYER,
-            distributedAmounts
-          );
+          this.addPayment(payments[key], actors.BUYER, distributedAmounts);
         } else if (payments[key]._to.toLowerCase() === seller) {
-          PaymentController.addPayment(
-            payments[key],
-            actors.SELLER,
-            distributedAmounts
-          );
+          this.addPayment(payments[key], actors.SELLER, distributedAmounts);
         } else {
-          PaymentController.addPayment(
-            payments[key],
-            actors.ESCROW,
-            distributedAmounts
-          );
+          this.addPayment(payments[key], actors.ESCROW, distributedAmounts);
         }
       }
     } catch (error) {
@@ -82,7 +70,7 @@ class PaymentController {
     res.status(200).send({ distributedAmounts });
   }
 
-  static addPayment(paymentDetails, actor, distributedAmounts) {
+  addPayment(paymentDetails, actor, distributedAmounts) {
     // _type:  0 - Payment, 1 - Seller Deposit, 2 - Buyer Deposit
     if (paymentDetails._type === 0) {
       distributedAmounts.payment[actor] = ethers.BigNumber.from(
@@ -99,13 +87,13 @@ class PaymentController {
     }
   }
 
-  static async createPayments(req, res, next) {
+  async createPayments(req, res, next) {
     const events = req.body;
     let promises = [];
 
     try {
       for (const key in events) {
-        promises.push(paymentsRepository.createPayment(events[key]));
+        promises.push(this.paymentsRepository.createPayment(events[key]));
       }
 
       await Promise.all(promises);
@@ -122,13 +110,13 @@ class PaymentController {
     res.status(200).send({ updated: true });
   }
 
-  static async getPaymentsByVoucherID(req, res, next) {
+  async getPaymentsByVoucherID(req, res, next) {
     const tokenIdVoucher = req.params.tokenIdVoucher;
 
     let payments;
 
     try {
-      payments = await paymentsRepository.getPaymentsByVoucherTokenId(
+      payments = await this.paymentsRepository.getPaymentsByVoucherTokenId(
         tokenIdVoucher
       );
     } catch (error) {
@@ -145,4 +133,4 @@ class PaymentController {
   }
 }
 
-module.exports = PaymentController;
+module.exports = PaymentsController;

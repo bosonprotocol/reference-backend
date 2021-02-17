@@ -3,12 +3,13 @@ const { BigNumber } = require("ethers");
 
 const APIError = require("../api-error");
 const voucherUtils = require("../../utils/voucherUtils");
-const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
-
-const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
 class VoucherSuppliesController {
-  static async getVoucherSupply(req, res, next) {
+  constructor(voucherSuppliesRepository) {
+    this.voucherSuppliesRepository = voucherSuppliesRepository;
+  }
+
+  async getVoucherSupply(req, res, next) {
     let voucherSupply;
 
     if (typeof req.params.id === "undefined") {
@@ -17,7 +18,7 @@ class VoucherSuppliesController {
     }
 
     try {
-      voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
+      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
         req.params.id
       );
       voucherSupply.voucherStatus = voucherUtils.calcVoucherSupplyStatus(
@@ -40,11 +41,11 @@ class VoucherSuppliesController {
     });
   }
 
-  static async getAllVoucherSupplies(req, res, next) {
+  async getAllVoucherSupplies(req, res, next) {
     let voucherSupplies;
 
     try {
-      voucherSupplies = await voucherSuppliesRepository.getAllVoucherSupplies();
+      voucherSupplies = await this.voucherSuppliesRepository.getAllVoucherSupplies();
     } catch (error) {
       console.error(
         `An error occurred while tried to fetch all voucher supplies!`
@@ -56,12 +57,12 @@ class VoucherSuppliesController {
     res.status(200).send({ voucherSupplies });
   }
 
-  static async getSellerSupplies(req, res, next) {
+  async getSellerSupplies(req, res, next) {
     let voucherSupplies;
     const owner = req.params.address.toLowerCase();
 
     try {
-      voucherSupplies = await voucherSuppliesRepository.getAllVoucherSuppliesByOwner(
+      voucherSupplies = await this.voucherSuppliesRepository.getAllVoucherSuppliesByOwner(
         owner
       );
 
@@ -83,12 +84,12 @@ class VoucherSuppliesController {
     res.status(200).send({ voucherSupplies });
   }
 
-  static async getBuyerSupplies(req, res, next) {
+  async getBuyerSupplies(req, res, next) {
     let voucherSupplies;
     const buyer = req.params.address.toLowerCase();
 
     try {
-      voucherSupplies = await voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
+      voucherSupplies = await this.voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
         buyer
       );
     } catch (error) {
@@ -102,16 +103,16 @@ class VoucherSuppliesController {
     res.status(200).send({ voucherSupplies });
   }
 
-  static async getSupplyStatuses(req, res, next) {
+  async getSupplyStatuses(req, res, next) {
     let active,
       inactive = [];
     const address = res.locals.address;
 
     try {
-      active = await voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
+      active = await this.voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
         address
       );
-      inactive = await voucherSuppliesRepository.getInactiveVoucherSuppliesByOwner(
+      inactive = await this.voucherSuppliesRepository.getInactiveVoucherSuppliesByOwner(
         address
       );
     } catch (error) {
@@ -125,12 +126,12 @@ class VoucherSuppliesController {
     res.status(200).send({ active: active.length, inactive: inactive.length });
   }
 
-  static async getActiveSupplies(req, res, next) {
+  async getActiveSupplies(req, res, next) {
     let active = [];
     const address = res.locals.address;
 
     try {
-      active = await voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
+      active = await this.voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
         address
       );
     } catch (error) {
@@ -146,12 +147,12 @@ class VoucherSuppliesController {
     });
   }
 
-  static async getInactiveSupplies(req, res, next) {
+  async getInactiveSupplies(req, res, next) {
     let inActive = [];
     const address = res.locals.address;
 
     try {
-      inActive = await voucherSuppliesRepository.getInactiveVoucherSuppliesByOwner(
+      inActive = await this.voucherSuppliesRepository.getInactiveVoucherSuppliesByOwner(
         address
       );
     } catch (error) {
@@ -164,13 +165,13 @@ class VoucherSuppliesController {
     });
   }
 
-  static async createVoucherSupply(req, res, next) {
+  async createVoucherSupply(req, res, next) {
     const fileRefs = req.fileRefs;
     const voucherOwner = res.locals.address;
     let voucherSupply;
 
     try {
-      voucherSupply = await voucherSuppliesRepository.createVoucherSupply(
+      voucherSupply = await this.voucherSuppliesRepository.createVoucherSupply(
         req.body,
         fileRefs,
         voucherOwner
@@ -186,13 +187,13 @@ class VoucherSuppliesController {
     res.status(201).send({ voucherSupply });
   }
 
-  static async updateVoucherSupply(req, res, next) {
+  async updateVoucherSupply(req, res, next) {
     const fileRefs = req.fileRefs;
     const voucherOwner = res.locals.address;
     const voucher = res.locals.voucherSupply;
 
     try {
-      await voucherSuppliesRepository.updateVoucherSupply(
+      await this.voucherSuppliesRepository.updateVoucherSupply(
         voucher,
         req.body,
         fileRefs
@@ -211,9 +212,9 @@ class VoucherSuppliesController {
   /**
    * @notice This function is triggered while event 'LogOrderCreated' is emitted
    */
-  static async setSupplyMetaOnOrderCreated(req, res, next) {
+  async setSupplyMetaOnOrderCreated(req, res, next) {
     try {
-      await voucherSuppliesRepository.setVoucherSupplyMeta(req.body);
+      await this.voucherSuppliesRepository.setVoucherSupplyMeta(req.body);
     } catch (error) {
       console.error(
         `An error occurred while user [${req.body._voucherOwner}] tried to update Voucher.`
@@ -230,7 +231,7 @@ class VoucherSuppliesController {
    *  TransferSingle
    *  TransferBatch
    */
-  static async updateSupplyOnTransfer(req, res, next) {
+  async updateSupplyOnTransfer(req, res, next) {
     let promises = [];
     let vouchersSupplies = req.body.voucherSupplies;
     let quantities = req.body.quantities;
@@ -258,7 +259,9 @@ class VoucherSuppliesController {
           continue;
         }
 
-        promises.push(voucherSuppliesRepository.updateSupplyMeta(metadata));
+        promises.push(
+          this.voucherSuppliesRepository.updateSupplyMeta(metadata)
+        );
       }
 
       await Promise.all(promises);
@@ -275,7 +278,7 @@ class VoucherSuppliesController {
     res.status(200).send({ success: true });
   }
 
-  static async updateSupplyOnCancel(req, res, next) {
+  async updateSupplyOnCancel(req, res, next) {
     try {
       let metadata;
 
@@ -285,7 +288,7 @@ class VoucherSuppliesController {
         qty: req.body.qty,
       };
 
-      await voucherSuppliesRepository.updateSupplyMeta(metadata);
+      await this.voucherSuppliesRepository.updateSupplyMeta(metadata);
     } catch (error) {
       console.error(
         `An error occurred while trying to update a voucher from Cancel Voucher Set event.`
@@ -299,11 +302,13 @@ class VoucherSuppliesController {
     res.status(200).send({ success: true });
   }
 
-  static async deleteVoucherSupply(req, res, next) {
+  async deleteVoucherSupply(req, res, next) {
     const voucherSupply = res.locals.voucherSupply;
 
     try {
-      await voucherSuppliesRepository.deleteVoucherSupply(voucherSupply.id);
+      await this.voucherSuppliesRepository.deleteVoucherSupply(
+        voucherSupply.id
+      );
     } catch (error) {
       console.error(
         `An error occurred while user [${req.body.voucherOwner}] tried to delete Voucher.`
@@ -314,12 +319,12 @@ class VoucherSuppliesController {
     res.status(200).send({ success: true });
   }
 
-  static async deleteImage(req, res, next) {
+  async deleteImage(req, res, next) {
     const voucherSupply = res.locals.voucherSupply;
     const imageUrl = req.query.imageUrl;
 
     try {
-      await voucherSuppliesRepository.deleteVoucherSupplyImage(
+      await this.voucherSuppliesRepository.deleteVoucherSupplyImage(
         voucherSupply.id,
         imageUrl
       );

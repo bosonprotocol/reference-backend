@@ -1,14 +1,15 @@
 const APIError = require("./../api-error");
-const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
-
-const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
 class VoucherValidator {
-  static async ValidateVoucherSupplyExists(req, res, next) {
+  constructor(voucherSuppliesRepository) {
+    this.voucherSuppliesRepository = voucherSuppliesRepository;
+  }
+
+  async validateVoucherSupplyExists(req, res, next) {
     let voucherSupply;
 
     try {
-      voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
+      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
         req.params.id
       );
     } catch (error) {
@@ -31,14 +32,14 @@ class VoucherValidator {
     next();
   }
 
-  static async ValidateCanDelete(req, res, next) {
+  async validateCanDelete(req, res, next) {
     if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
       return next(new APIError(401, "Unauthorized."));
     }
     next();
   }
 
-  static async ValidateCanUpdateVoucherSupply(req, res, next) {
+  async validateCanUpdateVoucherSupply(req, res, next) {
     if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
       return next(new APIError(401, "Unauthorized."));
     }
@@ -46,7 +47,7 @@ class VoucherValidator {
     next();
   }
 
-  static async ValidateDates(req, res, next) {
+  async validateDates(req, res, next) {
     const start = new Date();
     start.setHours(0, 0, 0, 0);
 

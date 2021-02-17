@@ -3,9 +3,6 @@ const ethers = require("ethers");
 
 const APIError = require("../api-error");
 const constants = require("../../utils/testUtils/constants");
-const mongooseService = require("../../database/index.js");
-const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
-const VouchersRepository = require("../../database/Vouchers/vouchers-repository");
 
 const provider = new ethers.providers.InfuraProvider("rinkeby", [
   constants.INFURA_API_KEY,
@@ -21,9 +18,6 @@ const TestUtils = require("../../utils/testUtils/testUtils");
 const utils = new TestUtils(provider);
 
 const { AbiCoder, Interface } = require("ethers").utils;
-
-const voucherSuppliesRepository = new VoucherSuppliesRepository();
-const vouchersRepository = new VouchersRepository();
 
 async function getEncodedTopic(receipt, abi, eventName) {
   const interface = new Interface(abi);
@@ -56,7 +50,12 @@ async function decodeData(receipt, encodedTopic, paramsArr) {
 }
 
 class TestController {
-  static async createVoucherSupply(req, res, next) {
+  constructor(voucherSuppliesRepository, vouchersRepository) {
+    this.voucherSuppliesRepository = voucherSuppliesRepository;
+    this.vouchersRepository = vouchersRepository;
+  }
+
+  async createVoucherSupply(req, res, next) {
     const voucherOwner = sellerWallet.address;
     let timestamp;
 
@@ -73,7 +72,7 @@ class TestController {
       req.body.contact = "test";
       req.body.conditions = "test";
 
-      tx = await TestController.createVoucherBatch(req.body);
+      tx = await this.createVoucherBatch(req.body);
       receipt = await tx.wait();
 
       parsedEvent = await utils.findEventByName(
@@ -90,7 +89,7 @@ class TestController {
     }
 
     try {
-      await voucherSuppliesRepository.createVoucherSupply(
+      await this.voucherSuppliesRepository.createVoucherSupply(
         {
           ...req.body,
           ...parsedEvent,
@@ -109,7 +108,7 @@ class TestController {
     res.status(200).send({ tokenSupplyID: parsedEvent._tokenIdSupply });
   }
 
-  static async createVoucher(req, res, next) {
+  async createVoucher(req, res, next) {
     let cashierContract_Buyer = new ethers.Contract(
       constants.CashierContractAddress,
       Cashier.abi,
@@ -119,7 +118,7 @@ class TestController {
 
     let data;
 
-    const voucherSupply = await voucherSuppliesRepository.getVoucherSupplyBySupplyTokenId(
+    const voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyBySupplyTokenId(
       supplyID
     );
 
@@ -166,7 +165,7 @@ class TestController {
     };
 
     try {
-      await vouchersRepository.createVoucher(metadata, voucherSupply.id);
+      await this.vouchersRepository.createVoucher(metadata, voucherSupply.id);
     } catch (error) {
       console.error(error);
       return next(new APIError(400, "Failed to store voucher in DB"));
@@ -175,21 +174,21 @@ class TestController {
     res.status(200).send({ tokenIdVoucher: data[0].toString() });
   }
 
-  static async redeem(req, res, next) {
+  async redeem(req, res, next) {
     const voucherID = req.params.voucherID;
     const voucherKernel = new ethers.Contract(
       constants.VoucherKernelContractAddress,
       VoucherKernel.abi,
       buyerWallet
     );
-    const voucher = await vouchersRepository.getVoucherByVoucherTokenId(
+    const voucher = await this.vouchersRepository.getVoucherByVoucherTokenId(
       voucherID
     );
     let tx;
     try {
       tx = await voucherKernel.redeem(voucherID, { gasLimit: "4000000" });
       await tx.wait();
-      await vouchersRepository.updateVoucherStatus(voucher.id, "REDEEMED");
+      await this.vouchersRepository.updateVoucherStatus(voucher.id, "REDEEMED");
     } catch (error) {
       console.error(error);
       return next(new APIError(400, `Tx failed! TxHash: ${tx.hash}`));
@@ -198,12 +197,7 @@ class TestController {
     res.status(200).send({ sucess: true });
   }
 
-  static async buy(req, res) {
-    await mongooseService.buy();
-    res.status(200).send({ success: true });
-  }
-
-  static async createVoucherBatch(body) {
+  async createVoucherBatch(body) {
     let cashierContractSeller = new ethers.Contract(
       constants.CashierContractAddress,
       Cashier.abi,
