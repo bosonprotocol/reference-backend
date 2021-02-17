@@ -1,7 +1,19 @@
-const paymentsController = require("../controllers/payment-controller");
-const ErrorHandlers = require("../middlewares/error-handler");
-const authenticationMiddleware = require("../middlewares/authentication");
+const ConfigurationService = require("../../services/configuration-service");
+const AuthenticationService = require("../../services/authentication-service");
+
 const paymentValidator = require("../middlewares/payment-validator");
+const ErrorHandlers = require("../middlewares/error-handler");
+const AuthenticationMiddleware = require("../middlewares/authentication");
+
+const paymentsController = require("../controllers/payment-controller");
+
+const configurationService = new ConfigurationService();
+const authenticationService = new AuthenticationService(configurationService);
+
+const authenticationMiddleware = new AuthenticationMiddleware(
+  configurationService,
+  authenticationService
+);
 
 class UserVoucherRoutes {
   addTo(router) {
@@ -20,8 +32,8 @@ class UserVoucherRoutes {
 
     router.post(
       "/create-payment",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateGCLOUDService
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(paymentValidator.ValidatePaymentData),
       ErrorHandlers.globalErrorHandler(paymentsController.createPayments)

@@ -1,5 +1,11 @@
-const UsersController = require("../controllers/users-controller");
+const ConfigurationService = require("../../services/configuration-service");
+
 const ErrorHandlers = require("../middlewares/error-handler");
+const AuthenticationMiddleware = require("../middlewares/authentication");
+
+const UsersController = require("../controllers/users-controller");
+
+const configurationService = new ConfigurationService();
 
 class UsersRoutes {
   constructor(
@@ -13,6 +19,10 @@ class UsersRoutes {
       usersRepository,
       voucherSuppliesRepository,
       vouchersRepository
+    );
+    this.authenticationMiddleware = new AuthenticationMiddleware(
+      configurationService,
+      authenticationService
     );
   }
 
