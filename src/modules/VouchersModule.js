@@ -1,4 +1,4 @@
-const ErrorHandlingMiddleware = require("../middlewares/ErrorHandlingMiddleware");
+const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 
 class VouchersModule {
   constructor(

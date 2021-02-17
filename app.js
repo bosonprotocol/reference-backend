@@ -25,13 +25,13 @@ const PaymentsController = require("./src/api/controllers/PaymentsController");
 const AdministrationController = require("./src/api/controllers/AdministrationController");
 const TestController = require("./src/api/controllers/TestController");
 
-const UsersModule = require("./src/api/modules/UsersModule");
-const VoucherSuppliesModule = require("./src/api/modules/VoucherSuppliesModule");
-const VouchersModule = require("./src/api/modules/VouchersModule");
-const PaymentsModule = require("./src/api/modules/PaymentsModule");
-const AdministrationModule = require("./src/api/modules/AdministrationModule");
-const TestModule = require("./src/api/modules/TestModule");
-const HealthModule = require("./src/api/modules/HealthModule");
+const UsersModule = require("./src/modules/UsersModule");
+const VoucherSuppliesModule = require("./src/modules/VoucherSuppliesModule");
+const VouchersModule = require("./src/modules/VouchersModule");
+const PaymentsModule = require("./src/modules/PaymentsModule");
+const AdministrationModule = require("./src/modules/AdministrationModule");
+const TestModule = require("./src/modules/TestModule");
+const HealthModule = require("./src/modules/HealthModule");
 
 const configurationService = new ConfigurationService();
 const authenticationService = new AuthenticationService(configurationService);
