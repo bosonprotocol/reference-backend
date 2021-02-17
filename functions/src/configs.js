@@ -31,7 +31,7 @@ const configs = {
     WITHDRAW_VOUCHER_URL: `${demoApiUrl}/payments/create-payment`,
     GCLOUD_SECRET: functions.config().demo.gcloudsecret,
     GAS_LIMIT: "3000000",
-  }
+  },
 };
 
 function getConfigParams(version) {
