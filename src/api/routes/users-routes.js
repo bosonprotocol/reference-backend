@@ -1,30 +1,14 @@
-const ConfigurationService = require("../../services/configuration-service");
-
 const ErrorHandlers = require("../middlewares/error-handler");
-const UserValidator = require("../middlewares/user-validator");
-const AuthenticationMiddleware = require("../middlewares/authentication");
-
-const UsersController = require("../controllers/users-controller");
-
-const configurationService = new ConfigurationService();
 
 class UsersRoutes {
   constructor(
-    authenticationService,
-    usersRepository,
-    voucherSuppliesRepository,
-    vouchersRepository
+    authenticationMiddleware,
+    userValidatorMiddleware,
+    usersController
   ) {
-    this.usersController = new UsersController(
-      authenticationService,
-      usersRepository,
-      voucherSuppliesRepository,
-      vouchersRepository
-    );
-    this.authenticationMiddleware = new AuthenticationMiddleware(
-      configurationService,
-      authenticationService
-    );
+    this.authenticationMiddleware = authenticationMiddleware;
+    this.userValidatorMiddleware = userValidatorMiddleware;
+    this.usersController = usersController;
   }
 
   addTo(router) {
@@ -47,7 +31,9 @@ class UsersRoutes {
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler(UserValidator.ValidateMetadata),
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.userValidatorMiddleware.validateMetadata(req, res, next)
+      ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.usersController.commitToBuy(req, res, next)
       )

@@ -1,46 +1,49 @@
-const ConfigurationService = require("../../services/configuration-service");
-const AuthenticationService = require("../../services/authentication-service");
-
-const paymentValidator = require("../middlewares/payment-validator");
 const ErrorHandlers = require("../middlewares/error-handler");
-const AuthenticationMiddleware = require("../middlewares/authentication");
 
-const paymentsController = require("../controllers/payment-controller");
+class PaymentsRoutes {
+  constructor(
+    authenticationMiddleware,
+    paymentValidatorMiddleware,
+    paymentsController
+  ) {
+    this.authenticationMiddleware = authenticationMiddleware;
+    this.paymentValidatorMiddleware = paymentValidatorMiddleware;
+    this.paymentsController = paymentsController;
+  }
 
-const configurationService = new ConfigurationService();
-const authenticationService = new AuthenticationService(configurationService);
-
-const authenticationMiddleware = new AuthenticationMiddleware(
-  configurationService,
-  authenticationService
-);
-
-class UserVoucherRoutes {
   addTo(router) {
     router.get(
       "/get-payment/:tokenIdVoucher",
-      ErrorHandlers.globalErrorHandler(
-        paymentsController.getPaymentsByVoucherID
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.paymentsController.getPaymentsByVoucherID(req, res, next)
       )
     );
 
     router.get(
       "/:voucherID",
-      ErrorHandlers.globalErrorHandler(paymentValidator.ValidateID),
-      ErrorHandlers.globalErrorHandler(paymentsController.getPaymentActors)
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.paymentValidatorMiddleware.validateID(req, res, next)
+      ),
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.paymentsController.getPaymentActors(req, res, next)
+      )
     );
 
     router.post(
       "/create-payment",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        authenticationMiddleware.authenticateToken(req, res, next)
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler(paymentValidator.ValidatePaymentData),
-      ErrorHandlers.globalErrorHandler(paymentsController.createPayments)
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.paymentValidatorMiddleware.validatePaymentData(req, res, next)
+      ),
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.paymentsController.createPayments(req, res, next)
+      )
     );
 
     return router;
   }
 }
 
-module.exports = UserVoucherRoutes;
+module.exports = PaymentsRoutes;

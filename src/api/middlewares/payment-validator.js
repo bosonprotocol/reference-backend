@@ -1,10 +1,10 @@
 //@ts-nocheck
-
-const APIError = require("./../api-error");
 const isValid = require("mongoose").isValidObjectId;
 
-class VoucherValidator {
-  static async ValidatePaymentData(req, res, next) {
+const APIError = require("./../api-error");
+
+class PaymentValidator {
+  async validatePaymentData(req, res, next) {
     const payload = req.body;
 
     if (!Array.isArray(payload)) {
@@ -27,7 +27,7 @@ class VoucherValidator {
   }
 
   //TODO ObjectIDs should be validated in all routes, where applicable. Currently on payments route only.
-  static async ValidateID(req, res, next) {
+  async validateID(req, res, next) {
     if (!isValid(req.params.voucherID)) {
       return next(new APIError(400, `Invalid Object ID!`));
     }
@@ -36,4 +36,4 @@ class VoucherValidator {
   }
 }
 
-module.exports = VoucherValidator;
+module.exports = PaymentValidator;

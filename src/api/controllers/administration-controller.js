@@ -1,18 +1,18 @@
 const ethers = require("ethers");
 const ApiError = require("../api-error");
-const UsersRepository = require("../../database/User/users-repository");
-const VoucherSuppliesRepository = require("../../database/VoucherSupply/voucher-supplies-repository");
 
-const usersRepository = new UsersRepository();
-const voucherSuppliesRepository = new VoucherSuppliesRepository();
+class AdministrationController {
+  constructor(usersRepository, voucherSuppliesRepository) {
+    this.usersRepository = usersRepository;
+    this.voucherSuppliesRepository = voucherSuppliesRepository;
+  }
 
-class AdminController {
-  static async changeVoucherSupplyVisibility(req, res, next) {
+  async changeVoucherSupplyVisibility(req, res, next) {
     const supplyID = req.params.supplyID;
     let voucherSupply;
 
     try {
-      voucherSupply = await voucherSuppliesRepository.getVoucherSupplyById(
+      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
         supplyID
       );
     } catch (error) {
@@ -22,13 +22,13 @@ class AdminController {
       );
     }
 
-    const updatedVoucherSupply = await voucherSuppliesRepository.toggleVoucherSupplyVisibility(
+    const updatedVoucherSupply = await this.voucherSuppliesRepository.toggleVoucherSupplyVisibility(
       voucherSupply.id
     );
     res.status(200).send({ visible: updatedVoucherSupply.visible });
   }
 
-  static async makeAdmin(req, res, next) {
+  async makeAdmin(req, res, next) {
     const address = req.params.address.toLowerCase();
 
     if (!ethers.utils.isAddress(address)) {
@@ -41,7 +41,7 @@ class AdminController {
     }
 
     try {
-      const user = await usersRepository.getUser(address);
+      const user = await this.usersRepository.getUser(address);
 
       if (!user) {
         return next(
@@ -49,7 +49,7 @@ class AdminController {
         );
       }
 
-      await usersRepository.setUserToAdmin(address);
+      await this.usersRepository.setUserToAdmin(address);
     } catch (error) {
       console.error(error);
       return next(
@@ -61,4 +61,4 @@ class AdminController {
   }
 }
 
-module.exports = AdminController;
+module.exports = AdministrationController;

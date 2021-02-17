@@ -37,7 +37,8 @@ class FileStorageMiddleware {
 
         fileRefs.push({
           url: `https://storage.googleapis.com/${bucketName}/${storageDestination}`,
-          type: req.files[i].mimetype === PDF_CONTENT_TYPE ? "document" : "image",
+          type:
+            req.files[i].mimetype === PDF_CONTENT_TYPE ? "document" : "image",
         });
       }
 
