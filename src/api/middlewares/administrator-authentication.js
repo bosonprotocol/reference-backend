@@ -2,7 +2,7 @@
 const APIError = require("./../api-error");
 const userRoles = require("../../database/User/user-roles");
 
-class AdministratorAuthentication {
+class AdministratorAuthenticationMiddleware {
   constructor(authenticationService, usersRepository) {
     this.authenticationService = authenticationService;
     this.usersRepository = usersRepository;
@@ -35,4 +35,4 @@ class AdministratorAuthentication {
   }
 }
 
-module.exports = AdministratorAuthentication;
+module.exports = AdministratorAuthenticationMiddleware;

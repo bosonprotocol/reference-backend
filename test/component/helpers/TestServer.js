@@ -9,10 +9,10 @@ const VoucherSuppliesRepository = require("../../../src/database/VoucherSupply/v
 const PaymentsRepository = require("../../../src/database/Payment/payments-repository");
 
 const AdministratorAuthenticationMiddleware = require("../../../src/api/middlewares/administrator-authentication");
-const AuthenticationMiddleware = require("../../../src/api/middlewares/authentication");
-const UserValidatorMiddleware = require("../../../src/api/middlewares/user-validator");
-const VoucherValidatorMiddleware = require("../../../src/api/middlewares/voucher-validator");
-const PaymentValidatorMiddleware = require("../../../src/api/middlewares/payment-validator");
+const UserAuthenticationMiddleware = require("../../../src/api/middlewares/user-authentication");
+const UserValidationMiddleware = require("../../../src/api/middlewares/user-validation");
+const VoucherValidationMiddleware = require("../../../src/api/middlewares/voucher-validation");
+const PaymentValidationMiddleware = require("../../../src/api/middlewares/payment-validation");
 
 const HealthController = require("../../../src/api/controllers/health-controller");
 const UsersController = require("../../../src/api/controllers/users-controller");
@@ -74,18 +74,18 @@ class TestServer {
       authenticationService,
       usersRepository
     );
-    const authenticationMiddleware = new AuthenticationMiddleware(
+    const userAuthenticationMiddleware = new UserAuthenticationMiddleware(
       configurationService,
       authenticationService
     );
     const fileStorageMiddleware = new FakeFileStorageMiddleware("fileToUpload");
-    const userValidatorMiddleware = new UserValidatorMiddleware(
+    const userValidationMiddleware = new UserValidationMiddleware(
       vouchersRepository
     );
-    const voucherValidatorMiddleware = new VoucherValidatorMiddleware(
+    const voucherValidationMiddleware = new VoucherValidationMiddleware(
       voucherSuppliesRepository
     );
-    const paymentValidatorMiddleware = new PaymentValidatorMiddleware();
+    const paymentValidationMiddleware = new PaymentValidationMiddleware();
 
     const healthController = new HealthController();
     const usersController = new UsersController(
@@ -116,24 +116,24 @@ class TestServer {
 
     const healthRoutes = new HealthRoutes(healthController);
     const usersRoutes = new UsersRoutes(
-      authenticationMiddleware,
-      userValidatorMiddleware,
+      userAuthenticationMiddleware,
+      userValidationMiddleware,
       usersController
     );
     const voucherSuppliesRoutes = new VoucherSuppliesRoutes(
-      authenticationMiddleware,
+      userAuthenticationMiddleware,
       fileStorageMiddleware,
-      voucherSuppliesController,
-      voucherValidatorMiddleware
+      voucherValidationMiddleware,
+      voucherSuppliesController
     );
     const vouchersRoutes = new VouchersRoutes(
-      authenticationMiddleware,
-      userValidatorMiddleware,
+      userAuthenticationMiddleware,
+      userValidationMiddleware,
       vouchersController
     );
     const paymentsRoutes = new PaymentsRoutes(
-      authenticationMiddleware,
-      paymentValidatorMiddleware,
+      userAuthenticationMiddleware,
+      paymentValidationMiddleware,
       paymentsController
     );
     const administrationRoutes = new AdministrationRoutes(

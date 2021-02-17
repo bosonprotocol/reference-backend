@@ -1,7 +1,7 @@
-//@ts-nocheck
+// @ts-nocheck
 const APIError = require("./../api-error");
 
-class Authentication {
+class UserAuthenticationMiddleware {
   constructor(configurationService, authenticationService) {
     this.configurationService = configurationService;
     this.authenticationService = authenticationService;
@@ -47,4 +47,4 @@ class Authentication {
   }
 }
 
-module.exports = Authentication;
+module.exports = UserAuthenticationMiddleware;

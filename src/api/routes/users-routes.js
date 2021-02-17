@@ -2,12 +2,12 @@ const ErrorHandlers = require("../middlewares/error-handler");
 
 class UsersRoutes {
   constructor(
-    authenticationMiddleware,
-    userValidatorMiddleware,
+    userAuthenticationMiddleware,
+    userValidationMiddleware,
     usersController
   ) {
-    this.authenticationMiddleware = authenticationMiddleware;
-    this.userValidatorMiddleware = userValidatorMiddleware;
+    this.userAuthenticationMiddleware = userAuthenticationMiddleware;
+    this.userValidationMiddleware = userValidationMiddleware;
     this.usersController = usersController;
   }
 

@@ -1,6 +1,6 @@
 const APIError = require("./../api-error");
 
-class VoucherValidator {
+class VoucherValidationMiddleware {
   constructor(voucherSuppliesRepository) {
     this.voucherSuppliesRepository = voucherSuppliesRepository;
   }
@@ -63,4 +63,4 @@ class VoucherValidator {
   }
 }
 
-module.exports = VoucherValidator;
+module.exports = VoucherValidationMiddleware;

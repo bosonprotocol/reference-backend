@@ -7,6 +7,7 @@ class ErrorHandlers {
    * @param err
    * @param req
    * @param res
+   * @param next
    */
   static apiErrorHandler(err, req, res, next) {
     if (err instanceof APIError) {
@@ -20,7 +21,6 @@ class ErrorHandlers {
       );
       res.status(500).json("Internal Server Error");
     }
-
     next();
   }
 
