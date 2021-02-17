@@ -5,13 +5,15 @@ const Database = require("../shared/helpers/database");
 const Tokens = require("../shared/helpers/tokens");
 const { Signing } = require("../shared/helpers/signing");
 
+const API = require("./helpers/API");
 const TestServer = require("./helpers/TestServer");
-const Client = require("./helpers/Client");
+const Prerequisites = require("./helpers/Prerequisites");
 
 describe("User Signature Verification Resource", () => {
   let server;
   let database;
-  let client;
+  let api;
+  let prerequisites;
 
   const tokenSecret = Random.tokenSecret();
 
@@ -21,7 +23,8 @@ describe("User Signature Verification Resource", () => {
       .onAnyPort()
       .withConfigurationOverrides({ tokenSecret })
       .start();
-    client = new Client(server.address);
+    api = new API(server.address);
+    prerequisites = new Prerequisites(api);
   });
 
   afterEach(async () => {
@@ -39,18 +42,17 @@ describe("User Signature Verification Resource", () => {
       const domain = Random.signingDomain();
       const address = account.address;
 
-      const nonce = (await client.createOrUpdateUser(address)).body;
+      const nonce = await prerequisites.getUserNonce(account);
       const signature = await Signing.signAuthenticationMessage(
         account,
         nonce,
         domain
       );
 
-      const response = await client.verifyUserSignature(
-        address,
-        domain,
-        signature
-      );
+      const response = await api
+        .user(address)
+        .signatureVerification()
+        .post(domain, signature);
 
       const token = response.text;
       const tokenPayload = Tokens.verify(token, tokenSecret);
@@ -66,7 +68,7 @@ describe("User Signature Verification Resource", () => {
       const domain = Random.signingDomain();
       const address = account.address;
 
-      await client.createOrUpdateUser(address)
+      await api.users().post(address);
 
       const nonce = Random.nonce();
       const signature = await Signing.signAuthenticationMessage(
@@ -75,11 +77,10 @@ describe("User Signature Verification Resource", () => {
         domain
       );
 
-      const response = await client.verifyUserSignature(
-        address,
-        domain,
-        signature
-      );
+      const response = await api
+        .user(address)
+        .signatureVerification()
+        .post(domain, signature);
 
       expect(response.statusCode).to.eql(401);
       expect(response.body).to.eql("Unauthorized.");
@@ -90,15 +91,14 @@ describe("User Signature Verification Resource", () => {
       const domain = Random.signingDomain();
       const address = account.address;
 
-      await client.createOrUpdateUser(address)
+      await api.users().post(address);
 
       const signature = "not-a-signature";
 
-      const response = await client.verifyUserSignature(
-        address,
-        domain,
-        signature
-      );
+      const response = await api
+        .user(address)
+        .signatureVerification()
+        .post(domain, signature);
 
       expect(response.statusCode).to.eql(400);
       expect(response.body).to.eql("Signature was not verified!");

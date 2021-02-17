@@ -1,20 +1,19 @@
 const { expect } = require("chai");
-const request = require("superagent");
 
 const Random = require("../shared/helpers/random");
 const Database = require("../shared/helpers/database");
 const TestServer = require('./helpers/TestServer')
-const Client = require("./helpers/Client");
+const API = require("./helpers/API");
 
 describe("User Resource", () => {
   let server;
   let database;
-  let client;
+  let api;
 
   before(async () => {
     database = await Database.connect();
     server = await new TestServer().onAnyPort().start();
-    client = new Client(server.address);
+    api = new API(server.address);
   });
 
   afterEach(async () => {
@@ -29,7 +28,8 @@ describe("User Resource", () => {
   context("on POST", () => {
     it("returns 200 with a random nonce on success", async () => {
       const address = Random.address();
-      const response = await client.createOrUpdateUser(address);
+
+      const response = await (api.users().post(address));
 
       expect(response.statusCode).to.eql(200);
       expect(response.body).to.match(/\d{1,6}/);
