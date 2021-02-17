@@ -13,9 +13,9 @@ describe("AuthenticationService", () => {
       const configurationService = new ConfigurationService({
         tokenSecret,
       });
-      const authenticationService = new AuthenticationService({
-        configurationService,
-      });
+      const authenticationService = new AuthenticationService(
+        configurationService
+      );
 
       const token = authenticationService.generateToken(address);
 
@@ -32,9 +32,9 @@ describe("AuthenticationService", () => {
       const configurationService = new ConfigurationService({
         tokenSecret,
       });
-      const authenticationService = new AuthenticationService({
-        configurationService,
-      });
+      const authenticationService = new AuthenticationService(
+        configurationService
+      );
 
       const token = Tokens.sign({ user: address }, tokenSecret);
 
@@ -50,9 +50,9 @@ describe("AuthenticationService", () => {
       const configurationService = new ConfigurationService({
         tokenSecret: verifyingTokenSecret,
       });
-      const authenticationService = new AuthenticationService({
-        configurationService,
-      });
+      const authenticationService = new AuthenticationService(
+        configurationService
+      );
 
       const token = Tokens.sign({ user: address }, signingTokenSecret);
 

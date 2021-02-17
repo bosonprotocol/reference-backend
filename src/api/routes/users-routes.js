@@ -1,5 +1,4 @@
 const ConfigurationService = require("../../services/configuration-service");
-const AuthenticationService = require("../../services/authentication-service");
 
 const ErrorHandlers = require("../middlewares/error-handler");
 const UserValidator = require("../middlewares/user-validator");

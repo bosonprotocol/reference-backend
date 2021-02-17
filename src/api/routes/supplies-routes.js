@@ -1,17 +1,13 @@
-const multer = require("multer");
-
 const ErrorHandlers = require("../middlewares/error-handler");
 const voucherValidator = require("../middlewares/voucher-validator");
+const FileStorageMiddleware = require("../middlewares/file-storage");
 
 const voucherSuppliesController = require("../controllers/voucher-supplies-controller");
 
-const storage = multer.diskStorage({});
-const FILE_LIMIT = 10;
-const upload = multer({ storage });
-
 class VoucherSuppliesRoutes {
-  constructor (authenticationMiddleware) {
+  constructor(authenticationMiddleware) {
     this.authenticationMiddleware = authenticationMiddleware;
+    this.fileStorageMiddleware = new FileStorageMiddleware("fileToUpload");
   }
 
   addTo(router) {
@@ -20,8 +16,8 @@ class VoucherSuppliesRoutes {
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler(
-        upload.array("fileToUpload", FILE_LIMIT)
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.fileStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(voucherValidator.ValidateDates),
       ErrorHandlers.globalErrorHandler(

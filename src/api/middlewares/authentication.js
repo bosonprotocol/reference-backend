@@ -4,7 +4,7 @@ const APIError = require("./../api-error");
 class Authentication {
   constructor(configurationService, authenticationService) {
     this.configurationService = configurationService;
-    this.authenticationService = authenticationService
+    this.authenticationService = authenticationService;
   }
 
   async authenticateToken(req, res, next) {
