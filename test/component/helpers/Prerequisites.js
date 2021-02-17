@@ -15,7 +15,7 @@ class Prerequisites {
 
   async getUserToken(account) {
     const address = account.address;
-    const nonce = this.getUserNonce(account);
+    const nonce = await this.getUserNonce(account);
     const domain = Random.signingDomain();
     const signature = await Signing.signAuthenticationMessage(
       account,
@@ -28,7 +28,7 @@ class Prerequisites {
       .signatureVerification()
       .post(domain, signature);
 
-    return tokenResponse.body;
+    return tokenResponse.text;
   }
 }
 

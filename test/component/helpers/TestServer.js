@@ -27,7 +27,7 @@ class TestServer {
     return this;
   }
 
-  withConfigurationOverrides(overrides) {
+  addConfigurationOverrides(overrides) {
     this.configurationOverrides = {
       ...this.configurationOverrides,
       ...overrides,

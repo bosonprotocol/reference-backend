@@ -9,21 +9,21 @@ class FakeFileStorageMiddleware {
   }
 
   async storeFiles(req, res, next) {
-    this.delegate(req, res, next);
+    this.delegate(req, res, () => {
+      this.files.concat(req.files);
 
-    this.files.concat(req.files);
+      req.fileRefs = (req.files || []).reduce((acc, file) => {
+        return [
+          ...acc,
+          {
+            url: `https://boson.example.com/${file.originalname}`,
+            type: "image",
+          },
+        ];
+      }, []);
 
-    req.fileRefs = (req.files || []).reduce((acc, file) => {
-      return [
-        ...acc,
-        {
-          url: `https://boson.example.com/${file.filename}`,
-          type: "image",
-        },
-      ];
-    }, []);
-
-    next();
+      next();
+    });
   }
 }
 

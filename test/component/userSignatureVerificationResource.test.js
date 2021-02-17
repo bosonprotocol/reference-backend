@@ -21,7 +21,7 @@ describe("User Signature Verification Resource", () => {
     database = await Database.connect();
     server = await new TestServer()
       .onAnyPort()
-      .withConfigurationOverrides({ tokenSecret })
+      .addConfigurationOverrides({ tokenSecret })
       .start();
     api = new API(server.address);
     prerequisites = new Prerequisites(api);
