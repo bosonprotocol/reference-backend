@@ -165,11 +165,11 @@ class VoucherSuppliesController {
   }
 
   static async createVoucherSupply(req, res, next) {
+    const fileRefs = req.fileRefs;
     const voucherOwner = res.locals.address;
     let voucherSupply;
 
     try {
-      const fileRefs = await voucherUtils.uploadFiles(req);
       voucherSupply = await voucherSuppliesRepository.createVoucherSupply(
         req.body,
         fileRefs,
@@ -187,11 +187,11 @@ class VoucherSuppliesController {
   }
 
   static async updateVoucherSupply(req, res, next) {
+    const fileRefs = req.fileRefs;
     const voucherOwner = res.locals.address;
     const voucher = res.locals.voucherSupply;
 
     try {
-      const fileRefs = await voucherUtils.uploadFiles(req);
       await voucherSuppliesRepository.updateVoucherSupply(
         voucher,
         req.body,

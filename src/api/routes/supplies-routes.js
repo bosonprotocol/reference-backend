@@ -3,14 +3,13 @@ const ErrorHandlers = require("../middlewares/error-handler");
 // TODO: Rename to supply validator
 const voucherValidator = require("../middlewares/voucher-validator");
 const eventValidator = require("../middlewares/event-validator");
-const FileStorageMiddleware = require("../middlewares/file-storage");
 
 const voucherSuppliesController = require("../controllers/voucher-supplies-controller");
 
 class VoucherSuppliesRoutes {
-  constructor(authenticationMiddleware) {
+  constructor(authenticationMiddleware, fileStorageMiddleware) {
     this.authenticationMiddleware = authenticationMiddleware;
-    this.fileStorageMiddleware = new FileStorageMiddleware("fileToUpload");
+    this.fileStorageMiddleware = fileStorageMiddleware;
   }
 
   addTo(router) {
