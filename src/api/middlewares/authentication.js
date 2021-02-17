@@ -1,15 +1,13 @@
 //@ts-nocheck
 const APIError = require("./../api-error");
-const ConfigurationService = require("../../services/configuration-service");
-const AuthenticationService = require("../../services/authentication-service");
-
-const configurationService = new ConfigurationService();
-const authenticationService = new AuthenticationService({
-  configurationService,
-});
 
 class Authentication {
-  static async authenticateToken(req, res, next) {
+  constructor(configurationService, authenticationService) {
+    this.configurationService = configurationService;
+    this.authenticationService = authenticationService
+  }
+
+  async authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
 
@@ -18,7 +16,7 @@ class Authentication {
     }
 
     try {
-      const userObj = authenticationService.verifyToken(token);
+      const userObj = this.authenticationService.verifyToken(token);
       res.locals.address = userObj.user.toLowerCase();
     } catch (error) {
       return next(new APIError(403, "Forbidden."));
@@ -27,7 +25,7 @@ class Authentication {
     next();
   }
 
-  static async authenticateGCLOUDService(req, res, next) {
+  async authenticateGCLOUDService(req, res, next) {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
 
@@ -36,8 +34,8 @@ class Authentication {
     }
 
     try {
-      const payload = authenticationService.verifyToken(token);
-      if (payload.token !== configurationService.gcloudSecret) {
+      const payload = this.authenticationService.verifyToken(token);
+      if (payload.token !== this.configurationService.gcloudSecret) {
         return next(new APIError(403, "Forbidden."));
       }
     } catch (error) {

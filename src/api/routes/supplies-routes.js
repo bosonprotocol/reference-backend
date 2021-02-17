@@ -1,19 +1,24 @@
-const voucherSuppliesController = require("../controllers/voucher-supplies-controller");
+const multer = require("multer");
+
 const ErrorHandlers = require("../middlewares/error-handler");
-const authenticationMiddleware = require("../middlewares/authentication");
 const voucherValidator = require("../middlewares/voucher-validator");
 
-const multer = require("multer");
+const voucherSuppliesController = require("../controllers/voucher-supplies-controller");
+
 const storage = multer.diskStorage({});
 const FILE_LIMIT = 10;
 const upload = multer({ storage });
 
 class VoucherSuppliesRoutes {
+  constructor (authenticationMiddleware) {
+    this.authenticationMiddleware = authenticationMiddleware;
+  }
+
   addTo(router) {
     router.post(
       "/",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         upload.array("fileToUpload", FILE_LIMIT)
@@ -40,8 +45,8 @@ class VoucherSuppliesRoutes {
 
     router.get(
       "/status/all",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         voucherSuppliesController.getSupplyStatuses
@@ -50,8 +55,8 @@ class VoucherSuppliesRoutes {
 
     router.get(
       "/status/active",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         voucherSuppliesController.getActiveSupplies
@@ -60,8 +65,8 @@ class VoucherSuppliesRoutes {
 
     router.get(
       "/status/inactive",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         voucherSuppliesController.getInactiveSupplies
@@ -84,8 +89,8 @@ class VoucherSuppliesRoutes {
 
     router.patch(
       "/:id",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         upload.array("fileToUpload", FILE_LIMIT)
@@ -103,8 +108,8 @@ class VoucherSuppliesRoutes {
 
     router.delete(
       "/:id",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         voucherValidator.ValidateVoucherSupplyExists
@@ -117,8 +122,8 @@ class VoucherSuppliesRoutes {
 
     router.delete(
       "/:id/image",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         voucherValidator.ValidateVoucherSupplyExists

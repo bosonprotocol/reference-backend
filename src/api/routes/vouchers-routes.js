@@ -1,30 +1,42 @@
-const userVoucherController = require("../controllers/vouchers-controller");
+const ConfigurationService = require("../../services/configuration-service");
+const AuthenticationService = require("../../services/authentication-service");
+
 const ErrorHandlers = require("../middlewares/error-handler");
 const userValidator = require("../middlewares/user-validator");
-const authenticationMiddleware = require("../middlewares/authentication");
+const AuthenticationMiddleware = require("../middlewares/authentication");
+
+const userVoucherController = require("../controllers/vouchers-controller");
+
+const configurationService = new ConfigurationService();
+const authenticationService = new AuthenticationService(configurationService);
+
+const authenticationMiddleware = new AuthenticationMiddleware(
+  configurationService,
+  authenticationService
+);
 
 class VouchersRoutes {
   addTo(router) {
     router.get(
       "/",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(userVoucherController.getVouchers)
     );
 
     router.get(
       "/:voucherID/voucher-details",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(userVoucherController.getVoucherDetails)
     );
 
     router.get(
       "/buyers/:supplyID",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         userVoucherController.getBoughtVouchersForSupply
@@ -33,8 +45,8 @@ class VouchersRoutes {
 
     router.get(
       "/all",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateGCLOUDService
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        authenticationMiddleware.authenticateGCLOUDService(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(userVoucherController.getAllVouchers)
     );
@@ -46,8 +58,8 @@ class VouchersRoutes {
 
     router.patch(
       "/update",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),
       ErrorHandlers.globalErrorHandler(userVoucherController.updateVoucher)
@@ -55,8 +67,8 @@ class VouchersRoutes {
 
     router.patch(
       "/finalize",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateGCLOUDService
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        authenticationMiddleware.authenticateGCLOUDService(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(userVoucherController.finalizeVoucher)
     );

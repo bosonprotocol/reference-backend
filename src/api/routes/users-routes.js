@@ -1,7 +1,13 @@
-const UsersController = require("../controllers/users-controller");
+const ConfigurationService = require("../../services/configuration-service");
+const AuthenticationService = require("../../services/authentication-service");
+
 const ErrorHandlers = require("../middlewares/error-handler");
 const UserValidator = require("../middlewares/user-validator");
-const authenticationMiddleware = require("../middlewares/authentication");
+const AuthenticationMiddleware = require("../middlewares/authentication");
+
+const UsersController = require("../controllers/users-controller");
+
+const configurationService = new ConfigurationService();
 
 class UsersRoutes {
   constructor(
@@ -15,6 +21,10 @@ class UsersRoutes {
       usersRepository,
       voucherSuppliesRepository,
       vouchersRepository
+    );
+    this.authenticationMiddleware = new AuthenticationMiddleware(
+      configurationService,
+      authenticationService
     );
   }
 
@@ -35,8 +45,8 @@ class UsersRoutes {
 
     router.post(
       "/:supplyID/buy",
-      ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(UserValidator.ValidateMetadata),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
