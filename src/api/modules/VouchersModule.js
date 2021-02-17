@@ -1,7 +1,7 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 const eventValidator = require("../middlewares/event-validator");
 
-class VouchersRoutes {
+class VouchersModule {
   constructor(
     userAuthenticationMiddleware,
     userValidationMiddleware,
@@ -12,7 +12,11 @@ class VouchersRoutes {
     this.vouchersController = vouchersController;
   }
 
-  addTo(router) {
+  mountPoint() {
+    return "/vouchers";
+  }
+
+  addRoutesTo(router) {
     router.get(
       "/",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
@@ -131,4 +135,4 @@ class VouchersRoutes {
   }
 }
 
-module.exports = VouchersRoutes;
+module.exports = VouchersModule;

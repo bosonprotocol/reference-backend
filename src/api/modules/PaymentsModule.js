@@ -1,6 +1,6 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class PaymentsRoutes {
+class PaymentsModule {
   constructor(
     userAuthenticationMiddleware,
     paymentValidationMiddleware,
@@ -11,7 +11,11 @@ class PaymentsRoutes {
     this.paymentsController = paymentsController;
   }
 
-  addTo(router) {
+  mountPoint() {
+    return "/payments";
+  }
+
+  addRoutesTo(router) {
     router.get(
       "/get-payment/:tokenIdVoucher",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
@@ -46,4 +50,4 @@ class PaymentsRoutes {
   }
 }
 
-module.exports = PaymentsRoutes;
+module.exports = PaymentsModule;

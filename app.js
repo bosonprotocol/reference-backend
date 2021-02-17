@@ -25,13 +25,13 @@ const PaymentsController = require("./src/api/controllers/payments-controller");
 const AdministrationController = require("./src/api/controllers/administration-controller");
 const TestController = require("./src/api/controllers/test-controller");
 
-const UsersRoutes = require("./src/api/routes/users-routes");
-const VoucherSuppliesRoutes = require("./src/api/routes/supplies-routes");
-const VouchersRoutes = require("./src/api/routes/vouchers-routes");
-const PaymentsRoutes = require("./src/api/routes/payments-routes");
-const AdministrationRoutes = require("./src/api/routes/administration-routes");
-const TestRoutes = require("./src/api/routes/test-routes");
-const HealthRoutes = require("./src/api/routes/health-routes");
+const UsersModule = require("./src/api/modules/UsersModule");
+const VoucherSuppliesModule = require("./src/api/modules/VoucherSuppliesModule");
+const VouchersModule = require("./src/api/modules/VouchersModule");
+const PaymentsModule = require("./src/api/modules/PaymentsModule");
+const AdministrationModule = require("./src/api/modules/AdministrationModule");
+const TestModule = require("./src/api/modules/TestModule");
+const HealthModule = require("./src/api/modules/HealthModule");
 
 const configurationService = new ConfigurationService();
 const authenticationService = new AuthenticationService(configurationService);
@@ -88,40 +88,40 @@ const testController = new TestController(
   vouchersRepository
 );
 
-const healthRoutes = new HealthRoutes(healthController);
-const usersRoutes = new UsersRoutes(
+const healthModule = new HealthModule(healthController);
+const usersModule = new UsersModule(
   userAuthenticationMiddleware,
   userValidationMiddleware,
   usersController
 );
-const voucherSuppliesRoutes = new VoucherSuppliesRoutes(
+const voucherSuppliesModule = new VoucherSuppliesModule(
   userAuthenticationMiddleware,
   fileStorageMiddleware,
   voucherValidationMiddleware,
   voucherSuppliesController
 );
-const vouchersRoutes = new VouchersRoutes(
+const vouchersModule = new VouchersModule(
   userAuthenticationMiddleware,
   userValidationMiddleware,
   vouchersController
 );
-const paymentsRoutes = new PaymentsRoutes(
+const paymentsModule = new PaymentsModule(
   userAuthenticationMiddleware,
   paymentValidationMiddleware,
   paymentsController
 );
-const administrationRoutes = new AdministrationRoutes(
+const administrationModule = new AdministrationModule(
   administratorAuthenticationMiddleware,
   administrationController
 );
-const testRoutes = new TestRoutes(testController);
+const testModule = new TestModule(testController);
 
 new Server()
-  .withRoutes("/health", healthRoutes)
-  .withRoutes("/users", usersRoutes)
-  .withRoutes("/voucher-sets", voucherSuppliesRoutes)
-  .withRoutes("/vouchers", vouchersRoutes)
-  .withRoutes("/payments", paymentsRoutes)
-  .withRoutes("/admin", administrationRoutes)
-  .withRoutes("/test", testRoutes)
+  .withModule(healthModule)
+  .withModule(usersModule)
+  .withModule(voucherSuppliesModule)
+  .withModule(vouchersModule)
+  .withModule(paymentsModule)
+  .withModule(administrationModule)
+  .withModule(testModule)
   .start(process.env.PORT || 3000);

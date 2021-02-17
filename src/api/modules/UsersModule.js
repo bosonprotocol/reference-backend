@@ -1,6 +1,6 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class UsersRoutes {
+class UsersModule {
   constructor(
     userAuthenticationMiddleware,
     userValidationMiddleware,
@@ -11,7 +11,11 @@ class UsersRoutes {
     this.usersController = usersController;
   }
 
-  addTo(router) {
+  mountPoint() {
+    return "/users";
+  }
+
+  addRoutesTo(router) {
     router.post(
       "/:address",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
@@ -30,4 +34,4 @@ class UsersRoutes {
   }
 }
 
-module.exports = UsersRoutes;
+module.exports = UsersModule;
