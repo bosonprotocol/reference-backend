@@ -2,28 +2,28 @@ const ErrorHandlers = require("../middlewares/error-handler");
 
 class VoucherSuppliesRoutes {
   constructor(
-    authenticationMiddleware,
+    userAuthenticationMiddleware,
     fileStorageMiddleware,
-    voucherSuppliesController,
-    voucherValidator
+    voucherValidationMiddleware,
+    voucherSuppliesController
   ) {
-    this.authenticationMiddleware = authenticationMiddleware;
+    this.userAuthenticationMiddleware = userAuthenticationMiddleware;
     this.fileStorageMiddleware = fileStorageMiddleware;
+    this.voucherValidationMiddleware = voucherValidationMiddleware;
     this.voucherSuppliesController = voucherSuppliesController;
-    this.voucherValidator = voucherValidator;
   }
 
   addTo(router) {
     router.post(
       "/",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.fileStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidator.validateDates(req, res, next)
+        this.voucherValidationMiddleware.validateDates(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.createVoucherSupply(req, res, next)
@@ -47,7 +47,7 @@ class VoucherSuppliesRoutes {
     router.get(
       "/status/all",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.getSupplyStatuses(req, res, next)
@@ -57,7 +57,7 @@ class VoucherSuppliesRoutes {
     router.get(
       "/status/active",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.getActiveSupplies(req, res, next)
@@ -67,7 +67,7 @@ class VoucherSuppliesRoutes {
     router.get(
       "/status/inactive",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.getInactiveSupplies(req, res, next)
@@ -91,16 +91,16 @@ class VoucherSuppliesRoutes {
     router.patch(
       "/:id",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.fileStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidator.validateVoucherSupplyExists(req, res, next)
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidator.validateCanUpdateVoucherSupply(req, res, next)
+        this.voucherValidationMiddleware.validateCanUpdateVoucherSupply(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.updateVoucherSupply(req, res, next)
@@ -110,13 +110,13 @@ class VoucherSuppliesRoutes {
     router.delete(
       "/:id",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidator.validateVoucherSupplyExists(req, res, next)
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidator.validateCanDelete(req, res, next)
+        this.voucherValidationMiddleware.validateCanDelete(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.deleteVoucherSupply(req, res, next)
@@ -126,13 +126,13 @@ class VoucherSuppliesRoutes {
     router.delete(
       "/:id/image",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidator.validateVoucherSupplyExists(req, res, next)
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidator.validateCanDelete(req, res, next)
+        this.voucherValidationMiddleware.validateCanDelete(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.deleteImage(req, res, next)

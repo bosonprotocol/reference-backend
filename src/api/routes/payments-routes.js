@@ -2,12 +2,12 @@ const ErrorHandlers = require("../middlewares/error-handler");
 
 class PaymentsRoutes {
   constructor(
-    authenticationMiddleware,
-    paymentValidatorMiddleware,
+    userAuthenticationMiddleware,
+    paymentValidationMiddleware,
     paymentsController
   ) {
-    this.authenticationMiddleware = authenticationMiddleware;
-    this.paymentValidatorMiddleware = paymentValidatorMiddleware;
+    this.userAuthenticationMiddleware = userAuthenticationMiddleware;
+    this.paymentValidationMiddleware = paymentValidationMiddleware;
     this.paymentsController = paymentsController;
   }
 
@@ -22,7 +22,7 @@ class PaymentsRoutes {
     router.get(
       "/:voucherID",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.paymentValidatorMiddleware.validateID(req, res, next)
+        this.paymentValidationMiddleware.validateID(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.paymentsController.getPaymentActors(req, res, next)
@@ -32,10 +32,10 @@ class PaymentsRoutes {
     router.post(
       "/create-payment",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.paymentValidatorMiddleware.validatePaymentData(req, res, next)
+        this.paymentValidationMiddleware.validatePaymentData(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.paymentsController.createPayments(req, res, next)

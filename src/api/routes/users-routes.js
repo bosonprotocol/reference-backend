@@ -2,12 +2,12 @@ const ErrorHandlers = require("../middlewares/error-handler");
 
 class UsersRoutes {
   constructor(
-    authenticationMiddleware,
-    userValidatorMiddleware,
+    userAuthenticationMiddleware,
+    userValidationMiddleware,
     usersController
   ) {
-    this.authenticationMiddleware = authenticationMiddleware;
-    this.userValidatorMiddleware = userValidatorMiddleware;
+    this.userAuthenticationMiddleware = userAuthenticationMiddleware;
+    this.userValidationMiddleware = userValidationMiddleware;
     this.usersController = usersController;
   }
 
@@ -29,10 +29,10 @@ class UsersRoutes {
     router.post(
       "/:supplyID/buy",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.authenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.userValidatorMiddleware.validateMetadata(req, res, next)
+        this.userValidationMiddleware.validateMetadata(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.usersController.commitToBuy(req, res, next)

@@ -1,7 +1,7 @@
 // @ts-nocheck
 const APIError = require("./../api-error");
 
-class UserValidator {
+class UserValidationMiddleware {
   constructor(vouchersRepository) {
     this.vouchersRepository = vouchersRepository;
   }
@@ -34,4 +34,4 @@ class UserValidator {
   }
 }
 
-module.exports = UserValidator;
+module.exports = UserValidationMiddleware;

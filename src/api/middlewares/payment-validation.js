@@ -3,7 +3,7 @@ const isValid = require("mongoose").isValidObjectId;
 
 const APIError = require("./../api-error");
 
-class PaymentValidator {
+class PaymentValidationMiddleware {
   async validatePaymentData(req, res, next) {
     const payload = req.body;
 
@@ -36,4 +36,4 @@ class PaymentValidator {
   }
 }
 
-module.exports = PaymentValidator;
+module.exports = PaymentValidationMiddleware;

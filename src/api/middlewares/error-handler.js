@@ -7,6 +7,7 @@ class ErrorHandlers {
    * @param err
    * @param req
    * @param res
+   * @param next
    */
   // eslint-disable-next-line no-unused-vars
   static apiErrorHandler(err, req, res, next) {
@@ -21,6 +22,7 @@ class ErrorHandlers {
       );
       res.status(500).json("Internal Server Error");
     }
+    next();
   }
 
   /**
