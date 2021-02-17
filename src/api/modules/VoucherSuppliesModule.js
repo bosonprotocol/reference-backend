@@ -1,6 +1,6 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class VoucherSuppliesRoutes {
+class VoucherSuppliesModule {
   constructor(
     userAuthenticationMiddleware,
     fileStorageMiddleware,
@@ -13,7 +13,11 @@ class VoucherSuppliesRoutes {
     this.voucherSuppliesController = voucherSuppliesController;
   }
 
-  addTo(router) {
+  mountPoint() {
+    return "/voucher-sets";
+  }
+
+  addRoutesTo(router) {
     router.post(
       "/",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
@@ -97,10 +101,18 @@ class VoucherSuppliesRoutes {
         this.fileStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExists(req, res, next)
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateCanUpdateVoucherSupply(req, res, next)
+        this.voucherValidationMiddleware.validateCanUpdateVoucherSupply(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.updateVoucherSupply(req, res, next)
@@ -113,7 +125,11 @@ class VoucherSuppliesRoutes {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExists(req, res, next)
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherValidationMiddleware.validateCanDelete(req, res, next)
@@ -129,7 +145,11 @@ class VoucherSuppliesRoutes {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExists(req, res, next)
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.voucherValidationMiddleware.validateCanDelete(req, res, next)
@@ -143,4 +163,4 @@ class VoucherSuppliesRoutes {
   }
 }
 
-module.exports = VoucherSuppliesRoutes;
+module.exports = VoucherSuppliesModule;

@@ -1,11 +1,15 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class HealthRoutes {
+class HealthModule {
   constructor(healthController) {
     this.healthController = healthController;
   }
 
-  addTo(router) {
+  mountPoint() {
+    return "/health";
+  }
+
+  addRoutesTo(router) {
     router.get(
       "/",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
@@ -17,4 +21,4 @@ class HealthRoutes {
   }
 }
 
-module.exports = HealthRoutes;
+module.exports = HealthModule;

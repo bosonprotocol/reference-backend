@@ -1,11 +1,15 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class TestRoutes {
+class TestModule {
   constructor(testController) {
     this.testController = testController;
   }
 
-  addTo(router) {
+  mountPoint() {
+    return "/test";
+  }
+
+  addRoutesTo(router) {
     router.post(
       "/createBatch",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
@@ -31,4 +35,4 @@ class TestRoutes {
   }
 }
 
-module.exports = TestRoutes;
+module.exports = TestModule;

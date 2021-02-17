@@ -28,9 +28,9 @@ class Server {
     return `http://${serverHost}:${serverAddress.port}`;
   }
 
-  withRoutes(path, routes) {
+  withModule(module) {
     const router = express.Router();
-    this.app.use(path, routes.addTo(router));
+    this.app.use(module.mountPoint(), module.addRoutesTo(router));
     return this;
   }
 

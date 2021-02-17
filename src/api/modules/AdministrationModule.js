@@ -1,12 +1,16 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class AdministrationRoutes {
+class AdministrationModule {
   constructor(administratorAuthenticationMiddleware, administrationController) {
     this.administratorAuthenticationMiddleware = administratorAuthenticationMiddleware;
     this.administrationController = administrationController;
   }
 
-  addTo(router) {
+  mountPoint() {
+    return "/admin";
+  }
+
+  addRoutesTo(router) {
     router.patch(
       "/:address",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
@@ -43,4 +47,4 @@ class AdministrationRoutes {
   }
 }
 
-module.exports = AdministrationRoutes;
+module.exports = AdministrationModule;

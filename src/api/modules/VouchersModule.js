@@ -1,6 +1,6 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 
-class VouchersRoutes {
+class VouchersModule {
   constructor(
     userAuthenticationMiddleware,
     userValidationMiddleware,
@@ -11,7 +11,11 @@ class VouchersRoutes {
     this.vouchersController = vouchersController;
   }
 
-  addTo(router) {
+  mountPoint() {
+    return "/vouchers";
+  }
+
+  addRoutesTo(router) {
     router.get(
       "/",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
@@ -45,7 +49,11 @@ class VouchersRoutes {
     router.get(
       "/all",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.userAuthenticationMiddleware.authenticateGCLOUDService(req, res, next)
+        this.userAuthenticationMiddleware.authenticateGCLOUDService(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.vouchersController.getAllVouchers(req, res, next)
@@ -75,7 +83,11 @@ class VouchersRoutes {
     router.patch(
       "/finalize",
       ErrorHandlers.globalErrorHandler((req, res, next) =>
-        this.userAuthenticationMiddleware.authenticateGCLOUDService(req, res, next)
+        this.userAuthenticationMiddleware.authenticateGCLOUDService(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.vouchersController.finalizeVoucher(req, res, next)
@@ -86,4 +98,4 @@ class VouchersRoutes {
   }
 }
 
-module.exports = VouchersRoutes;
+module.exports = VouchersModule;
