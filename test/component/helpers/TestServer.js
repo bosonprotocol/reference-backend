@@ -11,9 +11,10 @@ const VoucherSuppliesRepository = require("../../../src/database/VoucherSupply/v
 
 const UsersRoutes = require("../../../src/api/routes/users-routes");
 const HealthRoutes = require("../../../src/api/routes/health-routes");
+const VoucherSuppliesRoutes = require("../../../src/api/routes/supplies-routes");
 
 const Ports = require("../../shared/helpers/ports");
-const VoucherSuppliesRoutes = require("../../../src/api/routes/supplies-routes");
+const FakeFileStorageMiddleware = require("../helpers/FakeFileStorageMiddleware");
 
 class TestServer {
   constructor() {
@@ -44,13 +45,14 @@ class TestServer {
       this.configurationOverrides
     );
     const authenticationService = new AuthenticationService(
-      configurationService,
+      configurationService
     );
 
     const authenticationMiddleware = new AuthenticationMiddleware(
       configurationService,
       authenticationService
     );
+    const fileStorageMiddleware = new FakeFileStorageMiddleware("fileToUpload");
 
     const usersRepository = new UsersRepository();
     const vouchersRepository = new VouchersRepository();
@@ -64,7 +66,8 @@ class TestServer {
       vouchersRepository
     );
     const voucherSuppliesRoutes = new VoucherSuppliesRoutes(
-      authenticationMiddleware
+      authenticationMiddleware,
+      fileStorageMiddleware
     );
 
     return new Server()

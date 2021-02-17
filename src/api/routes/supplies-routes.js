@@ -1,13 +1,12 @@
 const ErrorHandlers = require("../middlewares/error-handler");
 const voucherValidator = require("../middlewares/voucher-validator");
-const FileStorageMiddleware = require("../middlewares/file-storage");
 
 const voucherSuppliesController = require("../controllers/voucher-supplies-controller");
 
 class VoucherSuppliesRoutes {
-  constructor(authenticationMiddleware) {
+  constructor(authenticationMiddleware, fileStorageMiddleware) {
     this.authenticationMiddleware = authenticationMiddleware;
-    this.fileStorageMiddleware = new FileStorageMiddleware("fileToUpload");
+    this.fileStorageMiddleware = fileStorageMiddleware;
   }
 
   addTo(router) {
@@ -88,8 +87,8 @@ class VoucherSuppliesRoutes {
       ErrorHandlers.globalErrorHandler((req, res, next) =>
         this.authenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler(
-        upload.array("fileToUpload", FILE_LIMIT)
+      ErrorHandlers.globalErrorHandler((req, res, next) =>
+        this.fileStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlers.globalErrorHandler(
         voucherValidator.ValidateVoucherSupplyExists
