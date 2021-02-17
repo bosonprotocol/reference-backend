@@ -1,9 +1,9 @@
 const { expect } = require("chai");
 
-const ConfigurationService = require("../../../src/services/configuration-service");
-const AuthenticationService = require("../../../src/services/authentication-service");
+const ConfigurationService = require("../../../src/services/ConfigurationService");
+const AuthenticationService = require("../../../src/services/AuthenticationService");
 
-const Tokens = require("../../shared/helpers/tokens");
+const Tokens = require("../../shared/helpers/Tokens");
 
 describe("AuthenticationService", () => {
   context("generateToken", () => {

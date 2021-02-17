@@ -4,13 +4,13 @@ chai.use(require("chai-as-promised"));
 
 const expect = chai.expect;
 
-const ConfigurationService = require("../../src/services/configuration-service");
-const VouchersRepository = require("../../src/database/Voucher/vouchers-repository");
+const ConfigurationService = require("../../src/services/ConfigurationService");
+const VouchersRepository = require("../../src/database/Voucher/VouchersRepository");
 const Voucher = require("../../src/database/models/Voucher");
 const statuses = require("../../src/utils/userVoucherStatus");
 
-const Random = require("../shared/helpers/random");
-const Time = require("../shared/helpers/time");
+const Random = require("../shared/helpers/Random");
+const Time = require("../shared/helpers/Time");
 
 describe("Vouchers Repository", () => {
   before(async () => {

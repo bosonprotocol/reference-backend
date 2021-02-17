@@ -1,4 +1,4 @@
-const ErrorHandlers = require("../middlewares/error-handler");
+const ErrorHandlingMiddleware = require("../middlewares/ErrorHandlingMiddleware");
 
 class UsersModule {
   constructor(
@@ -18,27 +18,27 @@ class UsersModule {
   addRoutesTo(router) {
     router.post(
       "/:address",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.usersController.generateNonce(req, res, next)
       )
     );
 
     router.post(
       "/:address/verify-signature",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.usersController.verifySignature(req, res, next)
       )
     );
 
     router.post(
       "/:supplyID/buy",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userValidationMiddleware.validateMetadata(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.usersController.commitToBuy(req, res, next)
       )
     );

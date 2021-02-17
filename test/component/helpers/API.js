@@ -1,6 +1,6 @@
 const superagent = require("superagent-auth-bearer")(require("superagent"));
 
-const { Types } = require("../../shared/helpers/signing");
+const { Types } = require("../../shared/helpers/Signing");
 
 class HealthResource {
   constructor(serverAddress) {

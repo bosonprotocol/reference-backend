@@ -1,4 +1,5 @@
-const APIError = require("../api-error");
+const ApiError = require("../ApiError");
+
 const nonceUtils = require("../../utils/nonceUtils");
 
 class UserController {
@@ -27,7 +28,7 @@ class UserController {
     } catch (error) {
       console.error(error);
       return next(
-        new APIError(400, `Could not preserve nonce for user: ${address}.`)
+        new ApiError(400, `Could not preserve nonce for user: ${address}.`)
       );
     }
 
@@ -53,11 +54,11 @@ class UserController {
       );
 
       if (!isSignatureVerified && !req.body.isSmartWallet) {
-        return next(new APIError(401, "Unauthorized."));
+        return next(new ApiError(401, "Unauthorized."));
       }
     } catch (error) {
       console.error(error);
-      return next(new APIError(400, `Signature was not verified!`));
+      return next(new ApiError(400, `Signature was not verified!`));
     }
 
     const authToken = this.authenticationService.generateToken(address);
@@ -79,7 +80,7 @@ class UserController {
     } catch (error) {
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `Buy operation for Supply id: ${supplyID} could not be completed.`
         )

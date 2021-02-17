@@ -8,19 +8,19 @@ const VouchersRepository = require("../../../src/database/Voucher/vouchers-repos
 const VoucherSuppliesRepository = require("../../../src/database/VoucherSupply/voucher-supplies-repository");
 const PaymentsRepository = require("../../../src/database/Payment/payments-repository");
 
-const AdministratorAuthenticationMiddleware = require("../../../src/api/middlewares/administrator-authentication");
-const UserAuthenticationMiddleware = require("../../../src/api/middlewares/user-authentication");
-const UserValidationMiddleware = require("../../../src/api/middlewares/user-validation");
-const VoucherValidationMiddleware = require("../../../src/api/middlewares/voucher-validation");
-const PaymentValidationMiddleware = require("../../../src/api/middlewares/payment-validation");
+const AdministratorAuthenticationMiddleware = require("../../../src/api/middlewares/AdministratorAuthenticationMiddleware");
+const UserAuthenticationMiddleware = require("../../../src/api/middlewares/UserAuthenticationMiddleware");
+const UserValidationMiddleware = require("../../../src/api/middlewares/UserValidationMiddleware");
+const VoucherValidationMiddleware = require("../../../src/api/middlewares/VoucherValidationMiddleware");
+const PaymentValidationMiddleware = require("../../../src/api/middlewares/PaymentValidationMiddleware");
 
-const HealthController = require("../../../src/api/controllers/health-controller");
-const UsersController = require("../../../src/api/controllers/users-controller");
-const VoucherSuppliesController = require("../../../src/api/controllers/voucher-supplies-controller");
-const VouchersController = require("../../../src/api/controllers/vouchers-controller");
-const PaymentsController = require("../../../src/api/controllers/payments-controller");
-const AdministrationController = require("../../../src/api/controllers/administration-controller");
-const TestController = require("../../../src/api/controllers/test-controller");
+const HealthController = require("../../../src/api/controllers/HealthController");
+const UsersController = require("../../../src/api/controllers/UsersController");
+const VoucherSuppliesController = require("../../../src/api/controllers/VoucherSuppliesController");
+const VouchersController = require("../../../src/api/controllers/VouchersController");
+const PaymentsController = require("../../../src/api/controllers/PaymentsController");
+const AdministrationController = require("../../../src/api/controllers/AdministrationController");
+const TestController = require("../../../src/api/controllers/TestController");
 
 const UsersModule = require("../../../src/api/modules/UsersModule");
 const VoucherSuppliesModule = require("../../../src/api/modules/VoucherSuppliesModule");

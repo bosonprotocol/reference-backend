@@ -1,5 +1,5 @@
 // @ts-nocheck
-const APIError = require("./../api-error");
+const ApiError = require("./../ApiError");
 
 class UserAuthenticationMiddleware {
   constructor(configurationService, authenticationService) {
@@ -12,14 +12,14 @@ class UserAuthenticationMiddleware {
     const token = authHeader && authHeader.split(" ")[1];
 
     if (token == null) {
-      return next(new APIError(401, "Unauthorized."));
+      return next(new ApiError(401, "Unauthorized."));
     }
 
     try {
       const userObj = this.authenticationService.verifyToken(token);
       res.locals.address = userObj.user.toLowerCase();
     } catch (error) {
-      return next(new APIError(403, "Forbidden."));
+      return next(new ApiError(403, "Forbidden."));
     }
 
     next();
@@ -30,17 +30,17 @@ class UserAuthenticationMiddleware {
     const token = authHeader && authHeader.split(" ")[1];
 
     if (token == null) {
-      return next(new APIError(401, "Unauthorized."));
+      return next(new ApiError(401, "Unauthorized."));
     }
 
     try {
       const payload = this.authenticationService.verifyToken(token);
       if (payload.token !== this.configurationService.gcloudSecret) {
-        return next(new APIError(403, "Forbidden."));
+        return next(new ApiError(403, "Forbidden."));
       }
     } catch (error) {
       console.log(error);
-      return next(new APIError(403, "Forbidden."));
+      return next(new ApiError(403, "Forbidden."));
     }
 
     next();

@@ -27,4 +27,5 @@ class Database {
     await VoucherSupply.collection.deleteMany({});
   }
 }
+
 module.exports = Database;

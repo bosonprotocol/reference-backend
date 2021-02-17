@@ -1,6 +1,6 @@
-const APIError = require("../api-error");
+const ApiError = require("../ApiError");
 
-class ErrorHandlers {
+class ErrorHandlingMiddleware {
   /**
    * API Error handler used as a middleware. Triggered only by thrown Error by
    * us
@@ -11,7 +11,7 @@ class ErrorHandlers {
    */
   // eslint-disable-next-line no-unused-vars
   static apiErrorHandler(err, req, res, next) {
-    if (err instanceof APIError) {
+    if (err instanceof ApiError) {
       res.status(err.code).json(err.message);
     } else {
       // This should not happen. If an error is thrown using NEXT it should be
@@ -44,4 +44,4 @@ class ErrorHandlers {
   }
 }
 
-module.exports = ErrorHandlers;
+module.exports = ErrorHandlingMiddleware;

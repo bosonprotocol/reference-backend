@@ -1,5 +1,4 @@
 // @ts-nocheck
-
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const collections = require("../collections.json");

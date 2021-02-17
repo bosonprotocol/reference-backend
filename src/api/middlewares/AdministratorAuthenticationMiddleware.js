@@ -1,6 +1,6 @@
 // @ts-nocheck
-const APIError = require("./../api-error");
-const userRoles = require("../../database/User/user-roles");
+const ApiError = require("./../ApiError");
+const userRoles = require("../../database/User/userRoles");
 
 class AdministratorAuthenticationMiddleware {
   constructor(authenticationService, usersRepository) {
@@ -13,7 +13,7 @@ class AdministratorAuthenticationMiddleware {
     const token = authHeader && authHeader.split(" ")[1];
 
     if (token == null) {
-      return next(new APIError(401, "Unauthorized."));
+      return next(new ApiError(401, "Unauthorized."));
     }
 
     try {
@@ -22,13 +22,13 @@ class AdministratorAuthenticationMiddleware {
       const user = await this.usersRepository.getUser(ethAddress);
 
       if (user.role !== userRoles.ADMIN) {
-        return next(new APIError(403, "User is not admin!"));
+        return next(new ApiError(403, "User is not admin!"));
       }
 
       res.locals.address = ethAddress;
     } catch (error) {
       console.error(error);
-      return next(new APIError(403, "Forbidden."));
+      return next(new ApiError(403, "Forbidden."));
     }
 
     next();

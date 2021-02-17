@@ -1,4 +1,4 @@
-const ErrorHandlers = require("../middlewares/error-handler");
+const ErrorHandlingMiddleware = require("../middlewares/ErrorHandlerMiddleware");
 
 class AdministrationModule {
   constructor(administratorAuthenticationMiddleware, administrationController) {
@@ -13,28 +13,28 @@ class AdministrationModule {
   addRoutesTo(router) {
     router.patch(
       "/:address",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.administratorAuthenticationMiddleware.validateAdminAccess(
           req,
           res,
           next
         )
       ),
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.administrationController.makeAdmin(req, res, next)
       )
     );
 
     router.patch(
       "/updateVisibleStatus/:supplyID",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.administratorAuthenticationMiddleware.validateAdminAccess(
           req,
           res,
           next
         )
       ),
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.administrationController.changeVoucherSupplyVisibility(
           req,
           res,

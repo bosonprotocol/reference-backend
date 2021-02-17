@@ -1,4 +1,4 @@
-const VOUCHER_STATUS = require("./voucherStatus");
+const voucherStatus = require("./voucherStatus");
 
 class VoucherUtils {
   static calcVoucherSupplyStatus(startDate, expiryDate, qty) {
@@ -10,10 +10,10 @@ class VoucherUtils {
       todayToMillis > expiryToMillis ||
       qty <= 0
     ) {
-      return VOUCHER_STATUS.INACTIVE;
+      return voucherStatus.INACTIVE;
     }
 
-    return VOUCHER_STATUS.ACTIVE;
+    return voucherStatus.ACTIVE;
   }
 }
 

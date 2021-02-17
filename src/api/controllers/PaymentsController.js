@@ -1,6 +1,6 @@
 const ethers = require("ethers");
 
-const APIError = require("../api-error");
+const ApiError = require("../ApiError");
 
 const actors = {
   BUYER: "buyer",
@@ -56,7 +56,7 @@ class PaymentsController {
     } catch (error) {
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `Get payment actors for voucher id: ${userVoucher._tokenIdVoucher} could not be completed.`
         )
@@ -96,7 +96,7 @@ class PaymentsController {
     } catch (error) {
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `Create payment operation for voucher id: ${events[0]._tokenIdVoucher} could not be completed.`
         )
@@ -118,7 +118,7 @@ class PaymentsController {
     } catch (error) {
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `Get payment for voucher id: ${tokenIdVoucher} could not be completed.`
         )

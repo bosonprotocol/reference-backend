@@ -1,4 +1,4 @@
-const ErrorHandlers = require("../middlewares/error-handler");
+const ErrorHandlingMiddleware = require("../middlewares/ErrorHandlerMiddleware");
 
 class HealthModule {
   constructor(healthController) {
@@ -12,7 +12,7 @@ class HealthModule {
   addRoutesTo(router) {
     router.get(
       "/",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.healthController.getHealth(req, res, next)
       )
     );

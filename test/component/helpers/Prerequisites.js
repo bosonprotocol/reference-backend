@@ -1,5 +1,5 @@
-const Random = require("../../shared/helpers/random");
-const { Signing } = require("../../shared/helpers/signing");
+const Random = require("../../shared/helpers/Random");
+const { Signing } = require("../../shared/helpers/Signing");
 
 class Prerequisites {
   constructor(api) {

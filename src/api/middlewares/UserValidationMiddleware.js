@@ -1,5 +1,5 @@
 // @ts-nocheck
-const APIError = require("./../api-error");
+const ApiError = require("./../ApiError");
 
 class UserValidationMiddleware {
   constructor(vouchersRepository) {
@@ -10,7 +10,7 @@ class UserValidationMiddleware {
     const voucherHolder = req.body._holder;
 
     if (voucherHolder.toLowerCase() !== res.locals.address) {
-      return next(new APIError(403, "Forbidden."));
+      return next(new ApiError(403, "Forbidden."));
     }
 
     next();
@@ -25,7 +25,7 @@ class UserValidationMiddleware {
       userVoucher._holder !== res.locals.address &&
       userVoucher.voucherOwner !== res.locals.address
     ) {
-      return next(new APIError(403, "Forbidden."));
+      return next(new ApiError(403, "Forbidden."));
     }
 
     res.locals.userVoucher = userVoucher;

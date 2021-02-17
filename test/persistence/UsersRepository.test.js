@@ -4,12 +4,12 @@ chai.use(require("chai-as-promised"));
 
 const expect = chai.expect;
 
-const ConfigurationService = require("../../src/services/configuration-service");
-const UsersRepository = require("../../src/database/User/users-repository");
+const ConfigurationService = require("../../src/services/ConfigurationService");
+const UsersRepository = require("../../src/database/User/UsersRepository");
 const User = require("../../src/database/models/User");
-const userRoles = require("../../src/database/User/user-roles");
+const userRoles = require("../../src/database/User/userRoles");
 
-const Random = require("../shared/helpers/random");
+const Random = require("../shared/helpers/Random");
 
 describe("Users Repository", () => {
   before(async () => {

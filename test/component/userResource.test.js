@@ -1,7 +1,7 @@
 const { expect } = require("chai");
 
-const Random = require("../shared/helpers/random");
-const Database = require("../shared/helpers/database");
+const Random = require("../shared/helpers/Random");
+const Database = require("../shared/helpers/Database");
 const TestServer = require('./helpers/TestServer')
 const API = require("./helpers/API");
 

@@ -1,7 +1,8 @@
 // @ts-nocheck
 const ethers = require("ethers");
 
-const APIError = require("../api-error");
+const ApiError = require("../ApiError");
+
 const constants = require("../../utils/testUtils/constants");
 
 const provider = new ethers.providers.InfuraProvider("rinkeby", [
@@ -85,7 +86,7 @@ class TestController {
       );
     } catch (error) {
       console.error(error.error);
-      return next(new APIError(400, `Transaction failed. TxHash: ${tx.hash} `));
+      return next(new ApiError(400, `Transaction failed. TxHash: ${tx.hash} `));
     }
 
     try {
@@ -102,7 +103,7 @@ class TestController {
         `An error occurred while user [${voucherOwner}] tried to create Voucher.`
       );
       console.error(error);
-      return next(new APIError(400, "Invalid voucher model"));
+      return next(new ApiError(400, "Invalid voucher model"));
     }
 
     res.status(200).send({ tokenSupplyID: parsedEvent._tokenIdSupply });
@@ -153,7 +154,7 @@ class TestController {
       ]);
     } catch (error) {
       console.error(error);
-      return next(new APIError(400, `Transaction failed! TxHash: ${tx.hash}`));
+      return next(new ApiError(400, `Transaction failed! TxHash: ${tx.hash}`));
     }
 
     metadata = {
@@ -168,7 +169,7 @@ class TestController {
       await this.vouchersRepository.createVoucher(metadata, voucherSupply.id);
     } catch (error) {
       console.error(error);
-      return next(new APIError(400, "Failed to store voucher in DB"));
+      return next(new ApiError(400, "Failed to store voucher in DB"));
     }
 
     res.status(200).send({ tokenIdVoucher: data[0].toString() });
@@ -191,7 +192,7 @@ class TestController {
       await this.vouchersRepository.updateVoucherStatus(voucher.id, "REDEEMED");
     } catch (error) {
       console.error(error);
-      return next(new APIError(400, `Tx failed! TxHash: ${tx.hash}`));
+      return next(new ApiError(400, `Tx failed! TxHash: ${tx.hash}`));
     }
 
     res.status(200).send({ sucess: true });
