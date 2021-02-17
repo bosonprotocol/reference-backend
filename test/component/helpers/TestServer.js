@@ -43,9 +43,9 @@ class TestServer {
     const configurationService = new ConfigurationService(
       this.configurationOverrides
     );
-    const authenticationService = new AuthenticationService({
+    const authenticationService = new AuthenticationService(
       configurationService,
-    });
+    );
 
     const authenticationMiddleware = new AuthenticationMiddleware(
       configurationService,

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const { utils } = require("ethers");
 
 class AuthenticationService {
-  constructor({ configurationService }) {
+  constructor(configurationService) {
     this.configurationService = configurationService;
   }
 

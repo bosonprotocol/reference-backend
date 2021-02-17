@@ -6,9 +6,7 @@ const UsersRepository = require("../../database/User/users-repository");
 const userRoles = require("../../database/User/user-roles");
 
 const configurationService = new ConfigurationService();
-const authenticationService = new AuthenticationService({
-  configurationService,
-});
+const authenticationService = new AuthenticationService(configurationService);
 const usersRepository = new UsersRepository();
 
 class AdminAuth {
