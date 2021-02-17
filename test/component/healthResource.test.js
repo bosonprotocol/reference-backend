@@ -1,15 +1,15 @@
 const { expect } = require("chai");
 
+const API = require("./helpers/API");
 const TestServer = require("./helpers/TestServer");
-const Client = require("./helpers/Client");
 
 describe("Health Resource", () => {
   let server;
-  let client;
+  let api;
 
   before(async () => {
     server = await new TestServer().onAnyPort().start();
-    client = new Client(server.address);
+    api = new API(server.address);
   });
 
   after(async () => {
@@ -18,7 +18,7 @@ describe("Health Resource", () => {
 
   context("on GET", () => {
     it("returns 200 and healthy body", async () => {
-      const response = await client.getHealth();
+      const response = await api.health().get();
 
       expect(response.statusCode).to.eql(200);
       expect(response.body).to.eql({ healthy: true });
