@@ -1,4 +1,4 @@
-const ErrorHandlingMiddleware = require("../middlewares/ErrorHandlingMiddleware.js");
+const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware.js");
 
 class HealthModule {
   constructor(healthController) {

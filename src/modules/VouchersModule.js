@@ -1,5 +1,5 @@
-const eventValidator = require("../middlewares/event-validator");
-const ErrorHandlingMiddleware = require("../middlewares/ErrorHandlingMiddleware");
+const eventValidator = require("../api/middlewares/event-validator");
+const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 
 class VouchersModule {
   constructor(
