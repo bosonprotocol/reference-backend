@@ -183,7 +183,7 @@ class VoucherSuppliesController {
       return next(new APIError(400, "Invalid voucher model"));
     }
 
-    res.status(200).send({ voucherSupply });
+    res.status(201).send({ voucherSupply });
   }
 
   static async updateVoucherSupply(req, res, next) {

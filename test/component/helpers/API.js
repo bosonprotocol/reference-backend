@@ -1,4 +1,4 @@
-const request = require("superagent");
+const superagent = require("superagent-auth-bearer")(require("superagent"));
 
 const { Types } = require("../../shared/helpers/signing");
 
@@ -8,7 +8,7 @@ class HealthResource {
   }
 
   async get() {
-    return request.get(`${this.serverAddress}/health`).ok(() => true);
+    return superagent.get(`${this.serverAddress}/health`).ok(() => true);
   }
 }
 
@@ -21,7 +21,7 @@ class UsersResource {
   //       as we are "upserting" a user rather than creating a resource under
   //       the user.
   async post(address) {
-    return request
+    return superagent
       .post(`${this.serverAddress}/users/${address}`)
       .ok(() => true);
   }
@@ -36,7 +36,7 @@ class UserSignatureVerificationResource {
   async post(domain, signature) {
     const types = { AuthSignature: Types.AuthSignature };
 
-    return request
+    return superagent
       .post(`${this.serverAddress}/users/${this.userAddress}/verify-signature`)
       .ok(() => true)
       .send({ address: this.userAddress, domain, types, signature });
@@ -57,9 +57,30 @@ class UserResource {
   }
 }
 
+class VoucherSuppliesResource {
+  constructor(serverAddress, token) {
+    this.serverAddress = serverAddress;
+    this.token = token;
+  }
+
+  async post(voucherSupplyData, imageFilePath) {
+    return superagent
+      .post(`${this.serverAddress}/voucher-sets`)
+      .field(voucherSupplyData)
+      .attach("fileToUpload", imageFilePath)
+      .authBearer(this.token);
+  }
+}
+
 class API {
   constructor(serverAddress) {
     this.serverAddress = serverAddress;
+    this.token = null;
+  }
+
+  withToken(token) {
+    this.token = token;
+    return this;
   }
 
   health() {
@@ -72,6 +93,10 @@ class API {
 
   user(address) {
     return new UserResource(this.serverAddress, address);
+  }
+
+  voucherSupplies() {
+    return new VoucherSuppliesResource(this.serverAddress, this.token);
   }
 }
 

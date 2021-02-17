@@ -5,7 +5,7 @@ const Database = require("../shared/helpers/database");
 
 const TestServer = require("./helpers/TestServer");
 const Prerequisites = require("./helpers/Prerequisites");
-const API = require('./helpers/API')
+const API = require("./helpers/API");
 
 describe("Voucher Supplies Resource", () => {
   let server;
@@ -19,7 +19,7 @@ describe("Voucher Supplies Resource", () => {
     database = await Database.connect();
     server = await new TestServer()
       .onAnyPort()
-      .withConfigurationOverrides({ tokenSecret })
+      .addConfigurationOverrides({ tokenSecret })
       .start();
     api = new API(server.address);
     prerequisites = new Prerequisites(api);
@@ -38,8 +38,20 @@ describe("Voucher Supplies Resource", () => {
     it("returns 201 and the created voucher supply", async () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
+      const voucherSupplyOwner = account.address;
+      const voucherSupplyMetadata = Random.voucherSupplyMetadata();
+      const voucherSupplyData = {
+        ...voucherSupplyMetadata,
+        voucherOwner: voucherSupplyOwner
+      };
+      const imageFilePath = 'test/fixtures/valid-image.png';
 
-      expect(token).not.to.be.null;
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(201);
     });
   });
 });

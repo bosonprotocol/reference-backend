@@ -51,7 +51,7 @@ class Random {
   }
 
   static tokenSecret() {
-    return faker.random.hexaDecimal(128);
+    return faker.random.hexaDecimal(128).slice(2);
   }
 
   static title() {
