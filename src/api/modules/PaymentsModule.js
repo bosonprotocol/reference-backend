@@ -1,4 +1,4 @@
-const ErrorHandlers = require("../middlewares/error-handler");
+const ErrorHandlingMiddleware = require("../middlewares/ErrorHandlingMiddleware");
 
 class PaymentsModule {
   constructor(
@@ -18,30 +18,30 @@ class PaymentsModule {
   addRoutesTo(router) {
     router.get(
       "/get-payment/:tokenIdVoucher",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.paymentsController.getPaymentsByVoucherID(req, res, next)
       )
     );
 
     router.get(
       "/:voucherID",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.paymentValidationMiddleware.validateID(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.paymentsController.getPaymentActors(req, res, next)
       )
     );
 
     router.post(
       "/create-payment",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.paymentValidationMiddleware.validatePaymentData(req, res, next)
       ),
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.paymentsController.createPayments(req, res, next)
       )
     );

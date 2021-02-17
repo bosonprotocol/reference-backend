@@ -1,6 +1,6 @@
 const { expect } = require("chai");
 
-const ConfigurationService = require("../../../src/services/configuration-service");
+const ConfigurationService = require("../../../src/services/ConfigurationService");
 
 const withEnv = (name, value, fn) => {
   const before = process.env[name];

@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const keccak256 = require("keccak256");
 
 const status = require("../../../src/utils/userVoucherStatus");
-const Time = require("./time");
+const Time = require("./Time");
 
 class Random {
   static documentId() {

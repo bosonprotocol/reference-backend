@@ -4,11 +4,11 @@ chai.use(require("chai-as-promised"));
 
 const expect = chai.expect;
 
-const ConfigurationService = require("../../src/services/configuration-service");
-const PaymentsRepository = require("../../src/database/Payment/payments-repository");
+const ConfigurationService = require("../../src/services/ConfigurationService");
+const PaymentsRepository = require("../../src/database/Payment/PaymentsRepository");
 const Payment = require("../../src/database/models/Payment");
 
-const Random = require("../shared/helpers/random");
+const Random = require("../shared/helpers/Random");
 
 describe("Payments Repository", () => {
   before(async () => {

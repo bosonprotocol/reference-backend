@@ -1,5 +1,5 @@
 // @ts-nocheck
-const APIError = require("../api-error");
+const ApiError = require("../ApiError");
 
 const voucherUtils = require("../../utils/voucherUtils");
 
@@ -125,7 +125,7 @@ class VouchersController {
     } catch (error) {
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `Buy operation for Supply id: ${supplyID} could not be completed.`
         )
@@ -147,7 +147,7 @@ class VouchersController {
       );
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `UPDATE operation for voucher id: ${voucherID} could not be completed.`
         )
@@ -172,7 +172,7 @@ class VouchersController {
     } catch (error) {
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `Update operation for voucher id: ${req.body._tokenIdVoucher} could not be completed.`
         )
@@ -200,7 +200,7 @@ class VouchersController {
 
       if (!voucher) {
         return next(
-          new APIError(
+          new ApiError(
             404,
             `User Voucher with voucherTokenId ${req.body._tokenIdVoucher} not found!`
           )
@@ -214,7 +214,7 @@ class VouchersController {
     } catch (error) {
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `Update operation for voucher id: ${voucher.id} could not be completed.`
         )
@@ -239,7 +239,7 @@ class VouchersController {
       );
       console.error(error);
       return next(
-        new APIError(
+        new ApiError(
           400,
           `Finalize operation for token voucher id: ${tokenIdVoucher} could not be completed.`
         )
@@ -257,7 +257,7 @@ class VouchersController {
     } catch (error) {
       console.error(`An error occurred while tried to fetch all vouchers!`);
       console.error(error);
-      return next(new APIError(400, `Error fetching all vouchers.`));
+      return next(new ApiError(400, `Error fetching all vouchers.`));
     }
 
     res.status(200).send({ vouchers });

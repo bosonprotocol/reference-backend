@@ -1,8 +1,8 @@
 const { expect } = require("chai");
 
-const Random = require("../shared/helpers/random");
-const Database = require("../shared/helpers/database");
-const Tokens = require("../shared/helpers/tokens");
+const Random = require("../shared/helpers/Random");
+const Database = require("../shared/helpers/Database");
+const Tokens = require("../shared/helpers/Tokens");
 const { Signing } = require("../shared/helpers/signing");
 
 const API = require("./helpers/API");

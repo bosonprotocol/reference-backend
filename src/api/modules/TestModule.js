@@ -1,4 +1,4 @@
-const ErrorHandlers = require("../middlewares/error-handler");
+const ErrorHandlingMiddleware = require("../middlewares/ErrorHandlingMiddleware");
 
 class TestModule {
   constructor(testController) {
@@ -12,21 +12,21 @@ class TestModule {
   addRoutesTo(router) {
     router.post(
       "/createBatch",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.testController.createVoucherSupply(req, res, next)
       )
     );
 
     router.post(
       "/commitToBuy/:supplyID",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.testController.createVoucher(req, res, next)
       )
     );
 
     router.post(
       "/redeem/:voucherID",
-      ErrorHandlers.globalErrorHandler((req, res, next) =>
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.testController.redeem(req, res, next)
       )
     );

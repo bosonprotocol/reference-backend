@@ -1,4 +1,4 @@
-const APIError = require("./../api-error");
+const ApiError = require("./../ApiError");
 
 class VoucherValidationMiddleware {
   constructor(voucherSuppliesRepository) {
@@ -14,7 +14,7 @@ class VoucherValidationMiddleware {
       );
     } catch (error) {
       return next(
-        new APIError(
+        new ApiError(
           404,
           `VoucherSupply with ID: ${req.params.id} does not exist!`
         )
@@ -23,7 +23,7 @@ class VoucherValidationMiddleware {
 
     if (!voucherSupply) {
       return next(
-        new APIError(400, `Voucher with ID: ${req.params.id} does not exist!`)
+        new ApiError(400, `Voucher with ID: ${req.params.id} does not exist!`)
       );
     }
 
@@ -34,14 +34,14 @@ class VoucherValidationMiddleware {
 
   async validateCanDelete(req, res, next) {
     if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
-      return next(new APIError(401, "Unauthorized."));
+      return next(new ApiError(401, "Unauthorized."));
     }
     next();
   }
 
   async validateCanUpdateVoucherSupply(req, res, next) {
     if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
-      return next(new APIError(401, "Unauthorized."));
+      return next(new ApiError(401, "Unauthorized."));
     }
 
     next();
@@ -56,7 +56,7 @@ class VoucherValidationMiddleware {
     const endDateToMillis = new Date(req.body.expiryDate).getTime();
 
     if (startDateToMillis < today || endDateToMillis < startDateToMillis) {
-      return next(new APIError(400, "Invalid Dates."));
+      return next(new ApiError(400, "Invalid Dates."));
     }
 
     next();

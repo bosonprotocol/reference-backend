@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const Time = require("./time");
+const Time = require("./Time");
 
 class Tokens {
   static sign(payload, secret) {

@@ -1,5 +1,6 @@
 const ethers = require("ethers");
-const ApiError = require("../api-error");
+
+const ApiError = require("../ApiError");
 
 class AdministrationController {
   constructor(usersRepository, voucherSuppliesRepository) {

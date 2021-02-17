@@ -1,11 +1,11 @@
-const APIError = require("../api-error");
+const ApiError = require("../ApiError");
 const { BigNumber } = require("ethers");
 
 class EventValidator {
   static async ValidateUserVoucherMetadata(req, res, next) {
     if (!req.body) {
       console.error("Empty body sent while, trying to update a user voucher!");
-      return next(new APIError(400, "Bad request."));
+      return next(new ApiError(400, "Bad request."));
     }
 
     if (
@@ -13,7 +13,7 @@ class EventValidator {
       !req.body._tokenIdVoucher
     ) {
       console.error("_tokenIdVoucher is empty!");
-      return next(new APIError(400, "Bad request."));
+      return next(new ApiError(400, "Bad request."));
     }
 
     next();
@@ -25,7 +25,7 @@ class EventValidator {
 
     if (!metadata) {
       console.error("Empty body sent while, trying to update a voucher!");
-      return next(new APIError(400, "Bad request."));
+      return next(new ApiError(400, "Bad request."));
     }
 
     if (
@@ -33,19 +33,19 @@ class EventValidator {
       !metadata.voucherSupplies.length
     ) {
       console.error("Does not have voucherSupplies to update");
-      return next(new APIError(400, "Bad request."));
+      return next(new ApiError(400, "Bad request."));
     }
 
     if (!Object.prototype.hasOwnProperty.call(metadata, "_correlationId")) {
       console.error("Does not have _correlationId to update");
-      return next(new APIError(400, "Bad request."));
+      return next(new ApiError(400, "Bad request."));
     }
 
     try {
       BigNumber.from(metadata._correlationId);
     } catch (error) {
       console.error("Tx ID cannot be casted to BN!");
-      return next(new APIError(400, "Bad request."));
+      return next(new ApiError(400, "Bad request."));
     }
 
     next();
@@ -54,7 +54,7 @@ class EventValidator {
   static async ValidateVoucherMetadata(req, res, next) {
     if (!req.body) {
       console.error("Empty body sent while, trying to update a user voucher!");
-      return next(new APIError(400, "Bad request."));
+      return next(new ApiError(400, "Bad request."));
     }
 
     /*eslint no-prototype-builtins: "error"*/
@@ -63,7 +63,7 @@ class EventValidator {
       !req.body._tokenIdSupply
     ) {
       console.error("_tokenIdSupply is missing!");
-      return next(new APIError(400, "Bad request."));
+      return next(new ApiError(400, "Bad request."));
     }
 
     next();
