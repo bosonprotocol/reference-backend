@@ -1,8 +1,15 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
+const TestController = require("../api/controllers/TestController");
 
 class TestModule {
-  constructor(testController) {
-    this.testController = testController;
+  constructor({
+    voucherSuppliesRepository,
+    vouchersRepository,
+    testController,
+  }) {
+    this.testController =
+      testController ||
+      new TestController(voucherSuppliesRepository, vouchersRepository);
   }
 
   mountPoint() {

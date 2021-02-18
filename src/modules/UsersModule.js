@@ -1,14 +1,29 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
+const UsersController = require("../api/controllers/UsersController");
+const UserValidationMiddleware = require("../api/middlewares/UserValidationMiddleware");
 
 class UsersModule {
-  constructor(
+  constructor({
+    authenticationService,
+    usersRepository,
+    voucherSuppliesRepository,
+    vouchersRepository,
     userAuthenticationMiddleware,
     userValidationMiddleware,
-    usersController
-  ) {
+    usersController,
+  }) {
     this.userAuthenticationMiddleware = userAuthenticationMiddleware;
-    this.userValidationMiddleware = userValidationMiddleware;
-    this.usersController = usersController;
+    this.userValidationMiddleware =
+      userValidationMiddleware ||
+      new UserValidationMiddleware(vouchersRepository);
+    this.usersController =
+      usersController ||
+      new UsersController(
+        authenticationService,
+        usersRepository,
+        voucherSuppliesRepository,
+        vouchersRepository
+      );
   }
 
   mountPoint() {

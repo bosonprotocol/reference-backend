@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const ConfigurationService = require('../../../src/services/configuration-service')
+const ConfigurationService = require('../../../src/services/ConfigurationService')
 const User = require("../../../src/database/models/User");
 const Payment = require("../../../src/database/models/Payment");
 const Voucher = require("../../../src/database/models/Voucher");

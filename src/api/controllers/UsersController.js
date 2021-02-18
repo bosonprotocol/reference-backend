@@ -2,7 +2,7 @@ const ApiError = require("../ApiError");
 
 const nonceUtils = require("../../utils/nonceUtils");
 
-class UserController {
+class UsersController {
   constructor(
     authenticationService,
     usersRepository,
@@ -91,4 +91,4 @@ class UserController {
   }
 }
 
-module.exports = UserController;
+module.exports = UsersController;

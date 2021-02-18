@@ -1,14 +1,21 @@
-const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlerMiddleware");
+const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
+const PaymentsController = require("../api/controllers/PaymentsController");
+const PaymentValidationMiddleware = require("../api/middlewares/PaymentValidationMiddleware");
 
 class PaymentsModule {
-  constructor(
+  constructor({
+    vouchersRepository,
+    paymentsRepository,
     userAuthenticationMiddleware,
     paymentValidationMiddleware,
-    paymentsController
-  ) {
+    paymentsController,
+  }) {
     this.userAuthenticationMiddleware = userAuthenticationMiddleware;
-    this.paymentValidationMiddleware = paymentValidationMiddleware;
-    this.paymentsController = paymentsController;
+    this.paymentValidationMiddleware =
+      paymentValidationMiddleware || new PaymentValidationMiddleware();
+    this.paymentsController =
+      paymentsController ||
+      new PaymentsController(vouchersRepository, paymentsRepository);
   }
 
   mountPoint() {

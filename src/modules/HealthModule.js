@@ -1,8 +1,9 @@
-const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlerMiddleware");
+const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
+const HealthController = require("../api/controllers/HealthController");
 
 class HealthModule {
-  constructor(healthController) {
-    this.healthController = healthController;
+  constructor({ healthController } = {}) {
+    this.healthController = healthController || new HealthController();
   }
 
   mountPoint() {

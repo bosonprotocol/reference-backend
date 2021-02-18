@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 
 const MongooseClient = require("./clients/MongooseClient");
-const ErrorHandlingMiddleware = require("./api/middlewares/ErrorHandlerMiddleware");
+const ErrorHandlingMiddleware = require("./api/middlewares/ErrorHandlingMiddleware");
 
 class Server {
   constructor() {
