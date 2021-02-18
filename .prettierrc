@@ -1,0 +1,14 @@
+{
+  "overrides": [
+    {
+      "files": "*.js",
+      "options": {
+        "printWidth":140,
+        "tabWidth": 4,
+        "useTabs": false,
+        "singleQuote": true,
+        "bracketSpacing": false
+      }
+    }
+  ]
+}
