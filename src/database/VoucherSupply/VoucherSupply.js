@@ -203,10 +203,6 @@ class VoucherSupplyService {
       userVoucher.supplyID
     );
 
-    console.log('userVoucher');
-    console.log(userVoucher);
-    console.log('========');
-
     const voucherSupply = {
       _id: userVoucher.id,
       title: voucherSupplyDetails._doc.title,
