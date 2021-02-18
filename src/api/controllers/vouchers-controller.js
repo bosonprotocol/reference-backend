@@ -1,8 +1,8 @@
 //@ts-nocheck
 
-const mongooseService = require('../../database/index.js');
-const APIError = require('../api-error');
-const voucherUtils = require('../../utils/voucherUtils');
+const mongooseService = require("../../database/index.js");
+const APIError = require("../api-error");
+const voucherUtils = require("../../utils/voucherUtils");
 
 class VoucherController {
     static async getVouchers(req, res, next) {

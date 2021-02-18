@@ -1,20 +1,20 @@
 //@ts-nocheck
 
-const mongooseService = require('../../database/index.js');
-const APIError = require('../api-error');
-const ethers = require('ethers');
-const constants = require('../../utils/testUtils/constants');
+const mongooseService = require("../../database/index.js");
+const APIError = require("../api-error");
+const ethers = require("ethers");
+const constants = require("../../utils/testUtils/constants");
 
-const provider = new ethers.providers.InfuraProvider('rinkeby', [constants.INFURA_API_KEY]);
+const provider = new ethers.providers.InfuraProvider("rinkeby", [constants.INFURA_API_KEY]);
 
 const sellerWallet = new ethers.Wallet(constants.SELLER_PK, provider);
 const buyerWallet = new ethers.Wallet(constants.BUYER_PK, provider);
-const Cashier = require('../../utils/testUtils/ABIS/Cashier.json');
-const VoucherKernel = require('../../utils/testUtils/ABIS/VoucherKernel.json');
-const TestUtils = require('../../utils/testUtils/testUtils');
+const Cashier = require("../../utils/testUtils/ABIS/Cashier.json");
+const VoucherKernel = require("../../utils/testUtils/ABIS/VoucherKernel.json");
+const TestUtils = require("../../utils/testUtils/testUtils");
 const utils = new TestUtils(provider);
 
-const {AbiCoder, Interface} = require('ethers').utils;
+const {AbiCoder, Interface} = require("ethers").utils;
 
 async function getEncodedTopic(receipt, abi, eventName) {
     const interface = new Interface(abi);
@@ -34,7 +34,7 @@ async function getEncodedTopic(receipt, abi, eventName) {
         }
     }
 
-    return '';
+    return "";
 }
 
 async function decodeData(receipt, encodedTopic, paramsArr) {
@@ -58,14 +58,14 @@ class TestController {
             req.body.startDate = (timestamp - 1 * constants.SECONDS_IN_DAY) * 1000;
             req.body.expiryDate = (timestamp + 2 * constants.SECONDS_IN_DAY) * 1000;
             req.body.offeredDate = Date.now();
-            req.body.location = 'test';
-            req.body.contact = 'test';
-            req.body.conditions = 'test';
+            req.body.location = "test";
+            req.body.contact = "test";
+            req.body.conditions = "test";
 
             tx = await TestController.createVoucherBatch(req.body);
             receipt = await tx.wait();
 
-            parsedEvent = await utils.findEventByName(receipt, 'LogOrderCreated', '_tokenIdSupply', '_seller', '_quantity', '_paymentType');
+            parsedEvent = await utils.findEventByName(receipt, "LogOrderCreated", "_tokenIdSupply", "_seller", "_quantity", "_paymentType");
         } catch (error) {
             console.error(error.error);
             return next(new APIError(400, `Transaction failed. TxHash: ${tx.hash} `));
@@ -83,7 +83,7 @@ class TestController {
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
             console.error(error);
-            return next(new APIError(400, 'Invalid voucher model'));
+            return next(new APIError(400, "Invalid voucher model"));
         }
 
         res.status(200).send({tokenSupplyID: parsedEvent._tokenIdSupply});
@@ -104,13 +104,13 @@ class TestController {
         try {
             tx = await cashierContract_Buyer.requestVoucher_ETH_ETH(supplyID, voucherSupply.voucherOwner, {
                 value: txValue.toString(),
-                gasLimit: '6000000',
+                gasLimit: "6000000",
             });
 
             const receipt = await tx.wait();
 
-            let encodedTopic = await getEncodedTopic(receipt, VoucherKernel.abi, 'LogVoucherDelivered');
-            data = await decodeData(receipt, encodedTopic, ['uint256', 'address', 'address', 'bytes32']);
+            let encodedTopic = await getEncodedTopic(receipt, VoucherKernel.abi, "LogVoucherDelivered");
+            data = await decodeData(receipt, encodedTopic, ["uint256", "address", "address", "bytes32"]);
         } catch (error) {
             console.error(error);
             return next(new APIError(400, `Transaction failed! TxHash: ${tx.hash}`));
@@ -128,7 +128,7 @@ class TestController {
             await mongooseService.createVoucher(metadata, voucherSupply.id);
         } catch (error) {
             console.error(error);
-            return next(new APIError(400, 'Failed to store voucher in DB'));
+            return next(new APIError(400, "Failed to store voucher in DB"));
         }
 
         res.status(200).send({tokenIdVoucher: data[0].toString()});
@@ -140,9 +140,9 @@ class TestController {
         const voucher = await mongooseService.findVoucherByTokenIdVoucher(voucherID);
         let tx;
         try {
-            tx = await voucherKernel.redeem(voucherID, {gasLimit: '4000000'});
+            tx = await voucherKernel.redeem(voucherID, {gasLimit: "4000000"});
             await tx.wait();
-            await mongooseService.updateVoucherStatus(voucher.id, 'REDEEMED');
+            await mongooseService.updateVoucherStatus(voucher.id, "REDEEMED");
         } catch (error) {
             console.error(error);
             return next(new APIError(400, `Tx failed! TxHash: ${tx.hash}`));
@@ -166,7 +166,7 @@ class TestController {
         const txValue = ethers.BigNumber.from(body.sellerDeposit).mul(body.qty);
         return await cashierContractSeller.requestCreateOrder_ETH_ETH(dataArr, {
             value: txValue,
-            gasLimit: '5000000',
+            gasLimit: "5000000",
         });
     }
 }

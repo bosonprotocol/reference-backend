@@ -1,21 +1,21 @@
-const APIError = require('../api-error');
-const jwt = require('jsonwebtoken');
-const utils = require('ethers').utils;
+const APIError = require("../api-error");
+const jwt = require("jsonwebtoken");
+const utils = require("ethers").utils;
 
 class AuthService {
     static async authenticateToken(req, res, next) {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        const authHeader = req.headers["authorization"];
+        const token = authHeader && authHeader.split(" ")[1];
 
         if (token == null) {
-            return next(new APIError(401, 'Unauthorized.'));
+            return next(new APIError(401, "Unauthorized."));
         }
 
         try {
             const user = await jwt.verify(token, process.env.TOKEN_SECRET);
             res.locals.address = user;
         } catch (error) {
-            return next(new APIError(403, 'Forbidden.'));
+            return next(new APIError(403, "Forbidden."));
         }
 
         next();
@@ -32,7 +32,7 @@ class AuthService {
             user: address,
         };
 
-        return jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: '180d'});
+        return jwt.sign(payload, process.env.TOKEN_SECRET, {expiresIn: "180d"});
     }
 
     static async verifyToken(token) {

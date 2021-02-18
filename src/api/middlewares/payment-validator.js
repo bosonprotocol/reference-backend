@@ -1,7 +1,7 @@
 //@ts-nocheck
 
-const APIError = require('./../api-error');
-const isValid = require('mongoose').isValidObjectId;
+const APIError = require("./../api-error");
+const isValid = require("mongoose").isValidObjectId;
 
 class VoucherValidator {
     static async ValidatePaymentData(req, res, next) {
@@ -11,11 +11,11 @@ class VoucherValidator {
             return next(new APIError(400, `Payload is not an array!`));
         }
 
-        if (!(typeof payload[0] === 'object')) {
+        if (!(typeof payload[0] === "object")) {
             return next(new APIError(400, `Payload does not contain the required information!`));
         }
 
-        if (!Object.prototype.hasOwnProperty.call(payload[0], '_tokenIdVoucher')) {
+        if (!Object.prototype.hasOwnProperty.call(payload[0], "_tokenIdVoucher")) {
             return next(new APIError(400, `Payload is not set to specific Voucher ID!`));
         }
 

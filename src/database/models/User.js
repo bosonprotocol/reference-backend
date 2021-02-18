@@ -1,7 +1,7 @@
 // @ts-nocheck
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const collections = require('../collections.json');
+const collections = require("../collections.json");
 const USER = collections.USER;
 
 const userSchema = new Schema({
@@ -15,7 +15,7 @@ const userSchema = new Schema({
         default: 0,
         validate(value) {
             if (value < 0) {
-                throw new Error('Nonce must be a postive number');
+                throw new Error("Nonce must be a postive number");
             }
         },
     },

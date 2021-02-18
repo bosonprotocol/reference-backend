@@ -1,16 +1,16 @@
 //@ts-nocheck
 
-const mongooseService = require('../../database/index.js');
-const APIError = require('../api-error');
-const voucherUtils = require('../../utils/voucherUtils');
+const mongooseService = require("../../database/index.js");
+const APIError = require("../api-error");
+const voucherUtils = require("../../utils/voucherUtils");
 
 class VoucherSuppliesController {
     static async getVoucherSupply(req, res, next) {
         let voucherSupply;
 
-        if (typeof req.params.id === 'undefined') {
+        if (typeof req.params.id === "undefined") {
             console.error(`An error occurred while tried to fetch Voucher.`);
-            return next(new APIError(400, 'No VoucherID was presented'));
+            return next(new APIError(400, "No VoucherID was presented"));
         }
 
         try {
@@ -61,7 +61,7 @@ class VoucherSuppliesController {
         } catch (error) {
             console.error(`An error occurred while user [${owner}] tried to fetch Vouchers.`);
             console.error(error);
-            return next(new APIError(400, 'Invalid operation'));
+            return next(new APIError(400, "Invalid operation"));
         }
 
         res.status(200).send({voucherSupplies});
@@ -76,7 +76,7 @@ class VoucherSuppliesController {
         } catch (error) {
             console.error(`An error occurred while user [${buyer}] tried to fetch Vouchers.`);
             console.error(error);
-            return next(new APIError(400, 'Invalid operation'));
+            return next(new APIError(400, "Invalid operation"));
         }
 
         res.status(200).send({voucherSupplies});
@@ -93,7 +93,7 @@ class VoucherSuppliesController {
         } catch (error) {
             console.error(`An error occurred while user tried to fetch Supply Statuses.`);
             console.error(error);
-            return next(new APIError(400, 'Bad request.'));
+            return next(new APIError(400, "Bad request."));
         }
 
         res.status(200).send({active: active.length, inactive: inactive.length});
@@ -108,7 +108,7 @@ class VoucherSuppliesController {
         } catch (error) {
             console.error(`An error occurred while user tried to fetch Active Supplies.`);
             console.error(error);
-            return next(new APIError(400, 'Bad request.'));
+            return next(new APIError(400, "Bad request."));
         }
 
         res.status(200).send({
@@ -124,7 +124,7 @@ class VoucherSuppliesController {
             inActive = await mongooseService.getInactiveSupplies(address);
         } catch (error) {
             console.error(error);
-            return next(new APIError(400, 'Bad request.'));
+            return next(new APIError(400, "Bad request."));
         }
 
         res.status(200).send({
@@ -142,7 +142,7 @@ class VoucherSuppliesController {
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to create Voucher.`);
             console.error(error.message);
-            return next(new APIError(400, 'Invalid voucher model'));
+            return next(new APIError(400, "Invalid voucher model"));
         }
 
         res.status(200).send({voucherSupply});
@@ -158,7 +158,7 @@ class VoucherSuppliesController {
         } catch (error) {
             console.error(`An error occurred while user [${voucherOwner}] tried to update Voucher.`);
             console.error(error);
-            return next(new APIError(400, 'Invalid voucher model'));
+            return next(new APIError(400, "Invalid voucher model"));
         }
 
         res.status(200).send({success: true});
@@ -171,7 +171,7 @@ class VoucherSuppliesController {
             await mongooseService.deleteVoucherSupply(voucherSupply.id);
         } catch (error) {
             console.error(`An error occurred while user [${req.body.voucherOwner}] tried to delete Voucher.`);
-            return next(new APIError(400, 'Invalid operation'));
+            return next(new APIError(400, "Invalid operation"));
         }
 
         res.status(200).send({success: true});
@@ -186,7 +186,7 @@ class VoucherSuppliesController {
         } catch (error) {
             console.error(`An error occurred while image from document [${req.params.id}] was tried to be deleted.`);
             console.error(error);
-            return next(new APIError(400, 'Invalid operation'));
+            return next(new APIError(400, "Invalid operation"));
         }
 
         res.status(200).send({success: true});

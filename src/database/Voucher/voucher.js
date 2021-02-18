@@ -1,5 +1,5 @@
-const Voucher = require('../models/Voucher');
-const status = require('../../utils/userVoucherStatus');
+const Voucher = require("../models/Voucher");
+const status = require("../../utils/userVoucherStatus");
 
 class VouchersService {
     static async createVoucher(metadata, supplyID) {
@@ -11,11 +11,11 @@ class VouchersService {
                 _tokenIdSupply: metadata._tokenIdSupply,
                 _tokenIdVoucher: metadata._tokenIdVoucher,
                 [status.COMMITTED]: new Date().getTime(),
-                [status.CANCELLED]: '',
-                [status.COMPLAINED]: '',
-                [status.REDEEMED]: '',
-                [status.REFUNDED]: '',
-                [status.FINALIZED]: '',
+                [status.CANCELLED]: "",
+                [status.COMPLAINED]: "",
+                [status.REDEEMED]: "",
+                [status.REFUNDED]: "",
+                [status.FINALIZED]: "",
                 voucherOwner: metadata._issuer.toLowerCase(),
                 actionDate: new Date().getTime(),
             },
@@ -25,7 +25,7 @@ class VouchersService {
 
     static async getUserVouchers(userAddress) {
         return await Voucher.find({_holder: userAddress}).sort({
-            actionDate: 'desc',
+            actionDate: "desc",
         });
     }
 
@@ -42,7 +42,7 @@ class VouchersService {
     }
 
     static async findAllVouchersByVoucherSupplyID(supplyID, owner) {
-        return await Voucher.where('supplyID').equals(supplyID).where('voucherOwner').equals(owner);
+        return await Voucher.where("supplyID").equals(supplyID).where("voucherOwner").equals(owner);
         // removed for POC to be able to show table with statuses when cancel or fault is executed
         // .where(status.CANCELLED).equals('')
     }

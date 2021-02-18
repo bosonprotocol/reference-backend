@@ -1,55 +1,55 @@
 //@ts-nocheck
-const VoucherSupply = require('../models/VoucherSupply');
+const VoucherSupply = require("../models/VoucherSupply");
 
 class VoucherSupplyService {
     static async getVoucherSuppliesByOwner(voucherOwner) {
-        return await VoucherSupply.where('voucherOwner')
+        return await VoucherSupply.where("voucherOwner")
             .equals(voucherOwner)
-            .select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'startDate', 'qty', 'visible'])
-            .sort({offeredDate: 'desc'})
+            .select(["title", "price", "description", "imagefiles", "expiryDate", "startDate", "qty", "visible"])
+            .sort({offeredDate: "desc"})
             .lean();
     }
 
     static async getVoucherSuppliesByBuyer(voucherOwner) {
         const today = new Date(Date.now());
 
-        return await VoucherSupply.where('voucherOwner')
+        return await VoucherSupply.where("voucherOwner")
             .ne(voucherOwner)
-            .where('startDate')
+            .where("startDate")
             .lte(today)
-            .where('expiryDate')
+            .where("expiryDate")
             .gte(today)
-            .where('qty')
+            .where("qty")
             .gt(0)
-            .select(['title', 'price', 'description', 'imagefiles', 'expiryDate', 'visible'])
-            .sort({offeredDate: 'desc'})
+            .select(["title", "price", "description", "imagefiles", "expiryDate", "visible"])
+            .sort({offeredDate: "desc"})
             .lean();
     }
 
     static async getActiveSupplies(address) {
         const today = new Date(Date.now());
 
-        return await VoucherSupply.where('voucherOwner')
+        return await VoucherSupply.where("voucherOwner")
             .equals(address.toLowerCase())
-            .where('startDate')
+            .where("startDate")
             .lte(today)
-            .where('expiryDate')
+            .where("expiryDate")
             .gte(today)
-            .where('qty')
+            .where("qty")
             .gt(0)
-            .select(['title', 'price', 'voucherOwner', 'qty', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible'])
-            .sort({offeredDate: 'desc'})
+            .select(["title", "price", "voucherOwner", "qty", "description", "imagefiles", "startDate", "expiryDate", "visible"])
+            .sort({offeredDate: "desc"})
             .lean();
     }
 
     static async getInactiveSupplies(address) {
         const today = new Date(Date.now());
 
-        return await VoucherSupply.where('voucherOwner')
+        return await VoucherSupply.where("voucherOwner")
             .equals(address.toLowerCase())
             .or([{startDate: {$gte: today}}, {expiryDate: {$lte: today}}, {qty: {$lte: 0}}])
-            .select(['title', 'price', 'voucherOwner', 'description', 'imagefiles', 'startDate', 'expiryDate', 'visible'])
-            .sort({offeredDate: 'desc'})
+            .select(["title", "price", "voucherOwner", "description", "imagefiles", "startDate", "expiryDate", "visible"])
+            .sort({offeredDate: "desc"})
             .lean();
     }
 

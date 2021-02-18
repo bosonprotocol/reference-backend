@@ -1,4 +1,4 @@
-const APIError = require('../api-error');
+const APIError = require("../api-error");
 
 class ErrorHandlers {
     /**
@@ -16,7 +16,7 @@ class ErrorHandlers {
             console.error(
                 `An error occurred. Normal error was thrown using next, and not using API Error object - ${err}. Error stack: ${err.stack}`
             );
-            res.status(500).json('Internal Server Error');
+            res.status(500).json("Internal Server Error");
         }
 
         next();
@@ -33,7 +33,7 @@ class ErrorHandlers {
                 await f(req, res, next);
             } catch (error) {
                 console.error(`Something went wrong while executing request. ${error.stack}`);
-                res.status(500).json('Internal Server Error');
+                res.status(500).json("Internal Server Error");
             }
         };
     }

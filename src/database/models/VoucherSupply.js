@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const {Schema} = mongoose;
-const collections = require('../collections.json');
+const collections = require("../collections.json");
 const VOUCHER_SUPPLY = collections.VOUCHER_SUPPLY;
 
 const voucherSchema = new Schema({
@@ -16,7 +16,7 @@ const voucherSchema = new Schema({
         required: true,
         validate(value) {
             if (value < 0) {
-                throw new Error('Qty must be a postive number');
+                throw new Error("Qty must be a postive number");
             }
         },
     },

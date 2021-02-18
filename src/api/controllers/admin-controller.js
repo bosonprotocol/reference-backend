@@ -1,6 +1,6 @@
-const mongooseService = require('../../database/index.js');
-const ApiError = require('../api-error');
-const ethers = require('ethers');
+const mongooseService = require("../../database/index.js");
+const ApiError = require("../api-error");
+const ethers = require("ethers");
 class AdminController {
     static async changeVoucherSupplyVisibility(req, res, next) {
         const supplyID = req.params.supplyID;

@@ -1,5 +1,5 @@
 // @ts-nocheck
-const Payment = require('../models/Payment');
+const Payment = require("../models/Payment");
 
 class PaymentService {
     static async createPayment(metadata) {
@@ -15,7 +15,7 @@ class PaymentService {
     }
 
     static async getPaymentsByVoucherID(_tokenIdVoucher) {
-        return await Payment.where('_tokenIdVoucher').equals(_tokenIdVoucher);
+        return await Payment.where("_tokenIdVoucher").equals(_tokenIdVoucher);
     }
 }
 

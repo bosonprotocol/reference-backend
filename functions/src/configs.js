@@ -1,4 +1,4 @@
-const functions = require('firebase-functions');
+const functions = require("firebase-functions");
 
 const apiUrl = functions.config().dev.apiurl;
 const demoApiUrl = functions.config().demo.apiurl;
@@ -16,7 +16,7 @@ const configs = {
         FINALIZE_VOUCHER_URL: `${apiUrl}/vouchers/finalize`,
         WITHDRAW_VOUCHER_URL: `${apiUrl}/payments/create-payment`,
         GCLOUD_SECRET: functions.config().dev.gcloudsecret,
-        GAS_LIMIT: '3000000',
+        GAS_LIMIT: "3000000",
     },
     demo: {
         VOUCHER_KERNEL_ADDRESS: functions.config().demo.voucherkerneladdress,
@@ -30,7 +30,7 @@ const configs = {
         FINALIZE_VOUCHER_URL: `${demoApiUrl}/vouchers/finalize`,
         WITHDRAW_VOUCHER_URL: `${demoApiUrl}/payments/create-payment`,
         GCLOUD_SECRET: functions.config().demo.gcloudsecret,
-        GAS_LIMIT: '3000000',
+        GAS_LIMIT: "3000000",
     },
 };
 

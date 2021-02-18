@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const url = process.env.DB_CONNECTION_STRING;
 const options = {

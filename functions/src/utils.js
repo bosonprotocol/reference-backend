@@ -1,5 +1,5 @@
 async function findEventByName(txReceipt, eventName, ...eventFields) {
-    if (typeof txReceipt !== 'object' || txReceipt === null) return;
+    if (typeof txReceipt !== "object" || txReceipt === null) return;
 
     let eventsArr = [];
 

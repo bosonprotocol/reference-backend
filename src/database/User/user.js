@@ -1,6 +1,6 @@
 // @ts-nocheck
-const User = require('../models/User');
-const userRoles = require('./user-roles');
+const User = require("../models/User");
+const userRoles = require("./user-roles");
 
 class UserService {
     static async getNonce(address) {

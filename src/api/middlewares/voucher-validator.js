@@ -1,5 +1,5 @@
-const APIError = require('./../api-error');
-const mongooseService = require('../../database/index.js');
+const APIError = require("./../api-error");
+const mongooseService = require("../../database/index.js");
 
 class VoucherValidator {
     static async ValidateVoucherSupplyExists(req, res, next) {
@@ -22,14 +22,14 @@ class VoucherValidator {
 
     static async ValidateCanDelete(req, res, next) {
         if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
-            return next(new APIError(401, 'Unauthorized.'));
+            return next(new APIError(401, "Unauthorized."));
         }
         next();
     }
 
     static async ValidateCanUpdateVoucherSupply(req, res, next) {
         if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
-            return next(new APIError(401, 'Unauthorized.'));
+            return next(new APIError(401, "Unauthorized."));
         }
 
         next();
@@ -44,7 +44,7 @@ class VoucherValidator {
         const endDateToMillis = new Date(req.body.expiryDate).getTime();
 
         if (startDateToMillis < today || endDateToMillis < startDateToMillis) {
-            return next(new APIError(400, 'Invalid Dates.'));
+            return next(new APIError(400, "Invalid Dates."));
         }
 
         next();

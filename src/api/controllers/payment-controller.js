@@ -1,11 +1,11 @@
-const mongooseService = require('../../database/index.js');
-const APIError = require('../api-error');
-const ethers = require('ethers');
+const mongooseService = require("../../database/index.js");
+const APIError = require("../api-error");
+const ethers = require("ethers");
 
 const actors = {
-    BUYER: 'buyer',
-    SELLER: 'seller',
-    ESCROW: 'escrow',
+    BUYER: "buyer",
+    SELLER: "seller",
+    ESCROW: "escrow",
 };
 
 class PaymentController {

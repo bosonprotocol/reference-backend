@@ -1,16 +1,16 @@
 //@ts-nocheck
-const APIError = require('./../api-error');
-const AuthService = require('../services/auth-service');
-const mongooseService = require('../../database/index.js');
-const roles = require('../../database/User/user-roles');
+const APIError = require("./../api-error");
+const AuthService = require("../services/auth-service");
+const mongooseService = require("../../database/index.js");
+const roles = require("../../database/User/user-roles");
 
 class AdminAuth {
     static async validateAdminAccess(req, res, next) {
-        const authHeader = req.headers['authorization'];
-        const token = authHeader && authHeader.split(' ')[1];
+        const authHeader = req.headers["authorization"];
+        const token = authHeader && authHeader.split(" ")[1];
 
         if (token == null) {
-            return next(new APIError(401, 'Unauthorized.'));
+            return next(new APIError(401, "Unauthorized."));
         }
 
         try {
@@ -19,13 +19,13 @@ class AdminAuth {
             const user = await mongooseService.getUser(ethAddress);
 
             if (user.role != roles.ADMIN) {
-                return next(new APIError(403, 'User is not admin!'));
+                return next(new APIError(403, "User is not admin!"));
             }
 
             res.locals.address = ethAddress;
         } catch (error) {
             console.error(error);
-            return next(new APIError(403, 'Forbidden.'));
+            return next(new APIError(403, "Forbidden."));
         }
 
         next();

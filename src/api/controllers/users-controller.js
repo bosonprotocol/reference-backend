@@ -1,7 +1,7 @@
-const nonceUtils = require('../../utils/nonceUtils');
-const mongooseService = require('../../database/index.js');
-const AuthValidator = require('../services/auth-service');
-const APIError = require('../api-error');
+const nonceUtils = require("../../utils/nonceUtils");
+const mongooseService = require("../../database/index.js");
+const AuthValidator = require("../services/auth-service");
+const APIError = require("../api-error");
 
 class UserController {
     static async generateNonce(req, res, next) {
@@ -38,7 +38,7 @@ class UserController {
             );
 
             if (!isSignatureVerified && !req.body.isSmartWallet) {
-                return next(new APIError(401, 'Unauthorized.'));
+                return next(new APIError(401, "Unauthorized."));
             }
         } catch (error) {
             console.error(error);

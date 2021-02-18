@@ -1,13 +1,13 @@
-const VOUCHER_STATUS = require('./voucherStatus');
+const VOUCHER_STATUS = require("./voucherStatus");
 const BUCKET_NAME = process.env.VOUCHERS_BUCKET;
 
 class VoucherUtils {
     static async uploadFiles(req) {
         if (!req.files) return [];
 
-        const {Storage} = require('@google-cloud/storage');
+        const {Storage} = require("@google-cloud/storage");
 
-        const PDF_CONTENT_TYPE = 'application/pdf';
+        const PDF_CONTENT_TYPE = "application/pdf";
         const gcs = new Storage();
         const bucket = gcs.bucket(BUCKET_NAME);
         const subFolderName = req.body.title;
@@ -28,7 +28,7 @@ class VoucherUtils {
 
             filesRefs.push({
                 url: `https://storage.googleapis.com/${BUCKET_NAME}/${storageDestination}`,
-                type: req.files[i].mimetype === PDF_CONTENT_TYPE ? 'document' : 'image',
+                type: req.files[i].mimetype === PDF_CONTENT_TYPE ? "document" : "image",
             });
         }
 
