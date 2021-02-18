@@ -7,7 +7,7 @@ const expect = chai.expect;
 const ConfigurationService = require("../../src/services/ConfigurationService");
 const VouchersRepository = require("../../src/database/Voucher/VouchersRepository");
 const Voucher = require("../../src/database/models/Voucher");
-const statuses = require("../../src/utils/userVoucherStatus");
+const voucherStatuses = require("../../src/utils/voucherStatuses");
 
 const Random = require("../shared/helpers/Random");
 const Time = require("../shared/helpers/Time");
@@ -56,13 +56,13 @@ describe("Vouchers Repository", () => {
       expect(voucher.voucherOwner).to.eql(metadata._issuer.toLowerCase());
       expect(voucher.actionDate.getTime()).to.be.greaterThan(before);
       expect(voucher.actionDate.getTime()).to.be.lessThan(after);
-      expect(voucher[statuses.COMMITTED].getTime()).to.be.greaterThan(before);
-      expect(voucher[statuses.COMMITTED].getTime()).to.be.lessThan(after);
-      expect(voucher[statuses.CANCELLED]).to.be.null;
-      expect(voucher[statuses.COMPLAINED]).to.be.null;
-      expect(voucher[statuses.REDEEMED]).to.be.null;
-      expect(voucher[statuses.REFUNDED]).to.be.null;
-      expect(voucher[statuses.FINALIZED]).to.be.null;
+      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.greaterThan(before);
+      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.lessThan(after);
+      expect(voucher[voucherStatuses.CANCELLED]).to.be.null;
+      expect(voucher[voucherStatuses.COMPLAINED]).to.be.null;
+      expect(voucher[voucherStatuses.REDEEMED]).to.be.null;
+      expect(voucher[voucherStatuses.REFUNDED]).to.be.null;
+      expect(voucher[voucherStatuses.FINALIZED]).to.be.null;
     });
 
     it("fails when voucher supply ID is missing", async () => {
@@ -141,18 +141,18 @@ describe("Vouchers Repository", () => {
       expect(voucher.voucherOwner).to.eql(metadata2._issuer.toLowerCase());
       expect(voucher.actionDate.getTime()).to.be.greaterThan(before);
       expect(voucher.actionDate.getTime()).to.be.lessThan(after);
-      expect(voucher[statuses.COMMITTED].getTime()).to.be.greaterThan(before);
-      expect(voucher[statuses.COMMITTED].getTime()).to.be.lessThan(after);
-      expect(voucher[statuses.CANCELLED]).to.be.null;
-      expect(voucher[statuses.COMPLAINED]).to.be.null;
-      expect(voucher[statuses.REDEEMED]).to.be.null;
-      expect(voucher[statuses.REFUNDED]).to.be.null;
-      expect(voucher[statuses.FINALIZED]).to.be.null;
+      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.greaterThan(before);
+      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.lessThan(after);
+      expect(voucher[voucherStatuses.CANCELLED]).to.be.null;
+      expect(voucher[voucherStatuses.COMPLAINED]).to.be.null;
+      expect(voucher[voucherStatuses.REDEEMED]).to.be.null;
+      expect(voucher[voucherStatuses.REFUNDED]).to.be.null;
+      expect(voucher[voucherStatuses.FINALIZED]).to.be.null;
     });
   });
 
   context("updateVoucherStatus", () => {
-    Object.values(statuses).forEach((status) => {
+    Object.values(voucherStatuses).forEach((status) => {
       context(` for ${status} status`, () => {
         it(
           `sets the current date on the status on the voucher ` +
@@ -160,12 +160,12 @@ describe("Vouchers Repository", () => {
           async () => {
             const savedVoucher = new Voucher(
               Random.voucherAttributes({
-                [statuses.COMMITTED]: Date.now(),
-                [statuses.CANCELLED]: null,
-                [statuses.COMPLAINED]: null,
-                [statuses.REDEEMED]: null,
-                [statuses.REFUNDED]: null,
-                [statuses.FINALIZED]: null,
+                [voucherStatuses.COMMITTED]: Date.now(),
+                [voucherStatuses.CANCELLED]: null,
+                [voucherStatuses.COMPLAINED]: null,
+                [voucherStatuses.REDEEMED]: null,
+                [voucherStatuses.REFUNDED]: null,
+                [voucherStatuses.FINALIZED]: null,
               })
             );
             await savedVoucher.save();
@@ -196,7 +196,7 @@ describe("Vouchers Repository", () => {
   });
 
   context("finalizeVoucher", () => {
-    Object.values(statuses).forEach((status) => {
+    Object.values(voucherStatuses).forEach((status) => {
       context(` for ${status} status`, () => {
         it(
           `sets the current date on the status on the voucher ` +
@@ -206,12 +206,12 @@ describe("Vouchers Repository", () => {
             const savedVoucher = new Voucher(
               Random.voucherAttributes({
                 _tokenIdVoucher: voucherTokenId,
-                [statuses.COMMITTED]: Date.now(),
-                [statuses.CANCELLED]: null,
-                [statuses.COMPLAINED]: null,
-                [statuses.REDEEMED]: null,
-                [statuses.REFUNDED]: null,
-                [statuses.FINALIZED]: null,
+                [voucherStatuses.COMMITTED]: Date.now(),
+                [voucherStatuses.CANCELLED]: null,
+                [voucherStatuses.COMPLAINED]: null,
+                [voucherStatuses.REDEEMED]: null,
+                [voucherStatuses.REFUNDED]: null,
+                [voucherStatuses.FINALIZED]: null,
               })
             );
             await savedVoucher.save();

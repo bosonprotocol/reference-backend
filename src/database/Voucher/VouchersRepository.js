@@ -1,5 +1,5 @@
 const Voucher = require("../models/Voucher");
-const status = require("../../utils/userVoucherStatus");
+const voucherStatuses = require("../../utils/voucherStatuses");
 
 // TODO: Rename supplyID to supplyId to match other IDs.
 // TODO: Discuss lowercase owner address consistency
@@ -13,12 +13,12 @@ class VouchersRepository {
         _holder: metadata._holder.toLowerCase(),
         _tokenIdSupply: metadata._tokenIdSupply,
         _tokenIdVoucher: metadata._tokenIdVoucher,
-        [status.COMMITTED]: new Date().getTime(),
-        [status.CANCELLED]: null,
-        [status.COMPLAINED]: null,
-        [status.REDEEMED]: null,
-        [status.REFUNDED]: null,
-        [status.FINALIZED]: null,
+        [voucherStatuses.COMMITTED]: new Date().getTime(),
+        [voucherStatuses.CANCELLED]: null,
+        [voucherStatuses.COMPLAINED]: null,
+        [voucherStatuses.REDEEMED]: null,
+        [voucherStatuses.REFUNDED]: null,
+        [voucherStatuses.FINALIZED]: null,
         voucherOwner: metadata._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
       },
