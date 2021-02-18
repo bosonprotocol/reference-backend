@@ -203,6 +203,10 @@ class VoucherSupplyService {
       userVoucher.supplyID
     );
 
+    console.log('userVoucher');
+    console.log(userVoucher);
+    console.log('========');
+
     const voucherSupply = {
       _id: userVoucher.id,
       title: voucherSupplyDetails._doc.title,
@@ -213,6 +217,13 @@ class VoucherSupplyService {
       price: voucherSupplyDetails._doc.price,
       expiryDate: voucherSupplyDetails._doc.expiryDate,
       visible: voucherSupplyDetails._doc.visible,
+      CANCELLED: userVoucher.CANCELLED ,
+      COMMITTED: userVoucher.COMMITTED ,
+      COMPLAINED: userVoucher.COMPLAINED ,
+      EXPIRED: userVoucher.EXPIRED ,
+      FINALIZED: userVoucher.FINALIZED ,
+      REDEEMED: userVoucher.REDEEMED ,
+      REFUNDED: userVoucher.REFUNDED 
     };
 
     voucherData.push(voucherSupply);
