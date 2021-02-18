@@ -4,7 +4,7 @@ const ethers = require("ethers");
 const mongoose = require("mongoose");
 const keccak256 = require("keccak256");
 
-const status = require("../../../src/utils/userVoucherStatus");
+const voucherStatuses = require("../../../src/utils/voucherStatuses");
 const Time = require("./Time");
 
 class Random {
@@ -260,12 +260,12 @@ class Random {
       _holder: Random.address().toLowerCase(),
       _tokenIdSupply: Random.uint256(),
       _tokenIdVoucher: Random.uint256(),
-      [status.COMMITTED]: commitUnixMillis,
-      [status.CANCELLED]: null,
-      [status.COMPLAINED]: null,
-      [status.REDEEMED]: redeemUnixMillis,
-      [status.REFUNDED]: null,
-      [status.FINALIZED]: finalizeUnixMillis,
+      [voucherStatuses.COMMITTED]: commitUnixMillis,
+      [voucherStatuses.CANCELLED]: null,
+      [voucherStatuses.COMPLAINED]: null,
+      [voucherStatuses.REDEEMED]: redeemUnixMillis,
+      [voucherStatuses.REFUNDED]: null,
+      [voucherStatuses.FINALIZED]: finalizeUnixMillis,
       voucherOwner,
       actionDate: commitUnixMillis,
       ...overrides,

@@ -8,7 +8,7 @@ const ConfigurationService = require("../../src/services/ConfigurationService");
 const VoucherSuppliesRepository = require("../../src/database/VoucherSupply/VoucherSuppliesRepository");
 const VoucherSupply = require("../../src/database/models/VoucherSupply");
 const Voucher = require("../../src/database/models/Voucher");
-const voucherStatus = require("../../src/utils/userVoucherStatus");
+const voucherStatuses = require("../../src/utils/voucherStatuses");
 
 const Random = require("../shared/helpers/Random");
 
@@ -1530,12 +1530,12 @@ describe("Voucher Supplies Repository", () => {
         _holder: voucherMetadata1._holder.toLowerCase(),
         _tokenIdSupply: voucherMetadata1._tokenIdSupply,
         _tokenIdVoucher: voucherMetadata1._tokenIdVoucher,
-        [voucherStatus.COMMITTED]: new Date().getTime(),
-        [voucherStatus.CANCELLED]: "",
-        [voucherStatus.COMPLAINED]: "",
-        [voucherStatus.REDEEMED]: "",
-        [voucherStatus.REFUNDED]: "",
-        [voucherStatus.FINALIZED]: "",
+        [voucherStatuses.COMMITTED]: new Date().getTime(),
+        [voucherStatuses.CANCELLED]: "",
+        [voucherStatuses.COMPLAINED]: "",
+        [voucherStatuses.REDEEMED]: "",
+        [voucherStatuses.REFUNDED]: "",
+        [voucherStatuses.FINALIZED]: "",
         voucherOwner: voucherMetadata1._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
       });
@@ -1547,12 +1547,12 @@ describe("Voucher Supplies Repository", () => {
         _holder: voucherMetadata2._holder.toLowerCase(),
         _tokenIdSupply: voucherMetadata2._tokenIdSupply,
         _tokenIdVoucher: voucherMetadata2._tokenIdVoucher,
-        [voucherStatus.COMMITTED]: new Date().getTime(),
-        [voucherStatus.CANCELLED]: "",
-        [voucherStatus.COMPLAINED]: "",
-        [voucherStatus.REDEEMED]: "",
-        [voucherStatus.REFUNDED]: "",
-        [voucherStatus.FINALIZED]: "",
+        [voucherStatuses.COMMITTED]: new Date().getTime(),
+        [voucherStatuses.CANCELLED]: "",
+        [voucherStatuses.COMPLAINED]: "",
+        [voucherStatuses.REDEEMED]: "",
+        [voucherStatuses.REFUNDED]: "",
+        [voucherStatuses.FINALIZED]: "",
         voucherOwner: voucherMetadata2._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
       });
@@ -1616,12 +1616,12 @@ describe("Voucher Supplies Repository", () => {
         _holder: voucherMetadata._holder.toLowerCase(),
         _tokenIdSupply: voucherMetadata._tokenIdSupply,
         _tokenIdVoucher: voucherMetadata._tokenIdVoucher,
-        [voucherStatus.COMMITTED]: new Date().getTime(),
-        [voucherStatus.CANCELLED]: "",
-        [voucherStatus.COMPLAINED]: "",
-        [voucherStatus.REDEEMED]: "",
-        [voucherStatus.REFUNDED]: "",
-        [voucherStatus.FINALIZED]: "",
+        [voucherStatuses.COMMITTED]: new Date().getTime(),
+        [voucherStatuses.CANCELLED]: "",
+        [voucherStatuses.COMPLAINED]: "",
+        [voucherStatuses.REDEEMED]: "",
+        [voucherStatuses.REFUNDED]: "",
+        [voucherStatuses.FINALIZED]: "",
         voucherOwner: voucherMetadata._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
       });
