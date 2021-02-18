@@ -1,7 +1,10 @@
 require 'rake_docker'
 require 'confidante'
+require 'rake_fly'
 
 configuration = Confidante.configuration
+
+RakeFly.define_installation_tasks(version: '6.7.2')
 
 task :default => [
     :build_fix,
@@ -130,6 +133,55 @@ namespace :tests do
     desc "Run all component tests"
     task :component => [:"database:test:provision"] do
       sh('npm', 'run', 'tests:app:component')
+    end
+  end
+end
+
+namespace :ci do
+  RakeFly.define_authentication_tasks(
+      namespace: :authentication,
+      argument_names: [
+          :ci_deployment_type,
+          :ci_deployment_label
+      ]) do |t, args|
+    configuration = configuration
+        .for_scope(args.to_h)
+
+    t.target = configuration.concourse_team
+    t.concourse_url = configuration.concourse_url
+    t.team = configuration.concourse_team
+    t.username = configuration.concourse_username
+    t.password = configuration.concourse_password
+
+    t.home_directory = 'build/fly'
+  end
+
+  namespace :pipeline do
+    RakeFly.define_pipeline_tasks(
+        namespace: :develop,
+        argument_names: [
+            :ci_deployment_type,
+            :ci_deployment_label
+        ]
+    ) do |t, args|
+      configuration = configuration
+          .for_scope(args.to_h.merge(role: 'develop-pipeline'))
+      ci_deployment_type = configuration.ci_deployment_identifier
+
+      t.target = configuration.concourse_team
+      t.team = configuration.concourse_team
+      t.pipeline = "contracts-master"
+
+      t.config = 'pipelines/master/pipeline.yaml'
+
+      t.vars = configuration.vars
+      t.var_files = [
+          'config/secrets/pipeline/constants.yaml',
+          "config/secrets/pipeline/#{ci_deployment_type}.yaml"
+      ]
+
+      t.non_interactive = true
+      t.home_directory = 'build/fly'
     end
   end
 end

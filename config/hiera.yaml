@@ -8,4 +8,8 @@
   :datadir: "config"
 :hierarchy:
   - "deployments/%{deployment_type}-%{deployment_label}"
+  - "roles/%{role}"
+  - "pipelines/defaults"
+  - "ci/%{ci_deployment_type}-%{ci_deployment_label}"
+  - "secrets/pipeline/%{ci_deployment_type}-%{ci_deployment_label}"
   - "defaults"

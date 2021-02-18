@@ -1,4 +1,12 @@
 ---
 # General
+region: "eu-west-2"
+
 component: "reference-backend"
 deployment_identifier: "%{deployment_type}-%{deployment_label}"
+
+source_repository_name: "bosonprotocol/reference-backend"
+source_repository_url: "git@github.com:%{hiera('source_repository_name')}.git"
+source_repository_branch: "master"
+
+rdm_management_account_id: "031036423983"
