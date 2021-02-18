@@ -60,7 +60,9 @@ class VouchersController {
       ErrorHandlers.globalErrorHandler(
         authenticationMiddleware.authenticateGCLOUDService
       ),
-      ErrorHandlers.globalErrorHandler(userVoucherController.updateStatusFromKeepers)
+      ErrorHandlers.globalErrorHandler(
+        userVoucherController.updateStatusFromKeepers
+      )
     );
 
     return router;

@@ -3,6 +3,7 @@ const functions = require("firebase-functions");
 const axios = require("axios").default;
 const ethers = require("ethers");
 const configs = require("./configs");
+const utils = require("./utils");
 
 const VoucherKernel = require("../abis/VoucherKernel.json");
 
@@ -114,7 +115,7 @@ async function triggerExpirations(executor, config) {
         console.error(`Error while triggering expiration of the voucher. Error: ${e}`);
     }
 
-    let parsedEvent = await findEventByName(receipt, 'LogExpirationTriggered', '_tokenIdVoucher', '_triggeredBy');
+    let parsedEvent = await utils.findEventByName(receipt, 'LogExpirationTriggered', '_tokenIdVoucher', '_triggeredBy');
 
     if (parsedEvent && parsedEvent[0]) {
         parsedEvent[0]._tokenIdVoucher = voucherID;
