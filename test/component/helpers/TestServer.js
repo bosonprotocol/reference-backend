@@ -10,17 +10,6 @@ const PaymentsRepository = require("../../../src/database/Payment/PaymentsReposi
 
 const AdministratorAuthenticationMiddleware = require("../../../src/api/middlewares/AdministratorAuthenticationMiddleware");
 const UserAuthenticationMiddleware = require("../../../src/api/middlewares/UserAuthenticationMiddleware");
-const UserValidationMiddleware = require("../../../src/api/middlewares/UserValidationMiddleware");
-const VoucherValidationMiddleware = require("../../../src/api/middlewares/VoucherValidationMiddleware");
-const PaymentValidationMiddleware = require("../../../src/api/middlewares/PaymentValidationMiddleware");
-
-const HealthController = require("../../../src/api/controllers/HealthController");
-const UsersController = require("../../../src/api/controllers/UsersController");
-const VoucherSuppliesController = require("../../../src/api/controllers/VoucherSuppliesController");
-const VouchersController = require("../../../src/api/controllers/VouchersController");
-const PaymentsController = require("../../../src/api/controllers/PaymentsController");
-const AdministrationController = require("../../../src/api/controllers/AdministrationController");
-const TestController = require("../../../src/api/controllers/TestController");
 
 const UsersModule = require("../../../src/modules/UsersModule");
 const VoucherSuppliesModule = require("../../../src/modules/VoucherSuppliesModule");
@@ -30,7 +19,7 @@ const AdministrationModule = require("../../../src/modules/AdministrationModule"
 const TestModule = require("../../../src/modules/TestModule");
 const HealthModule = require("../../../src/modules/HealthModule");
 
-const Ports = require("../../shared/helpers/ports");
+const Ports = require("../../shared/helpers/Ports");
 const FakeFileStorageMiddleware = require("../helpers/FakeFileStorageMiddleware");
 
 class TestServer {
@@ -78,69 +67,31 @@ class TestServer {
       configurationService,
       authenticationService
     );
-    const fileStorageMiddleware = new FakeFileStorageMiddleware("fileToUpload");
-    const userValidationMiddleware = new UserValidationMiddleware(
-      vouchersRepository
+    const voucherImageStorageMiddleware = new FakeFileStorageMiddleware(
+      "fileToUpload"
     );
-    const voucherValidationMiddleware = new VoucherValidationMiddleware(
-      voucherSuppliesRepository
-    );
-    const paymentValidationMiddleware = new PaymentValidationMiddleware();
 
-    const healthController = new HealthController();
-    const usersController = new UsersController(
+    const dependencies = {
+      configurationService,
       authenticationService,
-      usersRepository,
-      voucherSuppliesRepository,
-      vouchersRepository
-    );
-    const voucherSuppliesController = new VoucherSuppliesController(
-      voucherSuppliesRepository
-    );
-    const vouchersController = new VouchersController(
-      voucherSuppliesRepository,
-      vouchersRepository
-    );
-    const paymentsController = new PaymentsController(
-      vouchersRepository,
-      paymentsRepository
-    );
-    const administrationController = new AdministrationController(
-      usersRepository,
-      voucherSuppliesRepository
-    );
-    const testController = new TestController(
-      voucherSuppliesRepository,
-      vouchersRepository
-    );
 
-    const healthModule = new HealthModule(healthController);
-    const usersModule = new UsersModule(
-      userAuthenticationMiddleware,
-      userValidationMiddleware,
-      usersController
-    );
-    const voucherSuppliesModule = new VoucherSuppliesModule(
-      userAuthenticationMiddleware,
-      fileStorageMiddleware,
-      voucherValidationMiddleware,
-      voucherSuppliesController
-    );
-    const vouchersModule = new VouchersModule(
-      userAuthenticationMiddleware,
-      userValidationMiddleware,
-      vouchersController
-    );
-    const paymentsModule = new PaymentsModule(
-      userAuthenticationMiddleware,
-      paymentValidationMiddleware,
-      paymentsController
-    );
-    const administrationModule = new AdministrationModule(
+      usersRepository,
+      vouchersRepository,
+      voucherSuppliesRepository,
+      paymentsRepository,
+
       administratorAuthenticationMiddleware,
-      administrationController
-    );
-    const testModule = new TestModule(testController);
+      userAuthenticationMiddleware,
+      voucherImageStorageMiddleware,
+    };
+
+    const healthModule = new HealthModule(dependencies);
+    const usersModule = new UsersModule(dependencies);
+    const voucherSuppliesModule = new VoucherSuppliesModule(dependencies);
+    const vouchersModule = new VouchersModule(dependencies);
+    const paymentsModule = new PaymentsModule(dependencies);
+    const administrationModule = new AdministrationModule(dependencies);
+    const testModule = new TestModule(dependencies);
 
     return new Server()
       .withModule(healthModule)

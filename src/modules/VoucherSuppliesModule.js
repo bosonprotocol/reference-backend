@@ -1,18 +1,32 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
+const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
+const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware");
+const VoucherValidationMiddleware = require("../api/middlewares/VoucherValidationMiddleware");
 
 const eventValidator = require("../api/middlewares/event-validator");
 
 class VoucherSuppliesModule {
-  constructor(
+  constructor({
+    configurationService,
     userAuthenticationMiddleware,
-    fileStorageMiddleware,
+    voucherImageStorageMiddleware,
     voucherValidationMiddleware,
-    voucherSuppliesController
-  ) {
+    voucherSuppliesRepository,
+    voucherSuppliesController,
+  }) {
     this.userAuthenticationMiddleware = userAuthenticationMiddleware;
-    this.fileStorageMiddleware = fileStorageMiddleware;
-    this.voucherValidationMiddleware = voucherValidationMiddleware;
-    this.voucherSuppliesController = voucherSuppliesController;
+    this.voucherImageStorageMiddleware =
+      voucherImageStorageMiddleware ||
+      new FileStorageMiddleware(
+        "fileToUpload",
+        configurationService.vouchersBucket
+      );
+    this.voucherValidationMiddleware =
+      voucherValidationMiddleware ||
+      new VoucherValidationMiddleware(voucherSuppliesRepository);
+    this.voucherSuppliesController =
+      voucherSuppliesController ||
+      new VoucherSuppliesController(voucherSuppliesRepository);
   }
 
   mountPoint() {
@@ -26,7 +40,7 @@ class VoucherSuppliesModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.fileStorageMiddleware.storeFiles(req, res, next)
+        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherValidationMiddleware.validateDates(req, res, next)
@@ -163,7 +177,7 @@ class VoucherSuppliesModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.fileStorageMiddleware.storeFiles(req, res, next)
+        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherValidationMiddleware.validateVoucherSupplyExists(

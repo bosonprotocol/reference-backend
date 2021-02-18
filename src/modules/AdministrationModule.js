@@ -1,9 +1,25 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 
+const AdministratorAuthenticationMiddleware = require("../api/middlewares/AdministratorAuthenticationMiddleware");
+const AdministrationController = require("../api/controllers/AdministrationController");
+
 class AdministrationModule {
-  constructor(administratorAuthenticationMiddleware, administrationController) {
-    this.administratorAuthenticationMiddleware = administratorAuthenticationMiddleware;
-    this.administrationController = administrationController;
+  constructor({
+    authenticationService,
+    usersRepository,
+    voucherSuppliesRepository,
+    administratorAuthenticationMiddleware,
+    administrationController,
+  }) {
+    this.administratorAuthenticationMiddleware =
+      administratorAuthenticationMiddleware ||
+      new AdministratorAuthenticationMiddleware(
+        authenticationService,
+        usersRepository
+      );
+    this.administrationController =
+      administrationController ||
+      new AdministrationController(usersRepository, voucherSuppliesRepository);
   }
 
   mountPoint() {
