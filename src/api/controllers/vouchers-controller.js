@@ -72,6 +72,7 @@ class VoucherController {
         REDEEMED: userVoucher.REDEEMED,
         REFUNDED: userVoucher.REFUNDED,
         FINALIZED: userVoucher.FINALIZED,
+        EXPIRED: userVoucher.EXPIRED,
         supplyID: voucherSupply.id,
         voucherStatus: voucherUtils.calcVoucherSupplyStatus(
           voucherSupply.startDate,
@@ -126,12 +127,12 @@ class VoucherController {
     res.status(200).send({ updated: true });
   }
 
-  static async finalizeVoucher(req, res, next) {
+  static async updateStatusFromKeepers(req, res, next) {
     const tokenIdVoucher = req.body[0]._tokenIdVoucher;
     const status = req.body[0].status;
 
     try {
-      await mongooseService.finalizeVoucher(tokenIdVoucher, status);
+      await mongooseService.updateStatusFromKeepers(tokenIdVoucher, status);
     } catch (error) {
       console.error(
         `An error occurred while tried to finalize voucher with ID: [${tokenIdVoucher}]!`

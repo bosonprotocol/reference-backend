@@ -52,6 +52,10 @@ const userSchema = new Schema({
     type: Date,
     required: false,
   },
+  EXPIRED: {
+    type: Date,
+    required: false,
+  },
   actionDate: {
     type: Date,
     required: false,

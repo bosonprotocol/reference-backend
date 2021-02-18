@@ -9,7 +9,10 @@ class VoucherValidator {
       voucherSupply = await mongooseService.getVoucherSupply(req.params.id);
     } catch (error) {
       return next(
-        new APIError(404, `VoucherSupply with ID: ${req.params.id} does not exist!`)
+        new APIError(
+          404,
+          `VoucherSupply with ID: ${req.params.id} does not exist!`
+        )
       );
     }
 
