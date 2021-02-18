@@ -3,7 +3,15 @@ const mongooseService = require("../../database/index.js");
 
 class VoucherValidator {
   static async ValidateVoucherSupplyExists(req, res, next) {
-    const voucherSupply = await mongooseService.getVoucherSupply(req.params.id);
+    let voucherSupply;
+
+    try {
+      voucherSupply = await mongooseService.getVoucherSupply(req.params.id);
+    } catch (error) {
+      return next(
+        new APIError(404, `VoucherSupply with ID: ${req.params.id} does not exist!`)
+      );
+    }
 
     if (!voucherSupply) {
       return next(
