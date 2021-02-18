@@ -71,6 +71,24 @@ class UserController {
 
     res.status(200).send({ userVoucherID: userVoucher.id });
   }
+
+  static async cancelVoucherSet(req, res, next) {
+    const supplyID = req.params.supplyID;
+
+    try {
+      await mongooseService.makeVoucherSetQualityZero(supplyID);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `Buy operation for Supply id: ${supplyID} could not be completed.`
+        )
+      );
+    }
+
+    res.status(200).send({ supplyID });
+  }
 }
 
 module.exports = UserController;

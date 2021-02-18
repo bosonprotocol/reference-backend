@@ -164,6 +164,18 @@ class VoucherSupplyService {
     );
   }
 
+  static async makeVoucherSetQualityZero(supplyID) {
+    const res =  await VoucherSupply.findByIdAndUpdate(
+      supplyID,
+      {
+        qty: 0,
+      },
+      { useFindAndModify: false, new: true, upsert: true }
+    );
+    console.log(res)
+    return res
+  }
+
   static async updateVoucherVisibilityStatus(supplyID) {
     const voucherSupply = await this.getVoucherSupply(supplyID);
 

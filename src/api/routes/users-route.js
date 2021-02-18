@@ -26,6 +26,14 @@ class UsersRouter {
       ErrorHandlers.globalErrorHandler(usersController.commitToBuy)
     );
 
+    router.post(
+      "/:supplyID/cancel",
+      ErrorHandlers.globalErrorHandler(
+        authenticationMiddleware.authenticateToken
+      ),
+      ErrorHandlers.globalErrorHandler(usersController.cancelVoucherSet)
+    );
+
     return router;
   }
 }
