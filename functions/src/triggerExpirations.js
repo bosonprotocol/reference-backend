@@ -103,28 +103,46 @@ async function triggerExpirations(executor, config) {
       continue;
     }
 
-    console.log(
-      `Voucher: ${voucherID} is with commit status. The expiration is triggered.`
-    );
+    console.log(`Voucher: ${voucherID} is with commit status. The expiration is triggered.`);
+    let receipt;
 
     try {
-      // eslint-disable-next-line no-await-in-loop
-      let txOrder = await voucherKernelContractExecutor.triggerExpiration(
-        voucherID
-      );
-      // eslint-disable-next-line no-await-in-loop
-      await txOrder.wait();
+        let txOrder = await voucherKernelContractExecutor.triggerExpiration(voucherID);
+        receipt = await txOrder.wait();
     } catch (e) {
-      hasErrors = true;
-      console.error(
-        `Error while triggering expiration of the voucher. Error: ${e}`
-      );
+        hasErrors = true;
+        console.error(`Error while triggering expiration of the voucher. Error: ${e}`);
     }
-  }
 
-  let infoMsg = hasErrors
-    ? "triggerExpirations function finished with errors"
-    : "triggerExpirations function finished successfully";
+    let parsedEvent = await findEventByName(receipt, 'LogExpirationTriggered', '_tokenIdVoucher', '_triggeredBy');
 
-  console.info(infoMsg);
+    if (parsedEvent && parsedEvent[0]) {
+        parsedEvent[0]._tokenIdVoucher = voucherID;
+        const payload = [{
+            ...parsedEvent[0],
+            status: "EXPIRED"
+        }];
+
+        console.log(`Voucher: ${voucherID}. The expiration finished.`);
+
+        try {
+            await axios.patch(
+                config.UPDATE_STATUS_URL,
+                payload
+            );
+
+            console.log(`Voucher: ${voucherID}. Database updated.`);
+        } catch (e) {
+            hasErrors = true;
+            console.log(e);
+            console.error(`Error while updating the DB related to finalization of the voucher. Error: ${e}`);
+            continue;
+        }
+    }
+
+}
+
+let infoMsg = hasErrors ? 'triggerExpirations function finished with errors' : 'triggerExpirations function finished successfully'
+
+console.info(infoMsg);
 }

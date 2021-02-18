@@ -56,11 +56,11 @@ class VouchersController {
     );
 
     router.patch(
-      "/finalize",
+      "/update-status-from-keepers",
       ErrorHandlers.globalErrorHandler(
         authenticationMiddleware.authenticateGCLOUDService
       ),
-      ErrorHandlers.globalErrorHandler(userVoucherController.finalizeVoucher)
+      ErrorHandlers.globalErrorHandler(userVoucherController.updateStatusFromKeepers)
     );
 
     return router;

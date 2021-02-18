@@ -16,6 +16,7 @@ class VouchersService {
         [status.REDEEMED]: "",
         [status.REFUNDED]: "",
         [status.FINALIZED]: "",
+        [status.EXPIRED]: "",
         voucherOwner: metadata._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
       },
@@ -60,7 +61,7 @@ class VouchersService {
     );
   }
 
-  static async finalizeVoucher(tokenID, status) {
+  static async updateStatusFromKeepers(tokenID, status) {
     return await Voucher.findOneAndUpdate(
       { _tokenIdVoucher: tokenID },
       {
