@@ -237,6 +237,13 @@ class VoucherSupplyService {
       price: voucherSupplyDetails._doc.price,
       expiryDate: voucherSupplyDetails._doc.expiryDate,
       visible: voucherSupplyDetails._doc.visible,
+      CANCELLED: userVoucher.CANCELLED,
+      COMMITTED: userVoucher.COMMITTED,
+      COMPLAINED: userVoucher.COMPLAINED,
+      EXPIRED: userVoucher.EXPIRED,
+      FINALIZED: userVoucher.FINALIZED,
+      REDEEMED: userVoucher.REDEEMED,
+      REFUNDED: userVoucher.REFUNDED,
     };
 
     voucherData.push(voucherSupply);
