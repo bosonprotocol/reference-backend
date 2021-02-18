@@ -15,7 +15,13 @@ class UserValidator {
   }
 
   static async ValidateVoucherHolder(req, res, next) {
-    const userVoucher = await mongooseService.findVoucherById(req.body._id);
+    let userVoucher;
+
+    try {
+      userVoucher = await mongooseService.findVoucherById(req.body._id);
+    } catch (error) {
+      return next(new APIError(404, "Voucher not found!"));
+    }
 
     if (
       userVoucher._holder != res.locals.address &&

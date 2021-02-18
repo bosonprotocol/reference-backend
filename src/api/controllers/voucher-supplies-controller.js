@@ -151,11 +151,11 @@ class VoucherSuppliesController {
   }
 
   static async createVoucherSupply(req, res, next) {
-    const fileRefs = await voucherUtils.uploadFiles(req);
     const voucherOwner = res.locals.address;
     let voucherSupply;
 
     try {
+      const fileRefs = await voucherUtils.uploadFiles(req);
       voucherSupply = await mongooseService.createVoucherSupply(
         req.body,
         fileRefs,
@@ -165,7 +165,7 @@ class VoucherSuppliesController {
       console.error(
         `An error occurred while user [${voucherOwner}] tried to create Voucher.`
       );
-      console.error(error.errors);
+      console.error(error.message);
       return next(new APIError(400, "Invalid voucher model"));
     }
 
@@ -173,11 +173,11 @@ class VoucherSuppliesController {
   }
 
   static async updateVoucherSupply(req, res, next) {
-    const fileRefs = await voucherUtils.uploadFiles(req);
     const voucherOwner = res.locals.address;
     const voucher = res.locals.voucherSupply;
 
     try {
+      const fileRefs = await voucherUtils.uploadFiles(req);
       await mongooseService.updateVoucherSupply(voucher, req.body, fileRefs);
     } catch (error) {
       console.error(
