@@ -32,14 +32,6 @@ const voucherSchema = new Schema({
     type: Schema.Types.Decimal128,
     required: true,
   },
-  sellerDepositCurrency: {
-    type: String,
-    required: true
-  },
-  priceCurrency: {
-    type: String,
-    required: true
-  },
   category: {
     type: String,
     required: false,
