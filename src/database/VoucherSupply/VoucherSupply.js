@@ -1,5 +1,5 @@
 //@ts-nocheck
-const VoucherSupply = require('../models/VoucherSupply');
+const VoucherSupply = require("../models/VoucherSupply");
 
 class VoucherSupplyService {
 
@@ -191,16 +191,23 @@ class VoucherSupplyService {
         const voucherSupplyDetails = await this.getVoucherSupply(userVoucher.supplyID)
 
         const voucherSupply = {
-            _id: userVoucher.id,
-            title: voucherSupplyDetails._doc.title,
-            qty: voucherSupplyDetails._doc.qty,
-            description: voucherSupplyDetails._doc.description,
-            imagefiles: voucherSupplyDetails._doc.imagefiles,
-            category: voucherSupplyDetails._doc.category,
-            price: voucherSupplyDetails._doc.price,
-            expiryDate: voucherSupplyDetails._doc.expiryDate,
-            visible: voucherSupplyDetails._doc.visible
-        }
+          _id: userVoucher.id,
+          title: voucherSupplyDetails._doc.title,
+          qty: voucherSupplyDetails._doc.qty,
+          description: voucherSupplyDetails._doc.description,
+          imagefiles: voucherSupplyDetails._doc.imagefiles,
+          category: voucherSupplyDetails._doc.category,
+          price: voucherSupplyDetails._doc.price,
+          expiryDate: voucherSupplyDetails._doc.expiryDate,
+          visible: voucherSupplyDetails._doc.visible,
+          CANCELLED: userVoucher.CANCELLED,
+          COMMITTED: userVoucher.COMMITTED,
+          COMPLAINED: userVoucher.COMPLAINED,
+          EXPIRED: userVoucher.EXPIRED,
+          FINALIZED: userVoucher.FINALIZED,
+          REDEEMED: userVoucher.REDEEMED,
+          REFUNDED: userVoucher.REFUNDED,
+        };
 
         voucherData.push(
             voucherSupply

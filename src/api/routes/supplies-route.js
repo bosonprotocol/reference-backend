@@ -4,8 +4,7 @@ const authenticationMiddleware = require('../middlewares/authentication');
 const voucherValidator = require('../middlewares/voucher-validator')
 const eventValidator = require('../middlewares/event-validator')
 
-const os = require('os');
-const multer = require('multer');
+const multer = require("multer");
 const storage = multer.diskStorage({});
 const FILE_LIMIT = 10;
 const upload = multer({ storage });

@@ -1,7 +1,7 @@
-const VoucherSupply = require('./VoucherSupply/VoucherSupply')
-const User = require('./User/user')
-const Voucher = require('./Voucher/voucher')
-const Payment = require('./Payment/payment')
+const VoucherSupply = require("./VoucherSupply/VoucherSupply");
+const User = require("./User/user");
+const Voucher = require("./Voucher/voucher");
+const Payment = require("./Payment/payment");
 
 const MongooseService = {
     getNonce: User.getNonce,
@@ -32,7 +32,7 @@ const MongooseService = {
     getVoucherByID: Voucher.getVoucherByID,
     updateVoucherOnCommonEvent: Voucher.updateVoucherOnCommonEvent,
     findAllVouchersByVoucherSupplyID: Voucher.findAllVouchersByVoucherSupplyID,
-    finalizeVoucher: Voucher.finalizeVoucher,
+    updateStatusFromKeepers: Voucher.updateStatusFromKeepers,
     createPayment: Payment.createPayment,
     getPaymentsByVoucherID: Payment.getPaymentsByVoucherID,
     getAllVouchers: Voucher.getAllVouchers

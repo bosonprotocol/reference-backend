@@ -3,10 +3,10 @@ const APIError = require('../api-error')
 const ethers = require('ethers');
 
 const actors = {
-    BUYER: 'buyer',
-    SELLER: 'seller',
-    ESCROW: 'escrow'
-}
+  BUYER: "buyer",
+  SELLER: "seller",
+  ESCROW: "escrow",
+};
 
 class PaymentController {
 
@@ -52,55 +52,79 @@ class PaymentController {
             console.error(error)
             return next(new APIError(400, `Get payment actors for voucher id: ${ userVoucher._tokenIdVoucher } could not be completed.`))
         }
-
-        res.status(200).send({ distributedAmounts });
+      }
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `Get payment actors for voucher id: ${userVoucher._tokenIdVoucher} could not be completed.`
+        )
+      );
     }
 
-    static addPayment(paymentDetails, actor, distributedAmounts) {
-        // _type:  0 - Payment, 1 - Seller Deposit, 2 - Buyer Deposit
-        if (paymentDetails._type == 0) {
-            distributedAmounts.payment[actor] = ethers.BigNumber.from(distributedAmounts.payment[actor].toString()).add(paymentDetails._payment.toString())
-        } else if (paymentDetails._type == 1) {
-            distributedAmounts.sellerDeposit[actor] = ethers.BigNumber.from(distributedAmounts.sellerDeposit[actor].toString()).add(paymentDetails._payment.toString())
-        } else if (paymentDetails._type == 2){
-            distributedAmounts.buyerDeposit[actor] = ethers.BigNumber.from(distributedAmounts.buyerDeposit[actor].toString()).add(paymentDetails._payment.toString())
-        }
+    res.status(200).send({ distributedAmounts });
+  }
+
+  static addPayment(paymentDetails, actor, distributedAmounts) {
+    // _type:  0 - Payment, 1 - Seller Deposit, 2 - Buyer Deposit
+    if (paymentDetails._type == 0) {
+      distributedAmounts.payment[actor] = ethers.BigNumber.from(
+        distributedAmounts.payment[actor].toString()
+      ).add(paymentDetails._payment.toString());
+    } else if (paymentDetails._type == 1) {
+      distributedAmounts.sellerDeposit[actor] = ethers.BigNumber.from(
+        distributedAmounts.sellerDeposit[actor].toString()
+      ).add(paymentDetails._payment.toString());
+    } else if (paymentDetails._type == 2) {
+      distributedAmounts.buyerDeposit[actor] = ethers.BigNumber.from(
+        distributedAmounts.buyerDeposit[actor].toString()
+      ).add(paymentDetails._payment.toString());
+    }
+  }
+
+  static async createPayments(req, res, next) {
+    const events = req.body;
+    let promises = [];
+
+    try {
+      for (const key in events) {
+        promises.push(mongooseService.createPayment(events[key]));
+      }
+
+      await Promise.all(promises);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `Create payment operation for voucher id: ${events[0]._tokenIdVoucher} could not be completed.`
+        )
+      );
     }
 
-    static async createPayments(req, res, next) {
-        const events = req.body
-        let promises = []
+    res.status(200).send({ updated: true });
+  }
 
-        try {
-            for (const key in events) {
-                promises.push(mongooseService.createPayment(events[key]))
-            }
+  static async getPaymentsByVoucherID(req, res, next) {
+    const tokenIdVoucher = req.params.tokenIdVoucher;
 
-            await Promise.all(promises)
+    let payments;
 
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Create payment operation for voucher id: ${ events[0]._tokenIdVoucher } could not be completed.`))
-        }
-
-        res.status(200).send({ updated: true });
+    try {
+      payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `Get payment for voucher id: ${tokenIdVoucher} could not be completed.`
+        )
+      );
     }
 
-    static async getPaymentsByVoucherID(req, res, next) {
-        const tokenIdVoucher = req.params.tokenIdVoucher;
-
-        let payments; 
-
-        try {
-            payments = await mongooseService.getPaymentsByVoucherID(tokenIdVoucher);
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Get payment for voucher id: ${ voucherID } could not be completed.`))
-        }
-
-        res.status(200).send({ payments })
-    }
-
+    res.status(200).send({ payments });
+  }
 }
 
 module.exports = PaymentController;

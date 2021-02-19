@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const collections = require('../collections.json');
+const collections = require("../collections.json");
 const VOUCHER_SUPPLY = collections.VOUCHER_SUPPLY;
 
 const voucherSchema = new Schema({
@@ -100,4 +100,4 @@ const voucherSchema = new Schema({
 
 })
 
-module.exports = mongoose.model(VOUCHER_SUPPLY, voucherSchema)
+module.exports = mongoose.model(VOUCHER_SUPPLY, voucherSchema);

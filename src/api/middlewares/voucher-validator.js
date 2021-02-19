@@ -1,52 +1,61 @@
-const APIError = require('./../api-error');
-const AuthService = require('../services/auth-service')
-const mongooseService = require('../../database/index.js');
-const { mongo } = require('mongoose');
+const APIError = require("./../api-error");
+const mongooseService = require("../../database/index.js");
 
 class VoucherValidator {
+  static async ValidateVoucherSupplyExists(req, res, next) {
+    let voucherSupply;
 
-    static async ValidateVoucherSupplyExists(req, res, next) {
-        const voucherSupply = await mongooseService.getVoucherSupply(req.params.id);
-        
-        if (!voucherSupply) {
-            return next(new APIError(400, `Voucher with ID: ${req.params.id} does not exist!`))
-        }
-
-        res.locals.voucherSupply = voucherSupply
-
-        next();
+    try {
+      voucherSupply = await mongooseService.getVoucherSupply(req.params.id);
+    } catch (error) {
+      return next(
+        new APIError(
+          404,
+          `VoucherSupply with ID: ${req.params.id} does not exist!`
+        )
+      );
     }
 
-    static async ValidateCanDelete(req, res, next) {
-        if (res.locals.voucherSupply.voucherOwner != res.locals.address) {
-            return next(new APIError(401, 'Unauthorized.'))
-        }
-        next();
+    if (!voucherSupply) {
+      return next(
+        new APIError(400, `Voucher with ID: ${req.params.id} does not exist!`)
+      );
     }
 
-    static async ValidateCanUpdateVoucherSupply(req, res, next) {
-        if (res.locals.voucherSupply.voucherOwner != res.locals.address) {
-            return next(new APIError(401, 'Unauthorized.'))
-        }
+    res.locals.voucherSupply = voucherSupply;
 
-        next();
+    next();
+  }
+
+  static async ValidateCanDelete(req, res, next) {
+    if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
+      return next(new APIError(401, "Unauthorized."));
+    }
+    next();
+  }
+
+  static async ValidateCanUpdateVoucherSupply(req, res, next) {
+    if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
+      return next(new APIError(401, "Unauthorized."));
     }
 
-    static async ValidateDates(req, res, next) {
-        const start = new Date();
-        start.setHours(0,0,0,0);
+    next();
+  }
 
-        const today = new Date(start).getTime()
-        const startDateToMillis = new Date(req.body.startDate).getTime()
-        const endDateToMillis = new Date(req.body.expiryDate).getTime()
+  static async ValidateDates(req, res, next) {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
 
-        if (startDateToMillis < today || endDateToMillis < startDateToMillis) {
-            return next(new APIError(400, 'Invalid Dates.'))
-        }
+    const today = new Date(start).getTime();
+    const startDateToMillis = new Date(req.body.startDate).getTime();
+    const endDateToMillis = new Date(req.body.expiryDate).getTime();
 
-        next();
+    if (startDateToMillis < today || endDateToMillis < startDateToMillis) {
+      return next(new APIError(400, "Invalid Dates."));
     }
 
+    next();
+  }
 }
 
 module.exports = VoucherValidator;

@@ -1,8 +1,8 @@
 // @ts-nocheck
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const collections = require('../collections.json');
+const collections = require("../collections.json");
 const VOUCHER = collections.VOUCHER;
 
 const userSchema = new Schema({
@@ -51,6 +51,10 @@ const userSchema = new Schema({
         type: Date,
         required: false
     },
+    EXPIRED: {
+      type: Date,
+      required: false,
+    },
     actionDate: {
         type: Date,
         required: false
@@ -64,4 +68,4 @@ const userSchema = new Schema({
     }
 })
 
-module.exports = mongoose.model(VOUCHER, userSchema)
+module.exports = mongoose.model(VOUCHER, userSchema);

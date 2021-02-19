@@ -2,15 +2,18 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "lint": "eslint .",
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "functions:lint": "eslint \"src/**/*.js\"",
+    "functions:lint-fix": "eslint --fix \"src/**/*.js\"",
+    "functions:format": "prettier --list-different \"src/**/*.js\"",
+    "functions:format-fix": "prettier --write \"src/**/*.js\""
   },
   "engines": {
-    "node": "10"
+    "node": "12"
   },
   "dependencies": {
     "axios": "^0.20.0",
@@ -19,9 +22,10 @@
     "firebase-functions": "^3.3.0"
   },
   "devDependencies": {
-    "eslint": "^5.12.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "firebase-functions-test": "^0.1.6"
+    "eslint": "^7.18.0",
+    "eslint-config-prettier": "^7.2.0",
+    "firebase-functions-test": "^0.1.6",
+    "prettier": "^2.2.1"
   },
   "private": true
 }
