@@ -7,9 +7,10 @@ class UserValidator {
   static async ValidateMetadata(req, res, next) {
     const voucherHolder = req.body._holder;
 
-    if (!voucherHolder || voucherHolder.toLowerCase() != res.locals.address) {
+    if (voucherHolder.toLowerCase() != res.locals.address) {
       return next(new APIError(403, "Forbidden."));
     }
+
     next();
   }
 

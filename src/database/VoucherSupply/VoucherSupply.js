@@ -11,8 +11,6 @@ class VoucherSupplyService {
         "description",
         "imagefiles",
         "expiryDate",
-        "sellerDepositCurrency", 
-        "priceCurrency",
         "startDate",
         "qty",
         "visible",
@@ -37,8 +35,6 @@ class VoucherSupplyService {
         "price",
         "description",
         "imagefiles",
-        "sellerDepositCurrency", 
-        "priceCurrency",
         "expiryDate",
         "visible",
       ])
@@ -88,8 +84,6 @@ class VoucherSupplyService {
         "voucherOwner",
         "description",
         "imagefiles",
-        "sellerDepositCurrency", 
-        "priceCurrency",
         "startDate",
         "expiryDate",
         "visible",
@@ -110,8 +104,6 @@ class VoucherSupplyService {
       buyerDeposit: metadata.buyerDeposit,
       sellerDeposit: metadata.sellerDeposit,
       description: metadata.description,
-      sellerDepositCurrency: metadata.sellerDepositCurrency, 
-      priceCurrency: metadata.priceCurrency,
       location: metadata.location,
       contact: metadata.contact,
       conditions: metadata.conditions,
@@ -140,8 +132,6 @@ class VoucherSupplyService {
         price: metadata.price,
         buyerDeposit: metadata.buyerDeposit,
         sellerDeposit: metadata.sellerDeposit,
-        sellerDepositCurrency: metadata.sellerDepositCurrency, 
-        priceCurrency: metadata.priceCurrency,
         description: metadata.description,
         location: metadata.location,
         contact: metadata.contact,
@@ -162,18 +152,6 @@ class VoucherSupplyService {
       },
       { useFindAndModify: false, new: true, upsert: true }
     );
-  }
-
-  static async makeVoucherSetQualityZero(supplyID) {
-    const res =  await VoucherSupply.findByIdAndUpdate(
-      supplyID,
-      {
-        qty: 0,
-      },
-      { useFindAndModify: false, new: true, upsert: true }
-    );
-    console.log(res)
-    return res
   }
 
   static async updateVoucherVisibilityStatus(supplyID) {
@@ -232,8 +210,6 @@ class VoucherSupplyService {
       description: voucherSupplyDetails._doc.description,
       imagefiles: voucherSupplyDetails._doc.imagefiles,
       category: voucherSupplyDetails._doc.category,
-      sellerDepositCurrency: voucherSupplyDetails._doc.sellerDepositCurrency, 
-      priceCurrency: voucherSupplyDetails._doc.priceCurrency,
       price: voucherSupplyDetails._doc.price,
       expiryDate: voucherSupplyDetails._doc.expiryDate,
       visible: voucherSupplyDetails._doc.visible,
