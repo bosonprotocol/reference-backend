@@ -1,6 +1,6 @@
-const mongooseService = require('../../database/index.js')
-const APIError = require('../api-error')
-const ethers = require('ethers');
+const mongooseService = require("../../database/index.js");
+const APIError = require("../api-error");
+const ethers = require("ethers");
 
 const actors = {
   BUYER: "buyer",
@@ -9,48 +9,55 @@ const actors = {
 };
 
 class PaymentController {
+  static async getPaymentActors(req, res, next) {
+    const objectId = req.params.voucherID;
+    let userVoucher;
 
-    static async getPaymentActors(req, res, next) {
-        const objectId = req.params.voucherID
-        let userVoucher;
+    const distributedAmounts = {
+      payment: {
+        buyer: ethers.BigNumber.from(0),
+        seller: ethers.BigNumber.from(0),
+        escrow: ethers.BigNumber.from(0),
+      },
+      sellerDeposit: {
+        buyer: ethers.BigNumber.from(0),
+        seller: ethers.BigNumber.from(0),
+        escrow: ethers.BigNumber.from(0),
+      },
+      buyerDeposit: {
+        buyer: ethers.BigNumber.from(0),
+        seller: ethers.BigNumber.from(0),
+        escrow: ethers.BigNumber.from(0),
+      },
+    };
 
-        const distributedAmounts = {
-            payment: {
-                buyer: ethers.BigNumber.from(0),
-                seller: ethers.BigNumber.from(0),
-                escrow: ethers.BigNumber.from(0)
-            },
-            sellerDeposit: {
-                buyer: ethers.BigNumber.from(0),
-                seller: ethers.BigNumber.from(0),
-                escrow: ethers.BigNumber.from(0)
-            },
-            buyerDeposit: {
-                buyer: ethers.BigNumber.from(0),
-                seller: ethers.BigNumber.from(0),
-                escrow: ethers.BigNumber.from(0)
-            }
-        }
+    try {
+      userVoucher = await mongooseService.getVoucherByID(objectId);
+      const buyer = userVoucher._holder;
+      const seller = userVoucher.voucherOwner; // TODO this must come from the voucher, not voucher owner as, the voucher might be transferred and we do not want to update every single possible userVoucher with the newly owner from that supply
+      const payments = await mongooseService.getPaymentsByVoucherID(
+        userVoucher._tokenIdVoucher
+      );
 
-        try {
-            userVoucher = await mongooseService.getVoucherByID(objectId)
-            const buyer = userVoucher._holder;
-            const seller = userVoucher.voucherOwner // TODO this must come from the voucher, not voucher owner as, the voucher might be transferred and we do not want to update every single possible userVoucher with the newly owner from that supply
-            const payments = await mongooseService.getPaymentsByVoucherID(userVoucher._tokenIdVoucher);
-
-            for (const key in payments) {
-                if (payments[key]._to.toLowerCase() == buyer) {
-                    PaymentController.addPayment(payments[key], actors.BUYER, distributedAmounts)
-                } else if (payments[key]._to.toLowerCase() == seller) {
-                    PaymentController.addPayment(payments[key], actors.SELLER, distributedAmounts)
-                } else {
-                    PaymentController.addPayment(payments[key], actors.ESCROW, distributedAmounts)
-                }
-            }
-
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Get payment actors for voucher id: ${ userVoucher._tokenIdVoucher } could not be completed.`))
+      for (const key in payments) {
+        if (payments[key]._to.toLowerCase() == buyer) {
+          PaymentController.addPayment(
+            payments[key],
+            actors.BUYER,
+            distributedAmounts
+          );
+        } else if (payments[key]._to.toLowerCase() == seller) {
+          PaymentController.addPayment(
+            payments[key],
+            actors.SELLER,
+            distributedAmounts
+          );
+        } else {
+          PaymentController.addPayment(
+            payments[key],
+            actors.ESCROW,
+            distributedAmounts
+          );
         }
       }
     } catch (error) {

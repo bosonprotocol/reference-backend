@@ -1,9 +1,9 @@
 //@ts-nocheck
 
-const mongooseService = require('../../database/index.js')
-const APIError = require('../api-error')
-const voucherUtils = require('../../utils/voucherUtils');
-const { BigNumber } = require('ethers')
+const mongooseService = require("../../database/index.js");
+const APIError = require("../api-error");
+const voucherUtils = require("../../utils/voucherUtils");
+const { BigNumber } = require("ethers");
 
 class VoucherSuppliesController {
   static async getVoucherSupply(req, res, next) {
@@ -195,16 +195,17 @@ class VoucherSuppliesController {
    * @notice This function is triggered while event 'LogOrderCreated' is emitted
    */
   static async setSupplyMetaOnOrderCreated(req, res, next) {
-      
-      try {
-          await mongooseService.setVoucherSupplyMeta(req.body)
-      } catch (error) {
-          console.error(`An error occurred while user [${req.body._voucherOwner}] tried to update Voucher.`);
-          console.error(error)
-          return next(new APIError(400, 'Invalid voucher model'));
-      }
+    try {
+      await mongooseService.setVoucherSupplyMeta(req.body);
+    } catch (error) {
+      console.error(
+        `An error occurred while user [${req.body._voucherOwner}] tried to update Voucher.`
+      );
+      console.error(error);
+      return next(new APIError(400, "Invalid voucher model"));
+    }
 
-      res.status(200).send({ success: true });
+    res.status(200).send({ success: true });
   }
 
   /**
@@ -213,65 +214,72 @@ class VoucherSuppliesController {
    *  TransferBatch
    */
   static async updateSupplyOnTransfer(req, res, next) {
-      let promises = [];
-      let vouchersSupplies = req.body.voucherSupplies
-      let quantities = req.body.quantities
+    let promises = [];
+    let vouchersSupplies = req.body.voucherSupplies;
+    let quantities = req.body.quantities;
 
-      try {
+    try {
+      const startCorrelationId =
+        req.body._correlationId - vouchersSupplies.length;
 
-          const startCorrelationId = req.body._correlationId - vouchersSupplies.length
+      for (let i = 0; i < vouchersSupplies.length; i++) {
+        let metadata;
 
-          for (let i = 0; i < vouchersSupplies.length; i++) {
+        try {
+          metadata = {
+            voucherOwner: req.body.voucherOwner.toLowerCase(),
+            _tokenIdSupply: BigNumber.from(vouchersSupplies[i]).toString(),
+            qty: BigNumber.from(quantities[i]).toString(),
+            _correlationId: startCorrelationId + i,
+          };
+        } catch (error) {
+          console.error(
+            `Error while trying to convert vouchersSupply: ${JSON.stringify(
+              vouchersSupplies[i]
+            )} or quantity: ${JSON.stringify(quantities[i])} from BigNumber!`
+          );
+          continue;
+        }
 
-              let metadata;
-
-              try {
-                  metadata = {
-                      voucherOwner: req.body.voucherOwner.toLowerCase(),
-                      _tokenIdSupply: BigNumber.from(vouchersSupplies[i]).toString(),
-                      qty: BigNumber.from(quantities[i]).toString(),
-                      _correlationId: startCorrelationId + i
-                  };
-  
-              } catch (error) {
-                  console.error(`Error while trying to convert vouchersSupply: ${JSON.stringify(vouchersSupplies[i])} or quantity: ${JSON.stringify(quantities[i])} from BigNumber!`);
-                  continue;
-              }
-              
-              promises.push(mongooseService.updateSupplyMeta(metadata))
-          }
-
-          await Promise.all(promises)
-
-      } catch (error) {
-          console.error(`An error occurred while trying to update a voucher from Transfer event.`);
-          console.error(error.message)
-          return next(new APIError(404, 'Could not update the database from Transfer event!'));
+        promises.push(mongooseService.updateSupplyMeta(metadata));
       }
 
-      res.status(200).send({ success: true });
+      await Promise.all(promises);
+    } catch (error) {
+      console.error(
+        `An error occurred while trying to update a voucher from Transfer event.`
+      );
+      console.error(error.message);
+      return next(
+        new APIError(404, "Could not update the database from Transfer event!")
+      );
+    }
+
+    res.status(200).send({ success: true });
   }
 
   static async updateSupplyOnCancel(req, res, next) {
-      try {
+    try {
+      let metadata;
 
-          let metadata;
+      metadata = {
+        voucherOwner: req.body.voucherOwner.toLowerCase(),
+        _tokenIdSupply: req.body._tokenIdSupply.toString(),
+        qty: req.body.qty,
+      };
 
-          metadata = {
-              voucherOwner: req.body.voucherOwner.toLowerCase(),
-              _tokenIdSupply: req.body._tokenIdSupply.toString(),
-              qty: req.body.qty,
-          };
-      
-          await mongooseService.updateSupplyMeta(metadata)
+      await mongooseService.updateSupplyMeta(metadata);
+    } catch (error) {
+      console.error(
+        `An error occurred while trying to update a voucher from Cancel Voucher Set event.`
+      );
+      console.error(error.message);
+      return next(
+        new APIError(404, "Could not update the database from Transfer event!")
+      );
+    }
 
-      } catch (error) {
-          console.error(`An error occurred while trying to update a voucher from Cancel Voucher Set event.`);
-          console.error(error.message)
-          return next(new APIError(404, 'Could not update the database from Transfer event!'));
-      }
-
-      res.status(200).send({ success: true });
+    res.status(200).send({ success: true });
   }
 
   static async deleteVoucherSupply(req, res, next) {

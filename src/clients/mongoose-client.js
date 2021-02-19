@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const url = process.env.DB_CONNECTION_STRING;
 const options = {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-}
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+};
 
 let instance;
 

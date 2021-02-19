@@ -47,7 +47,6 @@ class UserController {
       return next(new APIError(400, `Signature was not verified!`));
     }
   }
-
 }
 
 module.exports = UserController;

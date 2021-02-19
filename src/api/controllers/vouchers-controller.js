@@ -104,66 +104,87 @@ class VoucherController {
     res.status(200).send({ voucher });
   }
 
-    static async commitToBuy(req, res, next) {
-        const supplyID = req.params.supplyID
-        const metadata = req.body;
-        let voucher;
+  static async commitToBuy(req, res, next) {
+    const supplyID = req.params.supplyID;
+    const metadata = req.body;
+    let voucher;
 
-        try {
-            voucher = await mongooseService.createVoucher(metadata, supplyID);
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Buy operation for Supply id: ${ supplyID } could not be completed.`))
-        }
-
-        res.status(200).send({ voucherID: voucher.id });
+    try {
+      voucher = await mongooseService.createVoucher(metadata, supplyID);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `Buy operation for Supply id: ${supplyID} could not be completed.`
+        )
+      );
     }
 
-    /**
-     * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
-     */
-    static async updateVoucherDelivered(req, res, next) {
-        let voucher;
+    res.status(200).send({ voucherID: voucher.id });
+  }
 
-        try {
-            voucher = await mongooseService.updateVoucherDelivered(req.body);
+  /**
+   * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
+   */
+  static async updateVoucherDelivered(req, res, next) {
+    let voucher;
 
-            await mongooseService.updateSupplyQty(voucher.supplyID);
+    try {
+      voucher = await mongooseService.updateVoucherDelivered(req.body);
 
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Update operation for voucher id: ${req.body._tokenIdVoucher} could not be completed.`))
-        }
-
-        res.status(200).send({ voucher: voucher.id});
+      await mongooseService.updateSupplyQty(voucher.supplyID);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `Update operation for voucher id: ${req.body._tokenIdVoucher} could not be completed.`
+        )
+      );
     }
 
-    /**
-     * @notice This function is triggered while some of the following events is emitted
-     *  LogVoucherRedeemed
-     *  LogVoucherRefunded
-     *  LogVoucherComplain
-     *  LogVoucherFaultCancel
-     *  Transfer (e.g ERC-721)
-     */
-    static async updateVoucherOnCommonEvent(req, res, next) {
-        let voucher
+    res.status(200).send({ voucher: voucher.id });
+  }
 
-        try {
-            voucher = await mongooseService.findVoucherByTokenIdVoucher(req.body._tokenIdVoucher)
-            
-            if (!voucher) { 
-                return next(new APIError(404, `User Voucher with voucherTokenId ${req.body._tokenIdVoucher} not found!`))
-            }
-            
-            await mongooseService.updateVoucherOnCommonEvent(voucher.id, req.body)
-        } catch (error) {
-            console.error(error)
-            return next(new APIError(400, `Update operation for voucher id: ${voucher.id} could not be completed.`))
-        }
+  /**
+   * @notice This function is triggered while some of the following events is emitted
+   *  LogVoucherRedeemed
+   *  LogVoucherRefunded
+   *  LogVoucherComplain
+   *  LogVoucherFaultCancel
+   *  Transfer (e.g ERC-721)
+   */
+  static async updateVoucherOnCommonEvent(req, res, next) {
+    let voucher;
 
-        res.status(200).send({ updated: true })
+    try {
+      voucher = await mongooseService.findVoucherByTokenIdVoucher(
+        req.body._tokenIdVoucher
+      );
+
+      if (!voucher) {
+        return next(
+          new APIError(
+            404,
+            `User Voucher with voucherTokenId ${req.body._tokenIdVoucher} not found!`
+          )
+        );
+      }
+
+      await mongooseService.updateVoucherOnCommonEvent(voucher.id, req.body);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `Update operation for voucher id: ${voucher.id} could not be completed.`
+        )
+      );
     }
+
+    res.status(200).send({ updated: true });
+  }
 
   static async updateStatusFromKeepers(req, res, next) {
     const tokenIdVoucher = req.body[0]._tokenIdVoucher;
