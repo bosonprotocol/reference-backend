@@ -84,6 +84,14 @@ class VoucherSuppliesRouter {
       )
     );
 
+    //TODO Delete this route, once event listeners are merged to develop
+    router.patch(
+      "/update-supply-oncancel-intermediary",
+      ErrorHandlers.globalErrorHandler(
+        voucherSuppliesController.updateSupplyOnCancel
+      )
+    );
+
     router.patch(
       "/:id",
       ErrorHandlers.globalErrorHandler(

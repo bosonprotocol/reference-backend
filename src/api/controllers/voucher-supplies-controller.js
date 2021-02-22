@@ -190,6 +190,31 @@ class VoucherSuppliesController {
     res.status(200).send({ success: true });
   }
 
+  static async updateSupplyOnCancel(req, res, next) {
+
+    try {
+      let metadata;
+
+      metadata = {
+        voucherOwner: res.locals.address,
+        _tokenIdSupply: req.body._tokenIdSupply.toString(),
+        qty: req.body.qty,
+      };
+
+      await mongooseService.updateSupplyMeta(metadata);
+    } catch (error) {
+      console.error(
+        `An error occurred while trying to update a voucher from Cancel Voucher Set event.`
+      );
+      console.error(error.message);
+      return next(
+        new APIError(404, "Could not update the database from Transfer event!")
+      );
+    }
+
+    res.status(200).send({ success: true });
+  }
+
   static async deleteVoucherSupply(req, res, next) {
     const voucherSupply = res.locals.voucherSupply;
 
