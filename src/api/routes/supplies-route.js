@@ -80,7 +80,18 @@ class VoucherSuppliesRouter {
     router.get(
       "/buy/:address",
       ErrorHandlers.globalErrorHandler(
+        authenticationMiddleware.authenticateToken
+      ),
+      ErrorHandlers.globalErrorHandler(
         voucherSuppliesController.getBuyerSupplies
+      )
+    );
+
+    //TODO Delete this route, once event listeners are merged to develop
+    router.patch(
+      "/update-supply-oncancel-intermediary",
+      ErrorHandlers.globalErrorHandler(
+        voucherSuppliesController.updateSupplyOnCancel
       )
     );
 
