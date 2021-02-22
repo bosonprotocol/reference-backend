@@ -80,9 +80,6 @@ class VoucherSuppliesRouter {
     router.get(
       "/buy/:address",
       ErrorHandlers.globalErrorHandler(
-        authenticationMiddleware.authenticateToken
-      ),
-      ErrorHandlers.globalErrorHandler(
         voucherSuppliesController.getBuyerSupplies
       )
     );
