@@ -37,6 +37,28 @@ exports.scheduledKeepersFinalizationsDev = functions.https.onRequest(
   }
 );
 
+exports.scheduledKeepersFinalizationsDemo = functions.https.onRequest(
+  async (request, response) => {
+    const demo = configs("demo");
+
+    const provider = ethers.getDefaultProvider(demo.NETWORK_NAME, {
+      etherscan: demo.ETHERSCAN_API_KEY,
+      infura: demo.INFURA_API_KEY,
+    });
+
+    const executor = new ethers.Wallet(demo.EXECUTOR_PRIVATE_KEY, provider);
+
+    axios.defaults.headers.common = {
+      Authorization: `Bearer ${demo.GCLOUD_SECRET}`,
+    };
+
+    // Finalization process
+    await triggerFinalizations(executor, demo);
+
+    response.send("Finalization process was executed successfully!");
+  }
+);
+
 async function triggerFinalizations(executor, config) {
   let hasErrors = false;
   let voucherKernelContractExecutor = new ethers.Contract(
@@ -109,7 +131,7 @@ async function triggerFinalizations(executor, config) {
       console.log(`Voucher: ${voucherID}. The finalization finished.`);
 
       try {
-        await axios.patch(config.FINALIZE_VOUCHER_URL, payload);
+        await axios.patch(config.UPDATE_STATUS_URL, payload);
 
         console.log(`Voucher: ${voucherID}. Database updated.`);
       } catch (e) {

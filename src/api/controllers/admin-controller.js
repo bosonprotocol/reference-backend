@@ -5,9 +5,13 @@ class AdminController {
   static async changeVoucherSupplyVisibility(req, res, next) {
     const supplyID = req.params.supplyID;
     let voucherSupply;
+    let updatedVoucherSupply;
 
     try {
       voucherSupply = await mongooseService.getVoucherSupply(supplyID);
+      updatedVoucherSupply = await mongooseService.updateVoucherVisibilityStatus(
+        voucherSupply.id
+      );
     } catch (error) {
       console.error(error);
       return next(
@@ -15,9 +19,6 @@ class AdminController {
       );
     }
 
-    const updatedVoucherSupply = await mongooseService.updateVoucherVisibilityStatus(
-      voucherSupply.id
-    );
     res.status(200).send({ visible: updatedVoucherSupply.visible });
   }
 

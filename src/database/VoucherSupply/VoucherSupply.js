@@ -154,6 +154,25 @@ class VoucherSupplyService {
     );
   }
 
+  static async updateSupplyMeta(metadata) {
+    const voucherSupply = await VoucherSupply.findOne(
+      {
+        _tokenIdSupply: metadata._tokenIdSupply,
+      },
+      { new: true, upsert: true }
+    );
+
+    if (!voucherSupply) {
+      throw new Error(
+        `Voucher for update with id: ${metadata._tokenIdSupply} not found!`
+      );
+    }
+
+    return await VoucherSupply.findByIdAndUpdate(voucherSupply.id, {
+      ...metadata,
+    });
+  }
+
   static async updateVoucherVisibilityStatus(supplyID) {
     const voucherSupply = await this.getVoucherSupply(supplyID);
 
@@ -213,6 +232,13 @@ class VoucherSupplyService {
       price: voucherSupplyDetails._doc.price,
       expiryDate: voucherSupplyDetails._doc.expiryDate,
       visible: voucherSupplyDetails._doc.visible,
+      CANCELLED: userVoucher.CANCELLED,
+      COMMITTED: userVoucher.COMMITTED,
+      COMPLAINED: userVoucher.COMPLAINED,
+      EXPIRED: userVoucher.EXPIRED,
+      FINALIZED: userVoucher.FINALIZED,
+      REDEEMED: userVoucher.REDEEMED,
+      REFUNDED: userVoucher.REFUNDED,
     };
 
     voucherData.push(voucherSupply);

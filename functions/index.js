@@ -8,3 +8,8 @@ exports.triggerFinalizationsDev =
   triggerFinalizations.scheduledKeepersFinalizationsDev;
 exports.triggerWithdrawalsDev =
   triggerWithdrawals.scheduledKeepersWithdrawalsDev;
+
+// Demo cloud functions
+exports.triggerExpirationsDemo = triggerExpirations.scheduledKeepersExpirationsDemo;
+exports.triggerFinalizationsDemo = triggerFinalizations.scheduledKeepersFinalizationsDemo;
+exports.triggerWithdrawalsDemo = triggerWithdrawals.scheduledKeepersWithdrawalsDemo;

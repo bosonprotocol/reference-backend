@@ -3,6 +3,7 @@ const functions = require("firebase-functions");
 const axios = require("axios").default;
 const ethers = require("ethers");
 const configs = require("./configs");
+const utils = require("./utils");
 
 const VoucherKernel = require("../abis/VoucherKernel.json");
 
@@ -30,6 +31,27 @@ exports.scheduledKeepersExpirationsDev = functions.https.onRequest(
 
     // Expiration process
     await triggerExpirations(executor, dev);
+
+    response.send("Expiration process was executed successfully!");
+  }
+);
+
+exports.scheduledKeepersExpirationsDemo = functions.https.onRequest(
+  async (request, response) => {
+    const demo = configs("demo");
+    const provider = ethers.getDefaultProvider(demo.NETWORK_NAME, {
+      etherscan: demo.ETHERSCAN_API_KEY,
+      infura: demo.INFURA_API_KEY,
+    });
+
+    const executor = new ethers.Wallet(demo.EXECUTOR_PRIVATE_KEY, provider);
+
+    axios.defaults.headers.common = {
+      Authorization: `Bearer ${demo.GCLOUD_SECRET}`,
+    };
+
+    // Expiration process
+    await triggerExpirations(executor, demo);
 
     response.send("Expiration process was executed successfully!");
   }
@@ -85,19 +107,50 @@ async function triggerExpirations(executor, config) {
     console.log(
       `Voucher: ${voucherID} is with commit status. The expiration is triggered.`
     );
+    let receipt;
 
     try {
-      // eslint-disable-next-line no-await-in-loop
       let txOrder = await voucherKernelContractExecutor.triggerExpiration(
         voucherID
       );
-      // eslint-disable-next-line no-await-in-loop
-      await txOrder.wait();
+      receipt = await txOrder.wait();
     } catch (e) {
       hasErrors = true;
       console.error(
         `Error while triggering expiration of the voucher. Error: ${e}`
       );
+    }
+
+    let parsedEvent = await utils.findEventByName(
+      receipt,
+      "LogExpirationTriggered",
+      "_tokenIdVoucher",
+      "_triggeredBy"
+    );
+
+    if (parsedEvent && parsedEvent[0]) {
+      parsedEvent[0]._tokenIdVoucher = voucherID;
+      const payload = [
+        {
+          ...parsedEvent[0],
+          status: "EXPIRED",
+        },
+      ];
+
+      console.log(`Voucher: ${voucherID}. The expiration finished.`);
+
+      try {
+        await axios.patch(config.UPDATE_STATUS_URL, payload);
+
+        console.log(`Voucher: ${voucherID}. Database updated.`);
+      } catch (e) {
+        hasErrors = true;
+        console.log(e);
+        console.error(
+          `Error while updating the DB related to finalization of the voucher. Error: ${e}`
+        );
+        continue;
+      }
     }
   }
 
