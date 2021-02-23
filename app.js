@@ -1,39 +1,70 @@
 require("dotenv").config();
-const express = require("express");
-const MongooseClient = require("./src/clients/mongoose-client");
 
-const usersRouter = require("./src/api/routes/users-route");
-const voucherSuppliesRouter = require("./src/api/routes/supplies-route");
-const vouchers = require("./src/api/routes/vouchers-route");
-const paymentRouter = require("./src/api/routes/payments-route");
-const adminRouter = require("./src/api/routes/admin-route");
-const testRouter = require("./src/api/routes/test-route");
-const ErrorHandler = require("./src/api/middlewares/error-handler");
+const Server = require("./src/server");
 
-const cors = require("cors");
+const ConfigurationService = require("./src/services/configuration-service.js");
+const AuthenticationService = require("./src/services/authentication-service");
 
-const app = express();
+const UsersRepository = require("./src/database/User/users-repository");
+const VouchersRepository = require("./src/database/Voucher/vouchers-repository");
+const VoucherSuppliesRepository = require("./src/database/VoucherSupply/voucher-supplies-repository");
+const PaymentsRepository = require("./src/database/Payment/payments-repository");
 
-app.use(cors());
-app.use(function (req, res, next) {
-  console.log("Time: ", Date.now());
-  next();
-});
-app.use(express.json());
+const AdministratorAuthenticationMiddleware = require("./src/api/middlewares/AdministratorAuthenticationMiddleware");
+const UserAuthenticationMiddleware = require("./src/api/middlewares/UserAuthenticationMiddleware");
 
-app.use("/users", usersRouter.route(express));
-app.use("/voucher-sets", voucherSuppliesRouter.route(express));
-app.use("/vouchers", vouchers.route(express));
-app.use("/payments", paymentRouter.route(express));
-app.use("/admin", adminRouter.route(express));
-app.use("/test", testRouter.route(express));
+const UsersModule = require("./src/modules/UsersModule");
+const VoucherSuppliesModule = require("./src/modules/VoucherSuppliesModule");
+const VouchersModule = require("./src/modules/VouchersModule");
+const PaymentsModule = require("./src/modules/PaymentsModule");
+const AdministrationModule = require("./src/modules/AdministrationModule");
+const TestModule = require("./src/modules/TestModule");
+const HealthModule = require("./src/modules/HealthModule");
 
-// Attach API Error handler
-app.use(ErrorHandler.apiErrorHandler);
+const configurationService = new ConfigurationService();
+const authenticationService = new AuthenticationService(configurationService);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-  await MongooseClient.getInstance();
+const usersRepository = new UsersRepository();
+const vouchersRepository = new VouchersRepository();
+const voucherSuppliesRepository = new VoucherSuppliesRepository();
+const paymentsRepository = new PaymentsRepository();
 
-  console.info(`App listening on: ` + PORT);
-});
+const administratorAuthenticationMiddleware = new AdministratorAuthenticationMiddleware(
+  authenticationService,
+  usersRepository
+);
+const userAuthenticationMiddleware = new UserAuthenticationMiddleware(
+  configurationService,
+  authenticationService
+);
+
+const dependencies = {
+  configurationService,
+  authenticationService,
+
+  usersRepository,
+  vouchersRepository,
+  voucherSuppliesRepository,
+  paymentsRepository,
+
+  administratorAuthenticationMiddleware,
+  userAuthenticationMiddleware,
+};
+
+const healthModule = new HealthModule(dependencies);
+const usersModule = new UsersModule(dependencies);
+const voucherSuppliesModule = new VoucherSuppliesModule(dependencies);
+const vouchersModule = new VouchersModule(dependencies);
+const paymentsModule = new PaymentsModule(dependencies);
+const administrationModule = new AdministrationModule(dependencies);
+const testModule = new TestModule(dependencies);
+
+new Server()
+  .withModule(healthModule)
+  .withModule(usersModule)
+  .withModule(voucherSuppliesModule)
+  .withModule(vouchersModule)
+  .withModule(paymentsModule)
+  .withModule(administrationModule)
+  .withModule(testModule)
+  .start(process.env.PORT || 3000);

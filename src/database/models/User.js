@@ -15,7 +15,7 @@ const userSchema = new Schema({
     default: 0,
     validate(value) {
       if (value < 0) {
-        throw new Error("Nonce must be a postive number");
+        throw new Error("Nonce must be a positive number");
       }
     },
   },

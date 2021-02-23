@@ -1,5 +1,11 @@
+require 'rake_docker'
+require 'confidante'
+
+configuration = Confidante.configuration
+
 task :default => [
     :build_fix,
+    :test
 ]
 
 task :build => [
@@ -14,6 +20,12 @@ task :build_fix => [
     :"app:format_fix",
     :"functions:lint_fix",
     :"functions:format_fix"
+]
+
+task :test => [
+    :'tests:app:unit',
+    :'tests:app:persistence',
+    :'tests:app:component'
 ]
 
 namespace :app do
@@ -80,6 +92,44 @@ namespace :functions do
   task :format_fix => [:'dependencies:install'] do
     Dir.chdir('functions') do
       sh('npm', 'run', 'functions:format-fix')
+    end
+  end
+end
+
+namespace :database do
+  namespace :test do
+    RakeDocker.define_container_tasks(
+        container_name: 'reference-backend-test-database') do |t|
+      configuration = configuration
+          .for_scope(
+              deployment_type: 'local',
+              deployment_label: 'testing')
+
+      t.image = "mongo:#{configuration.database_version}"
+      t.ports = ["#{configuration.database_port}:27017"]
+      t.environment = [
+          "MONGO_INITDB_ROOT_USERNAME=#{configuration.database_username}",
+          "MONGO_INITDB_ROOT_PASSWORD=#{configuration.database_password}",
+      ]
+    end
+  end
+end
+
+namespace :tests do
+  namespace :app do
+    desc "Run all component tests"
+    task :unit do
+      sh('npm', 'run', 'tests:app:unit')
+    end
+
+    desc "Run all persistence tests"
+    task :persistence => [:"database:test:provision"] do
+      sh('npm', 'run', 'tests:app:persistence')
+    end
+
+    desc "Run all component tests"
+    task :component => [:"database:test:provision"] do
+      sh('npm', 'run', 'tests:app:component')
     end
   end
 end
