@@ -131,7 +131,7 @@ async function triggerFinalizations(executor, config) {
       console.log(`Voucher: ${voucherID}. The finalization finished.`);
 
       try {
-        await axios.patch(config.FINALIZE_VOUCHER_URL, payload);
+        await axios.patch(config.UPDATE_STATUS_URL, payload);
 
         console.log(`Voucher: ${voucherID}. Database updated.`);
       } catch (e) {

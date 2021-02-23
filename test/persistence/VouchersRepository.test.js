@@ -92,21 +92,6 @@ describe("Vouchers Repository", () => {
       expect(voucher.supplyID).to.eql(voucherSupplyId);
     });
 
-    it("fails when supply token ID is missing", async () => {
-      const voucherSupplyId = Random.documentId().toString();
-      const metadata = Random.voucherMetadata({
-        _tokenIdSupply: null,
-      });
-
-      const vouchersRepository = new VouchersRepository();
-
-      await expect(
-        vouchersRepository.createVoucher(metadata, voucherSupplyId)
-      ).to.be.rejectedWith(
-        "Validation failed: _tokenIdSupply: Path `_tokenIdSupply` is required."
-      );
-    });
-
     it("updates the voucher when it already exists", async () => {
       const voucherSupplyId = Random.documentId().toString();
       const voucherTokenId = Random.uint256();
@@ -156,7 +141,7 @@ describe("Vouchers Repository", () => {
       context(` for ${status} status`, () => {
         it(
           `sets the current date on the status on the voucher ` +
-          "with the provided voucher ID when it exists",
+            "with the provided voucher ID when it exists",
           async () => {
             const savedVoucher = new Voucher(
               Random.voucherAttributes({
@@ -195,12 +180,12 @@ describe("Vouchers Repository", () => {
     });
   });
 
-  context("finalizeVoucher", () => {
+  context("updateStatusFromKeepers", () => {
     Object.values(voucherStatuses).forEach((status) => {
       context(` for ${status} status`, () => {
         it(
           `sets the current date on the status on the voucher ` +
-          "with the provided voucher token ID when it exists",
+            "with the provided voucher token ID when it exists",
           async () => {
             const voucherTokenId = Random.uint256();
             const savedVoucher = new Voucher(
@@ -218,7 +203,7 @@ describe("Vouchers Repository", () => {
 
             const vouchersRepository = new VouchersRepository();
             const [before, after] = await Time.boundaries(() =>
-              vouchersRepository.finalizeVoucher(voucherTokenId, status)
+              vouchersRepository.updateStatusFromKeepers(voucherTokenId, status)
             );
 
             const foundVoucher = await Voucher.findById(savedVoucher._id);
@@ -231,7 +216,7 @@ describe("Vouchers Repository", () => {
         it("does nothing when no voucher exists for the provided voucher ID", async () => {
           const vouchersRepository = new VouchersRepository();
           await expect(
-            vouchersRepository.finalizeVoucher(Random.uint256(), status)
+            vouchersRepository.updateStatusFromKeepers(Random.uint256(), status)
           ).to.be.rejectedWith("Voucher not found");
         });
       });

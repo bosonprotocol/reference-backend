@@ -6,9 +6,20 @@ class VoucherValidationMiddleware {
   }
 
   async validateVoucherSupplyExists(req, res, next) {
-    const voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
-      req.params.id
-    );
+    let voucherSupply;
+
+    try {
+      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
+        req.params.id
+      );
+    } catch (error) {
+      return next(
+        new ApiError(
+          404,
+          `VoucherSupply with ID: ${req.params.id} does not exist!`
+        )
+      );
+    }
 
     if (!voucherSupply) {
       return next(

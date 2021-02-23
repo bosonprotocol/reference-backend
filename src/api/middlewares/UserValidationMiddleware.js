@@ -17,9 +17,13 @@ class UserValidationMiddleware {
   }
 
   async validateVoucherHolder(req, res, next) {
-    const userVoucher = await this.vouchersRepository.getVoucherById(
-      req.body._id
-    );
+    let userVoucher;
+
+    try {
+      userVoucher = await this.vouchersRepository.getVoucherById(req.body._id);
+    } catch (error) {
+      return next(new ApiError(404, "Voucher not found!"));
+    }
 
     if (
       userVoucher._holder !== res.locals.address &&

@@ -83,7 +83,18 @@ const voucherSchema = new Schema({
   },
   _tokenIdSupply: {
     type: String,
-    required: true,
+    required: false,
+  },
+  _correlationId: {
+    type: Number,
+    required: false,
+  },
+  _paymentType: {
+    type: Number,
+    required: false,
+  },
+  _promiseId: {
+    type: String,
   },
 });
 

@@ -1,6 +1,6 @@
 const Server = require("../../.../../../src/server");
 
-const ConfigurationService = require("../../../src/services/ConfigurationService.js");
+const ConfigurationService = require("../../../src/services/ConfigurationService");
 const AuthenticationService = require("../../../src/services/AuthenticationService");
 
 const UsersRepository = require("../../../src/database/User/UsersRepository");

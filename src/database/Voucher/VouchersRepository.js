@@ -18,14 +18,44 @@ class VouchersRepository {
         [voucherStatuses.COMPLAINED]: null,
         [voucherStatuses.REDEEMED]: null,
         [voucherStatuses.REFUNDED]: null,
+        [voucherStatuses.EXPIRED]: null,
         [voucherStatuses.FINALIZED]: null,
         voucherOwner: metadata._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
+        _correlationId: metadata._correlationId,
       },
       { new: true, upsert: true, runValidators: true }
     );
   }
 
+  async updateVoucherDelivered(metadata) {
+    return Voucher.findOneAndUpdate(
+      {
+        _correlationId: metadata._correlationId,
+        _holder: metadata._holder.toLowerCase(),
+        _tokenIdSupply: metadata._tokenIdSupply,
+      },
+      {
+        _tokenIdVoucher: metadata._tokenIdVoucher,
+        _promiseId: metadata._promiseId,
+        voucherOwner: metadata._issuer,
+      },
+      { new: true, upsert: true }
+    );
+  }
+
+  static async updateVoucherOnCommonEvent(voucherID, metadata) {
+    return Voucher.findByIdAndUpdate(
+      voucherID,
+      {
+        ...metadata,
+      },
+      { new: true, upsert: true }
+    );
+  }
+
+  // TODO below functions actually are doind the same, we should update as per
+  //  collectionId, voucherId so we avoid duplication of functions
   async updateVoucherStatus(voucherId, status) {
     const voucher = await this.getVoucherById(voucherId);
     if (!voucher) {
@@ -40,7 +70,7 @@ class VouchersRepository {
     );
   }
 
-  async finalizeVoucher(voucherTokenId, status) {
+  async updateStatusFromKeepers(voucherTokenId, status) {
     const voucher = await this.getVoucherByVoucherTokenId(voucherTokenId);
     if (!voucher) {
       throw new Error("Voucher not found");

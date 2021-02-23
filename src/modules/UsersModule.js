@@ -1,29 +1,11 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const UsersController = require("../api/controllers/UsersController");
-const UserValidationMiddleware = require("../api/middlewares/UserValidationMiddleware");
 
 class UsersModule {
-  constructor({
-    authenticationService,
-    usersRepository,
-    voucherSuppliesRepository,
-    vouchersRepository,
-    userAuthenticationMiddleware,
-    userValidationMiddleware,
-    usersController,
-  }) {
-    this.userAuthenticationMiddleware = userAuthenticationMiddleware;
-    this.userValidationMiddleware =
-      userValidationMiddleware ||
-      new UserValidationMiddleware(vouchersRepository);
+  constructor({ authenticationService, usersRepository, usersController }) {
     this.usersController =
       usersController ||
-      new UsersController(
-        authenticationService,
-        usersRepository,
-        voucherSuppliesRepository,
-        vouchersRepository
-      );
+      new UsersController(authenticationService, usersRepository);
   }
 
   mountPoint() {
@@ -42,19 +24,6 @@ class UsersModule {
       "/:address/verify-signature",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.usersController.verifySignature(req, res, next)
-      )
-    );
-
-    router.post(
-      "/:supplyID/buy",
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.userValidationMiddleware.validateMetadata(req, res, next)
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.usersController.commitToBuy(req, res, next)
       )
     );
 

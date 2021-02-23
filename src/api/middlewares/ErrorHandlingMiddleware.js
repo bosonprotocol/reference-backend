@@ -9,7 +9,6 @@ class ErrorHandlingMiddleware {
    * @param res
    * @param next
    */
-  // eslint-disable-next-line no-unused-vars
   static apiErrorHandler(err, req, res, next) {
     if (err instanceof ApiError) {
       res.status(err.code).json(err.message);

@@ -4,6 +4,9 @@ require 'rake_fly'
 
 configuration = Confidante.configuration
 
+
+configuration = Confidante.configuration
+
 RakeFly.define_installation_tasks(version: '6.7.2')
 
 task :default => [

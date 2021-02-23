@@ -2,6 +2,7 @@ const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddlew
 const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
 const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware");
 const VoucherValidationMiddleware = require("../api/middlewares/VoucherValidationMiddleware");
+const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
 
 class VoucherSuppliesModule {
   constructor({
@@ -9,10 +10,13 @@ class VoucherSuppliesModule {
     userAuthenticationMiddleware,
     voucherImageStorageMiddleware,
     voucherValidationMiddleware,
+    eventValidationMiddleware,
     voucherSuppliesRepository,
     voucherSuppliesController,
   }) {
     this.userAuthenticationMiddleware = userAuthenticationMiddleware;
+    this.eventValidationMiddleware =
+      eventValidationMiddleware || new EventValidationMiddleware();
     this.voucherImageStorageMiddleware =
       voucherImageStorageMiddleware ||
       new FileStorageMiddleware(
@@ -103,6 +107,73 @@ class VoucherSuppliesModule {
       "/buy/:address",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.getBuyerSupplies(req, res, next)
+      )
+    );
+
+    // TODO: Delete this route, once event listeners are merged to develop
+    router.patch(
+      "/update-supply-oncancel-intermediary",
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherSuppliesController.updateSupplyOnCancel(req, res, next)
+      )
+    );
+
+    router.patch(
+      "/set-supply-meta",
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.userAuthenticationMiddleware.authenticateGCLOUDService(
+          req,
+          res,
+          next
+        )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateVoucherMetadata(req, res, next)
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherSuppliesController.setSupplyMetaOnOrderCreated(
+          req,
+          res,
+          next
+        )
+      )
+    );
+
+    router.patch(
+      "/update-supply-ontransfer",
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.userAuthenticationMiddleware.authenticateGCLOUDService(
+          req,
+          res,
+          next
+        )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateVoucherMetadataOnTransfer(
+          req,
+          res,
+          next
+        )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherSuppliesController.updateSupplyOnTransfer(req, res, next)
+      )
+    );
+
+    router.patch(
+      "/update-supply-oncancel",
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.userAuthenticationMiddleware.authenticateGCLOUDService(
+          req,
+          res,
+          next
+        )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateVoucherMetadata(req, res, next)
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherSuppliesController.updateSupplyOnCancel(req, res, next)
       )
     );
 

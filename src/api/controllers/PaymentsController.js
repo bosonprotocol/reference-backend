@@ -1,6 +1,7 @@
 const ethers = require("ethers");
 
 const ApiError = require("../ApiError");
+const paymentTypes = require("../../utils/paymentTypes");
 
 const actors = {
   BUYER: "buyer",
@@ -39,6 +40,10 @@ class PaymentsController {
     try {
       userVoucher = await this.vouchersRepository.getVoucherById(objectId);
       const buyer = userVoucher._holder;
+
+      // TODO this must come from the voucher, not voucher owner as, the voucher
+      //      might be transferred and we do not want to update every single
+      //     possible userVoucher with the newly owner from that supply
       const seller = userVoucher.voucherOwner;
       const payments = await this.paymentsRepository.getPaymentsByVoucherTokenId(
         userVoucher._tokenIdVoucher
@@ -67,16 +72,15 @@ class PaymentsController {
   }
 
   addPayment(paymentDetails, actor, distributedAmounts) {
-    // _type:  0 - Payment, 1 - Seller Deposit, 2 - Buyer Deposit
-    if (paymentDetails._type === 0) {
+    if (paymentDetails._type === paymentTypes.PAYMENT) {
       distributedAmounts.payment[actor] = ethers.BigNumber.from(
         distributedAmounts.payment[actor].toString()
       ).add(paymentDetails._payment.toString());
-    } else if (paymentDetails._type === 1) {
+    } else if (paymentDetails._type === paymentTypes.SELLER_DEPOSIT) {
       distributedAmounts.sellerDeposit[actor] = ethers.BigNumber.from(
         distributedAmounts.sellerDeposit[actor].toString()
       ).add(paymentDetails._payment.toString());
-    } else if (paymentDetails._type === 2) {
+    } else if (paymentDetails._type === paymentTypes.BUYER_DEPOSIT) {
       distributedAmounts.buyerDeposit[actor] = ethers.BigNumber.from(
         distributedAmounts.buyerDeposit[actor].toString()
       ).add(paymentDetails._payment.toString());

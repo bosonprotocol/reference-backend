@@ -16,7 +16,6 @@ const voucherSchema = new Schema({
   },
   _tokenIdSupply: {
     type: String,
-    required: true,
   },
   _tokenIdVoucher: {
     type: String,
@@ -48,9 +47,20 @@ const voucherSchema = new Schema({
     type: Date,
     required: false,
   },
+  EXPIRED: {
+    type: Date,
+    required: false,
+  },
   actionDate: {
     type: Date,
     required: false,
+  },
+  _correlationId: {
+    type: Number,
+    required: false,
+  },
+  _promiseId: {
+    type: String,
   },
 });
 

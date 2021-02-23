@@ -11,10 +11,14 @@ class AdministrationController {
   async changeVoucherSupplyVisibility(req, res, next) {
     const supplyID = req.params.supplyID;
     let voucherSupply;
+    let updatedVoucherSupply;
 
     try {
       voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
         supplyID
+      );
+      updatedVoucherSupply = await this.voucherSuppliesRepository.toggleVoucherSupplyVisibility(
+        voucherSupply.id
       );
     } catch (error) {
       console.error(error);
@@ -23,9 +27,6 @@ class AdministrationController {
       );
     }
 
-    const updatedVoucherSupply = await this.voucherSuppliesRepository.toggleVoucherSupplyVisibility(
-      voucherSupply.id
-    );
     res.status(200).send({ visible: updatedVoucherSupply.visible });
   }
 

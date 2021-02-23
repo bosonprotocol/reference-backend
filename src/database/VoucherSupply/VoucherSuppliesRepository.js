@@ -35,6 +35,7 @@ class VoucherSuppliesRepository {
       conditions: metadata.conditions,
       voucherOwner: voucherOwner,
       visible: true,
+      _correlationId: metadata._correlationId,
       _tokenIdSupply: metadata._tokenIdSupply,
       imagefiles: fileRefs,
     });
@@ -87,6 +88,46 @@ class VoucherSuppliesRepository {
       },
       { useFindAndModify: false, new: true }
     );
+  }
+
+  async setVoucherSupplyMeta(metadata) {
+    return VoucherSupply.findOneAndUpdate(
+      {
+        voucherOwner: metadata._voucherOwner,
+        _correlationId: metadata._correlationId,
+      },
+      {
+        _tokenIdSupply: metadata._tokenIdSupply,
+        _paymentType: metadata._paymentType,
+        _promiseId: metadata._promiseId,
+        qty: metadata.qty,
+        startDate: metadata.validFrom,
+        expiryDate: metadata.validTo,
+        price: metadata.price,
+        buyerDeposit: metadata.depositBu,
+        sellerDeposit: metadata.depositSe,
+      },
+      { new: true, upsert: true }
+    );
+  }
+
+  async updateSupplyMeta(metadata) {
+    const voucherSupply = await VoucherSupply.findOne(
+      {
+        _tokenIdSupply: metadata._tokenIdSupply,
+      },
+      { new: true, upsert: true }
+    );
+
+    if (!voucherSupply) {
+      throw new Error(
+        `Voucher for update with id: ${metadata._tokenIdSupply} not found!`
+      );
+    }
+
+    return VoucherSupply.findByIdAndUpdate(voucherSupply.id, {
+      ...metadata,
+    });
   }
 
   async toggleVoucherSupplyVisibility(id) {
@@ -200,6 +241,13 @@ class VoucherSuppliesRepository {
       price: voucherSupply.price,
       expiryDate: voucherSupply.expiryDate,
       visible: voucherSupply.visible,
+      CANCELLED: voucher.CANCELLED,
+      COMMITTED: voucher.COMMITTED,
+      COMPLAINED: voucher.COMPLAINED,
+      EXPIRED: voucher.EXPIRED,
+      FINALIZED: voucher.FINALIZED,
+      REDEEMED: voucher.REDEEMED,
+      REFUNDED: voucher.REFUNDED,
     };
 
     voucherSupplyDetailsList.push(voucherSupplyDetails);

@@ -7,3 +7,9 @@ This repository is the backend for the MVP version of the Redeemeum service
 `TOKEN_SECRET` is a random string used in the JWT token generation
 `VOUCHERS_BUCKET` is the name Bucket in a google cloud storage where the images are stored
 2. Run the app via `npm start`
+
+## Contributing
+
+Contributions are most welcome!
+
+Please note that by interacting here you are agreeing to abide by the [Code of Conduct](CODE_OF_CONDUCT.md). Thank you.

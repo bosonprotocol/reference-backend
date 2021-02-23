@@ -1580,6 +1580,13 @@ describe("Voucher Supplies Repository", () => {
         price: voucherSupply1.price,
         expiryDate: voucherSupply1.expiryDate,
         visible: voucherSupply1.visible,
+        CANCELLED: voucher1.CANCELLED,
+        COMMITTED: voucher1.COMMITTED,
+        COMPLAINED: voucher1.COMPLAINED,
+        EXPIRED: voucher1.EXPIRED,
+        FINALIZED: voucher1.FINALIZED,
+        REDEEMED: voucher1.REDEEMED,
+        REFUNDED: voucher1.REFUNDED,
       });
       expect(voucherSupplyDetailsList[1]).to.eql({
         _id: voucher2.id,
@@ -1591,6 +1598,13 @@ describe("Voucher Supplies Repository", () => {
         price: voucherSupply2.price,
         expiryDate: voucherSupply2.expiryDate,
         visible: voucherSupply2.visible,
+        CANCELLED: voucher2.CANCELLED,
+        COMMITTED: voucher2.COMMITTED,
+        COMPLAINED: voucher2.COMPLAINED,
+        EXPIRED: voucher2.EXPIRED,
+        FINALIZED: voucher2.FINALIZED,
+        REDEEMED: voucher2.REDEEMED,
+        REFUNDED: voucher2.REFUNDED,
       });
     });
 

@@ -3,16 +3,9 @@ const ApiError = require("../ApiError");
 const nonceUtils = require("../../utils/nonceUtils");
 
 class UsersController {
-  constructor(
-    authenticationService,
-    usersRepository,
-    voucherSuppliesRepository,
-    vouchersRepository
-  ) {
+  constructor(authenticationService, usersRepository) {
     this.authenticationService = authenticationService;
     this.usersRepository = usersRepository;
-    this.voucherSuppliesRepository = voucherSuppliesRepository;
-    this.vouchersRepository = vouchersRepository;
   }
 
   async generateNonce(req, res, next) {
@@ -64,30 +57,6 @@ class UsersController {
     const authToken = this.authenticationService.generateToken(address);
 
     res.status(200).send(authToken);
-  }
-
-  async commitToBuy(req, res, next) {
-    const supplyID = req.params.supplyID;
-    const metadata = req.body;
-    let userVoucher;
-
-    try {
-      userVoucher = await this.vouchersRepository.createVoucher(
-        metadata,
-        supplyID
-      );
-      await this.voucherSuppliesRepository.decrementVoucherSupplyQty(supplyID);
-    } catch (error) {
-      console.error(error);
-      return next(
-        new ApiError(
-          400,
-          `Buy operation for Supply id: ${supplyID} could not be completed.`
-        )
-      );
-    }
-
-    res.status(200).send({ userVoucherID: userVoucher.id });
   }
 }
 

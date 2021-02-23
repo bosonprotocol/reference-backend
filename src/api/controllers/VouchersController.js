@@ -83,6 +83,7 @@ class VouchersController {
         REDEEMED: userVoucher.REDEEMED,
         REFUNDED: userVoucher.REFUNDED,
         FINALIZED: userVoucher.FINALIZED,
+        EXPIRED: userVoucher.EXPIRED,
         supplyID: voucherSupply.id,
         voucherStatus: voucherUtils.calcVoucherSupplyStatus(
           voucherSupply.startDate,
@@ -111,11 +112,30 @@ class VouchersController {
       console.error(error.message);
       return next(`Error fetching Voucher Details for voucher: ${voucherID}`);
     }
-
     res.status(200).send({ voucher });
   }
 
-  async updateVoucher(req, res, next) {
+  async commitToBuy(req, res, next) {
+    const supplyID = req.params.supplyID;
+    const metadata = req.body;
+    let voucher;
+
+    try {
+      voucher = await this.vouchersRepository.createVoucher(metadata, supplyID);
+    } catch (error) {
+      console.error(error);
+      return next(
+        new ApiError(
+          400,
+          `Buy operation for Supply id: ${supplyID} could not be completed.`
+        )
+      );
+    }
+
+    res.status(200).send({ voucherID: voucher.id });
+  }
+
+  async updateVoucherStatus(req, res, next) {
     const voucherID = res.locals.userVoucher.id;
     const status = req.body.status;
 
@@ -137,12 +157,82 @@ class VouchersController {
     res.status(200).send({ updated: true });
   }
 
-  async finalizeVoucher(req, res, next) {
+  /**
+   * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
+   */
+  async updateVoucherDelivered(req, res, next) {
+    let voucher;
+
+    try {
+      voucher = await this.vouchersRepository.updateVoucherDelivered(req.body);
+
+      await this.voucherSuppliesRepository.decrementVoucherSupplyQty(
+        voucher.supplyID
+      );
+    } catch (error) {
+      console.error(error);
+      return next(
+        new ApiError(
+          400,
+          `Update operation for voucher id: ${req.body._tokenIdVoucher} could not be completed.`
+        )
+      );
+    }
+
+    res.status(200).send({ voucher: voucher.id });
+  }
+
+  /**
+   * @notice This function is triggered while some of the following events is emitted
+   *  LogVoucherRedeemed
+   *  LogVoucherRefunded
+   *  LogVoucherComplain
+   *  LogVoucherFaultCancel
+   *  Transfer (e.g ERC-721)
+   */
+  async updateVoucherOnCommonEvent(req, res, next) {
+    let voucher;
+
+    try {
+      voucher = await this.vouchersRepository.getVoucherByVoucherTokenId(
+        req.body._tokenIdVoucher
+      );
+
+      if (!voucher) {
+        return next(
+          new ApiError(
+            404,
+            `User Voucher with voucherTokenId ${req.body._tokenIdVoucher} not found!`
+          )
+        );
+      }
+
+      await this.vouchersRepository.updateVoucherOnCommonEvent(
+        voucher.id,
+        req.body
+      );
+    } catch (error) {
+      console.error(error);
+      return next(
+        new ApiError(
+          400,
+          `Update operation for voucher id: ${voucher.id} could not be completed.`
+        )
+      );
+    }
+
+    res.status(200).send({ updated: true });
+  }
+
+  async updateStatusFromKeepers(req, res, next) {
     const tokenIdVoucher = req.body[0]._tokenIdVoucher;
     const status = req.body[0].status;
 
     try {
-      await this.vouchersRepository.finalizeVoucher(tokenIdVoucher, status);
+      await this.vouchersRepository.updateStatusFromKeepers(
+        tokenIdVoucher,
+        status
+      );
     } catch (error) {
       console.error(
         `An error occurred while tried to finalize voucher with ID: [${tokenIdVoucher}]!`
