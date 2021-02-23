@@ -1,7 +1,8 @@
 const voucherSuppliesController = require("../controllers/voucher-supplies-controller");
 const ErrorHandlers = require("../middlewares/error-handler");
 const authenticationMiddleware = require("../middlewares/authentication");
-const voucherValidator = require("../middlewares/voucher-validator");
+const voucherValidator = require("../middlewares/voucher-validator"); // todo to be renamed to supply validator
+const eventValidator = require("../middlewares/event-validator");
 
 const multer = require("multer");
 const storage = multer.diskStorage({});
@@ -87,6 +88,41 @@ class VoucherSuppliesRouter {
     //TODO Delete this route, once event listeners are merged to develop
     router.patch(
       "/update-supply-oncancel-intermediary",
+      ErrorHandlers.globalErrorHandler(
+        voucherSuppliesController.updateSupplyOnCancel
+      )
+    );
+
+    router.patch(
+      "/set-supply-meta",
+      ErrorHandlers.globalErrorHandler(
+        authenticationMiddleware.authenticateGCLOUDService
+      ),
+      ErrorHandlers.globalErrorHandler(eventValidator.ValidateVoucherMetadata),
+      ErrorHandlers.globalErrorHandler(
+        voucherSuppliesController.setSupplyMetaOnOrderCreated
+      )
+    );
+
+    router.patch(
+      "/update-supply-ontransfer",
+      ErrorHandlers.globalErrorHandler(
+        authenticationMiddleware.authenticateGCLOUDService
+      ),
+      ErrorHandlers.globalErrorHandler(
+        eventValidator.ValidateVoucherMetadataOnTransfer
+      ),
+      ErrorHandlers.globalErrorHandler(
+        voucherSuppliesController.updateSupplyOnTransfer
+      )
+    );
+
+    router.patch(
+      "/update-supply-oncancel",
+      ErrorHandlers.globalErrorHandler(
+        authenticationMiddleware.authenticateGCLOUDService
+      ),
+      ErrorHandlers.globalErrorHandler(eventValidator.ValidateVoucherMetadata),
       ErrorHandlers.globalErrorHandler(
         voucherSuppliesController.updateSupplyOnCancel
       )

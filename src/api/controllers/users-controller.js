@@ -46,30 +46,6 @@ class UserController {
       console.error(error);
       return next(new APIError(400, `Signature was not verified!`));
     }
-
-    const authToken = AuthValidator.generateAccessToken(address);
-    res.status(200).send(authToken);
-  }
-
-  static async commitToBuy(req, res, next) {
-    const supplyID = req.params.supplyID;
-    const metadata = req.body;
-    let userVoucher;
-
-    try {
-      userVoucher = await mongooseService.createVoucher(metadata, supplyID);
-      await mongooseService.updateVoucherQty(supplyID);
-    } catch (error) {
-      console.error(error);
-      return next(
-        new APIError(
-          400,
-          `Buy operation for Supply id: ${supplyID} could not be completed.`
-        )
-      );
-    }
-
-    res.status(200).send({ userVoucherID: userVoucher.id });
   }
 }
 

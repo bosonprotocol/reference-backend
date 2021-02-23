@@ -236,7 +236,7 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "_nonce",
+          "name": "_correlationId",
           "type": "uint256"
         }
       ],
@@ -292,6 +292,25 @@
         }
       ],
       "name": "LogVoucherRefunded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "_tokenIdSupply",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_issuer",
+          "type": "address"
+        }
+      ],
+      "name": "LogVoucherSetFaultCancel",
       "type": "event"
     },
     {
@@ -693,25 +712,6 @@
           "type": "uint256"
         }
       ],
-      "name": "voucherIssuers",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
       "name": "vouchersStatus",
       "outputs": [
         {
@@ -853,7 +853,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "_txId",
+          "name": "_correlationId",
           "type": "uint256"
         }
       ],
@@ -954,6 +954,30 @@
       ],
       "name": "cancelOrFault",
       "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenIdSupply",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_issuer",
+          "type": "address"
+        }
+      ],
+      "name": "cancelOrFaultVoucherSet",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
       "stateMutability": "nonpayable",
       "type": "function"
     },
@@ -1131,25 +1155,6 @@
           "internalType": "bytes32",
           "name": "",
           "type": "bytes32"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
-        }
-      ],
-      "name": "getTotalSupply",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",

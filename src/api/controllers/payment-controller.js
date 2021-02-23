@@ -34,7 +34,7 @@ class PaymentController {
     try {
       userVoucher = await mongooseService.getVoucherByID(objectId);
       const buyer = userVoucher._holder;
-      const seller = userVoucher.voucherOwner;
+      const seller = userVoucher.voucherOwner; // TODO this must come from the voucher, not voucher owner as, the voucher might be transferred and we do not want to update every single possible userVoucher with the newly owner from that supply
       const payments = await mongooseService.getPaymentsByVoucherID(
         userVoucher._tokenIdVoucher
       );

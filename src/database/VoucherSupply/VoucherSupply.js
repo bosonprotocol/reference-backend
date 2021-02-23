@@ -109,6 +109,7 @@ class VoucherSupplyService {
       conditions: metadata.conditions,
       voucherOwner: voucherOwner,
       visible: true,
+      _correlationId: metadata._correlationId,
       _tokenIdSupply: metadata._tokenIdSupply,
       imagefiles: fileRefs,
     });
@@ -142,8 +143,12 @@ class VoucherSupplyService {
     );
   }
 
-  static async updateVoucherQty(supplyID) {
+  static async updateSupplyQty(supplyID) {
     const voucherSupply = await this.getVoucherSupply(supplyID);
+
+    if (!voucherSupply) {
+      throw new Error(`Voucher Supply with ID: ${supplyID} not found!`);
+    }
 
     return await VoucherSupply.findByIdAndUpdate(
       supplyID,
@@ -151,6 +156,27 @@ class VoucherSupplyService {
         qty: --voucherSupply.qty,
       },
       { useFindAndModify: false, new: true, upsert: true }
+    );
+  }
+
+  static async setVoucherSupplyMeta(metadata) {
+    return await VoucherSupply.findOneAndUpdate(
+      {
+        voucherOwner: metadata._voucherOwner,
+        _correlationId: metadata._correlationId,
+      },
+      {
+        _tokenIdSupply: metadata._tokenIdSupply,
+        _paymentType: metadata._paymentType,
+        _promiseId: metadata._promiseId,
+        qty: metadata.qty,
+        startDate: metadata.validFrom,
+        expiryDate: metadata.validTo,
+        price: metadata.price,
+        buyerDeposit: metadata.depositBu,
+        sellerDeposit: metadata.depositSe,
+      },
+      { new: true, upsert: true }
     );
   }
 

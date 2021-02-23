@@ -19,6 +19,23 @@ class VouchersService {
         [status.EXPIRED]: "",
         voucherOwner: metadata._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
+        _correlationId: metadata._correlationId
+      },
+      { new: true, upsert: true }
+    );
+  }
+
+  static async updateVoucherDelivered(metadata) {
+    return await Voucher.findOneAndUpdate(
+      {
+        _correlationId: metadata._correlationId,
+        _holder: metadata._holder.toLowerCase(),
+        _tokenIdSupply: metadata._tokenIdSupply,
+      },
+      {
+        _tokenIdVoucher: metadata._tokenIdVoucher,
+        _promiseId: metadata._promiseId,
+        voucherOwner: metadata._issuer,
       },
       { new: true, upsert: true }
     );
@@ -38,6 +55,10 @@ class VouchersService {
     return await Voucher.findById(myVoucherId);
   }
 
+  static async getVoucher(id) {
+    return await Voucher.findById(id);
+  }
+
   static async findVoucherByTokenIdVoucher(id) {
     return await Voucher.findOne({ _tokenIdVoucher: id });
   }
@@ -51,6 +72,17 @@ class VouchersService {
     // .where(status.CANCELLED).equals('')
   }
 
+  static async updateVoucherOnCommonEvent(voucherID, metadata) {
+    return await Voucher.findByIdAndUpdate(
+      voucherID,
+      {
+        ...metadata,
+      },
+      { new: true, upsert: true }
+    );
+  }
+
+  // TODO below functions actually are doind the same, we should update as per collectionId, voucherId so we avoid duplication of functions
   static async updateVoucherStatus(voucherID, status) {
     return await Voucher.findByIdAndUpdate(
       voucherID,

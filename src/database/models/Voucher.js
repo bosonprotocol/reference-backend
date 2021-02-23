@@ -16,17 +16,12 @@ const userSchema = new Schema({
   },
   _tokenIdSupply: {
     type: String,
-    required: true,
   },
   _tokenIdVoucher: {
     type: String,
   },
   voucherOwner: {
     type: String,
-  },
-  status: {
-    type: String,
-    required: true,
   },
   COMMITTED: {
     type: Date,
@@ -59,6 +54,13 @@ const userSchema = new Schema({
   actionDate: {
     type: Date,
     required: false,
+  },
+  _correlationId: {
+    type: Number,
+    required: false,
+  },
+  _promiseId: {
+    type: String,
   },
 });
 
