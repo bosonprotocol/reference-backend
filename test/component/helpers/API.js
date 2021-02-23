@@ -184,6 +184,14 @@ class VouchersResource {
         .get(`${this.absoluteServerRoute}/public`)
         .ok(() => true);
   }
+
+  async update(newStatus, voucherId) {
+    return superagent
+        .patch(`${this.absoluteServerRoute}/update`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send({ _id: voucherId, status: newStatus })
+  }
 }
 
 class AdministrationResource {

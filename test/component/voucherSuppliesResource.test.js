@@ -36,7 +36,7 @@ describe("Voucher Supplies Resource", () => {
 
   context("on POST", () => {
     it("returns 201 and the created voucher supply", async () => {
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupply();
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
 
       const response = await api
         .withToken(token)
@@ -61,23 +61,18 @@ describe("Voucher Supplies Resource", () => {
     });
 
     it("returns 200 and the requested voucher supply (by ID)", async () => {
-      // CREATE VOUCHER TO BE QUERIED FOR
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupply();
-
-      const createResponse = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, imageFilePath);
-      // END OF CREATE
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
 
       // QUERY FOR VOUCHER
-      const id = createResponse.body.voucherSupply._id; // query for created voucher supply
       const response = await api
           .voucherSupplies()
-          .getById(id);
+          .getById(voucherSupplyId);
 
       expect(response.status).to.eql(200);
-      expect(response.body.voucherSupply._id).to.eql(id); // check if queried id matches created id
+      expect(response.body.voucherSupply._id).to.eql(voucherSupplyId); // check if queried id matches created id
     });
 
     it("returns 400 and voucher doesn't exist", async () => {
@@ -174,16 +169,10 @@ describe("Voucher Supplies Resource", () => {
     it("returns 200 and the voucher supply update status", async () => {
       const expectedPropertyName = "success";
 
-      // CREATE VOUCHER TO BE QUERIED FOR
-      const [token, voucherSupplyData, oldImageFilePath] = await prerequisites.createVoucherSupply();
-
-      const responseCreate = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, oldImageFilePath);
-
-      const voucherSupplyId = responseCreate.body.voucherSupply._id;
-      // END OF CREATE
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
 
       // UPDATE VOUCHER WITH NEW IMAGE
       const newImageFilePath = 'test/fixtures/update-image.png';
@@ -220,15 +209,10 @@ describe("Voucher Supplies Resource", () => {
     it("returns 200 and deletes the voucher supply", async () => {
       const expectedPropertyName = "success";
 
-      // CREATE VOUCHER TO BE DELETED
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupply();
-
-      const responseCreate = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, imageFilePath);
-      const voucherSupplyId = responseCreate.body.voucherSupply._id
-      // END OF CREATE
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
 
       // DELETE VOUCHER SUPPLY
       const response = await api
@@ -261,19 +245,14 @@ describe("Voucher Supplies Resource", () => {
     it("returns 200 and deletes the voucher supply image", async () => {
       const expectedPropertyName = "success";
 
-      // CREATE VOUCHER TO BE DELETED
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupply();
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
 
       const imageFilePathTokens = imageFilePath.split("/");
       const imageName = imageFilePathTokens[imageFilePathTokens.length - 1];
       const imageUrl = `https://boson.example.com/${imageName}`;
-
-      const responseCreate = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, imageFilePath);
-      const voucherSupplyId = responseCreate.body.voucherSupply._id
-      // END OF CREATE
 
       // DELETE VOUCHER SUPPLY IMAGE
       const response = await api
