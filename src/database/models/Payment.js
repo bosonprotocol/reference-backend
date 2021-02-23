@@ -22,7 +22,6 @@ const paymentSchema = new Schema({
     type: String,
     required: true,
   },
-  // _type: 0 - Payment, 1 - Seller Deposit, 2 - Buyer Deposit
   _type: {
     type: Number,
     required: true,

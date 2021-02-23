@@ -6,16 +6,14 @@ const ErrorHandlingMiddleware = require("./api/middlewares/ErrorHandlingMiddlewa
 
 class Server {
   constructor() {
-    const app = express();
+    this.app = express();
 
-    app.use(express.json());
-    app.use(function (req, res, next) {
+    this.app.use(express.json());
+    this.app.use(function (req, res, next) {
       console.log("Time:", Date.now());
       next();
     });
-    app.use(cors());
-
-    this.app = app;
+    this.app.use(cors());
   }
 
   get address() {
