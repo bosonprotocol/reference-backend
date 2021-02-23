@@ -27,7 +27,7 @@ const configs = {
     INFURA_API_KEY: functions.config().demo.infuraapikey,
     API_URL: demoApiUrl,
     ALL_VOUCHERS_URL: `${demoApiUrl}/vouchers/all`,
-    UPDATE_STATUS: `${demoApiUrl}/vouchers/update-status-from-keepers`,
+    UPDATE_STATUS_URL: `${demoApiUrl}/vouchers/update-status-from-keepers`,
     WITHDRAW_VOUCHER_URL: `${demoApiUrl}/payments/create-payment`,
     GCLOUD_SECRET: functions.config().demo.gcloudsecret,
     GAS_LIMIT: "3000000",
