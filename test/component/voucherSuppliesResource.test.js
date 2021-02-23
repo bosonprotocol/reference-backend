@@ -36,15 +36,7 @@ describe("Voucher Supplies Resource", () => {
 
   context("on POST", () => {
     it("returns 201 and the created voucher supply", async () => {
-      const account = Random.account();
-      const token = await prerequisites.getUserToken(account);
-      const voucherSupplyOwner = account.address;
-      const voucherSupplyMetadata = Random.voucherSupplyMetadata();
-      const voucherSupplyData = {
-        ...voucherSupplyMetadata,
-        voucherOwner: voucherSupplyOwner
-      };
-      const imageFilePath = 'test/fixtures/valid-image.png';
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupply();
 
       const response = await api
         .withToken(token)
@@ -52,6 +44,272 @@ describe("Voucher Supplies Resource", () => {
         .post(voucherSupplyData, imageFilePath);
 
       expect(response.status).to.eql(201);
+    });
+  });
+
+  context("on GET", () => {
+    it("returns 200 and all voucher supplies", async () => {
+      const response = await api.voucherSupplies().getAll();
+      const expectedPropertyName = "voucherSupplies";
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      const voucherSuppliesProperty = response.body[expectedPropertyName];
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(Array.isArray(voucherSuppliesProperty)).to.eql(true);
+    });
+
+    it("returns 200 and the requested voucher supply (by ID)", async () => {
+      // CREATE VOUCHER TO BE QUERIED FOR
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupply();
+
+      const createResponse = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(voucherSupplyData, imageFilePath);
+      // END OF CREATE
+
+      // QUERY FOR VOUCHER
+      const id = createResponse.body.voucherSupply._id; // query for created voucher supply
+      const response = await api
+          .voucherSupplies()
+          .getById(id);
+
+      expect(response.status).to.eql(200);
+      expect(response.body.voucherSupply._id).to.eql(id); // check if queried id matches created id
+    });
+
+    it("returns 400 and voucher doesn't exist", async () => {
+      const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
+
+      // QUERY FOR VOUCHER
+      const response = await api
+          .voucherSupplies()
+          .getById(randomVoucherSupplyId);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("returns 200 and the statuses of all voucher supplies for the given address", async () => {
+      const expectedPropertyNames = ["active", "inactive"];
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .getStatuses();
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include.members(expectedPropertyNames);
+    });
+
+    it("returns 200 and the active voucher supplies for the given address", async () => {
+      const expectedPropertyName = "voucherSupplies";
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .getActive();
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+    });
+
+    it("returns 200 and the inactive voucher supplies for the given address", async () => {
+      const expectedPropertyName = "voucherSupplies";
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .getInactive();
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+    });
+
+    it("returns 200 and the voucher supplies for the given seller", async () => {
+      const expectedPropertyName = "voucherSupplies";
+      const account = Random.account();
+      const voucherSupplyOwner = account.address;
+
+      const response = await api
+          .voucherSupplies()
+          .getBySeller(voucherSupplyOwner);
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+    });
+
+    it("returns 200 and the voucher supplies for the given buyer", async () => {
+      const expectedPropertyName = "voucherSupplies";
+      const account = Random.account();
+      const voucherSupplyOwner = account.address;
+
+      const response = await api
+          .voucherSupplies()
+          .getByBuyer(voucherSupplyOwner);
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+    });
+  });
+
+  context("on Patch", () => {
+    it("returns 200 and the voucher supply update status", async () => {
+      const expectedPropertyName = "success";
+
+      // CREATE VOUCHER TO BE QUERIED FOR
+      const [token, voucherSupplyData, oldImageFilePath] = await prerequisites.createVoucherSupply();
+
+      const responseCreate = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(voucherSupplyData, oldImageFilePath);
+
+      const voucherSupplyId = responseCreate.body.voucherSupply._id;
+      // END OF CREATE
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = 'test/fixtures/update-image.png';
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .update(voucherSupplyId, newImageFilePath);
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
+    });
+
+    it("returns 400 with voucher supply does not exist (i.e. invalid ID)", async () => {
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+      const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
+      const newImageFilePath = 'test/fixtures/update-image.png';
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .update(randomVoucherSupplyId, newImageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+  });
+
+  context("on DELETE", () => {
+    it("returns 200 and deletes the voucher supply", async () => {
+      const expectedPropertyName = "success";
+
+      // CREATE VOUCHER TO BE DELETED
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupply();
+
+      const responseCreate = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(voucherSupplyData, imageFilePath);
+      const voucherSupplyId = responseCreate.body.voucherSupply._id
+      // END OF CREATE
+
+      // DELETE VOUCHER SUPPLY
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .delete(voucherSupplyId)
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END OF DELETE
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
+    });
+
+    it("returns 400 and voucher supply can't be deleted as it doesn't exist", async () => {
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+      const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
+
+      // DELETE VOUCHER SUPPLY
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .delete(randomVoucherSupplyId)
+      // END OF DELETE
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("returns 200 and deletes the voucher supply image", async () => {
+      const expectedPropertyName = "success";
+
+      // CREATE VOUCHER TO BE DELETED
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupply();
+
+      const imageFilePathTokens = imageFilePath.split("/");
+      const imageName = imageFilePathTokens[imageFilePathTokens.length - 1];
+      const imageUrl = `https://boson.example.com/${imageName}`;
+
+      const responseCreate = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(voucherSupplyData, imageFilePath);
+      const voucherSupplyId = responseCreate.body.voucherSupply._id
+      // END OF CREATE
+
+      // DELETE VOUCHER SUPPLY IMAGE
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .deleteImage(voucherSupplyId, imageUrl)
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END OF DELETE
+
+      // QUERY FOR VOUCHER - After Delete
+      const responseVoucherQuery2 = await api
+          .voucherSupplies()
+          .getById(voucherSupplyId);
+      const vsImagesAfter = responseVoucherQuery2.body.voucherSupply.imagefiles;
+      const vsImageUrlsAfterDelete = vsImagesAfter.map(image => image.url); // extract Url for expect comparison with image Url
+      // END QUERY - After Delete
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
+      expect(vsImageUrlsAfterDelete).not.include(imageUrl); // expect image Urls to not include the image Url after deletion
+    });
+
+    it("returns 400 and image can't be deleted because voucher supply doesn't exist", async () => {
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+      const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
+
+      // DELETE VOUCHER SUPPLY
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .deleteImage(randomVoucherSupplyId)
+      // END OF DELETE
+
+      expect(response.status).to.eql(400);
     });
   });
 });

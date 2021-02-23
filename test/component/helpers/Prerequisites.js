@@ -30,6 +30,23 @@ class Prerequisites {
 
     return tokenResponse.text;
   }
+
+  /*
+  Extracted as required many times in component tests for VoucherSuppliesModule
+   */
+  async createVoucherSupply() {
+    const account = Random.account();
+    const token = await this.getUserToken(account);
+    const voucherSupplyOwner = account.address;
+    const voucherSupplyMetadata = Random.voucherSupplyMetadata();
+    const voucherSupplyData = {
+      ...voucherSupplyMetadata,
+      voucherOwner: voucherSupplyOwner
+    };
+    const imageFilePath = 'test/fixtures/valid-image.png';
+
+    return [token, voucherSupplyData, imageFilePath];
+  }
 }
 
 module.exports = Prerequisites;

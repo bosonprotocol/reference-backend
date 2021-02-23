@@ -185,10 +185,39 @@ class Random {
     return faker.random.arrayElement([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
   }
 
+  static hexDigit() {
+    return faker.random.arrayElement([
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+    ]);
+  }
+
   static uint256() {
     const digits = [];
     for (var i = 0; i < 77; i++) {
       digits.push(Random.digit());
+    }
+    return digits.join("");
+  }
+
+  static voucherSupplyId() {
+    const digits = [];
+    for (var i = 0; i < 24; i++) {
+      digits.push(Random.hexDigit());
     }
     return digits.join("");
   }
