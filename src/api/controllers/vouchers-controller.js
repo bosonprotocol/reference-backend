@@ -124,6 +124,28 @@ class VoucherController {
     res.status(200).send({ voucherID: voucher.id });
   }
 
+  static async updateVoucherStatus(req, res, next) {
+    const voucherID = res.locals.userVoucher.id;
+    const status = req.body.status;
+
+    try {
+      await mongooseService.updateVoucherStatus(voucherID, status);
+    } catch (error) {
+      console.error(
+        `An error occurred while tried to update voucher with ID: [${voucherID}]!`
+      );
+      console.error(error);
+      return next(
+        new APIError(
+          400,
+          `UPDATE operation for voucher id: ${voucherID} could not be completed.`
+        )
+      );
+    }
+
+    res.status(200).send({ updated: true });
+  }
+
   /**
    * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
    */

@@ -19,6 +19,7 @@ class VouchersService {
         [status.EXPIRED]: "",
         voucherOwner: metadata._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
+        _correlationId: metadata._correlationId
       },
       { new: true, upsert: true }
     );
@@ -81,6 +82,7 @@ class VouchersService {
     );
   }
 
+  // TODO below functions actually are doind the same, we should update as per collectionId, voucherId so we avoid duplication of functions
   static async updateVoucherStatus(voucherID, status) {
     return await Voucher.findByIdAndUpdate(
       voucherID,

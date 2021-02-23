@@ -27,6 +27,7 @@ const MongooseService = {
   findVoucherById: Voucher.findVoucherById,
   findVoucherByTokenIdVoucher: Voucher.findVoucherByTokenIdVoucher,
   createVoucher: Voucher.createVoucher,
+  updateVoucherStatus: Voucher.updateVoucherStatus,
   updateVoucherDelivered: Voucher.updateVoucherDelivered,
   getUserVouchers: Voucher.getUserVouchers,
   getVoucherByID: Voucher.getVoucherByID,

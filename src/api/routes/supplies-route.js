@@ -1,7 +1,7 @@
 const voucherSuppliesController = require("../controllers/voucher-supplies-controller");
 const ErrorHandlers = require("../middlewares/error-handler");
 const authenticationMiddleware = require("../middlewares/authentication");
-const voucherValidator = require("../middlewares/voucher-validator");
+const voucherValidator = require("../middlewares/voucher-validator"); // todo to be renamed to supply validator
 const eventValidator = require("../middlewares/event-validator");
 
 const multer = require("multer");

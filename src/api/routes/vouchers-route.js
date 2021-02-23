@@ -2,6 +2,7 @@ const userVoucherController = require("../controllers/vouchers-controller");
 const ErrorHandlers = require("../middlewares/error-handler");
 const authenticationMiddleware = require("../middlewares/authentication");
 const eventValidator = require("../middlewares/event-validator");
+const userValidator = require("../middlewares/user-validator"); //todo to be renamed to voucher validator
 
 class VouchersController {
   static route(expressApp) {
@@ -52,6 +53,15 @@ class VouchersController {
     router.get(
       "/public",
       ErrorHandlers.globalErrorHandler(userVoucherController.getAllVouchers)
+    );
+
+    router.patch(
+      "/update",
+      ErrorHandlers.globalErrorHandler(
+        authenticationMiddleware.authenticateToken
+      ),
+      ErrorHandlers.globalErrorHandler(userValidator.ValidateVoucherHolder),
+      ErrorHandlers.globalErrorHandler(userVoucherController.updateVoucherStatus)
     );
 
     router.patch(
