@@ -1,4 +1,4 @@
-//@ts-nocheck
+// @ts-nocheck
 const isValid = require("mongoose").isValidObjectId;
 
 const ApiError = require("./../ApiError");

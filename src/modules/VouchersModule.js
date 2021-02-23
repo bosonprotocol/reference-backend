@@ -1,12 +1,13 @@
-const eventValidator = require("../api/middlewares/event-validator");
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const VouchersController = require("../api/controllers/VouchersController");
 const UserValidationMiddleware = require("../api/middlewares/UserValidationMiddleware");
+const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
 
 class VouchersModule {
   constructor({
     userAuthenticationMiddleware,
     userValidationMiddleware,
+    eventValidationMiddleware,
     voucherSuppliesRepository,
     vouchersRepository,
     vouchersController,
@@ -15,6 +16,8 @@ class VouchersModule {
     this.userValidationMiddleware =
       userValidationMiddleware ||
       new UserValidationMiddleware(vouchersRepository);
+    this.eventValidationMiddleware =
+      eventValidationMiddleware || new EventValidationMiddleware();
     this.vouchersController =
       vouchersController ||
       new VouchersController(voucherSuppliesRepository, vouchersRepository);
@@ -108,8 +111,12 @@ class VouchersModule {
           next
         )
       ),
-      ErrorHandlingMiddleware.globalErrorHandler(
-        eventValidator.ValidateUserVoucherMetadata
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateUserVoucherMetadata(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateVoucherDelivered(req, res, next)
@@ -125,8 +132,12 @@ class VouchersModule {
           next
         )
       ),
-      ErrorHandlingMiddleware.globalErrorHandler(
-        eventValidator.ValidateUserVoucherMetadata
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateUserVoucherMetadata(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateVoucherOnCommonEvent(req, res, next)

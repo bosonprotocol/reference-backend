@@ -1,8 +1,8 @@
 const ApiError = require("../ApiError");
 const { BigNumber } = require("ethers");
 
-class EventValidator {
-  static async ValidateUserVoucherMetadata(req, res, next) {
+class EventValidationMiddleware {
+  async validateUserVoucherMetadata(req, res, next) {
     if (!req.body) {
       console.error("Empty body sent while, trying to update a user voucher!");
       return next(new ApiError(400, "Bad request."));
@@ -20,7 +20,7 @@ class EventValidator {
   }
 
   // ERC1155 TransferSingle / TransferBatch Validation
-  static async ValidateVoucherMetadataOnTransfer(req, res, next) {
+  async validateVoucherMetadataOnTransfer(req, res, next) {
     const metadata = req.body;
 
     if (!metadata) {
@@ -51,7 +51,7 @@ class EventValidator {
     next();
   }
 
-  static async ValidateVoucherMetadata(req, res, next) {
+  async validateVoucherMetadata(req, res, next) {
     if (!req.body) {
       console.error("Empty body sent while, trying to update a user voucher!");
       return next(new ApiError(400, "Bad request."));
@@ -70,4 +70,4 @@ class EventValidator {
   }
 }
 
-module.exports = EventValidator;
+module.exports = EventValidationMiddleware;

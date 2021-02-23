@@ -3,16 +3,9 @@ const ApiError = require("../ApiError");
 const nonceUtils = require("../../utils/nonceUtils");
 
 class UsersController {
-  constructor(
-    authenticationService,
-    usersRepository,
-    voucherSuppliesRepository,
-    vouchersRepository
-  ) {
+  constructor(authenticationService, usersRepository) {
     this.authenticationService = authenticationService;
     this.usersRepository = usersRepository;
-    this.voucherSuppliesRepository = voucherSuppliesRepository;
-    this.vouchersRepository = vouchersRepository;
   }
 
   async generateNonce(req, res, next) {

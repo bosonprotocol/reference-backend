@@ -2,8 +2,7 @@ const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddlew
 const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
 const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware");
 const VoucherValidationMiddleware = require("../api/middlewares/VoucherValidationMiddleware");
-
-const eventValidator = require("../api/middlewares/event-validator");
+const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
 
 class VoucherSuppliesModule {
   constructor({
@@ -11,10 +10,13 @@ class VoucherSuppliesModule {
     userAuthenticationMiddleware,
     voucherImageStorageMiddleware,
     voucherValidationMiddleware,
+    eventValidationMiddleware,
     voucherSuppliesRepository,
     voucherSuppliesController,
   }) {
     this.userAuthenticationMiddleware = userAuthenticationMiddleware;
+    this.eventValidationMiddleware =
+      eventValidationMiddleware || new EventValidationMiddleware();
     this.voucherImageStorageMiddleware =
       voucherImageStorageMiddleware ||
       new FileStorageMiddleware(
@@ -125,8 +127,8 @@ class VoucherSuppliesModule {
           next
         )
       ),
-      ErrorHandlingMiddleware.globalErrorHandler(
-        eventValidator.ValidateVoucherMetadata
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateVoucherMetadata(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.setSupplyMetaOnOrderCreated(
@@ -146,8 +148,12 @@ class VoucherSuppliesModule {
           next
         )
       ),
-      ErrorHandlingMiddleware.globalErrorHandler(
-        eventValidator.ValidateVoucherMetadataOnTransfer
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateVoucherMetadataOnTransfer(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.updateSupplyOnTransfer(req, res, next)
@@ -163,8 +169,8 @@ class VoucherSuppliesModule {
           next
         )
       ),
-      ErrorHandlingMiddleware.globalErrorHandler(
-        eventValidator.ValidateVoucherMetadata
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateVoucherMetadata(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.updateSupplyOnCancel(req, res, next)
