@@ -30,11 +30,15 @@ task :build_fix => [
     :"functions:format_fix"
 ]
 
-task :test => [
-    :'tests:app:unit',
-    :'tests:app:persistence',
-    :'tests:app:component'
-]
+task :test, [:deployment_type, :deployment_label] do |_, args|
+  [
+      :'tests:app:unit',
+      :'tests:app:persistence',
+      :'tests:app:component'
+  ].each do |task_name|
+    Rake::Task[task_name].invoke(*args)
+  end
+end
 
 namespace :secrets do
   desc 'Check if secrets are readable'
@@ -180,6 +184,23 @@ namespace :database do
       t.backend_config = backend_config
     end
   end
+
+  namespace :contextual do
+    task :ensure, [:deployment_type, :deployment_label] do |_, args|
+      args.with_defaults(
+          deployment_type: 'local',
+          deployment_label: 'testing')
+
+      database_type = configuration
+          .for_scope(args.to_h)
+          .database_type
+      task_name = (database_type == 'deployed') ?
+          'database:environment:provision' :
+          'database:test:provision'
+
+      Rake::Task[task_name].invoke(*args)
+    end
+  end
 end
 
 namespace :tests do
@@ -190,13 +211,27 @@ namespace :tests do
     end
 
     desc "Run all persistence tests"
-    task :persistence => [:"database:test:provision"] do
-      sh('npm', 'run', 'tests:app:persistence')
+    task :persistence, [:deployment_type, :deployment_label] do |_, args|
+      args.with_defaults(
+          deployment_type: 'local',
+          deployment_label: 'testing')
+
+      Rake::Task['database:contextual:ensure'].invoke(*args)
+
+      sh(database_overrides_for(configuration, args),
+          'npm', 'run', 'tests:app:persistence')
     end
 
     desc "Run all component tests"
-    task :component => [:"database:test:provision"] do
-      sh('npm', 'run', 'tests:app:component')
+    task :component, [:deployment_type, :deployment_label] do |_, args|
+      args.with_defaults(
+          deployment_type: 'local',
+          deployment_label: 'testing')
+
+      Rake::Task['database:contextual:ensure'].invoke(*args)
+
+      sh(database_overrides_for(configuration, args),
+          'npm', 'run', 'tests:app:component')
     end
   end
 end
@@ -248,4 +283,20 @@ namespace :ci do
       t.home_directory = 'build/fly'
     end
   end
+end
+
+def database_overrides_for(configuration, args)
+  configuration = configuration
+      .for_scope(args.to_h.merge(role: 'database'))
+
+  (configuration.database_type == 'deployed') ?
+      {
+          "DB_CONNECTION_STRING" =>
+              "#{RubyTerraform::Output.for(
+                  name: 'connection_string',
+                  source_directory: 'infra/database',
+                  work_directory: 'build',
+                  backend_config: configuration.backend_config)}/api",
+      } :
+      {}
 end

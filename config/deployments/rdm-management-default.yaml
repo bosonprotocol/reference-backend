@@ -5,6 +5,8 @@ database_instance_size_name: "M10"
 database_allow_cidrs:
   - "10.0.0.0/8"
 
+database_type: "deployed"
+
 # State
 network_state_bucket_name: "rdm-tooling-network-rdm-management-default"
 network_state_key: "network/deployment-state/default.tfstate"
