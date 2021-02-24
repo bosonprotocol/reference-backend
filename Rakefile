@@ -1,13 +1,15 @@
-require 'rake_docker'
 require 'confidante'
+require 'rake_docker'
+require 'rake_terraform'
 require 'rake_fly'
 
 configuration = Confidante.configuration
 
-
-configuration = Confidante.configuration
-
 RakeFly.define_installation_tasks(version: '6.7.2')
+RakeTerraform.define_installation_tasks(
+    path: File.join(Dir.pwd, 'vendor', 'terraform'),
+    version: '0.14.7')
+
 
 task :default => [
     :build_fix,
@@ -33,6 +35,27 @@ task :test => [
     :'tests:app:persistence',
     :'tests:app:component'
 ]
+
+namespace :secrets do
+  desc 'Check if secrets are readable'
+  task :check do
+    if File.exist?('config/secrets')
+      puts 'Checking if secrets are accessible.'
+      unless File.read('config/secrets/.unlocked').strip == "true"
+        raise RuntimeError, Paint['Cannot access secrets.', :red]
+      end
+      puts 'Secrets accessible. Continuing.'
+    end
+  end
+
+  desc 'Unlock secrets'
+  task :unlock do
+    if File.exist?('config/secrets')
+      puts 'Unlocking secrets.'
+      sh('git crypt unlock')
+    end
+  end
+end
 
 namespace :app do
   namespace :dependencies do
@@ -102,6 +125,26 @@ namespace :functions do
   end
 end
 
+namespace :bootstrap do
+  RakeTerraform.define_command_tasks(
+      configuration_name: 'bootstrap infrastructure',
+      argument_names: [:deployment_type, :deployment_label]) do |t, args|
+    configuration = configuration
+        .for_scope(args.to_h.merge(role: 'bootstrap'))
+
+    deployment_identifier = configuration.deployment_identifier
+    vars = configuration.vars
+
+    t.source_directory = 'infra/bootstrap'
+    t.work_directory = 'build'
+
+    t.state_file =
+        File.join(
+            Dir.pwd, "state/bootstrap/#{deployment_identifier}.tfstate")
+    t.vars = vars
+  end
+end
+
 namespace :database do
   namespace :test do
     RakeDocker.define_container_tasks(
@@ -117,6 +160,24 @@ namespace :database do
           "MONGO_INITDB_ROOT_USERNAME=#{configuration.database_username}",
           "MONGO_INITDB_ROOT_PASSWORD=#{configuration.database_password}",
       ]
+    end
+  end
+
+  namespace :environment do
+    RakeTerraform.define_command_tasks(
+        configuration_name: 'database',
+        argument_names: [:deployment_type, :deployment_label]) do |t, args|
+      configuration = configuration
+          .for_scope(args.to_h.merge(role: 'database'))
+
+      vars = configuration.vars
+      backend_config = configuration.backend_config
+
+      t.source_directory = 'infra/database'
+      t.work_directory = 'build'
+
+      t.vars = vars
+      t.backend_config = backend_config
     end
   end
 end

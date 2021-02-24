@@ -9,4 +9,7 @@ source_repository_name: "bosonprotocol/reference-backend"
 source_repository_url: "git@github.com:%{hiera('source_repository_name')}.git"
 source_repository_branch: "master"
 
+storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}"
+storage_bucket_encryption: "AES256"
+
 rdm_management_account_id: "031036423983"

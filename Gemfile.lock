@@ -101,6 +101,13 @@ GEM
       rake_factory (>= 0.29, < 1)
       ruby_fly (>= 0.35)
       semantic (~> 1.6.1)
+    rake_terraform (1.13.0)
+      colored2 (~> 3.1)
+      rake_dependencies (~> 2, < 3)
+      rake_factory (>= 0.23, < 1)
+      ruby-terraform (>= 0.62, < 1)
+    ruby-terraform (0.64.0)
+      lino (>= 1.5)
     ruby2ruby (2.4.4)
       ruby_parser (~> 3.1)
       sexp_processor (~> 4.6)
@@ -127,6 +134,7 @@ DEPENDENCIES
   rake (~> 13.0)
   rake_docker (~> 2.13)
   rake_fly (~> 2.7)
+  rake_terraform (~> 1.13)
 
 BUNDLED WITH
    2.2.7
