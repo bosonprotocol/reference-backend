@@ -77,7 +77,7 @@ class Prerequisites {
   async createVoucher(token, voucherSupplyId, voucherMetadata) {
     const response = await this.api
         .withToken(token)
-        .users()
+        .vouchers()
         .commitToBuy(voucherSupplyId, voucherMetadata)
 
     return [response.statusCode, response.body];

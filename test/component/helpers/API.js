@@ -26,14 +26,6 @@ class UsersResource {
       .post(`${this.serverAddress}/users/${address}`)
       .ok(() => true);
   }
-
-  async commitToBuy(voucherSupplyId, voucherMetaData) {
-    return superagent
-        .post(`${this.serverAddress}/users/${voucherSupplyId}/buy`)
-        .authBearer(this.token)
-        .ok(() => true)
-        .send(voucherMetaData);
-  }
 }
 
 class UserSignatureVerificationResource {
@@ -191,6 +183,14 @@ class VouchersResource {
         .authBearer(this.token)
         .ok(() => true)
         .send({ _id: voucherId, status: newStatus })
+  }
+
+  async commitToBuy(voucherSupplyId, voucherMetaData) {
+    return superagent
+        .post(`${this.absoluteServerRoute}/commit-to-buy/${voucherSupplyId}`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send(voucherMetaData);
   }
 }
 

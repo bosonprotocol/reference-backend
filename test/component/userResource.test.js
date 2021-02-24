@@ -42,37 +42,5 @@ describe("User Resource", () => {
       expect(response.statusCode).to.eql(200);
       expect(response.body).to.match(/\d{1,6}/);
     });
-
-    it("returns 200 with the voucher ID", async () => {
-      // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
-      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
-      // END CREATE VOUCHER SUPPLY
-
-      // COMMIT TO BUY
-      const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
-      const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
-      // END COMMIT TO BUY
-
-      const expectedPropertyName = "userVoucherID";
-      const propertyNames = Object.getOwnPropertyNames(createVoucherResponseBody);
-
-      expect(createVoucherResponseCode).to.eql(200);
-      expect(propertyNames).to.include(expectedPropertyName);
-    });
-
-    it("returns 403 with forbidden (voucher holder doesn't match requesting address)", async () => {
-      // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
-      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
-      // END CREATE VOUCHER SUPPLY
-
-      // COMMIT TO BUY
-      const voucherMetadata = prerequisites.createVoucherMetadata(); // no override to force failure
-      const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
-      // END COMMIT TO BUY
-
-      expect(createVoucherResponseCode).to.eql(403);
-    });
   });
 });

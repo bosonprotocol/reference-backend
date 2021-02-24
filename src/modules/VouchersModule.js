@@ -44,6 +44,9 @@ class VouchersModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.userValidationMiddleware.validateMetadata(req, res, next)
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.commitToBuy(req, res, next)
       )
     );
