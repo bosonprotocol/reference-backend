@@ -31,11 +31,13 @@ class UsersController {
   async verifySignature(req, res, next) {
     const address = req.params.address;
 
+    let user;
+
     try {
-      const nonce = await this.usersRepository.getNonce(address.toLowerCase());
+      user = await this.usersRepository.getUser(address.toLowerCase());
 
       const message = {
-        value: `Authentication message: ${nonce}`,
+        value: `Authentication message: ${user.nonce}`,
       };
 
       const isSignatureVerified = this.authenticationService.isSignatureVerified(
@@ -54,7 +56,7 @@ class UsersController {
       return next(new ApiError(400, `Signature was not verified!`));
     }
 
-    const authToken = this.authenticationService.generateToken(address);
+    const authToken = this.authenticationService.generateToken(user);
 
     res.status(200).send(authToken);
   }

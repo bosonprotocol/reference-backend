@@ -59,7 +59,7 @@ describe("User Signature Verification Resource", () => {
       const tokenValidityInDays = Tokens.validityInDays(tokenPayload);
 
       expect(response.statusCode).to.eql(200);
-      expect(tokenPayload.user).to.eql(address);
+      expect(tokenPayload.user).to.eql(address.toLowerCase());
       expect(tokenValidityInDays).to.eql(180);
     });
 
