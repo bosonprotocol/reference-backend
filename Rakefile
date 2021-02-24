@@ -204,9 +204,9 @@ namespace :database do
 end
 
 namespace :tests do
-  namespace :app => [:'app:dependencies:install'] do
+  namespace :app do
     desc "Run all component tests"
-    task :unit do
+    task :unit => [:'app:dependencies:install'] do
       sh('npm', 'run', 'tests:app:unit')
     end
 
