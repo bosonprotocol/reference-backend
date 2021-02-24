@@ -7,7 +7,7 @@ vars:
 
   ci_provisioning_role_arn: "%{hiera('ci_provisioning_role_arn')}"
   ci_deployment_type: "%{hiera('ci_deployment_type')}"
-  ci_deployment_label: "%{hiera('ci_deployment_type')}"
+  ci_deployment_label: "%{hiera('ci_deployment_label')}"
 
   slack_success_channel: "#builds"
   slack_success_message: "<%{hiera('concourse_url')}/builds/$BUILD_ID|$BUILD_TEAM_NAME:$BUILD_PIPELINE_NAME:$BUILD_JOB_NAME [$BUILD_NAME]> _successful_! :clap:."

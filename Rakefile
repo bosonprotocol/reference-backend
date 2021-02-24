@@ -269,9 +269,9 @@ namespace :ci do
 
       t.target = configuration.concourse_team
       t.team = configuration.concourse_team
-      t.pipeline = "contracts-master"
+      t.pipeline = "reference-backend-develop"
 
-      t.config = 'pipelines/master/pipeline.yaml'
+      t.config = 'pipelines/develop/pipeline.yaml'
 
       t.vars = configuration.vars
       t.var_files = [
