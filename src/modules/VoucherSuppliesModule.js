@@ -55,6 +55,13 @@ class VoucherSuppliesModule {
     router.get(
       "/:id",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+          req,
+          res,
+          next
+        )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.getVoucherSupply(req, res, next)
       )
     );

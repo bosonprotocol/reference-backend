@@ -2,6 +2,7 @@
 const ApiError = require("../ApiError");
 
 const voucherUtils = require("../../utils/voucherUtils");
+const voucherStatuses = require("../../utils/voucherStatuses");
 
 class VouchersController {
   constructor(voucherSuppliesRepository, vouchersRepository) {
@@ -133,6 +134,23 @@ class VouchersController {
     }
 
     res.status(200).send({ voucherID: voucher.id });
+  }
+
+  async validateVoucherStatus(req, res, next) {
+    const status = req.body.status;
+
+    const validVoucherStatuses = Object.values(voucherStatuses); // extract as array
+
+    if (!validVoucherStatuses.includes(status)) {
+      return next(
+        new ApiError(
+          400,
+          `UPDATE voucher operation could not be completed with invalid status: ${status}`
+        )
+      );
+    }
+
+    next();
   }
 
   async updateVoucherStatus(req, res, next) {

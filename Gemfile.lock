@@ -74,4 +74,4 @@ DEPENDENCIES
   rake_docker (~> 2.13)
 
 BUNDLED WITH
-   2.2.7
+   2.2.11

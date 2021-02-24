@@ -44,6 +44,9 @@ class VouchersModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.userValidationMiddleware.validateMetadata(req, res, next)
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.commitToBuy(req, res, next)
       )
     );
@@ -98,6 +101,9 @@ class VouchersModule {
         this.userValidationMiddleware.validateVoucherHolder(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.vouchersController.validateVoucherStatus(req, res, next)
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateVoucherStatus(req, res, next)
       )
     );
@@ -119,6 +125,9 @@ class VouchersModule {
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.vouchersController.validateVoucherStatus(req, res, next)
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateVoucherDelivered(req, res, next)
       )
     );
@@ -138,6 +147,9 @@ class VouchersModule {
           res,
           next
         )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.vouchersController.validateVoucherStatus(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateVoucherOnCommonEvent(req, res, next)
