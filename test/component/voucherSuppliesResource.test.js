@@ -14,12 +14,13 @@ describe("Voucher Supplies Resource", () => {
   let api;
 
   const tokenSecret = Random.tokenSecret();
+  const gcloudSecret = Random.gcloudSecret();
 
   before(async () => {
     database = await Database.connect();
     server = await new TestServer()
       .onAnyPort()
-      .addConfigurationOverrides({ tokenSecret })
+      .addConfigurationOverrides({ tokenSecret, gcloudSecret })
       .start();
     api = new API(server.address);
     prerequisites = new Prerequisites(api);
@@ -35,7 +36,7 @@ describe("Voucher Supplies Resource", () => {
   });
 
   context("on POST", () => {
-    it("returns 201 and the created voucher supply", async () => {
+    it("createVoucherSupply - returns 201 and the created voucher supply", async () => {
       const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
 
       const response = await api
@@ -48,7 +49,7 @@ describe("Voucher Supplies Resource", () => {
   });
 
   context("on GET", () => {
-    it("returns 200 and all voucher supplies", async () => {
+    it("getAllVoucherSupplies - returns 200 and all voucher supplies", async () => {
       const response = await api.voucherSupplies().getAll();
       const expectedPropertyName = "voucherSupplies";
 
@@ -60,7 +61,7 @@ describe("Voucher Supplies Resource", () => {
       expect(Array.isArray(voucherSuppliesProperty)).to.eql(true);
     });
 
-    it("returns 200 and the requested voucher supply (by ID)", async () => {
+    it("getVoucherSupplyById - returns 200 and the requested voucher supply (by ID)", async () => {
       // CREATE VOUCHER SUPPLY
       const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
       const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
@@ -75,7 +76,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body.voucherSupply._id).to.eql(voucherSupplyId); // check if queried id matches created id
     });
 
-    it("returns 400 and voucher doesn't exist", async () => {
+    it("getVoucherSupplyById - returns 400 and voucher doesn't exist", async () => {
       const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
 
       // QUERY FOR VOUCHER
@@ -86,7 +87,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("returns 200 and the statuses of all voucher supplies for the given address", async () => {
+    it("getVoucherSupplyStatusesByOwner - returns 200 and the statuses of all voucher supplies for the given address", async () => {
       const expectedPropertyNames = ["active", "inactive"];
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
@@ -102,7 +103,7 @@ describe("Voucher Supplies Resource", () => {
       expect(propertyNames).to.include.members(expectedPropertyNames);
     });
 
-    it("returns 200 and the active voucher supplies for the given address", async () => {
+    it("getActiveVoucherSuppliesByOwner - returns 200 and the active voucher supplies for the given address", async () => {
       const expectedPropertyName = "voucherSupplies";
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
@@ -118,7 +119,7 @@ describe("Voucher Supplies Resource", () => {
       expect(propertyNames).to.include(expectedPropertyName);
     });
 
-    it("returns 200 and the inactive voucher supplies for the given address", async () => {
+    it("getInactiveVoucherSuppliesByOwner - returns 200 and the inactive voucher supplies for the given address", async () => {
       const expectedPropertyName = "voucherSupplies";
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
@@ -134,7 +135,7 @@ describe("Voucher Supplies Resource", () => {
       expect(propertyNames).to.include(expectedPropertyName);
     });
 
-    it("returns 200 and the voucher supplies for the given seller", async () => {
+    it("getVoucherSuppliesForSeller - returns 200 and the voucher supplies for the given seller", async () => {
       const expectedPropertyName = "voucherSupplies";
       const account = Random.account();
       const voucherSupplyOwner = account.address;
@@ -149,7 +150,7 @@ describe("Voucher Supplies Resource", () => {
       expect(propertyNames).to.include(expectedPropertyName);
     });
 
-    it("returns 200 and the voucher supplies for the given buyer", async () => {
+    it("getVoucherSuppliesForBuyer - returns 200 and the voucher supplies for the given buyer", async () => {
       const expectedPropertyName = "voucherSupplies";
       const account = Random.account();
       const voucherSupplyOwner = account.address;
@@ -166,7 +167,7 @@ describe("Voucher Supplies Resource", () => {
   });
 
   context("on Patch", () => {
-    it("returns 200 and the voucher supply update status", async () => {
+    it("updateVoucherSupply - returns 200 and the voucher supply update status", async () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY
@@ -190,7 +191,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
     });
 
-    it("returns 400 with voucher supply does not exist (i.e. invalid ID)", async () => {
+    it("updateVoucherSupply - returns 400 with voucher supply does not exist (i.e. invalid ID)", async () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
       const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
@@ -203,10 +204,73 @@ describe("Voucher Supplies Resource", () => {
 
       expect(response.status).to.eql(400);
     });
+
+    it("setVoucherSupplyMetaData - returns 200 and the success status", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .setMetadata(voucherSupplyData, voucherSupplyId);
+
+      const expectedPropertyName = "success";
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    it("setVoucherSupplyMetaData - returns 400 and voucher supply doesn't exist", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      const randomVoucherSupplyId = Random.voucherSupplyId();
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .setMetadata(voucherSupplyData, randomVoucherSupplyId); // pass random voucherSupplyId to force failure
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("setVoucherSupplyMetaData - returns 400 and bad request", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      const nullVoucherSupplyData = null;
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .setMetadata(nullVoucherSupplyData, voucherSupplyId); // pass null voucherSupplyData to force failure
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(400);
+    });
   });
 
   context("on DELETE", () => {
-    it("returns 200 and deletes the voucher supply", async () => {
+    it("deleteVoucherSupply - returns 200 and deletes the voucher supply", async () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY
@@ -227,7 +291,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
     });
 
-    it("returns 400 and voucher supply can't be deleted as it doesn't exist", async () => {
+    it("deleteVoucherSupply - returns 400 and voucher supply can't be deleted as it doesn't exist", async () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
       const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
@@ -242,7 +306,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("returns 200 and deletes the voucher supply image", async () => {
+    it("deleteVoucherSupplyImage - returns 200 and deletes the voucher supply image", async () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY
@@ -276,7 +340,7 @@ describe("Voucher Supplies Resource", () => {
       expect(vsImageUrlsAfterDelete).not.include(imageUrl); // expect image Urls to not include the image Url after deletion
     });
 
-    it("returns 400 and image can't be deleted because voucher supply doesn't exist", async () => {
+    it("deleteVoucherSupplyImage - returns 400 and image can't be deleted because voucher supply doesn't exist", async () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
       const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting

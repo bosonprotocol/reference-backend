@@ -35,7 +35,7 @@ describe("Administration Resource", () => {
     });
 
     context("on PATCH", () => {
-        // it("returns 200 and the address' admin update status", async () => {
+        // it("makeUserAdmin - returns 200 and the address' admin update status", async () => {
         //     // STEP 1 - REGISTER A USER AS ADMIN
         //     // STEP 2 - REGISTER ANOTHER USER AS NON-ADMIN
         //     // STEP 3 - USE ADMIN USER TO MAKE REQUEST TO MAKE USER 2 AN ADMIN

@@ -127,6 +127,14 @@ class VoucherSuppliesResource {
         .ok(() => true);
   }
 
+  async setMetadata(voucherSupplyData, voucherSupplyId) {
+    return superagent
+        .patch(`${this.absoluteServerRoute}/set-supply-meta/${voucherSupplyId}`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send(voucherSupplyData);
+  }
+
   async delete(voucherSupplyId) {
     return superagent
         .delete(`${this.absoluteServerRoute}/${voucherSupplyId}`)
@@ -171,18 +179,61 @@ class VouchersResource {
         .ok(() => true);
   }
 
+  async getAll() {
+    return superagent
+        .get(`${this.absoluteServerRoute}/all`)
+        .authBearer(this.token)
+        .ok(() => true);
+  }
+
   async getAllPublic() {
     return superagent
         .get(`${this.absoluteServerRoute}/public`)
         .ok(() => true);
   }
 
-  async update(newStatus, voucherId) {
+  async updateStatus(voucherId, newStatus) {
     return superagent
         .patch(`${this.absoluteServerRoute}/update`)
         .authBearer(this.token)
         .ok(() => true)
         .send({ _id: voucherId, status: newStatus })
+  }
+
+  async updateDelivered(voucherTokenId, voucherIssuer, promiseId, supplyTokenId, voucherHolder, correlationId) {
+    return superagent
+        .patch(`${this.absoluteServerRoute}/update-voucher-delivered`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send({
+          _tokenIdVoucher: voucherTokenId,
+          _issuer: voucherIssuer,
+          _promiseId: promiseId,
+          _tokenIdSupply: supplyTokenId,
+          _holder: voucherHolder,
+          _correlationId: correlationId
+        });
+  }
+
+  async updateFromCommonEvent(voucherTokenId) {
+    return superagent
+        .patch(`${this.absoluteServerRoute}/update-from-common-event`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send({
+          _tokenIdVoucher: voucherTokenId
+        });
+  }
+
+  async updateStatusFromKeepers(voucherTokenId, status) {
+    return superagent
+        .patch(`${this.absoluteServerRoute}/update-status-from-keepers`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send([{
+          _tokenIdVoucher: voucherTokenId,
+          status: status
+        }]);
   }
 
   async commitToBuy(voucherSupplyId, voucherMetaData) {

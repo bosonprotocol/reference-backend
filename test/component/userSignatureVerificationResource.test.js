@@ -37,7 +37,7 @@ describe("User Signature Verification Resource", () => {
   });
 
   context("on POST", () => {
-    it("returns 200 with a JWT valid for 180 days when the signature is valid", async () => {
+    it("verifySignature - returns 200 with a JWT valid for 180 days when the signature is valid", async () => {
       const account = Random.account();
       const domain = Random.signingDomain();
       const address = account.address;
@@ -63,7 +63,7 @@ describe("User Signature Verification Resource", () => {
       expect(tokenValidityInDays).to.eql(180);
     });
 
-    it("returns 401 when the signature is incorrect", async () => {
+    it("verifySignature - returns 401 when the signature is incorrect", async () => {
       const account = Random.account();
       const domain = Random.signingDomain();
       const address = account.address;
@@ -86,7 +86,7 @@ describe("User Signature Verification Resource", () => {
       expect(response.body).to.eql("Unauthorized.");
     });
 
-    it("returns 400 when the signature is invalid", async () => {
+    it("verifySignature - returns 400 when the signature is invalid", async () => {
       const account = Random.account();
       const domain = Random.signingDomain();
       const address = account.address;

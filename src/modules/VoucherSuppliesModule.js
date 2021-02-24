@@ -126,9 +126,16 @@ class VoucherSuppliesModule {
     );
 
     router.patch(
-      "/set-supply-meta",
+      "/set-supply-meta/:id",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userAuthenticationMiddleware.authenticateGCLOUDService(
+          req,
+          res,
+          next
+        )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(
           req,
           res,
           next

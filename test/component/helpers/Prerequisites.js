@@ -1,4 +1,5 @@
 const Random = require("../../shared/helpers/Random");
+const Tokens = require("../../shared/helpers/tokens");
 const { Signing } = require("../../shared/helpers/Signing");
 
 class Prerequisites {
@@ -29,6 +30,12 @@ class Prerequisites {
       .post(domain, signature);
 
     return tokenResponse.text;
+  }
+
+  getGCloudToken(gcloudSecret, tokenSecret) {
+    return Tokens.sign({
+      token: gcloudSecret,
+    }, tokenSecret);
   }
 
   /*

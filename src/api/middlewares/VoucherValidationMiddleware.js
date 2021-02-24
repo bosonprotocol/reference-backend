@@ -20,7 +20,7 @@ class VoucherValidationMiddleware {
         )
       );
     }
-
+    // console.log(voucherSupply)
     if (!voucherSupply) {
       return next(
         new ApiError(400, `Voucher with ID: ${req.params.id} does not exist!`)
