@@ -1,6 +1,7 @@
 require 'confidante'
 require 'rake_docker'
 require 'rake_terraform'
+require 'ruby_terraform/output'
 require 'rake_fly'
 
 configuration = Confidante.configuration

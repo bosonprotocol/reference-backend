@@ -7,5 +7,5 @@ output "cluster_id" {
 }
 
 output "connection_string" {
-  value = module.cluster.connection_strings[0].private_endpoint[0].srv_connection_string
+  value = module.cluster.connection_strings[0].private_endpoint[0].connection_string
 }
