@@ -2,13 +2,13 @@ require("dotenv").config();
 
 const Server = require("./src/server");
 
-const ConfigurationService = require("./src/services/configuration-service.js");
-const AuthenticationService = require("./src/services/authentication-service");
+const ConfigurationService = require("./src/services/ConfigurationService.js");
+const AuthenticationService = require("./src/services/AuthenticationService");
 
-const UsersRepository = require("./src/database/User/users-repository");
-const VouchersRepository = require("./src/database/Voucher/vouchers-repository");
-const VoucherSuppliesRepository = require("./src/database/VoucherSupply/voucher-supplies-repository");
-const PaymentsRepository = require("./src/database/Payment/payments-repository");
+const UsersRepository = require("./src/database/User/UsersRepository");
+const VouchersRepository = require("./src/database/Voucher/VouchersRepository");
+const VoucherSuppliesRepository = require("./src/database/VoucherSupply/VoucherSuppliesRepository");
+const PaymentsRepository = require("./src/database/Payment/PaymentsRepository");
 
 const AdministratorAuthenticationMiddleware = require("./src/api/middlewares/AdministratorAuthenticationMiddleware");
 const UserAuthenticationMiddleware = require("./src/api/middlewares/UserAuthenticationMiddleware");
