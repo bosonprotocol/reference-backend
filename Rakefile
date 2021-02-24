@@ -204,14 +204,16 @@ namespace :database do
 end
 
 namespace :tests do
-  namespace :app do
+  namespace :app => [:'app:dependencies:install'] do
     desc "Run all component tests"
     task :unit do
       sh('npm', 'run', 'tests:app:unit')
     end
 
     desc "Run all persistence tests"
-    task :persistence, [:deployment_type, :deployment_label] do |_, args|
+    task :persistence,
+        [:deployment_type, :deployment_label] =>
+            [:'app:dependencies:install'] do |_, args|
       args.with_defaults(
           deployment_type: 'local',
           deployment_label: 'testing')
@@ -223,7 +225,9 @@ namespace :tests do
     end
 
     desc "Run all component tests"
-    task :component, [:deployment_type, :deployment_label] do |_, args|
+    task :component,
+        [:deployment_type, :deployment_label] =>
+            [:'app:dependencies:install'] do |_, args|
       args.with_defaults(
           deployment_type: 'local',
           deployment_label: 'testing')
