@@ -11,8 +11,12 @@ class Tokens {
     return jwt.verify(token, secret);
   }
 
+  static validityInSeconds(payload) {
+    return payload.exp - payload.iat;
+  }
+
   static validityInDays(payload) {
-    return (payload.exp - payload.iat) / Time.oneDayInSeconds();
+    return this.validityInSeconds(payload) / Time.oneDayInSeconds();
   }
 }
 

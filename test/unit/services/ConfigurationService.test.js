@@ -109,4 +109,56 @@ describe("ConfigurationService", () => {
       expect(configurationService.vouchersBucket).to.be.undefined;
     });
   });
+
+  context("for superadmin username", () => {
+    it("uses environment variable by default", () => {
+      withEnv("SUPERADMIN_USERNAME", "supremeadmin", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.superadminUsername)
+          .to.eql("supremeadmin");
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("SUPERADMIN_USERNAME", "supremeadmin", () => {
+        const configurationService = new ConfigurationService({
+          superadminUsername: "ultimateadmin",
+        });
+        expect(configurationService.superadminUsername)
+          .to.eql("ultimateadmin");
+      });
+    });
+
+    it("returns undefined when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.superadminUsername).to.be.undefined;
+    });
+  });
+
+  context("for superadmin password", () => {
+    it("uses environment variable by default", () => {
+      withEnv("SUPERADMIN_PASSWORD", "extremelysecret", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.superadminPassword)
+          .to.eql("extremelysecret");
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("SUPERADMIN_PASSWORD", "extremelysecret", () => {
+        const configurationService = new ConfigurationService({
+          superadminPassword: "particularlysecret",
+        });
+        expect(configurationService.superadminPassword)
+          .to.eql("particularlysecret");
+      });
+    });
+
+    it("returns undefined when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.superadminPassword).to.be.undefined;
+    });
+  });
 });

@@ -201,6 +201,13 @@ class AdministrationResource {
     this.token = token;
   }
 
+  async logInAsSuperadmin(username, password) {
+    return superagent
+      .post(`${this.absoluteServerRoute}/super/login`)
+      .auth(username, password)
+      .ok(() => true)
+  }
+
   async makeAdmin(address) {
     return superagent
         .patch(`${this.absoluteServerRoute}/${address}`)

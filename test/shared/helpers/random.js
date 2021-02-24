@@ -5,7 +5,10 @@ const mongoose = require("mongoose");
 const keccak256 = require("keccak256");
 
 const voucherStatuses = require("../../../src/utils/voucherStatuses");
-const Time = require("./Time");
+const User = require("../../../src/database/models/User");
+const userRoles = require("../../../src/database/User/userRoles");
+
+const Time = require("./time");
 
 class Random {
   static documentId() {
@@ -35,6 +38,10 @@ class Random {
 
   static nonce() {
     return faker.random.number({ min: 0, max: 1000000 });
+  }
+
+  static userRole() {
+    return faker.random.arrayElement(Object.values(userRoles));
   }
 
   static chainId() {
@@ -220,6 +227,15 @@ class Random {
       digits.push(Random.hexDigit());
     }
     return digits.join("");
+  }
+
+  static user(overrides = {}) {
+    return new User({
+      address: Random.address(),
+      nonce: Random.nonce(),
+      role: Random.userRole(),
+      ...overrides
+    })
   }
 
   static voucherSupplyMetadata(overrides = {}) {
