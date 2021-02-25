@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const Server = require("./src/server");
+const Server = require("./src/ServerRename");
 
 const ConfigurationService = require("./src/services/ConfigurationService.js");
 const AuthenticationService = require("./src/services/AuthenticationService");
