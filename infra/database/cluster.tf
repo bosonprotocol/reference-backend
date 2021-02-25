@@ -31,8 +31,8 @@ module "cluster" {
       password = var.database_service_user_password
       roles = [
         {
-          role_name = "readWrite"
-          database_name = "api"
+          role_name = "readWriteAnyDatabase"
+          database_name = "admin"
           collection_name = null
         }
       ]
@@ -43,8 +43,8 @@ module "cluster" {
       password = var.database_read_only_user_password
       roles = [
         {
-          role_name = "read"
-          database_name = "api"
+          role_name = "readAnyDatabase"
+          database_name = "admin"
           collection_name = null
         }
       ]
