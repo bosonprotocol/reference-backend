@@ -1,7 +1,7 @@
 const ethers = require("ethers");
 
 const ApiError = require("../ApiError");
-const Superadmin = require("../../utils/SuperAdmin");
+const Superadmin = require("../../utils/Superadmin");
 
 class AdministrationController {
   constructor(
