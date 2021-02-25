@@ -421,6 +421,10 @@ def current_branch
   Git.open(File.dirname(__FILE__)).current_branch
 end
 
+def to_db_name(string)
+  string.gsub(/[^a-zA-Z0-9_-]/, "")
+end
+
 def database_overrides_for(configuration, args)
   configuration = configuration
       .for_scope(args.to_h.merge(role: 'database'))
@@ -435,7 +439,7 @@ def database_overrides_for(configuration, args)
                   backend_config: configuration.backend_config),
           "DB_USERNAME" => configuration.database_username,
           "DB_PASSWORD" => configuration.database_password,
-          "DB_NAME" => current_branch
+          "DB_NAME" => to_db_name(current_branch)
       } :
       {}
 end
