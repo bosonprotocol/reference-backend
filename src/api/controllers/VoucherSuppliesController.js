@@ -227,7 +227,7 @@ class VoucherSuppliesController {
 
   async deleteImage(req, res, next) {
     const voucherSupply = res.locals.voucherSupply;
-    const imageUrl = req.query.imageUrl;
+    const imageUrl = req.body.imageUrl;
 
     try {
       await this.voucherSuppliesRepository.deleteVoucherSupplyImage(

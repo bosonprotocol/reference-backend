@@ -18,7 +18,6 @@ const VoucherSuppliesModule = require("../../../src/modules/VoucherSuppliesModul
 const VouchersModule = require("../../../src/modules/VouchersModule");
 const PaymentsModule = require("../../../src/modules/PaymentsModule");
 const AdministrationModule = require("../../../src/modules/AdministrationModule");
-const TestModule = require("../../../src/modules/TestModule");
 const HealthModule = require("../../../src/modules/HealthModule");
 
 const Ports = require("../../shared/helpers/Ports");
@@ -95,7 +94,6 @@ class TestServer {
     const vouchersModule = new VouchersModule(dependencies);
     const paymentsModule = new PaymentsModule(dependencies);
     const administrationModule = new AdministrationModule(dependencies);
-    const testModule = new TestModule(dependencies);
 
     return new Server()
       .withMongooseClient(mongooseClient)
@@ -105,7 +103,6 @@ class TestServer {
       .withModule(vouchersModule)
       .withModule(paymentsModule)
       .withModule(administrationModule)
-      .withModule(testModule)
       .start(resolvedPort);
   }
 }

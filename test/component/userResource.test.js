@@ -2,18 +2,26 @@ const { expect } = require("chai");
 
 const Random = require("../shared/helpers/Random");
 const Database = require("../shared/helpers/Database");
-const TestServer = require('./helpers/TestServer')
+const TestServer = require('./helpers/TestServer');
+const Prerequisites = require("./helpers/Prerequisites");
 const API = require("./helpers/API");
 
 describe("User Resource", () => {
   let server;
   let database;
+  let prerequisites;
   let api;
+
+  const tokenSecret = Random.tokenSecret();
 
   before(async () => {
     database = await Database.connect();
-    server = await new TestServer().onAnyPort().start();
+    server = await new TestServer()
+        .onAnyPort()
+        .addConfigurationOverrides({ tokenSecret })
+        .start();
     api = new API(server.address);
+    prerequisites = new Prerequisites(api);
   });
 
   afterEach(async () => {

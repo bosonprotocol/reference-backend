@@ -1,33 +1,28 @@
 const ethers = require("ethers");
 
 const ApiError = require("../ApiError");
+const Superadmin = require("../../utils/Superadmin");
 
 class AdministrationController {
-  constructor(usersRepository, voucherSuppliesRepository) {
+  constructor(
+    authenticationService,
+    usersRepository,
+    voucherSuppliesRepository
+  ) {
+    this.authenticationService = authenticationService;
     this.usersRepository = usersRepository;
     this.voucherSuppliesRepository = voucherSuppliesRepository;
   }
 
-  async changeVoucherSupplyVisibility(req, res, next) {
-    const supplyID = req.params.supplyID;
-    let voucherSupply;
-    let updatedVoucherSupply;
+  async logInSuperadmin(req, res) {
+    const fiveMinutesInSeconds = 300;
 
-    try {
-      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
-        supplyID
-      );
-      updatedVoucherSupply = await this.voucherSuppliesRepository.toggleVoucherSupplyVisibility(
-        voucherSupply.id
-      );
-    } catch (error) {
-      console.error(error);
-      return next(
-        new ApiError(400, `Voucher with ID: ${supplyID} does not exist!`)
-      );
-    }
+    const authToken = this.authenticationService.generateToken(
+      Superadmin.instance(),
+      fiveMinutesInSeconds
+    );
 
-    res.status(200).send({ visible: updatedVoucherSupply.visible });
+    res.status(201).send(authToken);
   }
 
   async makeAdmin(req, res, next) {
@@ -60,6 +55,28 @@ class AdministrationController {
     }
 
     res.status(200).send({ updated: true });
+  }
+
+  async changeVoucherSupplyVisibility(req, res, next) {
+    const supplyID = req.params.supplyID;
+    let voucherSupply;
+    let updatedVoucherSupply;
+
+    try {
+      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
+        supplyID
+      );
+      updatedVoucherSupply = await this.voucherSuppliesRepository.toggleVoucherSupplyVisibility(
+        voucherSupply.id
+      );
+    } catch (error) {
+      console.error(error);
+      return next(
+        new ApiError(400, `Voucher with ID: ${supplyID} does not exist!`)
+      );
+    }
+
+    res.status(200).send({ visible: updatedVoucherSupply.visible });
   }
 }
 

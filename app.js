@@ -20,7 +20,6 @@ const VoucherSuppliesModule = require("./src/modules/VoucherSuppliesModule");
 const VouchersModule = require("./src/modules/VouchersModule");
 const PaymentsModule = require("./src/modules/PaymentsModule");
 const AdministrationModule = require("./src/modules/AdministrationModule");
-const TestModule = require("./src/modules/TestModule");
 const HealthModule = require("./src/modules/HealthModule");
 
 const configurationService = new ConfigurationService();
@@ -61,7 +60,6 @@ const voucherSuppliesModule = new VoucherSuppliesModule(dependencies);
 const vouchersModule = new VouchersModule(dependencies);
 const paymentsModule = new PaymentsModule(dependencies);
 const administrationModule = new AdministrationModule(dependencies);
-const testModule = new TestModule(dependencies);
 
 new Server()
   .withMongooseClient(mongooseClient)
@@ -71,5 +69,4 @@ new Server()
   .withModule(vouchersModule)
   .withModule(paymentsModule)
   .withModule(administrationModule)
-  .withModule(testModule)
   .start(process.env.PORT || 3000);

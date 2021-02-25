@@ -17,15 +17,13 @@ class AdministratorAuthenticationMiddleware {
     }
 
     try {
-      const userObj = this.authenticationService.verifyToken(token);
-      const ethAddress = userObj.user.toLowerCase();
-      const user = await this.usersRepository.getUser(ethAddress);
+      const payload = this.authenticationService.verifyToken(token);
 
-      if (user.role !== userRoles.ADMIN) {
+      if (payload.role !== userRoles.ADMIN) {
         return next(new ApiError(403, "User is not admin!"));
       }
 
-      res.locals.address = ethAddress;
+      res.locals.address = payload.user;
     } catch (error) {
       console.error(error);
       return next(new ApiError(403, "Forbidden."));

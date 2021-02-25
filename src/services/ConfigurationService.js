@@ -58,6 +58,20 @@ class ConfigurationService {
       coerceUndefined(process.env.VOUCHERS_BUCKET)
     );
   }
+
+  get superadminUsername() {
+    return (
+      this.overrides.superadminUsername ||
+      coerceUndefined(process.env.SUPERADMIN_USERNAME)
+    );
+  }
+
+  get superadminPassword() {
+    return (
+      this.overrides.superadminPassword ||
+      coerceUndefined(process.env.SUPERADMIN_PASSWORD)
+    );
+  }
 }
 
 module.exports = ConfigurationService;
