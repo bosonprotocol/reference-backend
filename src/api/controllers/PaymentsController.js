@@ -17,6 +17,7 @@ class PaymentsController {
 
   async getPaymentActors(req, res, next) {
     const objectId = req.params.voucherID;
+
     let userVoucher;
 
     const distributedAmounts = {

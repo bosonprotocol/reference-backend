@@ -121,7 +121,7 @@ class VoucherSuppliesRepository {
 
     if (!voucherSupply) {
       throw new Error(
-        `Voucher for update with id: ${metadata._tokenIdSupply} not found!`
+        `Voucher Supply for update with id: ${metadata._tokenIdSupply} not found!`
       );
     }
 

@@ -46,6 +46,33 @@ describe("Voucher Supplies Resource", () => {
 
       expect(response.status).to.eql(201);
     });
+
+    it("createVoucherSupply - returns 400 when invalid dates (start and/or end)", async () => {
+      let [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+
+      voucherSupplyData.startDate = "FAKE_INVALID_START_DATE" // force failure
+      voucherSupplyData.endDate = "FAKE_INVALID_END_DATE" // force failure
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(voucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when invalid voucher supply data", async () => {
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+
+      const fakeVoucherSupplyData = {}; // force failure
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(fakeVoucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
   });
 
   context("on GET", () => {
@@ -211,13 +238,14 @@ describe("Voucher Supplies Resource", () => {
       // CREATE VOUCHER SUPPLY
       const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
       const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      voucherSupplyData.id = voucherSupplyId;
       // END CREATE VOUCHER SUPPLY
 
       // SET VOUCHER SUPPLY METADATA
       const response = await api
           .withToken(gcloudToken)
           .voucherSupplies()
-          .setMetadata(voucherSupplyData, voucherSupplyId);
+          .setMetadata(voucherSupplyData);
 
       const expectedPropertyName = "success";
       const propertyNames = Object.getOwnPropertyNames(response.body);
@@ -234,21 +262,245 @@ describe("Voucher Supplies Resource", () => {
       // CREATE VOUCHER SUPPLY
       const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
       const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      voucherSupplyData.id = Random.voucherSupplyId(); // force failure
       // END CREATE VOUCHER SUPPLY
-
-      const randomVoucherSupplyId = Random.voucherSupplyId();
 
       // SET VOUCHER SUPPLY METADATA
       const response = await api
           .withToken(gcloudToken)
           .voucherSupplies()
-          .setMetadata(voucherSupplyData, randomVoucherSupplyId); // pass random voucherSupplyId to force failure
+          .setMetadata(voucherSupplyData);
       // SET VOUCHER SUPPLY METADATA
 
       expect(response.status).to.eql(400);
     });
 
-    it("setVoucherSupplyMetaData - returns 400 and bad request", async () => {
+    it("setVoucherSupplyMetaData - returns 400 when supply token id is missing", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      voucherSupplyData.id = voucherSupplyId;
+      // END CREATE VOUCHER SUPPLY
+
+      delete voucherSupplyData._tokenIdSupply; // force failure
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .setMetadata(voucherSupplyData);
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("setVoucherSupplyMetaData - returns 400 when voucher supply data is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      voucherSupplyData.id = voucherSupplyId;
+      // END CREATE VOUCHER SUPPLY
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .setMetadata(null); // force failure
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 200 and the success status", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner, qty, supplyTokenId] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
+      const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = [supplyTokenId];
+      const quantities = [qty];
+      const voucherOwner = voucherMetadata._holder;
+
+      const data = prerequisites.createSupplyUpdateTransferData(voucherMetadata, voucherSupplies, quantities, voucherOwner);
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnTransfer(data);
+
+      const expectedPropertyName = "success";
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    it("updateVoucherSupplyOnTransfer - batch - returns 200 and the success status", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLIES
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId1, voucherSupplyOwner1, qty1, supplyTokenId1] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      const [voucherSupplyId2, voucherSupplyOwner2, qty2, supplyTokenId2] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLIES
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner1);
+      const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId1, voucherMetadata);
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = [supplyTokenId1, supplyTokenId2];
+      const quantities = [qty1, qty2];
+      const voucherOwner = voucherMetadata._holder;
+
+      const data = prerequisites.createSupplyUpdateTransferData(voucherMetadata, voucherSupplies, quantities, voucherOwner);
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnTransfer(data);
+
+      const expectedPropertyName = "success";
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 400 when metadata is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner, qty, supplyTokenId] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
+      const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnTransfer(null); // force failure
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherOwner is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner, qty, supplyTokenId] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
+      const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = [supplyTokenId];
+      const quantities = [qty];
+      const voucherOwner = null; // force failure
+
+      const data = prerequisites.createSupplyUpdateTransferData(voucherMetadata, voucherSupplies, quantities, voucherOwner);
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnTransfer(data); // force failure
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherSupplies is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner, qty, supplyTokenId] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
+      const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = null; // force failure
+      const quantities = [qty];
+      const voucherOwner = voucherMetadata._holder;
+
+      const data = prerequisites.createSupplyUpdateTransferData(voucherMetadata, voucherSupplies, quantities, voucherOwner);
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnTransfer(data); // force failure
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherSupplies is empty", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner, qty, supplyTokenId] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
+      const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = []; // force failure
+      const quantities = [qty];
+      const voucherOwner = voucherMetadata._holder;
+
+      const data = prerequisites.createSupplyUpdateTransferData(voucherMetadata, voucherSupplies, quantities, voucherOwner);
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnTransfer(data); // force failure
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnCancel - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
 
       // CREATE VOUCHER SUPPLY
@@ -256,16 +508,93 @@ describe("Voucher Supplies Resource", () => {
       const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
       // END CREATE VOUCHER SUPPLY
 
-      const nullVoucherSupplyData = null;
+      const data = {
+        _tokenIdSupply: voucherSupplyData._tokenIdSupply,
+        voucherOwner: voucherSupplyData.voucherOwner,
+        qty: voucherSupplyData.qty
+      }
 
-      // SET VOUCHER SUPPLY METADATA
+      // UPDATE VOUCHER SUPPLY ON CANCEL
       const response = await api
           .withToken(gcloudToken)
           .voucherSupplies()
-          .setMetadata(nullVoucherSupplyData, voucherSupplyId); // pass null voucherSupplyData to force failure
-      // SET VOUCHER SUPPLY METADATA
+          .updateOnCancel(data);
+
+      const expectedPropertyName = "success";
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    it("updateVoucherSupplyOnCancel - returns 400 when request body is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      const data = null; // force failure
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnCancel(data);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
 
       expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnCancel - returns 400 when token supply id is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      const data = {
+        _tokenIdSupply: null, // force failure
+        voucherOwner: voucherSupplyData.voucherOwner,
+        qty: voucherSupplyData.qty
+      }
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnCancel(data);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnCancel - returns 404 and voucher not found", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+      // CREATE VOUCHER SUPPLY
+      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      // END CREATE VOUCHER SUPPLY
+
+      const data = {
+        _tokenIdSupply: Random.uint256(), // force failure
+        voucherOwner: voucherSupplyData.voucherOwner,
+        qty: voucherSupplyData.qty
+      }
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+          .withToken(gcloudToken)
+          .voucherSupplies()
+          .updateOnCancel(data);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(404);
     });
   });
 

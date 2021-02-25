@@ -127,12 +127,28 @@ class VoucherSuppliesResource {
         .ok(() => true);
   }
 
-  async setMetadata(voucherSupplyData, voucherSupplyId) {
+  async setMetadata(voucherSupplyData) {
     return superagent
-        .patch(`${this.absoluteServerRoute}/set-supply-meta/${voucherSupplyId}`)
+        .patch(`${this.absoluteServerRoute}/set-supply-meta`)
         .authBearer(this.token)
         .ok(() => true)
         .send(voucherSupplyData);
+  }
+
+  async updateOnTransfer(data) {
+    return superagent
+        .patch(`${this.absoluteServerRoute}/update-supply-ontransfer`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send(data);
+  }
+
+  async updateOnCancel(data) {
+    return superagent
+        .patch(`${this.absoluteServerRoute}/update-supply-oncancel`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send(data);
   }
 
   async delete(voucherSupplyId) {
@@ -200,19 +216,12 @@ class VouchersResource {
         .send({ _id: voucherId, status: newStatus })
   }
 
-  async updateDelivered(voucherTokenId, voucherIssuer, promiseId, supplyTokenId, voucherHolder, correlationId) {
+  async updateDelivered(data) {
     return superagent
         .patch(`${this.absoluteServerRoute}/update-voucher-delivered`)
         .authBearer(this.token)
         .ok(() => true)
-        .send({
-          _tokenIdVoucher: voucherTokenId,
-          _issuer: voucherIssuer,
-          _promiseId: promiseId,
-          _tokenIdSupply: supplyTokenId,
-          _holder: voucherHolder,
-          _correlationId: correlationId
-        });
+        .send(data);
   }
 
   async updateFromCommonEvent(voucherTokenId) {
@@ -265,6 +274,41 @@ class AdministrationResource {
         .authBearer(this.token)
         .ok(() => true);
   }
+
+  async changeSupplyVisibleStatus(supplyId) {
+    return superagent
+        .patch(`${this.absoluteServerRoute}/updateVisibleStatus/${supplyId}`)
+        .authBearer(this.token)
+        .ok(() => true);
+  }
+}
+
+class PaymentsResource {
+  constructor(serverAddress, token) {
+    this.serverAddress = serverAddress;
+    this.absoluteServerRoute = `${serverAddress}/payments`;
+    this.token = token;
+  }
+
+  async getByVoucherId(voucherTokenId) {
+    return superagent
+        .get(`${this.absoluteServerRoute}/get-payment/${voucherTokenId}`)
+        .ok(() => true);
+  }
+
+  async getActors(voucherTokenId) {
+    return superagent
+        .get(`${this.absoluteServerRoute}/${voucherTokenId}`)
+        .ok(() => true);
+  }
+
+  async post(paymentMetadata) {
+    return superagent
+        .post(`${this.absoluteServerRoute}/create-payment`)
+        .authBearer(this.token)
+        .ok(() => true)
+        .send(paymentMetadata);
+  }
 }
 
 class API {
@@ -300,6 +344,10 @@ class API {
 
   administration() {
     return new AdministrationResource(this.serverAddress, this.token);
+  }
+
+  payments() {
+    return new PaymentsResource(this.serverAddress, this.token);
   }
 }
 

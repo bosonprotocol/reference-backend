@@ -158,6 +158,28 @@ describe("Vouchers Resource", () => {
             expect(response.body[expectedPropertyName]).to.eql(true);
         });
 
+        it("updateVoucherStatus - returns 404 when invalid voucher id", async () => {
+            // CREATE VOUCHER SUPPLY
+            const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+            const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+            // END CREATE VOUCHER SUPPLY
+
+            // COMMIT TO BUY
+            const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
+            const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
+            // END COMMIT TO BUY
+
+            const newStatus = validVoucherStatuses[0]; // change to guaranteed valid status
+            const voucherId = "FAKE_INVALID_VOUCHER_ID"; // force failure
+
+            const response = await api
+                .withToken(token)
+                .vouchers()
+                .updateStatus(voucherId, newStatus);
+
+            expect(response.status).to.eql(404);
+        });
+
         it("updateVoucherStatus - returns 400 on voucher update to invalid status", async () => {
             // CREATE VOUCHER SUPPLY
             const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
@@ -200,10 +222,12 @@ describe("Vouchers Resource", () => {
             const voucherHolder = voucherMetadata._holder;
             const correlationId = voucherMetadata._correlationId;
 
+            const data = prerequisites.createVoucherUpdateDeliveredData(voucherTokenId, voucherIssuer, promiseId, supplyTokenId, voucherHolder, correlationId)
+
             const response = await api
                 .withToken(gcloudToken)
                 .vouchers()
-                .updateDelivered(voucherTokenId, voucherIssuer, promiseId, supplyTokenId, voucherHolder, correlationId);
+                .updateDelivered(data);
 
             const expectedPropertyName = "voucher";
             const propertyNames = Object.getOwnPropertyNames(response.body);
@@ -232,10 +256,12 @@ describe("Vouchers Resource", () => {
             const voucherHolder = voucherMetadata._holder;
             const correlationId = voucherMetadata._correlationId;
 
+            const data = prerequisites.createVoucherUpdateDeliveredData(voucherTokenId, voucherIssuer, promiseId, supplyTokenId, voucherHolder, correlationId)
+
             const response = await api
                 .withToken(gcloudToken)
                 .vouchers()
-                .updateDelivered(voucherTokenId, voucherIssuer, promiseId, supplyTokenId, voucherHolder, correlationId);
+                .updateDelivered(data);
 
             expect(response.status).to.eql(400);
         });
@@ -291,6 +317,29 @@ describe("Vouchers Resource", () => {
             expect(response.status).to.eql(400);
         });
 
+        it("updateVoucherFromCommonEvent - returns 404 when invalid voucherTokenId", async () => {
+            const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+            // CREATE VOUCHER SUPPLY
+            const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+            const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+            // END CREATE VOUCHER SUPPLY
+
+            // COMMIT TO BUY
+            const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
+            const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
+            // END COMMIT TO BUY
+
+            const voucherTokenId = "FAKE_INVALID_VOUCHER_TOKEN_ID"; // force metadata validation failure
+
+            const response = await api
+                .withToken(gcloudToken)
+                .vouchers()
+                .updateFromCommonEvent(voucherTokenId);
+
+            expect(response.status).to.eql(404);
+        });
+
         it("updateVoucherStatusFromKeepers - returns 200 and voucher updated success status", async () => {
             const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
 
@@ -335,6 +384,30 @@ describe("Vouchers Resource", () => {
 
             const newStatus = "FAKE_INVALID_STATUS_TEST"; // change to invalid status to force failure
             const voucherTokenId = voucherMetadata._tokenIdVoucher;
+
+            const response = await api
+                .withToken(gcloudToken)
+                .vouchers()
+                .updateStatusFromKeepers(voucherTokenId, newStatus);
+
+            expect(response.status).to.eql(400);
+        });
+
+        it("updateVoucherStatusFromKeepers - returns 400 when invalid voucher token id", async () => {
+            const gcloudToken = await prerequisites.getGCloudToken(gcloudSecret, tokenSecret);
+
+            // CREATE VOUCHER SUPPLY
+            const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+            const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+            // END CREATE VOUCHER SUPPLY
+
+            // COMMIT TO BUY
+            const voucherMetadata = prerequisites.createVoucherMetadata(voucherSupplyOwner);
+            const [createVoucherResponseCode, createVoucherResponseBody] = await prerequisites.createVoucher(token, voucherSupplyId, voucherMetadata);
+            // END COMMIT TO BUY
+
+            const newStatus = validVoucherStatuses[0]; // change to guaranteed valid status
+            const voucherTokenId = "FAKE_INVALID_VOUCHER_TOKEN_ID"; // force failure
 
             const response = await api
                 .withToken(gcloudToken)

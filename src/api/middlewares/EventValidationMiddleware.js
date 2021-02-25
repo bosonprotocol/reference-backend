@@ -23,13 +23,19 @@ class EventValidationMiddleware {
   async validateVoucherMetadataOnTransfer(req, res, next) {
     const metadata = req.body;
 
-    if (!metadata) {
+    if (!metadata || Object.keys(metadata).length === 0) {
       console.error("Empty body sent while, trying to update a voucher!");
+      return next(new ApiError(400, "Bad request."));
+    }
+
+    if (!metadata.voucherOwner) {
+      console.error("Does not have voucherOwner field!");
       return next(new ApiError(400, "Bad request."));
     }
 
     if (
       !Object.prototype.hasOwnProperty.call(metadata, "voucherSupplies") ||
+      !metadata.voucherSupplies ||
       !metadata.voucherSupplies.length
     ) {
       console.error("Does not have voucherSupplies to update");
@@ -52,7 +58,7 @@ class EventValidationMiddleware {
   }
 
   async validateVoucherMetadata(req, res, next) {
-    if (!req.body) {
+    if (!req.body || Object.keys(req.body).length === 0) {
       console.error("Empty body sent while, trying to update a user voucher!");
       return next(new ApiError(400, "Bad request."));
     }

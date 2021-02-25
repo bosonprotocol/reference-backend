@@ -37,7 +37,7 @@ class ConfigurationService {
   get superadminUsername() {
     return (
       this.overrides.superadminUsername ||
-        coerceUndefined(process.env.SUPERADMIN_USERNAME)
+      coerceUndefined(process.env.SUPERADMIN_USERNAME)
     );
   }
 
