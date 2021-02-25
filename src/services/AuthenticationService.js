@@ -17,10 +17,10 @@ class AuthenticationService {
     return address === verifiedWalletAddress;
   }
 
-  generateToken(address) {
+  generateToken(user, expiresIn = "180d") {
     const tokenSecret = this.configurationService.tokenSecret;
-    const payload = { user: address };
-    const options = { expiresIn: "180d" };
+    const payload = { user: user.address.toLowerCase(), role: user.role };
+    const options = { expiresIn };
 
     return jwt.sign(payload, tokenSecret, options);
   }
