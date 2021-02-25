@@ -1,26 +1,28 @@
 const ethers = require("ethers");
 
 const ApiError = require("../ApiError");
-const userRoles = require('../../database/User/userRoles')
+const Superadmin = require("../../utils/SuperAdmin");
 
 class AdministrationController {
-  constructor(authenticationService, usersRepository, voucherSuppliesRepository) {
-    this.authenticationService = authenticationService
+  constructor(
+    authenticationService,
+    usersRepository,
+    voucherSuppliesRepository
+  ) {
+    this.authenticationService = authenticationService;
     this.usersRepository = usersRepository;
     this.voucherSuppliesRepository = voucherSuppliesRepository;
   }
 
   async logInSuperadmin(req, res) {
-    const username = req.auth.user;
-    const role = userRoles.ADMIN;
-    const fiveMinutesInSeconds = 300
+    const fiveMinutesInSeconds = 300;
 
-    const authToken = this.authenticationService.generateToken({
-      address: username,
-      role
-    }, fiveMinutesInSeconds);
+    const authToken = this.authenticationService.generateToken(
+      Superadmin.instance(),
+      fiveMinutesInSeconds
+    );
 
-    res.status(201).send(authToken)
+    res.status(201).send(authToken);
   }
 
   async makeAdmin(req, res, next) {

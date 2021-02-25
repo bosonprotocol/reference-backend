@@ -1,6 +1,7 @@
 const { expect } = require("chai");
 
 const userRoles = require("../../src/database/User/userRoles");
+const { zeroAddress } = require("../../src/utils/addresses");
 
 const Random = require("../shared/helpers/Random");
 const Database = require("../shared/helpers/Database");
@@ -57,7 +58,7 @@ describe("Administration Resource", () => {
 
       expect(response.status).to.eql(201);
       expect(validityInSeconds).to.eql(fiveMinutesInSeconds);
-      expect(payload.user).to.eql(superadminUsername);
+      expect(payload.user).to.eql(zeroAddress);
       expect(payload.role).to.eql(userRoles.ADMIN);
     });
 
