@@ -188,8 +188,7 @@ describe("ConfigurationService", () => {
     it("uses environment variable by default", () => {
       withEnv("SUPERADMIN_USERNAME", "supremeadmin", () => {
         const configurationService = new ConfigurationService();
-        expect(configurationService.superadminUsername)
-          .to.eql("supremeadmin");
+        expect(configurationService.superadminUsername).to.eql("supremeadmin");
       });
     });
 
@@ -198,8 +197,7 @@ describe("ConfigurationService", () => {
         const configurationService = new ConfigurationService({
           superadminUsername: "ultimateadmin",
         });
-        expect(configurationService.superadminUsername)
-          .to.eql("ultimateadmin");
+        expect(configurationService.superadminUsername).to.eql("ultimateadmin");
       });
     });
 
@@ -214,8 +212,9 @@ describe("ConfigurationService", () => {
     it("uses environment variable by default", () => {
       withEnv("SUPERADMIN_PASSWORD", "extremelysecret", () => {
         const configurationService = new ConfigurationService();
-        expect(configurationService.superadminPassword)
-          .to.eql("extremelysecret");
+        expect(configurationService.superadminPassword).to.eql(
+          "extremelysecret"
+        );
       });
     });
 
@@ -224,8 +223,9 @@ describe("ConfigurationService", () => {
         const configurationService = new ConfigurationService({
           superadminPassword: "particularlysecret",
         });
-        expect(configurationService.superadminPassword)
-          .to.eql("particularlysecret");
+        expect(configurationService.superadminPassword).to.eql(
+          "particularlysecret"
+        );
       });
     });
 

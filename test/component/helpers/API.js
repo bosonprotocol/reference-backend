@@ -75,71 +75,67 @@ class VoucherSuppliesResource {
   }
 
   async getAll() {
-    return superagent
-        .get(`${this.absoluteServerRoute}/`)
-        .ok(() => true);
+    return superagent.get(`${this.absoluteServerRoute}/`).ok(() => true);
   }
 
   async getById(id) {
-    return superagent
-        .get(`${this.absoluteServerRoute}/${id}`)
-        .ok(() => true);
+    return superagent.get(`${this.absoluteServerRoute}/${id}`).ok(() => true);
   }
 
   async getStatuses() {
     return superagent
-        .get(`${this.absoluteServerRoute}/status/all`)
-        .authBearer(this.token)
-        .ok(() => true);
+      .get(`${this.absoluteServerRoute}/status/all`)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 
   async getActive() {
     return superagent
-        .get(`${this.absoluteServerRoute}/status/active`)
-        .authBearer(this.token)
-        .ok(() => true);
+      .get(`${this.absoluteServerRoute}/status/active`)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 
   async getInactive() {
     return superagent
-        .get(`${this.absoluteServerRoute}/status/inactive`)
-        .authBearer(this.token)
-        .ok(() => true);
+      .get(`${this.absoluteServerRoute}/status/inactive`)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 
   async getBySeller(address) {
     return superagent
-        .get(`${this.absoluteServerRoute}/sell/${address}`)
-        .ok(() => true);
+      .get(`${this.absoluteServerRoute}/sell/${address}`)
+      .ok(() => true);
   }
 
   async getByBuyer(address) {
     return superagent
-        .get(`${this.absoluteServerRoute}/buy/${address}`)
-        .ok(() => true);
+      .get(`${this.absoluteServerRoute}/buy/${address}`)
+      .ok(() => true);
   }
 
   async update(voucherSupplyId, imageFilePath) {
     return superagent
-        .patch(`${this.absoluteServerRoute}/${voucherSupplyId}`)
-        .attach("fileToUpload", imageFilePath)
-        .authBearer(this.token)
-        .ok(() => true);
+      .patch(`${this.absoluteServerRoute}/${voucherSupplyId}`)
+      .attach("fileToUpload", imageFilePath)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 
   async delete(voucherSupplyId) {
     return superagent
-        .delete(`${this.absoluteServerRoute}/${voucherSupplyId}`)
-        .authBearer(this.token)
-        .ok(() => true);
+      .delete(`${this.absoluteServerRoute}/${voucherSupplyId}`)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 
   async deleteImage(voucherSupplyId, imageFileUrl) {
     return superagent
-        .delete(`${this.absoluteServerRoute}/${voucherSupplyId}/image`)
-        .authBearer(this.token)
-        .ok(() => true)
-        .send({ imageUrl: imageFileUrl })
+      .delete(`${this.absoluteServerRoute}/${voucherSupplyId}/image`)
+      .authBearer(this.token)
+      .ok(() => true)
+      .send({ imageUrl: imageFileUrl });
   }
 }
 
@@ -152,45 +148,43 @@ class VouchersResource {
 
   async getVouchers() {
     return superagent
-        .get(`${this.absoluteServerRoute}/`)
-        .authBearer(this.token)
-        .ok(() => true);
+      .get(`${this.absoluteServerRoute}/`)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 
   async getVoucherDetails(voucherId) {
     return superagent
-        .get(`${this.absoluteServerRoute}/${voucherId}/voucher-details`)
-        .authBearer(this.token)
-        .ok(() => true);
+      .get(`${this.absoluteServerRoute}/${voucherId}/voucher-details`)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 
   async getBoughtVouchers(supplyId) {
     return superagent
-        .get(`${this.absoluteServerRoute}/buyers/${supplyId}`)
-        .authBearer(this.token)
-        .ok(() => true);
+      .get(`${this.absoluteServerRoute}/buyers/${supplyId}`)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 
   async getAllPublic() {
-    return superagent
-        .get(`${this.absoluteServerRoute}/public`)
-        .ok(() => true);
+    return superagent.get(`${this.absoluteServerRoute}/public`).ok(() => true);
   }
 
   async update(newStatus, voucherId) {
     return superagent
-        .patch(`${this.absoluteServerRoute}/update`)
-        .authBearer(this.token)
-        .ok(() => true)
-        .send({ _id: voucherId, status: newStatus })
+      .patch(`${this.absoluteServerRoute}/update`)
+      .authBearer(this.token)
+      .ok(() => true)
+      .send({ _id: voucherId, status: newStatus });
   }
 
   async commitToBuy(voucherSupplyId, voucherMetaData) {
     return superagent
-        .post(`${this.absoluteServerRoute}/commit-to-buy/${voucherSupplyId}`)
-        .authBearer(this.token)
-        .ok(() => true)
-        .send(voucherMetaData);
+      .post(`${this.absoluteServerRoute}/commit-to-buy/${voucherSupplyId}`)
+      .authBearer(this.token)
+      .ok(() => true)
+      .send(voucherMetaData);
   }
 }
 
@@ -205,14 +199,14 @@ class AdministrationResource {
     return superagent
       .post(`${this.absoluteServerRoute}/super/login`)
       .auth(username, password)
-      .ok(() => true)
+      .ok(() => true);
   }
 
   async makeAdmin(address) {
     return superagent
-        .patch(`${this.absoluteServerRoute}/${address}`)
-        .authBearer(this.token)
-        .ok(() => true);
+      .patch(`${this.absoluteServerRoute}/${address}`)
+      .authBearer(this.token)
+      .ok(() => true);
   }
 }
 

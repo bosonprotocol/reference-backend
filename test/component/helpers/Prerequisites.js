@@ -54,7 +54,7 @@ class Prerequisites {
       .administration()
       .makeAdmin(adminAddress);
 
-    return await this.getUserToken(adminAccount)
+    return await this.getUserToken(adminAccount);
   }
 
   /*

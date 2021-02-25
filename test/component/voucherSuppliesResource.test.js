@@ -36,7 +36,11 @@ describe("Voucher Supplies Resource", () => {
 
   context("on POST", () => {
     it("returns 201 and the created voucher supply", async () => {
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
 
       const response = await api
         .withToken(token)
@@ -62,14 +66,20 @@ describe("Voucher Supplies Resource", () => {
 
     it("returns 200 and the requested voucher supply (by ID)", async () => {
       // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
-      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
       // END CREATE VOUCHER SUPPLY
 
       // QUERY FOR VOUCHER
-      const response = await api
-          .voucherSupplies()
-          .getById(voucherSupplyId);
+      const response = await api.voucherSupplies().getById(voucherSupplyId);
 
       expect(response.status).to.eql(200);
       expect(response.body.voucherSupply._id).to.eql(voucherSupplyId); // check if queried id matches created id
@@ -80,8 +90,8 @@ describe("Voucher Supplies Resource", () => {
 
       // QUERY FOR VOUCHER
       const response = await api
-          .voucherSupplies()
-          .getById(randomVoucherSupplyId);
+        .voucherSupplies()
+        .getById(randomVoucherSupplyId);
 
       expect(response.status).to.eql(400);
     });
@@ -92,9 +102,9 @@ describe("Voucher Supplies Resource", () => {
       const token = await prerequisites.getUserToken(account);
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .getStatuses();
+        .withToken(token)
+        .voucherSupplies()
+        .getStatuses();
 
       const propertyNames = Object.getOwnPropertyNames(response.body);
 
@@ -107,10 +117,7 @@ describe("Voucher Supplies Resource", () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
 
-      const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .getActive();
+      const response = await api.withToken(token).voucherSupplies().getActive();
 
       const propertyNames = Object.getOwnPropertyNames(response.body);
 
@@ -124,9 +131,9 @@ describe("Voucher Supplies Resource", () => {
       const token = await prerequisites.getUserToken(account);
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .getInactive();
+        .withToken(token)
+        .voucherSupplies()
+        .getInactive();
 
       const propertyNames = Object.getOwnPropertyNames(response.body);
 
@@ -140,8 +147,8 @@ describe("Voucher Supplies Resource", () => {
       const voucherSupplyOwner = account.address;
 
       const response = await api
-          .voucherSupplies()
-          .getBySeller(voucherSupplyOwner);
+        .voucherSupplies()
+        .getBySeller(voucherSupplyOwner);
 
       const propertyNames = Object.getOwnPropertyNames(response.body);
 
@@ -155,8 +162,8 @@ describe("Voucher Supplies Resource", () => {
       const voucherSupplyOwner = account.address;
 
       const response = await api
-          .voucherSupplies()
-          .getByBuyer(voucherSupplyOwner);
+        .voucherSupplies()
+        .getByBuyer(voucherSupplyOwner);
 
       const propertyNames = Object.getOwnPropertyNames(response.body);
 
@@ -170,17 +177,25 @@ describe("Voucher Supplies Resource", () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
-      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
       // END CREATE VOUCHER SUPPLY
 
       // UPDATE VOUCHER WITH NEW IMAGE
-      const newImageFilePath = 'test/fixtures/update-image.png';
+      const newImageFilePath = "test/fixtures/update-image.png";
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .update(voucherSupplyId, newImageFilePath);
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, newImageFilePath);
 
       const propertyNames = Object.getOwnPropertyNames(response.body);
       // END OF UPDATE
@@ -194,12 +209,12 @@ describe("Voucher Supplies Resource", () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
       const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
-      const newImageFilePath = 'test/fixtures/update-image.png';
+      const newImageFilePath = "test/fixtures/update-image.png";
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .update(randomVoucherSupplyId, newImageFilePath);
+        .withToken(token)
+        .voucherSupplies()
+        .update(randomVoucherSupplyId, newImageFilePath);
 
       expect(response.status).to.eql(400);
     });
@@ -210,15 +225,23 @@ describe("Voucher Supplies Resource", () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
-      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
       // END CREATE VOUCHER SUPPLY
 
       // DELETE VOUCHER SUPPLY
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .delete(voucherSupplyId)
+        .withToken(token)
+        .voucherSupplies()
+        .delete(voucherSupplyId);
       const propertyNames = Object.getOwnPropertyNames(response.body);
       // END OF DELETE
 
@@ -234,9 +257,9 @@ describe("Voucher Supplies Resource", () => {
 
       // DELETE VOUCHER SUPPLY
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .delete(randomVoucherSupplyId)
+        .withToken(token)
+        .voucherSupplies()
+        .delete(randomVoucherSupplyId);
       // END OF DELETE
 
       expect(response.status).to.eql(400);
@@ -246,8 +269,16 @@ describe("Voucher Supplies Resource", () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
-      const [voucherSupplyId, voucherSupplyOwner] = await prerequisites.createVoucherSupply(token, voucherSupplyData, imageFilePath);
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
       // END CREATE VOUCHER SUPPLY
 
       const imageFilePathTokens = imageFilePath.split("/");
@@ -256,18 +287,18 @@ describe("Voucher Supplies Resource", () => {
 
       // DELETE VOUCHER SUPPLY IMAGE
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .deleteImage(voucherSupplyId, imageUrl)
+        .withToken(token)
+        .voucherSupplies()
+        .deleteImage(voucherSupplyId, imageUrl);
       const propertyNames = Object.getOwnPropertyNames(response.body);
       // END OF DELETE
 
       // QUERY FOR VOUCHER - After Delete
       const responseVoucherQuery2 = await api
-          .voucherSupplies()
-          .getById(voucherSupplyId);
+        .voucherSupplies()
+        .getById(voucherSupplyId);
       const vsImagesAfter = responseVoucherQuery2.body.voucherSupply.imagefiles;
-      const vsImageUrlsAfterDelete = vsImagesAfter.map(image => image.url); // extract Url for expect comparison with image Url
+      const vsImageUrlsAfterDelete = vsImagesAfter.map((image) => image.url); // extract Url for expect comparison with image Url
       // END QUERY - After Delete
 
       expect(response.status).to.eql(200);
@@ -283,9 +314,9 @@ describe("Voucher Supplies Resource", () => {
 
       // DELETE VOUCHER SUPPLY
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .deleteImage(randomVoucherSupplyId)
+        .withToken(token)
+        .voucherSupplies()
+        .deleteImage(randomVoucherSupplyId);
       // END OF DELETE
 
       expect(response.status).to.eql(400);

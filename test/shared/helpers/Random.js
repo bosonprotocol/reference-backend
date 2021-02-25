@@ -234,8 +234,8 @@ class Random {
       address: Random.address(),
       nonce: Random.nonce(),
       role: Random.userRole(),
-      ...overrides
-    })
+      ...overrides,
+    });
   }
 
   static voucherSupplyMetadata(overrides = {}) {

@@ -9,7 +9,7 @@ const Voucher = require("../../src/database/models/Voucher");
 const voucherStatuses = require("../../src/utils/voucherStatuses");
 
 const Random = require("../shared/helpers/Random");
-const Database = require('../shared/helpers/Database')
+const Database = require("../shared/helpers/Database");
 
 describe("Voucher Supplies Repository", () => {
   before(async () => {
@@ -883,7 +883,7 @@ describe("Voucher Supplies Repository", () => {
 
       const ownerVoucherSupply1 = new VoucherSupply({
         ...Random.voucherSupplyMetadata({
-          offeredDate: Date.now() - 10000
+          offeredDate: Date.now() - 10000,
         }),
         voucherOwner: voucherOwner1,
         imagefiles: [Random.fileRef(), Random.fileRef()],
@@ -891,7 +891,7 @@ describe("Voucher Supplies Repository", () => {
       });
       const ownerVoucherSupply2 = new VoucherSupply({
         ...Random.voucherSupplyMetadata({
-          offeredDate: Date.now() - 5000
+          offeredDate: Date.now() - 5000,
         }),
         voucherOwner: voucherOwner1,
         imagefiles: [Random.fileRef(), Random.fileRef()],
@@ -992,125 +992,132 @@ describe("Voucher Supplies Repository", () => {
   });
 
   context("getActiveVoucherSuppliesByOwner", () => {
-    it("returns voucher supplies created by the provided owner latest " +
-      "first if still active (after start date, before expiry and with " +
-      "remaining quantity)", async () => {
-      const voucherOwner1 = Random.address().toLowerCase();
-      const voucherOwner2 = Random.address().toLowerCase();
+    it(
+      "returns voucher supplies created by the provided owner latest " +
+        "first if still active (after start date, before expiry and with " +
+        "remaining quantity)",
+      async () => {
+        const voucherOwner1 = Random.address().toLowerCase();
+        const voucherOwner2 = Random.address().toLowerCase();
 
-      const alreadyExpiredDate = Random.pastDateUnixMillis();
-      const notYetExpiredDate = Random.futureDateUnixMillis();
-      const alreadyStartedDate = Random.pastDateUnixMillisBefore(alreadyExpiredDate);
-      const notYetStartedDate = Random.futureDateUnixMillisBefore(notYetExpiredDate);
+        const alreadyExpiredDate = Random.pastDateUnixMillis();
+        const notYetExpiredDate = Random.futureDateUnixMillis();
+        const alreadyStartedDate = Random.pastDateUnixMillisBefore(
+          alreadyExpiredDate
+        );
+        const notYetStartedDate = Random.futureDateUnixMillisBefore(
+          notYetExpiredDate
+        );
 
-      const availableQuantity = 5;
-      const unavailableQuantity = 0;
+        const availableQuantity = 5;
+        const unavailableQuantity = 0;
 
-      const ownerInactiveVoucherSupply1 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: notYetStartedDate,
-          expiryDate: notYetExpiredDate,
-          qty: availableQuantity,
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const ownerInactiveVoucherSupply2 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: alreadyStartedDate,
-          expiryDate: alreadyExpiredDate,
-          qty: availableQuantity
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const ownerInactiveVoucherSupply3 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: alreadyStartedDate,
-          expiryDate: notYetExpiredDate,
-          qty: unavailableQuantity
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const ownerActiveVoucherSupply1 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: alreadyStartedDate,
-          expiryDate: notYetExpiredDate,
-          qty: availableQuantity,
-          offeredDate: Date.now() - 10000
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
+        const ownerInactiveVoucherSupply1 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: notYetStartedDate,
+            expiryDate: notYetExpiredDate,
+            qty: availableQuantity,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const ownerInactiveVoucherSupply2 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: alreadyStartedDate,
+            expiryDate: alreadyExpiredDate,
+            qty: availableQuantity,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const ownerInactiveVoucherSupply3 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: alreadyStartedDate,
+            expiryDate: notYetExpiredDate,
+            qty: unavailableQuantity,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const ownerActiveVoucherSupply1 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: alreadyStartedDate,
+            expiryDate: notYetExpiredDate,
+            qty: availableQuantity,
+            offeredDate: Date.now() - 10000,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
 
-      const ownerActiveVoucherSupply2 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: alreadyStartedDate,
-          expiryDate: notYetExpiredDate,
-          qty: availableQuantity,
-          offeredDate: Date.now() - 5000
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const otherVoucherSupply1 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata(),
-        voucherOwner: voucherOwner2,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const otherVoucherSupply2 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata(),
-        voucherOwner: voucherOwner2,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
+        const ownerActiveVoucherSupply2 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: alreadyStartedDate,
+            expiryDate: notYetExpiredDate,
+            qty: availableQuantity,
+            offeredDate: Date.now() - 5000,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const otherVoucherSupply1 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata(),
+          voucherOwner: voucherOwner2,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const otherVoucherSupply2 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata(),
+          voucherOwner: voucherOwner2,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
 
-      await ownerInactiveVoucherSupply1.save();
-      await ownerInactiveVoucherSupply2.save();
-      await ownerInactiveVoucherSupply3.save();
-      await ownerActiveVoucherSupply1.save();
-      await ownerActiveVoucherSupply2.save();
-      await otherVoucherSupply1.save();
-      await otherVoucherSupply2.save();
+        await ownerInactiveVoucherSupply1.save();
+        await ownerInactiveVoucherSupply2.save();
+        await ownerInactiveVoucherSupply3.save();
+        await ownerActiveVoucherSupply1.save();
+        await ownerActiveVoucherSupply2.save();
+        await otherVoucherSupply1.save();
+        await otherVoucherSupply2.save();
 
-      const voucherSuppliesRepository = new VoucherSuppliesRepository();
-      const ownerVoucherSupplies = await voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
-        voucherOwner1
-      );
+        const voucherSuppliesRepository = new VoucherSuppliesRepository();
+        const ownerVoucherSupplies = await voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
+          voucherOwner1
+        );
 
-      expect(ownerVoucherSupplies.length).to.eql(2);
-      expect(ownerVoucherSupplies[0]).to.eql({
-        _id: ownerActiveVoucherSupply2._id,
-        voucherOwner: voucherOwner1,
-        title: ownerActiveVoucherSupply2.title,
-        price: ownerActiveVoucherSupply2.price,
-        description: ownerActiveVoucherSupply2.description,
-        imagefiles: ownerActiveVoucherSupply2.imagefiles,
-        expiryDate: ownerActiveVoucherSupply2.expiryDate,
-        startDate: ownerActiveVoucherSupply2.startDate,
-        qty: ownerActiveVoucherSupply2.qty,
-        visible: ownerActiveVoucherSupply2.visible,
-      });
-      expect(ownerVoucherSupplies[1]).to.eql({
-        _id: ownerActiveVoucherSupply1._id,
-        voucherOwner: voucherOwner1,
-        title: ownerActiveVoucherSupply1.title,
-        price: ownerActiveVoucherSupply1.price,
-        description: ownerActiveVoucherSupply1.description,
-        imagefiles: ownerActiveVoucherSupply1.imagefiles,
-        expiryDate: ownerActiveVoucherSupply1.expiryDate,
-        startDate: ownerActiveVoucherSupply1.startDate,
-        qty: ownerActiveVoucherSupply1.qty,
-        visible: ownerActiveVoucherSupply1.visible,
-      });
-    });
+        expect(ownerVoucherSupplies.length).to.eql(2);
+        expect(ownerVoucherSupplies[0]).to.eql({
+          _id: ownerActiveVoucherSupply2._id,
+          voucherOwner: voucherOwner1,
+          title: ownerActiveVoucherSupply2.title,
+          price: ownerActiveVoucherSupply2.price,
+          description: ownerActiveVoucherSupply2.description,
+          imagefiles: ownerActiveVoucherSupply2.imagefiles,
+          expiryDate: ownerActiveVoucherSupply2.expiryDate,
+          startDate: ownerActiveVoucherSupply2.startDate,
+          qty: ownerActiveVoucherSupply2.qty,
+          visible: ownerActiveVoucherSupply2.visible,
+        });
+        expect(ownerVoucherSupplies[1]).to.eql({
+          _id: ownerActiveVoucherSupply1._id,
+          voucherOwner: voucherOwner1,
+          title: ownerActiveVoucherSupply1.title,
+          price: ownerActiveVoucherSupply1.price,
+          description: ownerActiveVoucherSupply1.description,
+          imagefiles: ownerActiveVoucherSupply1.imagefiles,
+          expiryDate: ownerActiveVoucherSupply1.expiryDate,
+          startDate: ownerActiveVoucherSupply1.startDate,
+          qty: ownerActiveVoucherSupply1.qty,
+          visible: ownerActiveVoucherSupply1.visible,
+        });
+      }
+    );
 
     it("returns empty list when owner has no active voucher supplies", async () => {
       const voucherOwner1 = Random.address();
@@ -1119,8 +1126,12 @@ describe("Voucher Supplies Repository", () => {
 
       const alreadyExpiredDate = Random.pastDateUnixMillis();
       const notYetExpiredDate = Random.futureDateUnixMillis();
-      const alreadyStartedDate = Random.pastDateUnixMillisBefore(alreadyExpiredDate);
-      const notYetStartedDate = Random.futureDateUnixMillisBefore(notYetExpiredDate);
+      const alreadyStartedDate = Random.pastDateUnixMillisBefore(
+        alreadyExpiredDate
+      );
+      const notYetStartedDate = Random.futureDateUnixMillisBefore(
+        notYetExpiredDate
+      );
 
       const availableQuantity = 5;
       const unavailableQuantity = 0;
@@ -1139,7 +1150,7 @@ describe("Voucher Supplies Repository", () => {
         ...Random.voucherSupplyMetadata({
           startDate: alreadyStartedDate,
           expiryDate: alreadyExpiredDate,
-          qty: availableQuantity
+          qty: availableQuantity,
         }),
         voucherOwner: voucherOwner1,
         imagefiles: [Random.fileRef(), Random.fileRef()],
@@ -1149,7 +1160,7 @@ describe("Voucher Supplies Repository", () => {
         ...Random.voucherSupplyMetadata({
           startDate: alreadyStartedDate,
           expiryDate: notYetExpiredDate,
-          qty: unavailableQuantity
+          qty: unavailableQuantity,
         }),
         voucherOwner: voucherOwner1,
         imagefiles: [Random.fileRef(), Random.fileRef()],
@@ -1194,7 +1205,7 @@ describe("Voucher Supplies Repository", () => {
       );
 
       expect(owner1VoucherSupplies).to.eql([]);
-    })
+    });
 
     it("returns empty list when owner has no voucher supplies at all", async () => {
       const voucherOwner1 = Random.address();
@@ -1241,137 +1252,144 @@ describe("Voucher Supplies Repository", () => {
   });
 
   context("getInactiveVoucherSuppliesByOwner", () => {
-    it("returns voucher supplies created by the provided owner latest " +
-      "first if not active (before start date, after expiry or with " +
-      "no quantity)", async () => {
-      const voucherOwner1 = Random.address().toLowerCase();
-      const voucherOwner2 = Random.address().toLowerCase();
+    it(
+      "returns voucher supplies created by the provided owner latest " +
+        "first if not active (before start date, after expiry or with " +
+        "no quantity)",
+      async () => {
+        const voucherOwner1 = Random.address().toLowerCase();
+        const voucherOwner2 = Random.address().toLowerCase();
 
-      const alreadyExpiredDate = Random.pastDateUnixMillis();
-      const notYetExpiredDate = Random.futureDateUnixMillis();
-      const alreadyStartedDate = Random.pastDateUnixMillisBefore(alreadyExpiredDate);
-      const notYetStartedDate = Random.futureDateUnixMillisBefore(notYetExpiredDate);
+        const alreadyExpiredDate = Random.pastDateUnixMillis();
+        const notYetExpiredDate = Random.futureDateUnixMillis();
+        const alreadyStartedDate = Random.pastDateUnixMillisBefore(
+          alreadyExpiredDate
+        );
+        const notYetStartedDate = Random.futureDateUnixMillisBefore(
+          notYetExpiredDate
+        );
 
-      const availableQuantity = 5;
-      const unavailableQuantity = 0;
+        const availableQuantity = 5;
+        const unavailableQuantity = 0;
 
-      const ownerInactiveVoucherSupply1 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: notYetStartedDate,
-          expiryDate: notYetExpiredDate,
-          qty: availableQuantity,
-          offeredDate: Date.now() - 10000
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const ownerInactiveVoucherSupply2 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: alreadyStartedDate,
-          expiryDate: alreadyExpiredDate,
-          qty: availableQuantity,
-          offeredDate: Date.now() - 5000
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const ownerInactiveVoucherSupply3 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: alreadyStartedDate,
-          expiryDate: notYetExpiredDate,
-          qty: unavailableQuantity,
-          offeredDate: Date.now()
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const ownerActiveVoucherSupply1 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: alreadyStartedDate,
-          expiryDate: notYetExpiredDate,
-          qty: availableQuantity
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const ownerActiveVoucherSupply2 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata({
-          startDate: alreadyStartedDate,
-          expiryDate: notYetExpiredDate,
-          qty: availableQuantity
-        }),
-        voucherOwner: voucherOwner1,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const otherVoucherSupply1 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata(),
-        voucherOwner: voucherOwner2,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
-      const otherVoucherSupply2 = new VoucherSupply({
-        ...Random.voucherSupplyMetadata(),
-        voucherOwner: voucherOwner2,
-        imagefiles: [Random.fileRef(), Random.fileRef()],
-        visible: true,
-      });
+        const ownerInactiveVoucherSupply1 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: notYetStartedDate,
+            expiryDate: notYetExpiredDate,
+            qty: availableQuantity,
+            offeredDate: Date.now() - 10000,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const ownerInactiveVoucherSupply2 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: alreadyStartedDate,
+            expiryDate: alreadyExpiredDate,
+            qty: availableQuantity,
+            offeredDate: Date.now() - 5000,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const ownerInactiveVoucherSupply3 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: alreadyStartedDate,
+            expiryDate: notYetExpiredDate,
+            qty: unavailableQuantity,
+            offeredDate: Date.now(),
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const ownerActiveVoucherSupply1 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: alreadyStartedDate,
+            expiryDate: notYetExpiredDate,
+            qty: availableQuantity,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const ownerActiveVoucherSupply2 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata({
+            startDate: alreadyStartedDate,
+            expiryDate: notYetExpiredDate,
+            qty: availableQuantity,
+          }),
+          voucherOwner: voucherOwner1,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const otherVoucherSupply1 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata(),
+          voucherOwner: voucherOwner2,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
+        const otherVoucherSupply2 = new VoucherSupply({
+          ...Random.voucherSupplyMetadata(),
+          voucherOwner: voucherOwner2,
+          imagefiles: [Random.fileRef(), Random.fileRef()],
+          visible: true,
+        });
 
-      await ownerInactiveVoucherSupply1.save();
-      await ownerInactiveVoucherSupply2.save();
-      await ownerInactiveVoucherSupply3.save();
-      await ownerActiveVoucherSupply1.save();
-      await ownerActiveVoucherSupply2.save();
-      await otherVoucherSupply1.save();
-      await otherVoucherSupply2.save();
+        await ownerInactiveVoucherSupply1.save();
+        await ownerInactiveVoucherSupply2.save();
+        await ownerInactiveVoucherSupply3.save();
+        await ownerActiveVoucherSupply1.save();
+        await ownerActiveVoucherSupply2.save();
+        await otherVoucherSupply1.save();
+        await otherVoucherSupply2.save();
 
-      const voucherSuppliesRepository = new VoucherSuppliesRepository();
-      const ownerVoucherSupplies = await voucherSuppliesRepository.getInactiveVoucherSuppliesByOwner(
-        voucherOwner1
-      );
+        const voucherSuppliesRepository = new VoucherSuppliesRepository();
+        const ownerVoucherSupplies = await voucherSuppliesRepository.getInactiveVoucherSuppliesByOwner(
+          voucherOwner1
+        );
 
-      expect(ownerVoucherSupplies.length).to.eql(3);
-      expect(ownerVoucherSupplies[0]).to.eql({
-        _id: ownerInactiveVoucherSupply3._id,
-        voucherOwner: voucherOwner1,
-        title: ownerInactiveVoucherSupply3.title,
-        price: ownerInactiveVoucherSupply3.price,
-        description: ownerInactiveVoucherSupply3.description,
-        imagefiles: ownerInactiveVoucherSupply3.imagefiles,
-        expiryDate: ownerInactiveVoucherSupply3.expiryDate,
-        startDate: ownerInactiveVoucherSupply3.startDate,
-        qty: ownerInactiveVoucherSupply3.qty,
-        visible: ownerInactiveVoucherSupply3.visible,
-      });
-      expect(ownerVoucherSupplies[1]).to.eql({
-        _id: ownerInactiveVoucherSupply2._id,
-        voucherOwner: voucherOwner1,
-        title: ownerInactiveVoucherSupply2.title,
-        price: ownerInactiveVoucherSupply2.price,
-        description: ownerInactiveVoucherSupply2.description,
-        imagefiles: ownerInactiveVoucherSupply2.imagefiles,
-        expiryDate: ownerInactiveVoucherSupply2.expiryDate,
-        startDate: ownerInactiveVoucherSupply2.startDate,
-        qty: ownerInactiveVoucherSupply2.qty,
-        visible: ownerInactiveVoucherSupply2.visible,
-      });
-      expect(ownerVoucherSupplies[2]).to.eql({
-        _id: ownerInactiveVoucherSupply1._id,
-        voucherOwner: voucherOwner1,
-        title: ownerInactiveVoucherSupply1.title,
-        price: ownerInactiveVoucherSupply1.price,
-        description: ownerInactiveVoucherSupply1.description,
-        imagefiles: ownerInactiveVoucherSupply1.imagefiles,
-        expiryDate: ownerInactiveVoucherSupply1.expiryDate,
-        startDate: ownerInactiveVoucherSupply1.startDate,
-        qty: ownerInactiveVoucherSupply1.qty,
-        visible: ownerInactiveVoucherSupply1.visible,
-      });
-    });
+        expect(ownerVoucherSupplies.length).to.eql(3);
+        expect(ownerVoucherSupplies[0]).to.eql({
+          _id: ownerInactiveVoucherSupply3._id,
+          voucherOwner: voucherOwner1,
+          title: ownerInactiveVoucherSupply3.title,
+          price: ownerInactiveVoucherSupply3.price,
+          description: ownerInactiveVoucherSupply3.description,
+          imagefiles: ownerInactiveVoucherSupply3.imagefiles,
+          expiryDate: ownerInactiveVoucherSupply3.expiryDate,
+          startDate: ownerInactiveVoucherSupply3.startDate,
+          qty: ownerInactiveVoucherSupply3.qty,
+          visible: ownerInactiveVoucherSupply3.visible,
+        });
+        expect(ownerVoucherSupplies[1]).to.eql({
+          _id: ownerInactiveVoucherSupply2._id,
+          voucherOwner: voucherOwner1,
+          title: ownerInactiveVoucherSupply2.title,
+          price: ownerInactiveVoucherSupply2.price,
+          description: ownerInactiveVoucherSupply2.description,
+          imagefiles: ownerInactiveVoucherSupply2.imagefiles,
+          expiryDate: ownerInactiveVoucherSupply2.expiryDate,
+          startDate: ownerInactiveVoucherSupply2.startDate,
+          qty: ownerInactiveVoucherSupply2.qty,
+          visible: ownerInactiveVoucherSupply2.visible,
+        });
+        expect(ownerVoucherSupplies[2]).to.eql({
+          _id: ownerInactiveVoucherSupply1._id,
+          voucherOwner: voucherOwner1,
+          title: ownerInactiveVoucherSupply1.title,
+          price: ownerInactiveVoucherSupply1.price,
+          description: ownerInactiveVoucherSupply1.description,
+          imagefiles: ownerInactiveVoucherSupply1.imagefiles,
+          expiryDate: ownerInactiveVoucherSupply1.expiryDate,
+          startDate: ownerInactiveVoucherSupply1.startDate,
+          qty: ownerInactiveVoucherSupply1.qty,
+          visible: ownerInactiveVoucherSupply1.visible,
+        });
+      }
+    );
 
     it("returns empty list when owner has no inactive voucher supplies", async () => {
       const voucherOwner1 = Random.address();
@@ -1387,7 +1405,7 @@ describe("Voucher Supplies Repository", () => {
         ...Random.voucherSupplyMetadata({
           startDate: alreadyStartedDate,
           expiryDate: notYetExpiredDate,
-          qty: availableQuantity
+          qty: availableQuantity,
         }),
         voucherOwner: voucherOwner1,
         imagefiles: [Random.fileRef(), Random.fileRef()],
@@ -1397,7 +1415,7 @@ describe("Voucher Supplies Repository", () => {
         ...Random.voucherSupplyMetadata({
           startDate: alreadyStartedDate,
           expiryDate: notYetExpiredDate,
-          qty: availableQuantity
+          qty: availableQuantity,
         }),
         voucherOwner: voucherOwner1,
         imagefiles: [Random.fileRef(), Random.fileRef()],
@@ -1441,7 +1459,7 @@ describe("Voucher Supplies Repository", () => {
       );
 
       expect(owner1VoucherSupplies).to.eql([]);
-    })
+    });
 
     it("returns empty list when owner has no voucher supplies at all", async () => {
       const voucherOwner1 = Random.address();

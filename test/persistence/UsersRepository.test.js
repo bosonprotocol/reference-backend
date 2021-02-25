@@ -8,7 +8,7 @@ const User = require("../../src/database/models/User");
 const userRoles = require("../../src/database/User/userRoles");
 
 const Random = require("../shared/helpers/Random");
-const Database = require('../shared/helpers/Database')
+const Database = require("../shared/helpers/Database");
 
 describe("Users Repository", () => {
   before(async () => {

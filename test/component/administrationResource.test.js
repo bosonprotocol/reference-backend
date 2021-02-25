@@ -5,7 +5,7 @@ const { zeroAddress } = require("../../src/utils/addresses");
 
 const Random = require("../shared/helpers/Random");
 const Database = require("../shared/helpers/Database");
-const Tokens = require("../shared/helpers/tokens");
+const Tokens = require("../shared/helpers/Tokens");
 
 const TestServer = require("./helpers/TestServer");
 const Prerequisites = require("./helpers/Prerequisites");
@@ -167,10 +167,17 @@ describe("Administration Resource", () => {
 
       expect(response.status).to.eql(403);
 
-      const secondUserTokenAfter = await prerequisites.getUserToken(secondUserAccount);
-      const secondUserTokenAfterPayload = Tokens.verify(secondUserTokenAfter, tokenSecret);
+      const secondUserTokenAfter = await prerequisites.getUserToken(
+        secondUserAccount
+      );
+      const secondUserTokenAfterPayload = Tokens.verify(
+        secondUserTokenAfter,
+        tokenSecret
+      );
 
-      expect(secondUserTokenAfterPayload.user).to.eql(secondUserAddress.toLowerCase());
+      expect(secondUserTokenAfterPayload.user).to.eql(
+        secondUserAddress.toLowerCase()
+      );
       expect(secondUserTokenAfterPayload.role).to.eql(userRoles.USER);
     });
   });

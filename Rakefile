@@ -20,14 +20,18 @@ task :build => [
     :"app:lint",
     :"app:format",
     :"functions:lint",
-    :"functions:format"
+    :"functions:format",
+    :"tests:app:lint",
+    :"tests:app:format"
 ]
 
 task :build_fix => [
     :"app:lint_fix",
     :"app:format_fix",
     :"functions:lint_fix",
-    :"functions:format_fix"
+    :"functions:format_fix",
+    :"tests:app:lint_fix",
+    :"tests:app:format_fix"
 ]
 
 task :test, [:deployment_type, :deployment_label] do |_, args|
@@ -205,6 +209,26 @@ end
 
 namespace :tests do
   namespace :app do
+    desc "Lint all tests"
+    task :lint => [:'app:dependencies:install'] do
+      sh('npm', 'run', 'tests:app:lint')
+    end
+
+    desc "Lint & fix all tests"
+    task :lint_fix => [:'app:dependencies:install'] do
+      sh('npm', 'run', 'tests:app:lint-fix')
+    end
+
+    desc "Format all test files"
+    task :format => [:'app:dependencies:install'] do
+      sh('npm', 'run', 'tests:app:format')
+    end
+
+    desc "Format & fix all test files"
+    task :format_fix => [:'app:dependencies:install'] do
+      sh('npm', 'run', 'tests:app:format-fix')
+    end
+
     desc "Run all component tests"
     task :unit => [:'app:dependencies:install'] do
       sh('npm', 'run', 'tests:app:unit')

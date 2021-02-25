@@ -9,7 +9,7 @@ const voucherStatuses = require("../../src/utils/voucherStatuses");
 
 const Random = require("../shared/helpers/Random");
 const Time = require("../shared/helpers/Time");
-const Database = require('../shared/helpers/Database')
+const Database = require("../shared/helpers/Database");
 
 describe("Vouchers Repository", () => {
   before(async () => {
@@ -46,8 +46,12 @@ describe("Vouchers Repository", () => {
       expect(voucher.voucherOwner).to.eql(metadata._issuer.toLowerCase());
       expect(voucher.actionDate.getTime()).to.be.greaterThan(before);
       expect(voucher.actionDate.getTime()).to.be.lessThan(after);
-      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.greaterThan(before);
-      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.lessThan(after);
+      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.greaterThan(
+        before
+      );
+      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.lessThan(
+        after
+      );
       expect(voucher[voucherStatuses.CANCELLED]).to.be.null;
       expect(voucher[voucherStatuses.COMPLAINED]).to.be.null;
       expect(voucher[voucherStatuses.REDEEMED]).to.be.null;
@@ -116,8 +120,12 @@ describe("Vouchers Repository", () => {
       expect(voucher.voucherOwner).to.eql(metadata2._issuer.toLowerCase());
       expect(voucher.actionDate.getTime()).to.be.greaterThan(before);
       expect(voucher.actionDate.getTime()).to.be.lessThan(after);
-      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.greaterThan(before);
-      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.lessThan(after);
+      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.greaterThan(
+        before
+      );
+      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.lessThan(
+        after
+      );
       expect(voucher[voucherStatuses.CANCELLED]).to.be.null;
       expect(voucher[voucherStatuses.COMPLAINED]).to.be.null;
       expect(voucher[voucherStatuses.REDEEMED]).to.be.null;

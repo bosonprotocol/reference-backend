@@ -4,8 +4,8 @@ const ConfigurationService = require("../../../src/services/ConfigurationService
 const AuthenticationService = require("../../../src/services/AuthenticationService");
 const userRoles = require("../../../src/database/User/userRoles");
 
-const Tokens = require("../../shared/helpers/tokens");
-const Random = require("../../shared/helpers/random");
+const Tokens = require("../../shared/helpers/Tokens");
+const Random = require("../../shared/helpers/Random");
 
 describe("AuthenticationService", () => {
   context("generateToken", () => {
