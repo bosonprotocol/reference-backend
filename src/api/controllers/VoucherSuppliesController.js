@@ -1,4 +1,5 @@
 // @ts-nocheck
+const { BigNumber } = require("ethers");
 const ApiError = require("../ApiError");
 
 const voucherUtils = require("../../utils/voucherUtils");
@@ -179,7 +180,7 @@ class VoucherSuppliesController {
       console.error(
         `An error occurred while user [${voucherOwner}] tried to create Voucher.`
       );
-      console.error(error.errors);
+      console.error(error.message);
       return next(new ApiError(400, "Invalid voucher model"));
     }
 
@@ -203,6 +204,99 @@ class VoucherSuppliesController {
       );
       console.error(error);
       return next(new ApiError(400, "Invalid voucher model"));
+    }
+
+    res.status(200).send({ success: true });
+  }
+
+  /**
+   * @notice This function is triggered while event 'LogOrderCreated' is emitted
+   */
+  async setSupplyMetaOnOrderCreated(req, res, next) {
+    try {
+      await this.voucherSuppliesRepository.setVoucherSupplyMeta(req.body);
+    } catch (error) {
+      console.error(
+        `An error occurred while user [${req.body._voucherOwner}] tried to update Voucher.`
+      );
+      console.error(error);
+      return next(new ApiError(400, "Invalid voucher model"));
+    }
+
+    res.status(200).send({ success: true });
+  }
+
+  /**
+   * @notice This function is triggered while one of the following events is emitted
+   *  TransferSingle
+   *  TransferBatch
+   */
+  async updateSupplyOnTransfer(req, res, next) {
+    let promises = [];
+    let vouchersSupplies = req.body.voucherSupplies;
+    let quantities = req.body.quantities;
+
+    try {
+      const startCorrelationId =
+        req.body._correlationId - vouchersSupplies.length;
+
+      for (let i = 0; i < vouchersSupplies.length; i++) {
+        let metadata;
+
+        try {
+          metadata = {
+            voucherOwner: req.body.voucherOwner.toLowerCase(),
+            _tokenIdSupply: BigNumber.from(vouchersSupplies[i]).toString(),
+            qty: BigNumber.from(quantities[i]).toString(),
+            _correlationId: startCorrelationId + i,
+          };
+        } catch (error) {
+          console.error(
+            `Error while trying to convert vouchersSupply: ${JSON.stringify(
+              vouchersSupplies[i]
+            )} or quantity: ${JSON.stringify(quantities[i])} from BigNumber!`
+          );
+          continue;
+        }
+
+        promises.push(
+          this.voucherSuppliesRepository.updateSupplyMeta(metadata)
+        );
+      }
+
+      await Promise.all(promises);
+    } catch (error) {
+      console.error(
+        `An error occurred while trying to update a voucher from Transfer event.`
+      );
+      console.error(error.message);
+      return next(
+        new ApiError(404, "Could not update the database from Transfer event!")
+      );
+    }
+
+    res.status(200).send({ success: true });
+  }
+
+  async updateSupplyOnCancel(req, res, next) {
+    try {
+      let metadata;
+
+      metadata = {
+        voucherOwner: req.body.voucherOwner.toLowerCase(),
+        _tokenIdSupply: req.body._tokenIdSupply.toString(),
+        qty: req.body.qty,
+      };
+
+      await this.voucherSuppliesRepository.updateSupplyMeta(metadata);
+    } catch (error) {
+      console.error(
+        `An error occurred while trying to update a voucher from Cancel Voucher Set event.`
+      );
+      console.error(error.message);
+      return next(
+        new ApiError(404, "Could not update the database from Transfer event!")
+      );
     }
 
     res.status(200).send({ success: true });
