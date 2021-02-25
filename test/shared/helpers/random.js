@@ -61,6 +61,15 @@ class Random {
     return faker.random.hexaDecimal(128).slice(2);
   }
 
+  // TODO change to match gCloudSecret format
+  static gcloudSecret() {
+    return faker.random.hexaDecimal(128).slice(2);
+  }
+
+  static promiseId() {
+    return keccak256(faker.random.alpha(64)).toString("hex");
+  }
+
   static title() {
     return faker.random.words(3);
   }
@@ -284,6 +293,7 @@ class Random {
       _tokenIdVoucher: Random.uint256(),
       _holder: Random.address(),
       _issuer: Random.address(),
+      _correlationId: Random.uint256(),
       ...overrides,
     };
   }

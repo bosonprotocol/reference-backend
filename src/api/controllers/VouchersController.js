@@ -137,7 +137,9 @@ class VouchersController {
   }
 
   async validateVoucherStatus(req, res, next) {
-    const status = req.body.status;
+    const status = Array.isArray(req.body)
+      ? req.body[0].status
+      : req.body.status; // support keeper's body (array)
 
     const validVoucherStatuses = Object.values(voucherStatuses); // extract as array
 

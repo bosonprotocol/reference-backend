@@ -135,6 +135,13 @@ class VoucherSuppliesModule {
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+          req,
+          res,
+          next
+        )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.eventValidationMiddleware.validateVoucherMetadata(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>

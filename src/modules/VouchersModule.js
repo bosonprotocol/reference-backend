@@ -125,9 +125,6 @@ class VouchersModule {
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.vouchersController.validateVoucherStatus(req, res, next)
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateVoucherDelivered(req, res, next)
       )
     );
@@ -149,9 +146,6 @@ class VouchersModule {
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.vouchersController.validateVoucherStatus(req, res, next)
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateVoucherOnCommonEvent(req, res, next)
       )
     );
@@ -164,6 +158,9 @@ class VouchersModule {
           res,
           next
         )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.vouchersController.validateVoucherStatus(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateStatusFromKeepers(req, res, next)
