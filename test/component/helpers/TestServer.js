@@ -3,6 +3,8 @@ const Server = require("../../.../../../src/server");
 const ConfigurationService = require("../../../src/services/ConfigurationService");
 const AuthenticationService = require("../../../src/services/AuthenticationService");
 
+const MongooseClient = require("../../../src/clients/MongooseClient");
+
 const UsersRepository = require("../../../src/database/User/UsersRepository");
 const VouchersRepository = require("../../../src/database/Voucher/VouchersRepository");
 const VoucherSuppliesRepository = require("../../../src/database/VoucherSupply/VoucherSuppliesRepository");
@@ -54,6 +56,8 @@ class TestServer {
       configurationService
     );
 
+    const mongooseClient = new MongooseClient(configurationService);
+
     const usersRepository = new UsersRepository();
     const vouchersRepository = new VouchersRepository();
     const voucherSuppliesRepository = new VoucherSuppliesRepository();
@@ -94,6 +98,7 @@ class TestServer {
     const testModule = new TestModule(dependencies);
 
     return new Server()
+      .withMongooseClient(mongooseClient)
       .withModule(healthModule)
       .withModule(usersModule)
       .withModule(voucherSuppliesModule)

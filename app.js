@@ -2,13 +2,15 @@ require("dotenv").config();
 
 const Server = require("./src/server");
 
-const ConfigurationService = require("./src/services/configuration-service.js");
-const AuthenticationService = require("./src/services/authentication-service");
+const ConfigurationService = require("./src/services/ConfigurationService.js");
+const AuthenticationService = require("./src/services/AuthenticationService");
 
-const UsersRepository = require("./src/database/User/users-repository");
-const VouchersRepository = require("./src/database/Voucher/vouchers-repository");
-const VoucherSuppliesRepository = require("./src/database/VoucherSupply/voucher-supplies-repository");
-const PaymentsRepository = require("./src/database/Payment/payments-repository");
+const MongooseClient = require("./src/clients/MongooseClient");
+
+const UsersRepository = require("./src/database/User/UsersRepository");
+const VouchersRepository = require("./src/database/Voucher/VouchersRepository");
+const VoucherSuppliesRepository = require("./src/database/VoucherSupply/VoucherSuppliesRepository");
+const PaymentsRepository = require("./src/database/Payment/PaymentsRepository");
 
 const AdministratorAuthenticationMiddleware = require("./src/api/middlewares/AdministratorAuthenticationMiddleware");
 const UserAuthenticationMiddleware = require("./src/api/middlewares/UserAuthenticationMiddleware");
@@ -23,6 +25,8 @@ const HealthModule = require("./src/modules/HealthModule");
 
 const configurationService = new ConfigurationService();
 const authenticationService = new AuthenticationService(configurationService);
+
+const mongooseClient = new MongooseClient(configurationService);
 
 const usersRepository = new UsersRepository();
 const vouchersRepository = new VouchersRepository();
@@ -60,6 +64,7 @@ const administrationModule = new AdministrationModule(dependencies);
 const testModule = new TestModule(dependencies);
 
 new Server()
+  .withMongooseClient(mongooseClient)
   .withModule(healthModule)
   .withModule(usersModule)
   .withModule(voucherSuppliesModule)

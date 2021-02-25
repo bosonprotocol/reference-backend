@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 
-const MongooseClient = require("./clients/MongooseClient");
 const ErrorHandlingMiddleware = require("./api/middlewares/ErrorHandlingMiddleware");
 
 class Server {
@@ -32,11 +31,16 @@ class Server {
     return this;
   }
 
+  withMongooseClient(mongooseClient) {
+    this.mongooseClient = mongooseClient;
+    return this;
+  }
+
   start(port) {
     this.app.use(ErrorHandlingMiddleware.apiErrorHandler);
 
     this.server = this.app.listen(port, async () => {
-      await MongooseClient.getInstance();
+      await this.mongooseClient.connect();
 
       console.info(`App listening on: ` + port);
     });

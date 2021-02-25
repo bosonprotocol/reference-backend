@@ -11,7 +11,32 @@ class ConfigurationService {
   get databaseConnectionString() {
     return (
       this.overrides.databaseConnectionString ||
-      coerceUndefined(process.env.DB_CONNECTION_STRING)
+      coerceUndefined(process.env.DB_CONNECTION_STRING) ||
+      "mongodb://localhost:27017"
+    );
+  }
+
+  get databaseName() {
+    return (
+      this.overrides.databaseName ||
+      coerceUndefined(process.env.DB_NAME) ||
+      "api"
+    );
+  }
+
+  get databaseUsername() {
+    return (
+      this.overrides.databaseUsername ||
+      coerceUndefined(process.env.DB_USERNAME) ||
+      "admin"
+    );
+  }
+
+  get databasePassword() {
+    return (
+      this.overrides.databasePassword ||
+      coerceUndefined(process.env.DB_PASSWORD) ||
+      "secret"
     );
   }
 

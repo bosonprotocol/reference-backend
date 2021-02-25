@@ -1,37 +1,27 @@
 const chai = require("chai");
-const mongoose = require("mongoose");
 chai.use(require("chai-as-promised"));
 
 const expect = chai.expect;
 
-const ConfigurationService = require("../../src/services/ConfigurationService");
 const VouchersRepository = require("../../src/database/Voucher/VouchersRepository");
 const Voucher = require("../../src/database/models/Voucher");
 const voucherStatuses = require("../../src/utils/voucherStatuses");
 
 const Random = require("../shared/helpers/Random");
 const Time = require("../shared/helpers/Time");
+const Database = require('../shared/helpers/Database')
 
 describe("Vouchers Repository", () => {
   before(async () => {
-    const configurationService = new ConfigurationService();
-    const databaseConnectionString =
-      configurationService.databaseConnectionString ||
-      "mongodb://admin:secret@localhost:27017/admin";
-    await mongoose.connect(databaseConnectionString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
-    });
+    await Database.connect();
   });
 
   afterEach(async () => {
-    await Voucher.collection.deleteMany({});
+    await Database.truncateCollection(Voucher);
   });
 
   after(async () => {
-    await mongoose.disconnect();
+    await Database.disconnect();
   });
 
   context("createVoucher", () => {

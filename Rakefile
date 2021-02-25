@@ -297,11 +297,13 @@ def database_overrides_for(configuration, args)
   (configuration.database_type == 'deployed') ?
       {
           "DB_CONNECTION_STRING" =>
-              "#{RubyTerraform::Output.for(
+              RubyTerraform::Output.for(
                   name: 'connection_string',
                   source_directory: 'infra/database',
                   work_directory: 'build',
-                  backend_config: configuration.backend_config)}/api",
+                  backend_config: configuration.backend_config),
+          "DB_USERNAME" => configuration.database_username,
+          "DB_PASSWORD" => configuration.database_password,
       } :
       {}
 end

@@ -12,29 +12,103 @@ const withEnv = (name, value, fn) => {
 describe("ConfigurationService", () => {
   context("for database connection string", () => {
     it("uses environment variable when present", () => {
-      withEnv("DB_CONNECTION_STRING", "mongodb://localhost:27017/api", () => {
+      withEnv("DB_CONNECTION_STRING", "mongodb://localhost:27017", () => {
         const configurationService = new ConfigurationService();
         expect(configurationService.databaseConnectionString).to.eql(
-          "mongodb://localhost:27017/api"
+          "mongodb://localhost:27017"
         );
       });
     });
 
     it("uses the provided override when supplied", () => {
-      withEnv("DB_CONNECTION_STRING", "mongodb://localhost:27017/api", () => {
+      withEnv("DB_CONNECTION_STRING", "mongodb://localhost:27017", () => {
         const configurationService = new ConfigurationService({
-          databaseConnectionString: "mongodb://mongo.example.com:27017/api",
+          databaseConnectionString: "mongodb://mongo.example.com:27017",
         });
         expect(configurationService.databaseConnectionString).to.eql(
-          "mongodb://mongo.example.com:27017/api"
+          "mongodb://mongo.example.com:27017"
         );
       });
     });
 
-    it("returns undefined when no environment variable or override", () => {
+    it("uses localhost:27017 when no environment variable or override", () => {
       const configurationService = new ConfigurationService();
 
-      expect(configurationService.databaseConnectionString).to.be.undefined;
+      expect(configurationService.databaseConnectionString).to.eql(
+        "mongodb://localhost:27017"
+      );
+    });
+  });
+
+  context("for database name", () => {
+    it("uses environment variable when present", () => {
+      withEnv("DB_NAME", "service", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.databaseName).to.eql("service");
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("DB_NAME", "service", () => {
+        const configurationService = new ConfigurationService({
+          databaseName: "backend",
+        });
+        expect(configurationService.databaseName).to.eql("backend");
+      });
+    });
+
+    it("uses api when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.databaseName).to.eql("api");
+    });
+  });
+
+  context("for database username", () => {
+    it("uses environment variable when present", () => {
+      withEnv("DB_USERNAME", "user", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.databaseUsername).to.eql("user");
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("DB_USERNAME", "user", () => {
+        const configurationService = new ConfigurationService({
+          databaseUsername: "app",
+        });
+        expect(configurationService.databaseUsername).to.eql("app");
+      });
+    });
+
+    it("uses admin when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.databaseUsername).to.eql("admin");
+    });
+  });
+
+  context("for database password", () => {
+    it("uses environment variable when present", () => {
+      withEnv("DB_PASSWORD", "password", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.databasePassword).to.eql("password");
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("DB_PASSWORD", "password", () => {
+        const configurationService = new ConfigurationService({
+          databasePassword: "pass",
+        });
+        expect(configurationService.databasePassword).to.eql("pass");
+      });
+    });
+
+    it("uses admin when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.databasePassword).to.eql("secret");
     });
   });
 

@@ -5,6 +5,9 @@ database_instance_size_name: "M10"
 database_allow_cidrs:
   - "10.0.0.0/8"
 
+database_username: "%{hiera('database_service_user_username')}"
+database_password: "%{hiera('database_service_user_password')}"
+
 database_type: "deployed"
 
 # State
