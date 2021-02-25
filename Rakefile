@@ -11,7 +11,6 @@ RakeTerraform.define_installation_tasks(
     path: File.join(Dir.pwd, 'vendor', 'terraform'),
     version: '0.14.7')
 
-
 task :default => [
     :build_fix,
     :test
@@ -287,7 +286,110 @@ namespace :ci do
       t.non_interactive = true
       t.home_directory = 'build/fly'
     end
+
+    RakeFly.define_pipeline_tasks(
+        namespace: :builder,
+        argument_names: [
+            :ci_deployment_type,
+            :ci_deployment_label]
+    ) do |t, args|
+      configuration = configuration
+          .for_scope(args.to_h.merge(role: 'builder-pipeline'))
+      ci_deployment_type = configuration.ci_deployment_identifier
+
+      t.target = configuration.concourse_team
+      t.team = configuration.concourse_team
+      t.pipeline = "reference-backend-builder"
+
+      t.config = 'pipelines/builder/pipeline.yaml'
+
+      t.vars = configuration.vars
+      t.var_files = [
+          'config/secrets/pipeline/constants.yaml',
+          "config/secrets/pipeline/#{ci_deployment_type}.yaml"
+      ]
+
+      t.non_interactive = true
+      t.home_directory = 'build/fly'
+    end
+
+    namespace :pr do
+      RakeFly.define_pipeline_tasks(
+          argument_names: [
+              :ci_deployment_type,
+              :ci_deployment_label,
+              :branch
+          ]
+      ) do |t, args|
+        branch = args.branch || pr_metadata_branch
+
+        configuration = configuration
+            .for_scope(args.to_h.merge(role: 'pr-pipeline'))
+            .for_overrides(source_repository_branch: branch)
+
+        ci_deployment_type = configuration.ci_deployment_identifier
+
+        t.target = configuration.concourse_team
+        t.team = configuration.concourse_team
+        t.pipeline = "reference-backend-pr-#{branch}"
+
+        t.config = 'pipelines/pr/pipeline.yaml'
+
+        t.vars = configuration.vars
+        t.var_files = [
+            'config/secrets/pipeline/constants.yaml',
+            "config/secrets/pipeline/#{ci_deployment_type}.yaml"
+        ]
+
+        t.non_interactive = true
+        t.home_directory = 'build/fly'
+      end
+
+      task :handle, [
+          :ci_deployment_type,
+          :ci_deployment_label,
+          :branch,
+          :state
+      ] do |_, args|
+        branch = args.branch || pr_metadata_branch
+        state = args.state || pr_metadata_state
+
+        if state == "OPEN"
+          Rake::Task[:"ci:pipeline:pr:push"].invoke(
+              args.ci_deployment_type,
+              args.ci_deployment_label,
+              branch)
+        else
+          Rake::Task[:"ci:pipeline:pr:destroy"].invoke(
+              args.ci_deployment_type,
+              args.ci_deployment_label,
+              branch)
+        end
+      end
+    end
   end
+
+  namespace :pipelines do
+    desc "Push all pipelines"
+    task :push, [:ci_deployment_type, :ci_deployment_label] do |_, args|
+      Rake::Task[:"ci:pipeline:develop:push"].invoke(*args)
+      Rake::Task[:"ci:pipeline:builder:push"].invoke(*args)
+    end
+  end
+end
+
+def pr_metadata_value(key)
+  File.exist?(".git/resource/#{key}") ?
+      File.read(".git/resource/#{key}") :
+      nil
+end
+
+def pr_metadata_branch
+  pr_metadata_value("head_name")
+end
+
+def pr_metadata_state
+  pr_metadata_value("state")
 end
 
 def database_overrides_for(configuration, args)
@@ -304,6 +406,7 @@ def database_overrides_for(configuration, args)
                   backend_config: configuration.backend_config),
           "DB_USERNAME" => configuration.database_username,
           "DB_PASSWORD" => configuration.database_password,
+          "DB_NAME" => pr_metadata_branch || "api"
       } :
       {}
 end
