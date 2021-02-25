@@ -1,6 +1,5 @@
 // @ts-nocheck
 const { BigNumber } = require("ethers");
-
 const ApiError = require("../ApiError");
 
 const voucherUtils = require("../../utils/voucherUtils");

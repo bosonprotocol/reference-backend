@@ -3,7 +3,7 @@ const { expect } = require("chai");
 const Random = require("../shared/helpers/Random");
 const Database = require("../shared/helpers/Database");
 const Tokens = require("../shared/helpers/Tokens");
-const { Signing } = require("../shared/helpers/signing");
+const { Signing } = require("../shared/helpers/Signing");
 
 const API = require("./helpers/API");
 const TestServer = require("./helpers/TestServer");

@@ -1,5 +1,4 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
-
 const PaymentsController = require("../api/controllers/PaymentsController");
 const PaymentValidationMiddleware = require("../api/middlewares/PaymentValidationMiddleware");
 

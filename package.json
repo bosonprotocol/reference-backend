@@ -8,6 +8,10 @@
     "app:lint-fix": "eslint --fix app.js \"src/**/*.js\"",
     "app:format": "prettier --list-different app.js \"src/**/*.js\"",
     "app:format-fix": "prettier --write app.js \"src/**/*.js\"",
+    "tests:app:lint": "eslint \"test/**/*.js\"",
+    "tests:app:lint-fix": "eslint --fix \"test/**/*.js\"",
+    "tests:app:format": "prettier --list-different \"test/**/*.js\"",
+    "tests:app:format-fix": "prettier --write \"test/**/*.js\"",
     "tests:app:unit": "mocha --reporter spec \"test/unit/**/*.test.js\"",
     "tests:app:persistence": "mocha --reporter spec \"test/persistence/**/*.test.js\"",
     "tests:app:component": "mocha --reporter spec \"test/component/**/*.test.js\""

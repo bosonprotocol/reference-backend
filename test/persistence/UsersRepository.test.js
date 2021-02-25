@@ -1,36 +1,26 @@
 const chai = require("chai");
-const mongoose = require("mongoose");
 chai.use(require("chai-as-promised"));
 
 const expect = chai.expect;
 
-const ConfigurationService = require("../../src/services/ConfigurationService");
 const UsersRepository = require("../../src/database/User/UsersRepository");
 const User = require("../../src/database/models/User");
 const userRoles = require("../../src/database/User/userRoles");
 
 const Random = require("../shared/helpers/Random");
+const Database = require("../shared/helpers/Database");
 
 describe("Users Repository", () => {
   before(async () => {
-    const configurationService = new ConfigurationService();
-    const databaseConnectionString =
-      configurationService.databaseConnectionString ||
-      "mongodb://admin:secret@localhost:27017/admin";
-    await mongoose.connect(databaseConnectionString, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
-    });
+    await Database.connect();
   });
 
   afterEach(async () => {
-    await User.collection.deleteMany({});
+    await Database.truncateCollection(User);
   });
 
   after(async () => {
-    await mongoose.disconnect();
+    await Database.disconnect();
   });
 
   context("createUser", () => {

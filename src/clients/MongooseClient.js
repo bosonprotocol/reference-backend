@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-const url = process.env.DB_CONNECTION_STRING;
 const options = {
   useUnifiedTopology: true,
   useNewUrlParser: true,
@@ -8,18 +7,22 @@ const options = {
   useFindAndModify: false,
 };
 
-let instance;
-
-module.exports = class MongooseClient {
-  static getInstance() {
-    if (!instance) {
-      instance = MongooseClient.connect();
-    }
-
-    return instance;
+class MongooseClient {
+  constructor(configurationService) {
+    this.configurationService = configurationService;
   }
 
-  static connect() {
-    return mongoose.connect(url, options);
+  connect() {
+    return mongoose.connect(
+      this.configurationService.databaseConnectionString,
+      {
+        ...options,
+        dbName: this.configurationService.databaseName,
+        user: this.configurationService.databaseUsername,
+        pass: this.configurationService.databasePassword,
+      }
+    );
   }
-};
+}
+
+module.exports = MongooseClient;

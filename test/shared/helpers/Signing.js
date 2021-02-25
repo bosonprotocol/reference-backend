@@ -11,15 +11,11 @@ const AuthSignature = [{ name: "value", type: "string" }];
 
 const Types = {
   EIP712Domain,
-  AuthSignature
-}
+  AuthSignature,
+};
 
 class Signing {
-  static async signAuthenticationMessage(
-    account,
-    nonce,
-    domain
-  ) {
+  static async signAuthenticationMessage(account, nonce, domain) {
     const types = {
       EIP712Domain,
       AuthSignature,

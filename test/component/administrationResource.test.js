@@ -5,7 +5,7 @@ const { zeroAddress } = require("../../src/utils/addresses");
 
 const Random = require("../shared/helpers/Random");
 const Database = require("../shared/helpers/Database");
-const Tokens = require("../shared/helpers/tokens");
+const Tokens = require("../shared/helpers/Tokens");
 
 const TestServer = require("./helpers/TestServer");
 const Prerequisites = require("./helpers/Prerequisites");
@@ -112,17 +112,17 @@ describe("Administration Resource", () => {
 
       const userTokenBefore = await prerequisites.getUserToken(userAccount);
       const userTokenBeforePayload = Tokens.verify(
-          userTokenBefore,
-          tokenSecret
+        userTokenBefore,
+        tokenSecret
       );
 
       expect(userTokenBeforePayload.user).to.eql(userAddress.toLowerCase());
       expect(userTokenBeforePayload.role).to.eql(userRoles.USER);
 
       const response = await api
-          .withToken(userTokenBefore) // force failure
-          .administration()
-          .makeAdmin(userAddress);
+        .withToken(userTokenBefore) // force failure
+        .administration()
+        .makeAdmin(userAddress);
 
       expect(response.status).to.eql(403);
     });
@@ -189,33 +189,44 @@ describe("Administration Resource", () => {
 
       expect(response.status).to.eql(403);
 
-      const secondUserTokenAfter = await prerequisites.getUserToken(secondUserAccount);
-      const secondUserTokenAfterPayload = Tokens.verify(secondUserTokenAfter, tokenSecret);
+      const secondUserTokenAfter = await prerequisites.getUserToken(
+        secondUserAccount
+      );
+      const secondUserTokenAfterPayload = Tokens.verify(
+        secondUserTokenAfter,
+        tokenSecret
+      );
 
-      expect(secondUserTokenAfterPayload.user).to.eql(secondUserAddress.toLowerCase());
+      expect(secondUserTokenAfterPayload.user).to.eql(
+        secondUserAddress.toLowerCase()
+      );
       expect(secondUserTokenAfterPayload.role).to.eql(userRoles.USER);
     });
 
     it("changeVoucherSupplyVisibility - return 200 and allow an admin to change voucher supply's visibility", async () => {
       // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
       const responseCreateSupply = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, imageFilePath);
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
       const voucherSupplyId = responseCreateSupply.body.voucherSupply._id;
       // END CREATE VOUCHER SUPPLY
 
       // CHANGE VOUCHER SUPPLY VISIBILITY USING ADMIN
       const superadminToken = await prerequisites.getSuperadminToken(
-          superadminUsername,
-          superadminPassword
+        superadminUsername,
+        superadminPassword
       );
 
       const response = await api
-          .withToken(superadminToken)
-          .administration()
-          .changeSupplyVisibleStatus(voucherSupplyId);
+        .withToken(superadminToken)
+        .administration()
+        .changeSupplyVisibleStatus(voucherSupplyId);
       // CHANGE VOUCHER SUPPLY VISIBILITY USING ADMIN
 
       const expectedPropertyName = "visible";
@@ -228,19 +239,23 @@ describe("Administration Resource", () => {
 
     it("changeVoucherSupplyVisibility - return 403 when change requested by non-admin user", async () => {
       // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
       const responseCreateSupply = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, imageFilePath);
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
       const voucherSupplyId = responseCreateSupply.body.voucherSupply._id;
       // END CREATE VOUCHER SUPPLY
 
       // CHANGE VOUCHER SUPPLY VISIBILITY USING NON-ADMIN USER
       const response = await api
-          .withToken(token)
-          .administration()
-          .changeSupplyVisibleStatus(voucherSupplyId);
+        .withToken(token)
+        .administration()
+        .changeSupplyVisibleStatus(voucherSupplyId);
       // CHANGE VOUCHER SUPPLY VISIBILITY USING NON-ADMIN USER
 
       expect(response.status).to.eql(403);
@@ -248,24 +263,28 @@ describe("Administration Resource", () => {
 
     it("changeVoucherSupplyVisibility - return 400 when admin tries to change non-existent voucher supply's visibility", async () => {
       // CREATE VOUCHER SUPPLY
-      const [token, voucherSupplyData, imageFilePath] = await prerequisites.createVoucherSupplyData();
-      const responseCreateSupply = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, imageFilePath);
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
       const voucherSupplyId = Random.voucherSupplyId();
       // END CREATE VOUCHER SUPPLY
 
       // CHANGE VOUCHER SUPPLY VISIBILITY USING ADMIN
       const superadminToken = await prerequisites.getSuperadminToken(
-          superadminUsername,
-          superadminPassword
+        superadminUsername,
+        superadminPassword
       );
 
       const response = await api
-          .withToken(superadminToken)
-          .administration()
-          .changeSupplyVisibleStatus(voucherSupplyId);
+        .withToken(superadminToken)
+        .administration()
+        .changeSupplyVisibleStatus(voucherSupplyId);
       // CHANGE VOUCHER SUPPLY VISIBILITY USING ADMIN
 
       expect(response.status).to.eql(400);

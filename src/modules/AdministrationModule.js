@@ -1,7 +1,6 @@
 const basicAuthenticationMiddleware = require("express-basic-auth");
 
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
-
 const AdministratorAuthenticationMiddleware = require("../api/middlewares/AdministratorAuthenticationMiddleware");
 const AdministrationController = require("../api/controllers/AdministrationController");
 

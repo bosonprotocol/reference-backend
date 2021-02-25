@@ -1,5 +1,5 @@
 const Random = require("../../shared/helpers/Random");
-const Tokens = require("../../shared/helpers/tokens");
+const Tokens = require("../../shared/helpers/Tokens");
 const { Signing } = require("../../shared/helpers/Signing");
 
 class Prerequisites {
@@ -55,13 +55,16 @@ class Prerequisites {
       .administration()
       .makeAdmin(adminAddress);
 
-    return await this.getUserToken(adminAccount)
+    return await this.getUserToken(adminAccount);
   }
 
   getGCloudToken(gcloudSecret, tokenSecret) {
-    return Tokens.sign({
-      token: gcloudSecret,
-    }, tokenSecret);
+    return Tokens.sign(
+      {
+        token: gcloudSecret,
+      },
+      tokenSecret
+    );
   }
 
   /*
@@ -120,25 +123,37 @@ class Prerequisites {
 
   async createPayment(token, paymentsMetadata) {
     const response = await this.api
-        .withToken(token)
-        .payments()
-        .post(paymentsMetadata)
+      .withToken(token)
+      .payments()
+      .post(paymentsMetadata);
 
-    return [response.status, response.body]
+    return [response.status, response.body];
   }
 
-  createVoucherUpdateDeliveredData(voucherTokenId, voucherIssuer, promiseId, supplyTokenId, voucherHolder, correlationId) {
+  createVoucherUpdateDeliveredData(
+    voucherTokenId,
+    voucherIssuer,
+    promiseId,
+    supplyTokenId,
+    voucherHolder,
+    correlationId
+  ) {
     return {
       _tokenIdVoucher: voucherTokenId,
       _issuer: voucherIssuer,
       _promiseId: promiseId,
       _tokenIdSupply: supplyTokenId,
       _holder: voucherHolder,
-      _correlationId: correlationId
+      _correlationId: correlationId,
     };
   }
 
-  createSupplyUpdateTransferData(voucherMetadata, voucherSupplies, quantities, voucherOwner) {
+  createSupplyUpdateTransferData(
+    voucherMetadata,
+    voucherSupplies,
+    quantities,
+    voucherOwner
+  ) {
     return {
       _tokenIdVoucher: voucherMetadata._tokenIdVoucher,
       _issuer: voucherMetadata._issuer,
@@ -148,8 +163,8 @@ class Prerequisites {
       _promiseId: voucherMetadata._promiseId,
       voucherSupplies: voucherSupplies,
       quantities: quantities,
-      voucherOwner: voucherOwner
-    }
+      voucherOwner: voucherOwner,
+    };
   }
 }
 

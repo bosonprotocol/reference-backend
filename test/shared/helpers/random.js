@@ -8,7 +8,7 @@ const voucherStatuses = require("../../../src/utils/voucherStatuses");
 const User = require("../../../src/database/models/User");
 const userRoles = require("../../../src/database/User/userRoles");
 
-const Time = require("./time");
+const Time = require("./Time");
 
 class Random {
   static documentId() {
@@ -243,8 +243,8 @@ class Random {
       address: Random.address(),
       nonce: Random.nonce(),
       role: Random.userRole(),
-      ...overrides
-    })
+      ...overrides,
+    });
   }
 
   static voucherSupplyMetadata(overrides = {}) {

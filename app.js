@@ -1,9 +1,11 @@
 require("dotenv").config();
 
-const Server = require("./src/server");
+const Server = require("./src/Server");
 
 const ConfigurationService = require("./src/services/ConfigurationService.js");
 const AuthenticationService = require("./src/services/AuthenticationService");
+
+const MongooseClient = require("./src/clients/MongooseClient");
 
 const UsersRepository = require("./src/database/User/UsersRepository");
 const VouchersRepository = require("./src/database/Voucher/VouchersRepository");
@@ -22,6 +24,8 @@ const HealthModule = require("./src/modules/HealthModule");
 
 const configurationService = new ConfigurationService();
 const authenticationService = new AuthenticationService(configurationService);
+
+const mongooseClient = new MongooseClient(configurationService);
 
 const usersRepository = new UsersRepository();
 const vouchersRepository = new VouchersRepository();
@@ -58,6 +62,7 @@ const paymentsModule = new PaymentsModule(dependencies);
 const administrationModule = new AdministrationModule(dependencies);
 
 new Server()
+  .withMongooseClient(mongooseClient)
   .withModule(healthModule)
   .withModule(usersModule)
   .withModule(voucherSuppliesModule)
