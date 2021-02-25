@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const Time = require("./Time");
 
-class Tokens {
+class TokensRename {
   static sign(payload, secret) {
     return jwt.sign(payload, secret);
   }
@@ -20,4 +20,4 @@ class Tokens {
   }
 }
 
-module.exports = Tokens;
+module.exports = TokensRename;
