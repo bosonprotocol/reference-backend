@@ -65,6 +65,8 @@ GEM
       sexp_processor (~> 4.0)
     excon (0.79.0)
     getsource (0.2.2)
+    git (1.8.1)
+      rchardet (~> 1.8)
     hamster (3.0.0)
       concurrent-ruby (~> 1.0)
     hiera (3.6.0)
@@ -106,6 +108,7 @@ GEM
       rake_dependencies (~> 2, < 3)
       rake_factory (>= 0.23, < 1)
       ruby-terraform (>= 0.62, < 1)
+    rchardet (1.8.0)
     ruby-terraform (0.64.0)
       lino (>= 1.5)
     ruby2ruby (2.4.4)
@@ -131,6 +134,7 @@ PLATFORMS
 
 DEPENDENCIES
   confidante (~> 0.27)
+  git (~> 1.8)
   rake (~> 13.0)
   rake_docker (~> 2.13)
   rake_fly (~> 2.7)

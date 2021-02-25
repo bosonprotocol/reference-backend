@@ -1,3 +1,4 @@
+require 'git'
 require 'confidante'
 require 'rake_docker'
 require 'rake_terraform'
@@ -416,6 +417,10 @@ def pr_metadata_state
   pr_metadata_value("state")
 end
 
+def current_branch
+  Git.open(File.dirname(__FILE__)).current_branch
+end
+
 def database_overrides_for(configuration, args)
   configuration = configuration
       .for_scope(args.to_h.merge(role: 'database'))
@@ -430,7 +435,7 @@ def database_overrides_for(configuration, args)
                   backend_config: configuration.backend_config),
           "DB_USERNAME" => configuration.database_username,
           "DB_PASSWORD" => configuration.database_password,
-          "DB_NAME" => pr_metadata_branch || "api"
+          "DB_NAME" => current_branch
       } :
       {}
 end
