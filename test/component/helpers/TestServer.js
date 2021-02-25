@@ -1,4 +1,4 @@
-const Server = require("../../../src/ServerRename");
+const Server = require("../../../src/Server");
 
 const ConfigurationService = require("../../../src/services/ConfigurationService");
 const AuthenticationService = require("../../../src/services/AuthenticationService");
