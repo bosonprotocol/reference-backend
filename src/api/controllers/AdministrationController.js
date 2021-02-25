@@ -1,7 +1,7 @@
 const ethers = require("ethers");
 
 const ApiError = require("../ApiError");
-const userRoles = require("../../database/User/userRoles");
+const Superadmin = require("../../utils/Superadmin");
 
 class AdministrationController {
   constructor(
@@ -15,15 +15,10 @@ class AdministrationController {
   }
 
   async logInSuperadmin(req, res) {
-    const username = req.auth.user;
-    const role = userRoles.ADMIN;
     const fiveMinutesInSeconds = 300;
 
     const authToken = this.authenticationService.generateToken(
-      {
-        address: username,
-        role,
-      },
+      Superadmin.instance(),
       fiveMinutesInSeconds
     );
 

@@ -1,7 +1,12 @@
 {
   "extends": [
     "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
     "prettier"
+  ],
+  "plugins": [
+    "import"
   ],
   "env": {
     "node": true,
@@ -11,5 +16,13 @@
   },
   "parserOptions": {
     "ecmaVersion": 9
+  },
+  "rules": {
+    "import/no-unresolved": [
+      2,
+      {
+        "commonjs": true
+      }
+    ]
   }
 }
