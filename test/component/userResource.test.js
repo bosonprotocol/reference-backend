@@ -31,7 +31,7 @@ describe("User Resource", () => {
   });
 
   context("on POST", () => {
-    it("returns 200 with a random nonce on success", async () => {
+    it("registerUser - returns 200 with a random nonce on success", async () => {
       const address = Random.address();
 
       const response = await api.users().post(address);

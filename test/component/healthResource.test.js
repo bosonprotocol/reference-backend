@@ -21,7 +21,7 @@ describe("Health Resource", () => {
   });
 
   context("on GET", () => {
-    it("returns 200 and healthy body", async () => {
+    it("getHealth - returns 200 and healthy body", async () => {
       const response = await api.health().get();
 
       expect(response.statusCode).to.eql(200);

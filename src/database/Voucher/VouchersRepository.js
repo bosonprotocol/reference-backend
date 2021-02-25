@@ -44,7 +44,7 @@ class VouchersRepository {
     );
   }
 
-  static async updateVoucherOnCommonEvent(voucherID, metadata) {
+  async updateVoucherOnCommonEvent(voucherID, metadata) {
     return Voucher.findByIdAndUpdate(
       voucherID,
       {
@@ -54,7 +54,7 @@ class VouchersRepository {
     );
   }
 
-  // TODO below functions actually are doind the same, we should update as per
+  // TODO below functions actually are doing the same, we should update as per
   //  collectionId, voucherId so we avoid duplication of functions
   async updateVoucherStatus(voucherId, status) {
     const voucher = await this.getVoucherById(voucherId);
