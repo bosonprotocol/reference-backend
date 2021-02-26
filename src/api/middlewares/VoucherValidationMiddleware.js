@@ -7,8 +7,7 @@ class VoucherValidationMiddleware {
 
   async validateVoucherSupplyExists(req, res, next) {
     let voucherSupply;
-
-    const voucherSupplyId = req.params.id ? req.params.id : req.body.id; //Todo improve validation for set-supply-meta
+    const voucherSupplyId = req.params.id;
 
     try {
       voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
@@ -26,6 +25,36 @@ class VoucherValidationMiddleware {
     if (!voucherSupply) {
       return next(
         new ApiError(400, `Voucher with ID: ${voucherSupplyId} does not exist!`)
+      );
+    }
+
+    res.locals.voucherSupply = voucherSupply;
+
+    next();
+  }
+
+  async validateVoucherSupplyExistsByOwnerAndCorrelationId(req, res, next) {
+    let voucherSupply;
+
+    try {
+      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyByOwnerAndCorrelationId(
+        req.body
+      );
+    } catch (error) {
+      return next(
+        new ApiError(
+          404,
+          `VoucherSupply with Owner: ${req.body.voucherOwner} and CorrelationID: ${req.body._correlationId} does not exist!`
+        )
+      );
+    }
+
+    if (!voucherSupply) {
+      return next(
+        new ApiError(
+          400,
+          `Voucher with Owner: ${req.body.voucherOwner} and CorrelationID: ${req.body._correlationId} does not exist!`
+        )
       );
     }
 
