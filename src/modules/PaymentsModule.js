@@ -43,7 +43,11 @@ class PaymentsModule {
     router.post(
       "/create-payment",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
+        this.userAuthenticationMiddleware.authenticateGCLOUDService(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.paymentValidationMiddleware.validatePaymentData(req, res, next)
