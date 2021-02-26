@@ -1,39 +1,72 @@
 require("dotenv").config();
-const express = require("express");
-const MongooseClient = require("./src/clients/mongoose-client");
 
-const usersRouter = require("./src/api/routes/users-route");
-const voucherSuppliesRouter = require("./src/api/routes/supplies-route");
-const vouchers = require("./src/api/routes/vouchers-route");
-const paymentRouter = require("./src/api/routes/payments-route");
-const adminRouter = require("./src/api/routes/admin-route");
-const testRouter = require("./src/api/routes/test-route");
-const ErrorHandler = require("./src/api/middlewares/error-handler");
+const Server = require("./src/Server");
 
-const cors = require("cors");
+const ConfigurationService = require("./src/services/ConfigurationService.js");
+const AuthenticationService = require("./src/services/AuthenticationService");
 
-const app = express();
+const MongooseClient = require("./src/clients/MongooseClient");
 
-app.use(cors());
-app.use(function (req, res, next) {
-  console.log("Time: ", Date.now());
-  next();
-});
-app.use(express.json());
+const UsersRepository = require("./src/database/User/UsersRepository");
+const VouchersRepository = require("./src/database/Voucher/VouchersRepository");
+const VoucherSuppliesRepository = require("./src/database/VoucherSupply/VoucherSuppliesRepository");
+const PaymentsRepository = require("./src/database/Payment/PaymentsRepository");
 
-app.use("/users", usersRouter.route(express));
-app.use("/voucher-sets", voucherSuppliesRouter.route(express));
-app.use("/vouchers", vouchers.route(express));
-app.use("/payments", paymentRouter.route(express));
-app.use("/admin", adminRouter.route(express));
-app.use("/test", testRouter.route(express));
+const AdministratorAuthenticationMiddleware = require("./src/api/middlewares/AdministratorAuthenticationMiddleware");
+const UserAuthenticationMiddleware = require("./src/api/middlewares/UserAuthenticationMiddleware");
 
-// Attach API Error handler
-app.use(ErrorHandler.apiErrorHandler);
+const UsersModule = require("./src/modules/UsersModule");
+const VoucherSuppliesModule = require("./src/modules/VoucherSuppliesModule");
+const VouchersModule = require("./src/modules/VouchersModule");
+const PaymentsModule = require("./src/modules/PaymentsModule");
+const AdministrationModule = require("./src/modules/AdministrationModule");
+const HealthModule = require("./src/modules/HealthModule");
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-  await MongooseClient.getInstance();
+const configurationService = new ConfigurationService();
+const authenticationService = new AuthenticationService(configurationService);
 
-  console.info(`App listening on: ` + PORT);
-});
+const mongooseClient = new MongooseClient(configurationService);
+
+const usersRepository = new UsersRepository();
+const vouchersRepository = new VouchersRepository();
+const voucherSuppliesRepository = new VoucherSuppliesRepository();
+const paymentsRepository = new PaymentsRepository();
+
+const administratorAuthenticationMiddleware = new AdministratorAuthenticationMiddleware(
+  authenticationService,
+  usersRepository
+);
+const userAuthenticationMiddleware = new UserAuthenticationMiddleware(
+  configurationService,
+  authenticationService
+);
+
+const dependencies = {
+  configurationService,
+  authenticationService,
+
+  usersRepository,
+  vouchersRepository,
+  voucherSuppliesRepository,
+  paymentsRepository,
+
+  administratorAuthenticationMiddleware,
+  userAuthenticationMiddleware,
+};
+
+const healthModule = new HealthModule(dependencies);
+const usersModule = new UsersModule(dependencies);
+const voucherSuppliesModule = new VoucherSuppliesModule(dependencies);
+const vouchersModule = new VouchersModule(dependencies);
+const paymentsModule = new PaymentsModule(dependencies);
+const administrationModule = new AdministrationModule(dependencies);
+
+new Server()
+  .withMongooseClient(mongooseClient)
+  .withModule(healthModule)
+  .withModule(usersModule)
+  .withModule(voucherSuppliesModule)
+  .withModule(vouchersModule)
+  .withModule(paymentsModule)
+  .withModule(administrationModule)
+  .start(process.env.PORT || 3000);

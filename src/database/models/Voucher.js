@@ -1,11 +1,11 @@
 // @ts-nocheck
-
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const collections = require("../collections.json");
 const VOUCHER = collections.VOUCHER;
 
-const userSchema = new Schema({
+// TODO: discuss whether action date is needed
+const voucherSchema = new Schema({
   supplyID: {
     type: String,
     required: true,
@@ -16,17 +16,12 @@ const userSchema = new Schema({
   },
   _tokenIdSupply: {
     type: String,
-    required: true,
   },
   _tokenIdVoucher: {
     type: String,
   },
   voucherOwner: {
     type: String,
-  },
-  status: {
-    type: String,
-    required: true,
   },
   COMMITTED: {
     type: Date,
@@ -60,6 +55,13 @@ const userSchema = new Schema({
     type: Date,
     required: false,
   },
+  _correlationId: {
+    type: Number,
+    required: false,
+  },
+  _promiseId: {
+    type: String,
+  },
 });
 
-module.exports = mongoose.model(VOUCHER, userSchema);
+module.exports = mongoose.model(VOUCHER, voucherSchema);

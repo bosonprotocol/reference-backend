@@ -1,0 +1,7 @@
+---
+database_username: "admin"
+database_password: "secret"
+database_port: "27017"
+database_version: "4.4"
+
+database_type: "local"
