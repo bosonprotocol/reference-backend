@@ -1,9 +1,30 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+# Node / NPM / Yarn
+node_modules
+
+# Build
+/local
+/build
+/run
+/vendor
+
+# Secrets
+.secret
 .env
 .env.prod
-/node_modules/
-package-lock.json
-.DS_Store
-yarn.lock
-/tests
 
-.idea
+# OS
+.DS_Store
+
+# IntelliJ IDEA
+*.iml
+*.iws
+*.ipr
+.idea/
+
+# Test Coverage
+coverage*
+
+# Personal Preferences
+.vscode

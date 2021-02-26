@@ -1,2 +1,2 @@
 service: default
-runtime: nodejs10
+runtime: nodejs12
