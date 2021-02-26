@@ -178,6 +178,13 @@ class VoucherSuppliesRepository {
     return VoucherSupply.findById(id);
   }
 
+  async getVoucherSupplyByOwnerAndCorrelationId(metadata) {
+    return VoucherSupply.findOne({
+      voucherOwner: metadata.voucherOwner,
+      _correlationId: metadata._correlationId,
+    });
+  }
+
   async getVoucherSupplyBySupplyTokenId(supplyTokenId) {
     return VoucherSupply.findOne({ _tokenIdSupply: supplyTokenId });
   }

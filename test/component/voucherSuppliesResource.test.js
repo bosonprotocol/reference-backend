@@ -272,14 +272,20 @@ describe("Voucher Supplies Resource", () => {
         voucherSupplyData,
         imageFilePath
       );
-      voucherSupplyData.id = voucherSupplyId;
       // END CREATE VOUCHER SUPPLY
+
+      // GET VOUCHER SUPPLY
+      const responseVoucherSupply = await api
+        .voucherSupplies()
+        .getById(voucherSupplyId);
+      const voucherSupply = responseVoucherSupply.body.voucherSupply;
+      // END GET VOUCHER SUPPLY
 
       // SET VOUCHER SUPPLY METADATA
       const response = await api
         .withToken(gcloudToken)
         .voucherSupplies()
-        .setMetadata(voucherSupplyData);
+        .setMetadata(voucherSupply);
 
       const expectedPropertyName = "success";
       const propertyNames = Object.getOwnPropertyNames(response.body);
@@ -302,19 +308,28 @@ describe("Voucher Supplies Resource", () => {
         voucherSupplyData,
         imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
-      await prerequisites.createVoucherSupply(
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
         token,
         voucherSupplyData,
         imageFilePath
       );
-      voucherSupplyData.id = Random.voucherSupplyId(); // force failure
       // END CREATE VOUCHER SUPPLY
+
+      // GET VOUCHER SUPPLY
+      const responseVoucherSupply = await api
+        .voucherSupplies()
+        .getById(voucherSupplyId);
+      const voucherSupply = responseVoucherSupply.body.voucherSupply;
+      // END GET VOUCHER SUPPLY
+
+      voucherSupply.voucherOwner = null; // force failure
+      voucherSupply._correlationId = null; // force failure
 
       // SET VOUCHER SUPPLY METADATA
       const response = await api
         .withToken(gcloudToken)
         .voucherSupplies()
-        .setMetadata(voucherSupplyData);
+        .setMetadata(voucherSupply);
       // SET VOUCHER SUPPLY METADATA
 
       expect(response.status).to.eql(400);
@@ -337,18 +352,24 @@ describe("Voucher Supplies Resource", () => {
         voucherSupplyData,
         imageFilePath
       );
-      voucherSupplyData.id = voucherSupplyId;
       // END CREATE VOUCHER SUPPLY
 
-      delete voucherSupplyData._tokenIdSupply; // force failure
+      // GET VOUCHER SUPPLY
+      const responseVoucherSupply = await api
+        .voucherSupplies()
+        .getById(voucherSupplyId);
+      const voucherSupply = responseVoucherSupply.body.voucherSupply;
+      // END GET VOUCHER SUPPLY
+
+      delete voucherSupply._tokenIdSupply; /// force failure
 
       // SET VOUCHER SUPPLY METADATA
       const response = await api
         .withToken(gcloudToken)
         .voucherSupplies()
-        .setMetadata(voucherSupplyData);
+        .setMetadata(voucherSupply);
       // SET VOUCHER SUPPLY METADATA
-
+      console.log(response.body);
       expect(response.status).to.eql(400);
     });
 
@@ -364,19 +385,20 @@ describe("Voucher Supplies Resource", () => {
         voucherSupplyData,
         imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
-      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+      await prerequisites.createVoucherSupply(
         token,
         voucherSupplyData,
         imageFilePath
       );
-      voucherSupplyData.id = voucherSupplyId;
       // END CREATE VOUCHER SUPPLY
+
+      const voucherSupply = null; // force failure
 
       // SET VOUCHER SUPPLY METADATA
       const response = await api
         .withToken(gcloudToken)
         .voucherSupplies()
-        .setMetadata(null); // force failure
+        .setMetadata(voucherSupply);
       // SET VOUCHER SUPPLY METADATA
 
       expect(response.status).to.eql(400);
