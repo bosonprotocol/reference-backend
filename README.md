@@ -34,8 +34,23 @@ For instructions on how to get set up with these specific versions:
 * See the [OS X guide](docs/setup/osx.md) if you are on a Mac.
 * See the [Linux guide](docs/setup/linux.md) if you use a Linux distribution.
 
-### Running the build
+### Running the app locally
+1. Create a `.env` file based on the `.env.example` file.
 
+```shell script
+DB_CONNECTION_STRING=mongodb://localhost:27017/api # The connection string to MongoDB.
+TOKEN_SECRET=1fdd5... # A random string used in the JWT token generation.
+GCLOUD_SECRET=1f123ce5... # Your GCloud secret token. See [the Google docs](https://cloud.google.com/secret-manager/docs/creating-and-accessing-secrets).
+VOUCHERS_BUCKET="vouchers-upload-images-bucket" # The name for your bucket in Google cloud storage where the images will be stored.
+```
+
+2. Run:
+```shell script
+npm install
+npm start
+```
+
+### Running the build
 We have a fully automated local build process to check that your changes are
 good to be merged. To run the build:
 
