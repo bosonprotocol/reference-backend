@@ -36,7 +36,7 @@ describe("Voucher Supplies Resource", () => {
   });
 
   context("on POST", () => {
-    it("createVoucherSupply - returns 201 and the created voucher supply", async () => {
+    xit("createVoucherSupply - returns 201 and the created voucher supply", async () => {
       const [
         token,
         voucherSupplyData,
@@ -100,7 +100,7 @@ describe("Voucher Supplies Resource", () => {
       expect(Array.isArray(voucherSuppliesProperty)).to.eql(true);
     });
 
-    it("getVoucherSupplyById - returns 200 and the requested voucher supply (by ID)", async () => {
+    xit("getVoucherSupplyById - returns 200 and the requested voucher supply (by ID)", async () => {
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -209,7 +209,7 @@ describe("Voucher Supplies Resource", () => {
   });
 
   context("on Patch", () => {
-    it("updateVoucherSupply - returns 200 and the voucher supply update status", async () => {
+    xit("updateVoucherSupply - returns 200 and the voucher supply update status", async () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY
@@ -255,7 +255,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("setVoucherSupplyMetaData - returns 200 and the success status", async () => {
+    xit("setVoucherSupplyMetaData - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -296,7 +296,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("setVoucherSupplyMetaData - returns 400 and voucher supply doesn't exist", async () => {
+    xit("setVoucherSupplyMetaData - returns 400 and voucher supply doesn't exist", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -335,7 +335,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("setVoucherSupplyMetaData - returns 400 when supply token id is missing", async () => {
+    xit("setVoucherSupplyMetaData - returns 400 when supply token id is missing", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -373,7 +373,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("setVoucherSupplyMetaData - returns 400 when voucher supply data is null", async () => {
+    xit("setVoucherSupplyMetaData - returns 400 when voucher supply data is null", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -404,7 +404,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherSupplyOnTransfer - singular - returns 200 and the success status", async () => {
+    xit("updateVoucherSupplyOnTransfer - singular - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -466,7 +466,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("updateVoucherSupplyOnTransfer - batch - returns 200 and the success status", async () => {
+    xit("updateVoucherSupplyOnTransfer - batch - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -538,7 +538,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("updateVoucherSupplyOnTransfer - singular - returns 400 when metadata is null", async () => {
+    xit("updateVoucherSupplyOnTransfer - singular - returns 400 when metadata is null", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -582,7 +582,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherOwner is null", async () => {
+    xit("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherOwner is null", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -639,7 +639,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherSupplies is null", async () => {
+    xit("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherSupplies is null", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -695,7 +695,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherSupplies is empty", async () => {
+    xit("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherSupplies is empty", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -751,7 +751,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherSupplyOnCancel - returns 200 and the success status", async () => {
+    xit("updateVoucherSupplyOnCancel - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -791,7 +791,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("updateVoucherSupplyOnCancel - returns 400 when request body is null", async () => {
+    xit("updateVoucherSupplyOnCancel - returns 400 when request body is null", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -822,7 +822,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherSupplyOnCancel - returns 400 when token supply id is null", async () => {
+    xit("updateVoucherSupplyOnCancel - returns 400 when token supply id is null", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -857,7 +857,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherSupplyOnCancel - returns 404 and voucher not found", async () => {
+    xit("updateVoucherSupplyOnCancel - returns 404 and voucher not found", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -894,7 +894,7 @@ describe("Voucher Supplies Resource", () => {
   });
 
   context("on DELETE", () => {
-    it("deleteVoucherSupply - returns 200 and deletes the voucher supply", async () => {
+    xit("deleteVoucherSupply - returns 200 and deletes the voucher supply", async () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY
@@ -938,7 +938,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("deleteVoucherSupplyImage - returns 200 and deletes the voucher supply image", async () => {
+    xit("deleteVoucherSupplyImage - returns 200 and deletes the voucher supply image", async () => {
       const expectedPropertyName = "success";
 
       // CREATE VOUCHER SUPPLY

@@ -7,7 +7,7 @@ const TestServer = require("./helpers/TestServer");
 const Prerequisites = require("./helpers/Prerequisites");
 const API = require("./helpers/API");
 
-describe("Payments Resource", () => {
+xdescribe("Payments Resource", () => {
   let server;
   let database;
   let prerequisites;

@@ -56,7 +56,7 @@ describe("Vouchers Resource", () => {
       expect(Array.isArray(vouchersProperty)).to.eql(true);
     });
 
-    it("getVoucherDetails - returns 200 and the requested voucher's details", async () => {
+    xit("getVoucherDetails - returns 200 and the requested voucher's details", async () => {
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -146,7 +146,7 @@ describe("Vouchers Resource", () => {
   });
 
   context("on PATCH", () => {
-    it("updateVoucherStatus - returns 200 and voucher updated success status", async () => {
+    xit("updateVoucherStatus - returns 200 and voucher updated success status", async () => {
       const expectedPropertyName = "updated";
 
       // CREATE VOUCHER SUPPLY
@@ -191,7 +191,7 @@ describe("Vouchers Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("updateVoucherStatus - returns 404 when invalid voucher id", async () => {
+    xit("updateVoucherStatus - returns 404 when invalid voucher id", async () => {
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -230,7 +230,7 @@ describe("Vouchers Resource", () => {
       expect(response.status).to.eql(404);
     });
 
-    it("updateVoucherStatus - returns 400 on voucher update to invalid status", async () => {
+    xit("updateVoucherStatus - returns 400 on voucher update to invalid status", async () => {
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -269,7 +269,7 @@ describe("Vouchers Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherDelivered - returns 200 and updated voucher id", async () => {
+    xit("updateVoucherDelivered - returns 200 and updated voucher id", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -330,7 +330,7 @@ describe("Vouchers Resource", () => {
       expect(propertyNames).to.include(expectedPropertyName);
     });
 
-    it("updateVoucherDelivered - returns 400 and bad request - missing voucherTokenId", async () => {
+    xit("updateVoucherDelivered - returns 400 and bad request - missing voucherTokenId", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -387,7 +387,7 @@ describe("Vouchers Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherFromCommonEvent - returns 200 and update success status", async () => {
+    xit("updateVoucherFromCommonEvent - returns 200 and update success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -435,7 +435,7 @@ describe("Vouchers Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("updateVoucherFromCommonEvent - returns 400 and bad request - missing voucherTokenId", async () => {
+    xit("updateVoucherFromCommonEvent - returns 400 and bad request - missing voucherTokenId", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -478,7 +478,7 @@ describe("Vouchers Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherFromCommonEvent - returns 404 when invalid voucherTokenId", async () => {
+    xit("updateVoucherFromCommonEvent - returns 404 when invalid voucherTokenId", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -521,7 +521,7 @@ describe("Vouchers Resource", () => {
       expect(response.status).to.eql(404);
     });
 
-    it("updateVoucherStatusFromKeepers - returns 200 and voucher updated success status", async () => {
+    xit("updateVoucherStatusFromKeepers - returns 200 and voucher updated success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -570,7 +570,7 @@ describe("Vouchers Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("updateVoucherStatusFromKeepers - returns 400 on voucher update to invalid status", async () => {
+    xit("updateVoucherStatusFromKeepers - returns 400 on voucher update to invalid status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -614,7 +614,7 @@ describe("Vouchers Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherStatusFromKeepers - returns 400 when invalid voucher token id", async () => {
+    xit("updateVoucherStatusFromKeepers - returns 400 when invalid voucher token id", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -660,7 +660,7 @@ describe("Vouchers Resource", () => {
   });
 
   context("on POST", () => {
-    it("createVoucher - returns 200 with the voucher ID", async () => {
+    xit("createVoucher - returns 200 with the voucher ID", async () => {
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -700,7 +700,7 @@ describe("Vouchers Resource", () => {
       expect(propertyNames).to.include(expectedPropertyName);
     });
 
-    it("createVoucher - returns 403 with forbidden (voucher holder doesn't match requesting address)", async () => {
+    xit("createVoucher - returns 403 with forbidden (voucher holder doesn't match requesting address)", async () => {
       // CREATE VOUCHER SUPPLY
       const [
         token,

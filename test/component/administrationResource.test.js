@@ -203,7 +203,7 @@ describe("Administration Resource", () => {
       expect(secondUserTokenAfterPayload.role).to.eql(userRoles.USER);
     });
 
-    it("changeVoucherSupplyVisibility - return 200 and allow an admin to change voucher supply's visibility", async () => {
+    xit("changeVoucherSupplyVisibility - return 200 and allow an admin to change voucher supply's visibility", async () => {
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -237,7 +237,7 @@ describe("Administration Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(false); // visible changed from true to false
     });
 
-    it("changeVoucherSupplyVisibility - return 403 when change requested by non-admin user", async () => {
+    xit("changeVoucherSupplyVisibility - return 403 when change requested by non-admin user", async () => {
       // CREATE VOUCHER SUPPLY
       const [
         token,
