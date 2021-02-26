@@ -369,7 +369,7 @@ describe("Voucher Supplies Resource", () => {
         .voucherSupplies()
         .setMetadata(voucherSupply);
       // SET VOUCHER SUPPLY METADATA
-      console.log(response.body);
+
       expect(response.status).to.eql(400);
     });
 
