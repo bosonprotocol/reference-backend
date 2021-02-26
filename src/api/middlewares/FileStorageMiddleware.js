@@ -44,9 +44,8 @@ class FileStorageMiddleware {
 
       req.fileRefs = fileRefs;
 
+      next();
     });
-
-    next();
 
   }
 }
