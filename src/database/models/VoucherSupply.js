@@ -86,7 +86,7 @@ const voucherSchema = new Schema({
     required: false,
   },
   _correlationId: {
-    type: Number,
+    type: String,
     required: false,
   },
   _paymentType: {

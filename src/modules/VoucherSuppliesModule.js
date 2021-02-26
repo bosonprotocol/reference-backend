@@ -135,7 +135,7 @@ class VoucherSuppliesModule {
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+        this.voucherValidationMiddleware.validateVoucherSupplyExistsByOwnerAndCorrelationId(
           req,
           res,
           next
