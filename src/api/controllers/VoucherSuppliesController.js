@@ -5,7 +5,8 @@ const ApiError = require("../ApiError");
 const voucherUtils = require("../../utils/voucherUtils");
 
 class VoucherSuppliesController {
-  constructor(voucherSuppliesRepository) {
+  constructor(configurationService, voucherSuppliesRepository) {
+    this.configurationService = configurationService;
     this.voucherSuppliesRepository = voucherSuppliesRepository;
   }
 
@@ -166,11 +167,12 @@ class VoucherSuppliesController {
   }
 
   async createVoucherSupply(req, res, next) {
-    const fileRefs = req.fileRefs;
+    const bucketName = this.configurationService.bucketName;
     const voucherOwner = res.locals.address;
     let voucherSupply;
 
     try {
+      const fileRefs = await voucherUtils.uploadFiles(req, bucketName);
       voucherSupply = await this.voucherSuppliesRepository.createVoucherSupply(
         req.body,
         fileRefs,
@@ -188,11 +190,12 @@ class VoucherSuppliesController {
   }
 
   async updateVoucherSupply(req, res, next) {
-    const fileRefs = req.fileRefs;
+    const bucketName = this.configurationService.bucketName;
     const voucherOwner = res.locals.address;
     const voucher = res.locals.voucherSupply;
 
     try {
+      const fileRefs = await voucherUtils.uploadFiles(req, bucketName);
       await this.voucherSuppliesRepository.updateVoucherSupply(
         voucher,
         req.body,

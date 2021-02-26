@@ -4,6 +4,11 @@ const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware"
 const VoucherValidationMiddleware = require("../api/middlewares/VoucherValidationMiddleware");
 const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
 
+const multer = require("multer");
+const storage = multer.diskStorage({});
+const FILE_LIMIT = 10;
+const upload = multer({ storage });
+
 class VoucherSuppliesModule {
   constructor({
     configurationService,
@@ -28,7 +33,10 @@ class VoucherSuppliesModule {
       new VoucherValidationMiddleware(voucherSuppliesRepository);
     this.voucherSuppliesController =
       voucherSuppliesController ||
-      new VoucherSuppliesController(voucherSuppliesRepository);
+      new VoucherSuppliesController(
+        configurationService,
+        voucherSuppliesRepository
+      );
   }
 
   mountPoint() {
@@ -41,8 +49,8 @@ class VoucherSuppliesModule {
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
+      ErrorHandlingMiddleware.globalErrorHandler(
+        upload.array("fileToUpload", FILE_LIMIT)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherValidationMiddleware.validateDates(req, res, next)
@@ -196,8 +204,8 @@ class VoucherSuppliesModule {
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
+      ErrorHandlingMiddleware.globalErrorHandler(
+        upload.array("fileToUpload", FILE_LIMIT)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherValidationMiddleware.validateVoucherSupplyExists(
