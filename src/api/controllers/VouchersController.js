@@ -127,7 +127,6 @@ class VouchersController {
       await this.voucherSuppliesRepository.decrementVoucherSupplyQty(
         voucher.supplyID
       );
-
     } catch (error) {
       console.error(error);
       return next(
