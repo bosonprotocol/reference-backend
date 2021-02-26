@@ -12,7 +12,6 @@ class FileStorageMiddleware {
   }
 
   async storeFiles(req, res, next) {
-    console.log('in store files');
     this.delegate(req, res, async () => {
       if (!req.files) return [];
 
