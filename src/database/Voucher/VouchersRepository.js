@@ -89,7 +89,7 @@ class VouchersRepository {
   }
 
   async getAllVouchersByVoucherSupplyIdAndOwner(voucherSupplyId, owner) {
-    return Voucher.where("supplyID")
+    return Voucher.where("_tokenIdSupply")
       .equals(voucherSupplyId)
       .where("voucherOwner")
       .equals(owner);
