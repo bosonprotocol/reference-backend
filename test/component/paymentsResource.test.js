@@ -14,12 +14,13 @@ describe("Payments Resource", () => {
   let api;
 
   const tokenSecret = Random.tokenSecret();
+  const gcloudSecret = Random.gcloudSecret();
 
   before(async () => {
     database = await Database.connect();
     server = await new TestServer()
       .onAnyPort()
-      .addConfigurationOverrides({ tokenSecret })
+      .addConfigurationOverrides({ tokenSecret, gcloudSecret })
       .start();
     api = new API(server.address);
     prerequisites = new Prerequisites(api);
@@ -36,6 +37,11 @@ describe("Payments Resource", () => {
 
   context("on GET", () => {
     it("getPaymentsByVoucherTokenId - returns 200 and all payments for the given voucherTokenId", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -69,7 +75,7 @@ describe("Payments Resource", () => {
       const paymentsMetadata = [
         Random.paymentMetadata({ _tokenIdVoucher: voucherTokenId }),
       ]; // override with correct id
-      await prerequisites.createPayment(token, paymentsMetadata);
+      await prerequisites.createPayment(gcloudToken, paymentsMetadata);
       // END CREATE PAYMENT
 
       const response = await api.payments().getByVoucherId(voucherTokenId);
@@ -81,6 +87,11 @@ describe("Payments Resource", () => {
     });
 
     it("getPaymentActors - returns 200 and all payment actors for the given voucherTokenId", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -115,7 +126,7 @@ describe("Payments Resource", () => {
       const paymentsMetadata = [
         Random.paymentMetadata({ _tokenIdVoucher: voucherTokenId }),
       ]; // override with correct id
-      await prerequisites.createPayment(token, paymentsMetadata);
+      await prerequisites.createPayment(gcloudToken, paymentsMetadata);
       // END CREATE PAYMENT
 
       const response = await api.payments().getActors(voucherId);
@@ -128,6 +139,11 @@ describe("Payments Resource", () => {
     });
 
     it("getPaymentActors - returns 400 when voucherId is invalid", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -162,7 +178,7 @@ describe("Payments Resource", () => {
       const paymentsMetadata = [
         Random.paymentMetadata({ _tokenIdVoucher: voucherTokenId }),
       ]; // override with correct id
-      await prerequisites.createPayment(token, paymentsMetadata);
+      await prerequisites.createPayment(gcloudToken, paymentsMetadata);
       // END CREATE PAYMENT
 
       const response = await api.payments().getActors(voucherId);
@@ -173,6 +189,11 @@ describe("Payments Resource", () => {
 
   context("on POST", () => {
     it("createPayment - returns 200 and all payments for the given voucherTokenId", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -205,7 +226,7 @@ describe("Payments Resource", () => {
       const [
         paymentResponseCode,
         paymentResponseBody,
-      ] = await prerequisites.createPayment(token, paymentsMetadata);
+      ] = await prerequisites.createPayment(gcloudToken, paymentsMetadata);
       // END CREATE PAYMENT
 
       const expectedPropertyName = "updated";
@@ -216,7 +237,51 @@ describe("Payments Resource", () => {
       expect(paymentResponseBody[expectedPropertyName]).to.eql(true);
     });
 
+    it("createPayment - returns 403 when invalid token", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId,
+        voucherSupplyOwner,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // CREATE VOUCHER
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+      // END CREATE VOUCHER
+
+      // CREATE PAYMENT
+      const paymentsMetadata = [Random.paymentMetadata()]; // must be array
+      const [paymentResponseCode] = await prerequisites.createPayment(
+        token,
+        paymentsMetadata
+      ); // force fail with wrong token
+      // END CREATE PAYMENT
+
+      expect(paymentResponseCode).to.eql(403);
+    });
+
     it("createPayment - returns 400 when paymentMetadata is not an array", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -247,7 +312,7 @@ describe("Payments Resource", () => {
       // CREATE PAYMENT
       const paymentsMetadata = Random.paymentMetadata(); // force failure
       const [paymentResponseCode] = await prerequisites.createPayment(
-        token,
+        gcloudToken,
         paymentsMetadata
       );
       // END CREATE PAYMENT
@@ -256,6 +321,11 @@ describe("Payments Resource", () => {
     });
 
     it("createPayment - returns 400 when paymentsMetadata elements are not objects", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -286,7 +356,7 @@ describe("Payments Resource", () => {
       // CREATE PAYMENT
       const paymentsMetadata = ["FAKE_PAYMENTS_METADATA_NOT_AN_OBJECT"]; // force failure
       const [paymentResponseCode] = await prerequisites.createPayment(
-        token,
+        gcloudToken,
         paymentsMetadata
       );
       // END CREATE PAYMENT
@@ -295,6 +365,11 @@ describe("Payments Resource", () => {
     });
 
     it("createPayment - returns 400 when paymentsMetadata elements don't contain voucherTokenId", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -328,7 +403,7 @@ describe("Payments Resource", () => {
       // CREATE PAYMENT
       const paymentsMetadata = [paymentMetadata];
       const [paymentResponseCode] = await prerequisites.createPayment(
-        token,
+        gcloudToken,
         paymentsMetadata
       );
       // END CREATE PAYMENT
@@ -337,6 +412,11 @@ describe("Payments Resource", () => {
     });
 
     it("createPayment - returns 400 when paymentsMetadata contains invalid voucherTokenId", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -370,7 +450,7 @@ describe("Payments Resource", () => {
       // CREATE PAYMENT
       const paymentsMetadata = [paymentMetadata];
       const [paymentResponseCode] = await prerequisites.createPayment(
-        token,
+        gcloudToken,
         paymentsMetadata
       );
       // END CREATE PAYMENT
