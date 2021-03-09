@@ -37,7 +37,6 @@ class VoucherSuppliesRepository {
       visible: true,
       _correlationId: metadata._correlationId,
       _tokenIdSupply: metadata._tokenIdSupply,
-      _paymentType: metadata.paymentType,
       imagefiles: fileRefs,
     });
 
