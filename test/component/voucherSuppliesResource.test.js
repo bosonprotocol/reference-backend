@@ -55,14 +55,13 @@ describe("Voucher Supplies Resource", () => {
       let [
         token,
         voucherSupplyData,
-        imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
       const filePath = "test/fixtures/malicious-fake-image.html";
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, filePath);
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
 
       expect(response.status).to.eql(400);
     });
@@ -71,14 +70,13 @@ describe("Voucher Supplies Resource", () => {
       let [
         token,
         voucherSupplyData,
-        imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
       const filePath = "test/fixtures/less-than-10KB.png";
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, filePath);
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
 
       expect(response.status).to.eql(400);
     });
@@ -281,9 +279,9 @@ describe("Voucher Supplies Resource", () => {
         imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
       const [voucherSupplyId] = await prerequisites.createVoucherSupply(
-          token,
-          voucherSupplyData,
-          imageFilePath
+        token,
+        voucherSupplyData,
+        imageFilePath
       );
       // END CREATE VOUCHER SUPPLY
 
@@ -291,9 +289,9 @@ describe("Voucher Supplies Resource", () => {
       const newImageFilePath = "test/fixtures/malicious-fake-image.html";
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .update(voucherSupplyId, newImageFilePath);
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, newImageFilePath);
       // END OF UPDATE
 
       expect(response.status).to.eql(400);
@@ -307,9 +305,9 @@ describe("Voucher Supplies Resource", () => {
         imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
       const [voucherSupplyId] = await prerequisites.createVoucherSupply(
-          token,
-          voucherSupplyData,
-          imageFilePath
+        token,
+        voucherSupplyData,
+        imageFilePath
       );
       // END CREATE VOUCHER SUPPLY
 
@@ -317,9 +315,9 @@ describe("Voucher Supplies Resource", () => {
       const newImageFilePath = "test/fixtures/less-than-10KB.png";
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .update(voucherSupplyId, newImageFilePath);
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, newImageFilePath);
       // END OF UPDATE
 
       expect(response.status).to.eql(400);

@@ -1,3 +1,5 @@
+const FileStore = require("../services/FileStore");
+
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
 const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware");
@@ -21,7 +23,7 @@ class VoucherSuppliesModule {
       voucherImageStorageMiddleware ||
       new FileStorageMiddleware(
         "fileToUpload",
-        configurationService.vouchersBucket
+        new FileStore(configurationService.vouchersBucket)
       );
     this.voucherValidationMiddleware =
       voucherValidationMiddleware ||
