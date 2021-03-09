@@ -51,6 +51,38 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(201);
     });
 
+    it("createVoucherSupply - returns 400 when invalid mime-type", async () => {
+      let [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/malicious-fake-image.html";
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when image size too small (<10KB)", async () => {
+      let [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/less-than-10KB.png";
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
     it("createVoucherSupply - returns 400 when invalid dates (start and/or end)", async () => {
       let [
         token,
@@ -239,6 +271,58 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(200);
       expect(propertyNames).to.include(expectedPropertyName);
       expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
+    });
+
+    it("updateVoucherSupply - returns 400 when invalid mime-type", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+          token,
+          voucherSupplyData,
+          imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/malicious-fake-image.html";
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .update(voucherSupplyId, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupply - returns 400 when image size too small (<10KB)", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+          token,
+          voucherSupplyData,
+          imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/less-than-10KB.png";
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .update(voucherSupplyId, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
     });
 
     it("updateVoucherSupply - returns 400 with voucher supply does not exist (i.e. invalid ID)", async () => {
