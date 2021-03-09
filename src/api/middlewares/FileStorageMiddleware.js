@@ -13,7 +13,7 @@ class FileStorageMiddleware {
 
   async storeFiles(req, res, next) {
     this.delegate(req, res, async () => {
-      if (!req.files) return [];
+      if (!req.files) next();
 
       const PDF_CONTENT_TYPE = "application/pdf";
       const gcs = new Storage();
