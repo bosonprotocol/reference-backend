@@ -93,7 +93,7 @@ class VoucherSuppliesRepository {
   async setVoucherSupplyMeta(metadata) {
     return VoucherSupply.findOneAndUpdate(
       {
-        voucherOwner: metadata._voucherOwner,
+        voucherOwner: metadata.voucherOwner,
         _correlationId: metadata._correlationId,
       },
       {
@@ -180,7 +180,7 @@ class VoucherSuppliesRepository {
 
   async getVoucherSupplyByOwnerAndCorrelationId(metadata) {
     return VoucherSupply.findOne({
-      voucherOwner: metadata._voucherOwner,
+      voucherOwner: metadata.voucherOwner,
       _correlationId: metadata._correlationId,
     });
   }
