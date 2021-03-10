@@ -123,10 +123,6 @@ class VouchersController {
 
     try {
       voucher = await this.vouchersRepository.createVoucher(metadata, supplyID);
-      //todo once EL are implemented this should be removed from here...
-      await this.voucherSuppliesRepository.decrementVoucherSupplyQty(
-        voucher.supplyID
-      );
     } catch (error) {
       console.error(error);
       return next(
