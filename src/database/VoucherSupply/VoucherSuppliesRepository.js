@@ -37,6 +37,7 @@ class VoucherSuppliesRepository {
       visible: true,
       _correlationId: metadata._correlationId,
       _tokenIdSupply: metadata._tokenIdSupply,
+      _paymentType: metadata.paymentType,
       imagefiles: fileRefs,
     });
 
@@ -93,7 +94,7 @@ class VoucherSuppliesRepository {
   async setVoucherSupplyMeta(metadata) {
     return VoucherSupply.findOneAndUpdate(
       {
-        voucherOwner: metadata.voucherOwner,
+        voucherOwner: metadata._voucherOwner,
         _correlationId: metadata._correlationId,
       },
       {
