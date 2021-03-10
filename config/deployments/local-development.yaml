@@ -6,5 +6,7 @@ database_version: "4.4"
 
 database_type: "local"
 
+app_port: "3001"
+
 token_secret: "e039b2caa4b26f6ec6c65388676389e917e0cd248aaf1222df0540b9bb60d160393e15620e5155cbe2abb97f1b3f96483f670a5788d17a2488077bbce696afcc"
 gcloud_secret: "e9c21f96242935be36928c9acb44ef88b1153644994ba1"

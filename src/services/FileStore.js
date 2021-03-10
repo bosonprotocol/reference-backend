@@ -17,7 +17,7 @@ class FileStore {
     await this.storageBucket.file(location).makePublic();
 
     return {
-      url: `https://storage.googleapis.com/${location}`,
+      url: `https://storage.googleapis.com/${this.storageBucket.name}/${location}`,
       type: file.mimetype === PDF_CONTENT_TYPE ? "document" : "image",
     };
   }
