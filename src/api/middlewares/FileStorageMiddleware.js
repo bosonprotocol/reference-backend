@@ -47,8 +47,6 @@ class FileStorageMiddleware {
 
       next();
     });
-      // next();
-
   }
 }
 
