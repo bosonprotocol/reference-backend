@@ -396,7 +396,7 @@ namespace :ci do
 
         t.target = configuration.concourse_team
         t.team = configuration.concourse_team
-        t.pipeline = "reference-backend-pr-#{branch}"
+        t.pipeline = "reference-backend-pr-#{to_pipeline_name(branch)}"
 
         t.config = 'pipelines/pr/pipeline.yaml'
 
@@ -463,6 +463,10 @@ end
 
 def to_db_name(string)
   string.gsub(/[^a-zA-Z0-9_-]/, "")
+end
+
+def to_pipeline_name(string)
+  string.gsub(/[^a-zA-Z0-9_-]/, "_")
 end
 
 def database_overrides_for(configuration, args)

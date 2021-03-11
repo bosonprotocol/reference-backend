@@ -72,7 +72,10 @@ class TestServer {
       authenticationService
     );
     const fakeVoucherImageFileStore = new FakeFileStore();
-    const voucherImageStorageMiddleware = new FileStorageMiddleware("fileToUpload", fakeVoucherImageFileStore);
+    const voucherImageStorageMiddleware = new FileStorageMiddleware(
+      "fileToUpload",
+      fakeVoucherImageFileStore
+    );
 
     const dependencies = {
       configurationService,

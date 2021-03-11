@@ -89,9 +89,9 @@ describe("Voucher Supplies Resource", () => {
       const filePath = "test/fixtures/greater-than-5MB.jpg";
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .post(voucherSupplyData, filePath);
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
 
       expect(response.status).to.eql(400);
     });
@@ -346,9 +346,9 @@ describe("Voucher Supplies Resource", () => {
         imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
       const [voucherSupplyId] = await prerequisites.createVoucherSupply(
-          token,
-          voucherSupplyData,
-          imageFilePath
+        token,
+        voucherSupplyData,
+        imageFilePath
       );
       // END CREATE VOUCHER SUPPLY
 
@@ -356,9 +356,9 @@ describe("Voucher Supplies Resource", () => {
       const newImageFilePath = "test/fixtures/greater-than-5MB.jpg";
 
       const response = await api
-          .withToken(token)
-          .voucherSupplies()
-          .update(voucherSupplyId, newImageFilePath);
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, newImageFilePath);
       // END OF UPDATE
 
       expect(response.status).to.eql(400);

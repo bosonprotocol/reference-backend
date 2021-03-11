@@ -1,6 +1,7 @@
 const multer = require("multer");
 
 const ApiError = require("../../api/ApiError");
+const { v4: uuidv4 } = require("uuid");
 
 class FileStorageMiddleware {
   constructor(fieldName, fileStore) {
@@ -45,14 +46,14 @@ class FileStorageMiddleware {
 
       if (!this.validFileTypes(req.files)) {
         return next(
-            new ApiError(400, "Invalid file type for voucher set image.")
+          new ApiError(400, "Invalid file type for voucher set image.")
         );
       }
 
       const fileRefs = [];
 
       try {
-        const subFolderName = req.body.title;
+        const subFolderName = uuidv4();
 
         for (let i = 0; i < req.files.length; i++) {
           const file = req.files[i];
