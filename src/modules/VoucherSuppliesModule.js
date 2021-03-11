@@ -117,14 +117,6 @@ class VoucherSuppliesModule {
       )
     );
 
-    // TODO: Delete this route, once event listeners are merged to develop
-    router.patch(
-      "/update-supply-oncancel-intermediary",
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherSuppliesController.updateSupplyOnCancel(req, res, next)
-      )
-    );
-
     router.patch(
       "/set-supply-meta",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
