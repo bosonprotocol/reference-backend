@@ -38,6 +38,7 @@ task :build_fix => [
 task :test, [:deployment_type, :deployment_label] do |_, args|
   [
     :'tests:app:unit',
+    :'tests:app:integration',
     :'tests:app:persistence',
     :'tests:app:component'
   ].each do |task_name|
@@ -264,9 +265,14 @@ namespace :tests do
       sh('npm', 'run', 'tests:app:format-fix')
     end
 
-    desc "Run all component tests"
+    desc "Run all unit tests"
     task :unit => [:'app:dependencies:install'] do
       sh('npm', 'run', 'tests:app:unit')
+    end
+
+    desc "Run all integration tests"
+        task :integration => [:'app:dependencies:install'] do
+          sh('npm', 'run', 'tests:app:integration')
     end
 
     desc "Run all persistence tests"

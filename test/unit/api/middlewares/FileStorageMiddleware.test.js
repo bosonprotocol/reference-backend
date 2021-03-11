@@ -7,10 +7,9 @@ const path = require("path");
 const MockExpressRequest = require("mock-express-request");
 const FormData = require("form-data");
 
-const FakeFileStore = require('../../../shared/fakes/services/FakeFileStore')
-const Promises = require('../../../shared/helpers/Promises')
-
+const FakeFileStore = require("../../../shared/fakes/services/FakeFileStore");
 const FileStorageMiddleware = require("../../../../src/api/middlewares/FileStorageMiddleware");
+const Promises = require("../../../shared/helpers/Promises");
 
 describe("FileStorageMiddleware", () => {
   context("storeFiles", () => {
@@ -20,10 +19,10 @@ describe("FileStorageMiddleware", () => {
       const formData = new FormData();
       formData.append("title", "some-voucher");
       formData.append(
-        fieldName,
-        fs.createReadStream(
-          path.join(__dirname, "..", "..", "..", "fixtures", "valid-image.png")
-        )
+          fieldName,
+          fs.createReadStream(
+              path.join(__dirname, "..", "..", "..", "fixtures", "valid-image.png")
+          )
       );
       const request = new MockExpressRequest({
         method: "POST",
@@ -37,12 +36,12 @@ describe("FileStorageMiddleware", () => {
 
       const fileStore = FakeFileStore.successful();
       const fileStorageMiddleware = new FileStorageMiddleware(
-        fieldName,
-        fileStore
+          fieldName,
+          fileStore
       );
       const storeFiles = Promises.promisify(
-        fileStorageMiddleware.storeFiles,
-        fileStorageMiddleware
+          fileStorageMiddleware.storeFiles,
+          fileStorageMiddleware
       );
 
       await storeFiles(request, response);
@@ -60,10 +59,10 @@ describe("FileStorageMiddleware", () => {
       const formData = new FormData();
       formData.append("title", "some-voucher");
       formData.append(
-        fieldName,
-        fs.createReadStream(
-          path.join(__dirname, "..", "..", "..", "fixtures", "valid-image.png")
-        )
+          fieldName,
+          fs.createReadStream(
+              path.join(__dirname, "..", "..", "..", "fixtures", "valid-image.png")
+          )
       );
       const request = new MockExpressRequest({
         method: "POST",
@@ -77,12 +76,12 @@ describe("FileStorageMiddleware", () => {
 
       const fileStore = FakeFileStore.failure();
       const fileStorageMiddleware = new FileStorageMiddleware(
-        fieldName,
-        fileStore
+          fieldName,
+          fileStore
       );
       const storeFiles = Promises.promisify(
-        fileStorageMiddleware.storeFiles,
-        fileStorageMiddleware
+          fileStorageMiddleware.storeFiles,
+          fileStorageMiddleware
       );
 
       await expect(storeFiles(request, response)).to.eventually.be.rejected;

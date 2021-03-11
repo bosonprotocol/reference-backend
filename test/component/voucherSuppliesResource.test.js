@@ -81,6 +81,21 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
+    it("createVoucherSupply - returns 400 when image size too large (>5MB)", async () => {
+      let [
+        token,
+        voucherSupplyData,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/greater-than-5MB.jpg";
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
     it("createVoucherSupply - returns 400 when invalid dates (start and/or end)", async () => {
       let [
         token,
@@ -323,6 +338,32 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
+    it("updateVoucherSupply - returns 400 when image size too large (>5MB)", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+          token,
+          voucherSupplyData,
+          imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/greater-than-5MB.jpg";
+
+      const response = await api
+          .withToken(token)
+          .voucherSupplies()
+          .update(voucherSupplyId, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
+    });
+
     it("updateVoucherSupply - returns 400 with voucher supply does not exist (i.e. invalid ID)", async () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
@@ -486,7 +527,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    it("updateVoucherSupplyOnTransfer - singular - returns 200 and the success status", async () => {
+    xit("updateVoucherSupplyOnTransfer - singular - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -548,7 +589,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("updateVoucherSupplyOnTransfer - batch - returns 200 and the success status", async () => {
+    xit("updateVoucherSupplyOnTransfer - batch - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret

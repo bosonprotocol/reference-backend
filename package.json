@@ -23,6 +23,7 @@
     "tests:app:format": "prettier --list-different \"test/**/*.js\"",
     "tests:app:format-fix": "prettier --write \"test/**/*.js\"",
     "tests:app:unit": "mocha --reporter spec \"test/unit/**/*.test.js\"",
+    "tests:app:integration": "mocha --reporter spec \"test/integration/**/*.test.js\"",
     "tests:app:persistence": "mocha --reporter spec \"test/persistence/**/*.test.js\"",
     "tests:app:component": "mocha --reporter spec \"test/component/**/*.test.js\""
   },
