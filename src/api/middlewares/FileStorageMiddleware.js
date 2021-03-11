@@ -53,14 +53,15 @@ class FileStorageMiddleware {
       const fileRefs = [];
 
       try {
-        const subFolderName = uuidv4();
+        const folder = uuidv4();
 
         for (let i = 0; i < req.files.length; i++) {
           const file = req.files[i];
-          const fileName = file.originalname;
-          const storageDestination = `${subFolderName}/${fileName}`;
 
-          const fileRef = await this.fileStore.store(file, storageDestination);
+          const fileRef = await this.fileStore.store({
+            ...file,
+            folder,
+          });
 
           fileRefs.push(fileRef);
         }

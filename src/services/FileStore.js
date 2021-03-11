@@ -7,7 +7,9 @@ class FileStore {
     this.storageBucket = new Storage().bucket(bucketName);
   }
 
-  async store(file, location) {
+  async store(file) {
+    const location = `${file.folder}/${file.originalname}`;
+
     await this.storageBucket.upload(file.path, {
       destination: location,
       contentType: file.mimetype,

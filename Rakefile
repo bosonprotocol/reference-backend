@@ -38,7 +38,6 @@ task :build_fix => [
 task :test, [:deployment_type, :deployment_label] do |_, args|
   [
     :'tests:app:unit',
-    :'tests:app:integration',
     :'tests:app:persistence',
     :'tests:app:component'
   ].each do |task_name|
@@ -271,8 +270,20 @@ namespace :tests do
     end
 
     desc "Run all integration tests"
-        task :integration => [:'app:dependencies:install'] do
-          sh('npm', 'run', 'tests:app:integration')
+    task :integration => [:'app:dependencies:install'] do
+      configuration = configuration
+        .for_scope(
+          deployment_type: 'local',
+          deployment_label: 'testing',
+          role: 'integration-tests'
+        )
+
+      environment = configuration
+        .environment
+        .map { |k, v| [k.to_s, v] }
+        .to_h
+
+      sh(environment, 'npm', 'run', 'tests:app:integration')
     end
 
     desc "Run all persistence tests"

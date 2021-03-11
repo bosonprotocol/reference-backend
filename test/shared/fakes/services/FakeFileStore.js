@@ -12,18 +12,17 @@ class FakeFileStore {
     this.files = [];
   }
 
-  async store(file, location) {
+  async store(file) {
     if (this.errorMessage) {
       throw new Error(this.errorMessage);
     }
 
     this.files.push({
       file,
-      location,
     });
 
     return {
-      url: `https://example.com/${location}`,
+      url: `https://example.com/${file.folder}/${file.originalname}`,
       type: "image",
     };
   }
