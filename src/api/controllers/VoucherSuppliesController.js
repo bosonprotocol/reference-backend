@@ -217,7 +217,7 @@ class VoucherSuppliesController {
       await this.voucherSuppliesRepository.setVoucherSupplyMeta(req.body);
     } catch (error) {
       console.error(
-        `An error occurred while user [${req.body._voucherOwner}] tried to update Voucher.`
+        `An error occurred while user [${req.body.voucherOwner}] tried to update Voucher.`
       );
       console.error(error);
       return next(new ApiError(400, "Invalid voucher model"));
