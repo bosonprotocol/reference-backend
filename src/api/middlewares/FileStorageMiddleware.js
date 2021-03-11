@@ -1,6 +1,6 @@
 const multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
 class FileStorageMiddleware {
   constructor(fieldName, bucketName) {
