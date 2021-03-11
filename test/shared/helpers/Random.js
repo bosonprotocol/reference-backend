@@ -3,6 +3,7 @@ const keythereum = require("keythereum");
 const ethers = require("ethers");
 const mongoose = require("mongoose");
 const keccak256 = require("keccak256");
+const { v4: uuidv4 } = require("uuid");
 
 const voucherStatuses = require("../../../src/utils/voucherStatuses");
 const User = require("../../../src/database/models/User");
@@ -274,7 +275,7 @@ class Random {
 
   static fileRefUrl() {
     const bucketName = faker.random.alpha(10);
-    const subFolderName = faker.random.alpha(10);
+    const subFolderName = uuidv4();
     const fileName = faker.random.alpha(10);
 
     return `https://storage.googleapis.com/${bucketName}/${subFolderName}/${fileName}`;

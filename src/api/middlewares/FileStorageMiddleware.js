@@ -1,5 +1,6 @@
 const multer = require("multer");
 const { Storage } = require("@google-cloud/storage");
+const { v4: uuidv4 } = require("uuid");
 
 class FileStorageMiddleware {
   constructor(fieldName, bucketName) {
@@ -19,7 +20,7 @@ class FileStorageMiddleware {
       const gcs = new Storage();
       const bucketName = this.bucketName;
       const bucket = gcs.bucket(bucketName);
-      const subFolderName = req.body.title;
+      const subFolderName = uuidv4();
       const fileRefs = [];
 
       for (let i = 0; i < req.files.length; i++) {
