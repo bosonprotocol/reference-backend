@@ -20,11 +20,11 @@ class FileStorageMiddleware {
       const gcs = new Storage();
       const bucketName = this.bucketName;
       const bucket = gcs.bucket(bucketName);
-      const subFolderName = req.body.title;
+      const subFolderName = uuidv4();
       const fileRefs = [];
 
       for (let i = 0; i < req.files.length; i++) {
-        const fileName = uuidv4() + req.files[i].originalname;
+        const fileName = req.files[i].originalname;
         const storageDestination = `${subFolderName}/${fileName}`;
 
         await bucket.upload(req.files[i].path, {
