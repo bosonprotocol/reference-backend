@@ -9,7 +9,7 @@ const Random = require("../../shared/helpers/Random");
 
 const { Storage } = require("@google-cloud/storage");
 
-describe("FileStore", function() {
+describe("FileStore", function () {
   this.timeout(15 * 1000); // set longer timeout for image upload
 
   context("store()", () => {
