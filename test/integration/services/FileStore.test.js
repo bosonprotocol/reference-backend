@@ -9,7 +9,9 @@ const Random = require("../../shared/helpers/Random");
 
 const { Storage } = require("@google-cloud/storage");
 
-describe("FileStore", () => {
+describe("FileStore", function() {
+  this.timeout(15 * 1000); // set longer timeout for image upload
+
   context("store()", () => {
     it("uploads the file in google cloud storage using the specified location", async () => {
       const configurationService = new ConfigurationService();
@@ -17,7 +19,7 @@ describe("FileStore", () => {
       const bucket = new Storage().bucket(bucketName);
 
       const folder = Random.uuid();
-      const fileName = "valid-image.png";
+      const fileName = "update-image.png";
       const path = `test/fixtures/${fileName}`;
       const mimeType = "image/png";
 
