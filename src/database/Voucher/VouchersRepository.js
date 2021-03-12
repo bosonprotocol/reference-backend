@@ -23,6 +23,7 @@ class VouchersRepository {
         voucherOwner: metadata._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
         _correlationId: metadata._correlationId,
+        blockchainAnchored: false,
       },
       { new: true, upsert: true, runValidators: true }
     );
@@ -39,6 +40,7 @@ class VouchersRepository {
         _tokenIdVoucher: metadata._tokenIdVoucher,
         _promiseId: metadata._promiseId,
         voucherOwner: metadata._issuer,
+        blockchainAnchored: true,
       },
       { new: true, upsert: true }
     );
@@ -51,22 +53,6 @@ class VouchersRepository {
         ...metadata,
       },
       { new: true, upsert: true }
-    );
-  }
-
-  // TODO below functions actually are doing the same, we should update as per
-  //  collectionId, voucherId so we avoid duplication of functions
-  async updateVoucherStatus(voucherId, status) {
-    const voucher = await this.getVoucherById(voucherId);
-    if (!voucher) {
-      throw new Error("Voucher not found");
-    }
-    return Voucher.findByIdAndUpdate(
-      voucherId,
-      {
-        [status]: new Date().getTime(),
-      },
-      { useFindAndModify: false, new: true }
     );
   }
 
