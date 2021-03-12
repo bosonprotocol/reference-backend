@@ -93,22 +93,6 @@ class VouchersModule {
     );
 
     router.patch(
-      "/update",
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.userAuthenticationMiddleware.authenticateToken(req, res, next)
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.userValidationMiddleware.validateVoucherHolder(req, res, next)
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.vouchersController.validateVoucherStatus(req, res, next)
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.vouchersController.updateVoucherStatus(req, res, next)
-      )
-    );
-
-    router.patch(
       "/update-voucher-delivered",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userAuthenticationMiddleware.authenticateGCLOUDService(
