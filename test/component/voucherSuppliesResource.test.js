@@ -527,12 +527,11 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(400);
     });
 
-    xit("updateVoucherSupplyOnTransfer - singular - returns 200 and the success status", async () => {
+    it("updateVoucherSupplyOnTransfer - singular - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
       );
-
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -589,7 +588,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    xit("updateVoucherSupplyOnTransfer - batch - returns 200 and the success status", async () => {
+    it("updateVoucherSupplyOnTransfer - batch - returns 200 and the success status", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
