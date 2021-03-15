@@ -1,0 +1,14 @@
+environment:
+  PORT: "%{hiera('app_port')}"
+
+  DB_CONNECTION_STRING: "mongodb://localhost:%{hiera('database_port')}"
+  DB_NAME: "api"
+  DB_USERNAME: "%{hiera('database_username')}"
+  DB_PASSWORD: "%{hiera('database_password')}"
+
+  TOKEN_SECRET: "%{hiera('token_secret')}"
+  GCLOUD_SECRET: "%{hiera('gcloud_secret')}"
+
+  VOUCHERS_BUCKET: "%{hiera('image_storage_bucket_name')}"
+
+  GOOGLE_APPLICATION_CREDENTIALS: "%{hiera('google_application_credentials')}"

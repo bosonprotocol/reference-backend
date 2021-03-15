@@ -1,0 +1,3 @@
+environment:
+  VOUCHERS_BUCKET: "%{hiera('image_storage_bucket_name')}"
+  GOOGLE_APPLICATION_CREDENTIALS: "%{hiera('google_application_credentials')}"

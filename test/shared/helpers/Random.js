@@ -231,6 +231,24 @@ class Random {
     return digits.join("");
   }
 
+  static uuid() {
+    return uuidv4();
+  }
+
+  static file(overrides = {}) {
+    const defaultFileName = `${this.uuid()}.png`;
+    const defaultPath = "test/fixtures/valid-image.png";
+    const defaultMimeType = "image/png";
+    const defaultFolder = this.uuid();
+
+    return {
+      originalname: overrides.fileName || defaultFileName,
+      path: overrides.path || defaultPath,
+      mimetype: overrides.mimeType || defaultMimeType,
+      folder: overrides.folder || defaultFolder,
+    };
+  }
+
   static voucherSupplyId() {
     const digits = [];
     for (var i = 0; i < 24; i++) {
@@ -275,7 +293,7 @@ class Random {
 
   static fileRefUrl() {
     const bucketName = faker.random.alpha(10);
-    const subFolderName = uuidv4();
+    const subFolderName = this.uuid();
     const fileName = faker.random.alpha(10);
 
     return `https://storage.googleapis.com/${bucketName}/${subFolderName}/${fileName}`;
