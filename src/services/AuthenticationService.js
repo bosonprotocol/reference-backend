@@ -17,7 +17,7 @@ class AuthenticationService {
     return address === verifiedWalletAddress;
   }
 
-  generateToken(user, expiresIn = "180d") {
+  generateToken(user, expiresIn = "7d") {
     const tokenSecret = this.configurationService.tokenSecret;
     const payload = { user: user.address.toLowerCase(), role: user.role };
     const options = { expiresIn };
