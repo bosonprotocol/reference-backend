@@ -37,7 +37,7 @@ describe("User Signature Verification Resource", () => {
   });
 
   context("on POST", () => {
-    it("verifySignature - returns 200 with a JWT valid for 180 days when the signature is valid", async () => {
+    it("verifySignature - returns 200 with a JWT valid for 7 days when the signature is valid", async () => {
       const account = Random.account();
       const domain = Random.signingDomain();
       const address = account.address;
@@ -60,7 +60,7 @@ describe("User Signature Verification Resource", () => {
 
       expect(response.statusCode).to.eql(200);
       expect(tokenPayload.user).to.eql(address.toLowerCase());
-      expect(tokenValidityInDays).to.eql(180);
+      expect(tokenValidityInDays).to.eql(7);
     });
 
     it("verifySignature - returns 401 when the signature is incorrect", async () => {
