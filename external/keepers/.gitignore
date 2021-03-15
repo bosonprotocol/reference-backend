@@ -1,0 +1,10 @@
+# Node / NPM / Yarn
+node_modules
+
+# OS
+.DS_Store
+
+#Personal Preferences
+.vscode
+
+.env

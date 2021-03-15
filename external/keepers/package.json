@@ -1,0 +1,16 @@
+{
+  "name": "event-listeners",
+  "version": "1.0.0",
+  "description": "Redemeeum event listeners to trace events emitted from smart contracts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "LimeChain",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "dotenv": "^8.2.0",
+    "ethers": "^5.0.4"
+  }
+}

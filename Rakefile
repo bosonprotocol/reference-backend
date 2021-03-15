@@ -116,7 +116,7 @@ namespace :functions do
   namespace :dependencies do
     desc "Install all functions dependencies"
     task :install do
-      Dir.chdir('functions') do
+      Dir.chdir('external/functions') do
         sh('npm', 'install')
       end
     end
@@ -124,28 +124,28 @@ namespace :functions do
 
   desc "Lint all function sources"
   task :lint => [:'dependencies:install'] do
-    Dir.chdir('functions') do
+    Dir.chdir('external/functions') do
       sh('npm', 'run', 'functions:lint')
     end
   end
 
   desc "Lint & fix all app source"
   task :lint_fix => [:'dependencies:install'] do
-    Dir.chdir('functions') do
+    Dir.chdir('external/functions') do
       sh('npm', 'run', 'functions:lint-fix')
     end
   end
 
   desc "Format all app sources"
   task :format => [:'dependencies:install'] do
-    Dir.chdir('functions') do
+    Dir.chdir('external/functions') do
       sh('npm', 'run', 'functions:format')
     end
   end
 
   desc "Format & fix all app sources"
   task :format_fix => [:'dependencies:install'] do
-    Dir.chdir('functions') do
+    Dir.chdir('external/functions') do
       sh('npm', 'run', 'functions:format-fix')
     end
   end

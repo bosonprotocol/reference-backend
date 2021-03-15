@@ -2,22 +2,23 @@
 const functions = require("firebase-functions");
 const axios = require("axios").default;
 const ethers = require("ethers");
+
 const configs = require("./configs");
 const utils = require("./utils");
 
-const VoucherKernel = require("../abis/VoucherKernel.json");
+const VoucherKernel = require("../../abis/VoucherKernel.json");
 
-const COMMIT_IDX = 7; // usingHelpers contract
-
-const EXPIRATION_BLACKLISTED_VOUCHER_IDS = [
+const FINALIZATION_BLACKLISTED_VOUCHER_IDS = [
+  "57896044618658097711785492504343953936503180973527497460166655619477842952194",
   "57896044618658097711785492504343953937183745707369374387093404834341379375105",
   "57896044618658097711785492504343953940926851743499697485190525516090829701121",
   "57896044618658097711785492504343953942968545945025328265970773160681438969857",
 ];
 
-exports.scheduledKeepersExpirationsDev = functions.https.onRequest(
+exports.scheduledKeepersFinalizationsDev = functions.https.onRequest(
   async (request, response) => {
     const dev = configs("dev");
+
     const provider = ethers.getDefaultProvider(dev.NETWORK_NAME, {
       etherscan: dev.ETHERSCAN_API_KEY,
       infura: dev.INFURA_API_KEY,
@@ -29,16 +30,17 @@ exports.scheduledKeepersExpirationsDev = functions.https.onRequest(
       Authorization: `Bearer ${dev.GCLOUD_SECRET}`,
     };
 
-    // Expiration process
-    await triggerExpirations(executor, dev);
+    // Finalization process
+    await triggerFinalizations(executor, dev);
 
-    response.send("Expiration process was executed successfully!");
+    response.send("Finalization process was executed successfully!");
   }
 );
 
-exports.scheduledKeepersExpirationsDemo = functions.https.onRequest(
+exports.scheduledKeepersFinalizationsDemo = functions.https.onRequest(
   async (request, response) => {
     const demo = configs("demo");
+
     const provider = ethers.getDefaultProvider(demo.NETWORK_NAME, {
       etherscan: demo.ETHERSCAN_API_KEY,
       infura: demo.INFURA_API_KEY,
@@ -50,14 +52,14 @@ exports.scheduledKeepersExpirationsDemo = functions.https.onRequest(
       Authorization: `Bearer ${demo.GCLOUD_SECRET}`,
     };
 
-    // Expiration process
-    await triggerExpirations(executor, demo);
+    // Finalization process
+    await triggerFinalizations(executor, demo);
 
-    response.send("Expiration process was executed successfully!");
+    response.send("Finalization process was executed successfully!");
   }
 );
 
-async function triggerExpirations(executor, config) {
+async function triggerFinalizations(executor, config) {
   let hasErrors = false;
   let voucherKernelContractExecutor = new ethers.Contract(
     config.VOUCHER_KERNEL_ADDRESS,
@@ -69,8 +71,8 @@ async function triggerExpirations(executor, config) {
   try {
     res = await axios.get(config.ALL_VOUCHERS_URL);
   } catch (e) {
-    hasErrors = true;
     console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
+    return;
   }
 
   if (
@@ -82,48 +84,37 @@ async function triggerExpirations(executor, config) {
   for (let i = 0; i < res.data.vouchers.length; i++) {
     let voucher = res.data.vouchers[i];
     let voucherID = voucher._tokenIdVoucher;
-    let isStatusCommit = false;
-
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      let voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
-        voucherID
-      );
-      isStatusCommit = voucherStatus[0] === (0 | (1 << COMMIT_IDX)); // condition is borrowed from helper contract
-    } catch (e) {
-      hasErrors = true;
-      console.error(
-        `Error while checking voucher status toward the contract. Error: ${e}`
-      );
-    }
 
     if (
-      !isStatusCommit ||
-      EXPIRATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)
+      voucher.FINALIZED ||
+      FINALIZATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)
     ) {
+      console.log(`Voucher: ${voucherID} is already finalized`);
       continue;
     }
 
-    console.log(
-      `Voucher: ${voucherID} is with commit status. The expiration is triggered.`
-    );
+    console.log(`Voucher: ${voucherID}. The finalization has started.`);
+
+    let txOrder;
     let receipt;
 
     try {
-      let txOrder = await voucherKernelContractExecutor.triggerExpiration(
-        voucherID
+      txOrder = await voucherKernelContractExecutor.triggerFinalizeVoucher(
+        voucherID,
+        { gasLimit: config.GAS_LIMIT }
       );
+
       receipt = await txOrder.wait();
     } catch (e) {
       hasErrors = true;
       console.error(
-        `Error while triggering expiration of the voucher. Error: ${e}`
+        `Error while triggering finalization of the voucher. Error: ${e}`
       );
+      continue;
     }
-
     let parsedEvent = await utils.findEventByName(
       receipt,
-      "LogExpirationTriggered",
+      "LogFinalizeVoucher",
       "_tokenIdVoucher",
       "_triggeredBy"
     );
@@ -133,11 +124,11 @@ async function triggerExpirations(executor, config) {
       const payload = [
         {
           ...parsedEvent[0],
-          status: "EXPIRED",
+          status: "FINALIZED",
         },
       ];
 
-      console.log(`Voucher: ${voucherID}. The expiration finished.`);
+      console.log(`Voucher: ${voucherID}. The finalization finished.`);
 
       try {
         await axios.patch(config.UPDATE_STATUS_URL, payload);
@@ -149,14 +140,13 @@ async function triggerExpirations(executor, config) {
         console.error(
           `Error while updating the DB related to finalization of the voucher. Error: ${e}`
         );
-        continue;
       }
     }
   }
 
   let infoMsg = hasErrors
-    ? "triggerExpirations function finished with errors"
-    : "triggerExpirations function finished successfully";
+    ? "triggerFinalizations function finished with errors"
+    : "triggerFinalizations function finished successfully";
 
   console.info(infoMsg);
 }
