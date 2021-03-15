@@ -155,28 +155,6 @@ class VouchersController {
     next();
   }
 
-  async updateVoucherStatus(req, res, next) {
-    const voucherID = res.locals.userVoucher.id;
-    const status = req.body.status;
-
-    try {
-      await this.vouchersRepository.updateVoucherStatus(voucherID, status);
-    } catch (error) {
-      console.error(
-        `An error occurred while tried to update voucher with ID: [${voucherID}]!`
-      );
-      console.error(error);
-      return next(
-        new ApiError(
-          400,
-          `UPDATE operation for voucher id: ${voucherID} could not be completed.`
-        )
-      );
-    }
-
-    res.status(200).send({ updated: true });
-  }
-
   /**
    * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
    */

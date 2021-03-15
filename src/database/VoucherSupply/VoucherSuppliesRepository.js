@@ -35,6 +35,7 @@ class VoucherSuppliesRepository {
       conditions: metadata.conditions,
       voucherOwner: voucherOwner,
       visible: true,
+      blockchainAnchored: false,
       _correlationId: metadata._correlationId,
       _tokenIdSupply: metadata._tokenIdSupply,
       imagefiles: fileRefs,
@@ -106,6 +107,7 @@ class VoucherSuppliesRepository {
         price: metadata.price,
         buyerDeposit: metadata.depositBu,
         sellerDeposit: metadata.depositSe,
+        blockchainAnchored: true,
       },
       { new: true, upsert: true }
     );

@@ -134,50 +134,6 @@ describe("Vouchers Repository", () => {
     });
   });
 
-  context("updateVoucherStatus", () => {
-    Object.values(voucherStatuses).forEach((status) => {
-      context(` for ${status} status`, () => {
-        it(
-          `sets the current date on the status on the voucher ` +
-            "with the provided voucher ID when it exists",
-          async () => {
-            const savedVoucher = new Voucher(
-              Random.voucherAttributes({
-                [voucherStatuses.COMMITTED]: Date.now(),
-                [voucherStatuses.CANCELLED]: null,
-                [voucherStatuses.COMPLAINED]: null,
-                [voucherStatuses.REDEEMED]: null,
-                [voucherStatuses.REFUNDED]: null,
-                [voucherStatuses.FINALIZED]: null,
-              })
-            );
-            await savedVoucher.save();
-
-            const vouchersRepository = new VouchersRepository();
-            const [before, after] = await Time.boundaries(() =>
-              vouchersRepository.updateVoucherStatus(savedVoucher._id, status)
-            );
-
-            const foundVoucher = await Voucher.findById(savedVoucher._id);
-
-            expect(foundVoucher[status].getTime()).to.be.greaterThan(before);
-            expect(foundVoucher[status].getTime()).to.be.lessThan(after);
-          }
-        );
-
-        it("does nothing when no voucher exists for the provided voucher ID", async () => {
-          const vouchersRepository = new VouchersRepository();
-          await expect(
-            vouchersRepository.updateVoucherStatus(
-              Random.documentId().toString(),
-              status
-            )
-          ).to.be.rejectedWith("Voucher not found");
-        });
-      });
-    });
-  });
-
   context("updateStatusFromKeepers", () => {
     Object.values(voucherStatuses).forEach((status) => {
       context(` for ${status} status`, () => {
