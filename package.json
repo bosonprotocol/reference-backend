@@ -23,6 +23,7 @@
     "tests:app:format": "prettier --list-different \"test/**/*.js\"",
     "tests:app:format-fix": "prettier --write \"test/**/*.js\"",
     "tests:app:unit": "mocha --reporter spec \"test/unit/**/*.test.js\"",
+    "tests:app:integration": "mocha --reporter spec \"test/integration/**/*.test.js\"",
     "tests:app:persistence": "mocha --reporter spec \"test/persistence/**/*.test.js\"",
     "tests:app:component": "mocha --reporter spec \"test/component/**/*.test.js\""
   },
@@ -49,7 +50,9 @@
     "ethers": "^5.0.24",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
+    "form-data": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
+    "mock-express-request": "^0.2.2",
     "mongodb": "^3.5.8",
     "mongoose": "^5.9.19",
     "multer": "^1.4.2",

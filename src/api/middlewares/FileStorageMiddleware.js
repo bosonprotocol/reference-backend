@@ -1,46 +1,72 @@
 const multer = require("multer");
-const { Storage } = require("@google-cloud/storage");
-const { v4: uuidv4 } = require("uuid");
+
+const ApiError = require("../../api/ApiError");
+const Random = require("../../../test/shared/helpers/Random");
 
 class FileStorageMiddleware {
-  constructor(fieldName, bucketName) {
+  constructor(fieldName, fileStore) {
     const maximumAllowedFiles = 10;
     const storage = multer.diskStorage({});
     const uploader = multer({ storage });
 
-    this.bucketName = bucketName;
+    this.allowedMimeTypes = ["image/jpeg", "image/png"]; // TODO move to config
+    this.minimumFileSizeInKB = 10; // TODO move to config
+    this.maximumFileSizeInKB = 5 * 1024; // TODO move to config
+
     this.delegate = uploader.array(fieldName, maximumAllowedFiles);
+    this.fileStore = fileStore;
+  }
+
+  validFileTypes(files) {
+    for (let i = 0; i < files.length; i++) {
+      const mimetype = files[i].mimetype;
+      const fileSizeInKB = files[i].size / 1024;
+
+      // Check file type
+      if (!this.allowedMimeTypes.includes(mimetype)) {
+        return false;
+      }
+
+      // Check minimum file limit
+      if (fileSizeInKB < this.minimumFileSizeInKB) {
+        return false;
+      }
+
+      // Check maximum file limit
+      if (fileSizeInKB > this.maximumFileSizeInKB) {
+        return false;
+      }
+    }
+    return true;
   }
 
   async storeFiles(req, res, next) {
     this.delegate(req, res, async () => {
-      if (!req.files) return [];
+      if (!req.files) next();
 
-      const PDF_CONTENT_TYPE = "application/pdf";
-      const gcs = new Storage();
-      const bucketName = this.bucketName;
-      const bucket = gcs.bucket(bucketName);
-      const subFolderName = uuidv4();
+      if (!this.validFileTypes(req.files)) {
+        return next(
+          new ApiError(400, "Invalid file type for voucher set image.")
+        );
+      }
+
       const fileRefs = [];
 
-      for (let i = 0; i < req.files.length; i++) {
-        const fileName = req.files[i].originalname;
-        const storageDestination = `${subFolderName}/${fileName}`;
+      try {
+        const folder = Random.uuid();
 
-        await bucket.upload(req.files[i].path, {
-          destination: storageDestination,
-          contentType: req.files[i].mimetype,
-          resumable: false,
-        });
+        for (let i = 0; i < req.files.length; i++) {
+          const file = req.files[i];
 
-        // Public link format - https://storage.googleapis.com/[BUCKET_NAME]/[OBJECT_NAME]
-        await bucket.file(storageDestination).makePublic();
+          const fileRef = await this.fileStore.store({
+            ...file,
+            folder,
+          });
 
-        fileRefs.push({
-          url: `https://storage.googleapis.com/${bucketName}/${storageDestination}`,
-          type:
-            req.files[i].mimetype === PDF_CONTENT_TYPE ? "document" : "image",
-        });
+          fileRefs.push(fileRef);
+        }
+      } catch (err) {
+        next(err);
       }
 
       req.fileRefs = fileRefs;

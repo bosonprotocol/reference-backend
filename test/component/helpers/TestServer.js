@@ -21,7 +21,8 @@ const AdministrationModule = require("../../../src/modules/AdministrationModule"
 const HealthModule = require("../../../src/modules/HealthModule");
 
 const Ports = require("../../shared/helpers/Ports");
-const FakeFileStorageMiddleware = require("../helpers/FakeFileStorageMiddleware");
+const FakeFileStore = require("../../shared/fakes/services/FakeFileStore");
+const FileStorageMiddleware = require("../../../src/api/middlewares/FileStorageMiddleware");
 
 class TestServer {
   constructor() {
@@ -70,8 +71,10 @@ class TestServer {
       configurationService,
       authenticationService
     );
-    const voucherImageStorageMiddleware = new FakeFileStorageMiddleware(
-      "fileToUpload"
+    const fakeVoucherImageFileStore = new FakeFileStore();
+    const voucherImageStorageMiddleware = new FileStorageMiddleware(
+      "fileToUpload",
+      fakeVoucherImageFileStore
     );
 
     const dependencies = {
