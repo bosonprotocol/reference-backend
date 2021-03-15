@@ -1,7 +1,7 @@
 const multer = require("multer");
 
 const ApiError = require("../../api/ApiError");
-const { v4: uuidv4 } = require("uuid");
+const Random = require("../../../test/shared/helpers/Random");
 
 class FileStorageMiddleware {
   constructor(fieldName, fileStore) {
@@ -53,7 +53,7 @@ class FileStorageMiddleware {
       const fileRefs = [];
 
       try {
-        const folder = uuidv4();
+        const folder = Random.uuid();
 
         for (let i = 0; i < req.files.length; i++) {
           const file = req.files[i];
