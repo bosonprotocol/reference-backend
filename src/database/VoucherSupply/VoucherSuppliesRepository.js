@@ -237,7 +237,7 @@ class VoucherSuppliesRepository {
   async getVoucherSupplyDetails(voucher, voucherSupplyDetailsList) {
     const voucherSupply = await this.getVoucherSupplyById(voucher.supplyID);
     if (!voucherSupply) {
-      throw new Error("Voucher supply not found");
+      return
     }
 
     const voucherSupplyDetails = {
