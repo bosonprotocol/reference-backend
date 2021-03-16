@@ -21,11 +21,13 @@ aws sts assume-role \
 export AWS_ACCESS_KEY_ID="$(jq -M -r .Credentials.AccessKeyId build/session)"
 export AWS_SECRET_ACCESS_KEY="$(jq -M -r .Credentials.SecretAccessKey build/session)"
 export AWS_SESSION_TOKEN="$(jq -M -r .Credentials.SessionToken build/session)"
+
 export INCLUDE_COVERAGE="true"
 
 ./go "test[${DEPLOYMENT_TYPE},${DEPLOYMENT_LABEL}]"
 ./go "tests:app:coverage:badge"
 
+git config --global user.email "ci@redeemeum.com"
+git config --global user.name "Redeemeum CI"
 git add .
 git commit -m "Update coverage badge [ci skip]"
-git push
