@@ -24,7 +24,8 @@ node_modules
 .idea/
 
 # Test Coverage
-coverage*
+/coverage*
+.nyc_output
 
 # Personal Preferences
 .vscode
