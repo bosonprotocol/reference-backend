@@ -266,7 +266,8 @@ namespace :tests do
 
     desc "Run all unit tests"
     task :unit => [:'app:dependencies:install'] do
-      sh('npm', 'run', 'tests:app:unit')
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:unit:coverage' : 'tests:app:unit'
+      sh('npm', 'run', script_name)
     end
 
     desc "Run all integration tests"
@@ -296,8 +297,9 @@ namespace :tests do
 
       Rake::Task['database:contextual:ensure'].invoke(*args)
 
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:persistence:coverage' : 'tests:app:persistence'
       sh(database_overrides_for(configuration, args),
-         'npm', 'run', 'tests:app:persistence')
+         'npm', 'run', script_name)
     end
 
     desc "Run all component tests"
@@ -310,8 +312,16 @@ namespace :tests do
 
       Rake::Task['database:contextual:ensure'].invoke(*args)
 
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:component:coverage' : 'tests:app:component'
       sh(database_overrides_for(configuration, args),
-         'npm', 'run', 'tests:app:component')
+         'npm', 'run', script_name)
+    end
+
+    namespace :coverage do
+      desc "Run coverage badge creation"
+      task :badge => [:'app:dependencies:install'] do |_, args|
+        sh('npm', 'run', 'tests:coverage:badge')
+      end
     end
   end
 end

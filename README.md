@@ -2,6 +2,7 @@
 
 <h1 align="center">Boson Protocol Reference Backend</h1>
 
+$coverage$
 [![Gitter chat](https://badges.gitter.im/bosonprotocol.png)](https://gitter.im/bosonprotocol/community)
 
 This is a reference app meant to show how to integrate Boson into a NodeJS back-end. This repository contains a MongoDB service as well as keeper functions. Questions and comments encouraged!
