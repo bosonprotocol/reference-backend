@@ -76,14 +76,14 @@ class VoucherSuppliesRepository {
     );
   }
 
-  async decrementVoucherSupplyQty(id) {
-    const voucherSupply = await this.getVoucherSupplyById(id);
+  async decrementVoucherSupplyQty(supplyId) {
+    const voucherSupply = await this.getVoucherSupplyBySupplyTokenId(supplyId);
     if (!voucherSupply) {
       throw new Error("Voucher supply not found");
     }
 
     return VoucherSupply.findByIdAndUpdate(
-      id,
+      voucherSupply.id,
       {
         qty: --voucherSupply.qty,
       },

@@ -437,7 +437,7 @@ describe("Voucher Supplies Repository", () => {
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
       await voucherSuppliesRepository.decrementVoucherSupplyQty(
-        initialVoucherSupply._id
+        initialVoucherSupply._tokenIdSupply
       );
 
       const updatedVoucherSupply = await VoucherSupply.findOne({
@@ -485,10 +485,10 @@ describe("Voucher Supplies Repository", () => {
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
       await voucherSuppliesRepository.decrementVoucherSupplyQty(
-        initialVoucherSupply._id
+        initialVoucherSupply._tokenIdSupply
       );
       await voucherSuppliesRepository.decrementVoucherSupplyQty(
-        initialVoucherSupply._id
+        initialVoucherSupply._tokenIdSupply
       );
 
       const updatedVoucherSupply = await VoucherSupply.findOne({

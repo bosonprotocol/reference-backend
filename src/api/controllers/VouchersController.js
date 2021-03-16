@@ -174,7 +174,7 @@ class VouchersController {
       voucher = await this.vouchersRepository.updateVoucherDelivered(req.body);
 
       await this.voucherSuppliesRepository.decrementVoucherSupplyQty(
-        voucher.supplyID
+        req.body._tokenIdSupply
       );
     } catch (error) {
       console.error(error);
