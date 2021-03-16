@@ -60,7 +60,6 @@ class VouchersController {
       return next(
         new ApiError(400, `Error fetching all buyers for Voucher: ${supplyID}`)
       );
-
     }
     res.status(200).send({ vouchers });
   }

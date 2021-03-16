@@ -1652,7 +1652,7 @@ describe("Voucher Supplies Repository", () => {
           voucher,
           voucherSupplyDetailsList
         )
-      ).to.be.empty
+      ).to.be.empty;
     });
   });
 });
