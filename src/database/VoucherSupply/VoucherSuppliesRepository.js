@@ -237,7 +237,8 @@ class VoucherSuppliesRepository {
   async getVoucherSupplyDetails(voucher, voucherSupplyDetailsList) {
     const voucherSupply = await this.getVoucherSupplyById(voucher.supplyID);
     if (!voucherSupply) {
-      return
+      // if we are to support vouchers, committed outside of the reference-app - they would not get a supplyID, hence the whole collection with VoucherSupplyDetails would not be returned, if we throw an error.
+      return;
     }
 
     const voucherSupplyDetails = {

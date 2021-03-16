@@ -35,10 +35,9 @@ class VouchersController {
         `An error occurred while tried to get all vouchers for user: ${address}!`
       );
       console.error(error.message);
-      return next(new ApiError(
-        400,
-        `Error processing User Vouchers for user: ${address}`
-      ));
+      return next(
+        new ApiError(400, `Error processing User Vouchers for user: ${address}`)
+      );
     }
 
     res.status(200).send({ voucherData });
@@ -59,9 +58,7 @@ class VouchersController {
       );
       console.error(error.message);
       return next(
-        new ApiError(
-        400,
-        `Error fetching all buyers for Voucher: ${supplyID}`)
+        new ApiError(400, `Error fetching all buyers for Voucher: ${supplyID}`)
       );
 
     }
@@ -119,10 +116,12 @@ class VouchersController {
         `An error occurred while tried to fetch voucher details with ID: [${voucherID}]!`
       );
       console.error(error.message);
-      return next(new ApiError(
-        400,
-        `Error fetching Voucher Details for voucher: ${voucherID}`
-      ));
+      return next(
+        new ApiError(
+          400,
+          `Error fetching Voucher Details for voucher: ${voucherID}`
+        )
+      );
     }
     res.status(200).send({ voucher });
   }

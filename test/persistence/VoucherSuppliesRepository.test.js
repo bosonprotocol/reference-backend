@@ -1625,7 +1625,7 @@ describe("Voucher Supplies Repository", () => {
       });
     });
 
-    it("throws an error when the voucher supply does not exist", async () => {
+    it("returns an empty object if the voucher supply does not exist", async () => {
       const voucherMetadata = Random.voucherMetadata();
 
       const voucher = new Voucher({
@@ -1652,7 +1652,7 @@ describe("Voucher Supplies Repository", () => {
           voucher,
           voucherSupplyDetailsList
         )
-      ).to.be.rejectedWith("Voucher supply not found");
+      ).to.be.empty
     });
   });
 });
