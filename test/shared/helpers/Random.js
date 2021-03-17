@@ -224,8 +224,8 @@ class Random {
   }
 
   static uint256() {
-    const digits = [];
-    for (var i = 0; i < 77; i++) {
+    const digits = [1];
+    for (var i = 0; i < 76; i++) {
       digits.push(Random.digit());
     }
     return digits.join("");
