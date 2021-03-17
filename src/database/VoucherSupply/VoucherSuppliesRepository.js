@@ -35,6 +35,7 @@ class VoucherSuppliesRepository {
       conditions: metadata.conditions,
       voucherOwner: voucherOwner,
       visible: true,
+      blockchainAnchored: false,
       _correlationId: metadata._correlationId,
       _tokenIdSupply: metadata._tokenIdSupply,
       imagefiles: fileRefs,
@@ -75,14 +76,14 @@ class VoucherSuppliesRepository {
     );
   }
 
-  async decrementVoucherSupplyQty(id) {
-    const voucherSupply = await this.getVoucherSupplyById(id);
+  async decrementVoucherSupplyQty(supplyId) {
+    const voucherSupply = await this.getVoucherSupplyBySupplyTokenId(supplyId);
     if (!voucherSupply) {
       throw new Error("Voucher supply not found");
     }
 
     return VoucherSupply.findByIdAndUpdate(
-      id,
+      voucherSupply.id,
       {
         qty: --voucherSupply.qty,
       },
@@ -93,7 +94,7 @@ class VoucherSuppliesRepository {
   async setVoucherSupplyMeta(metadata) {
     return VoucherSupply.findOneAndUpdate(
       {
-        voucherOwner: metadata._voucherOwner,
+        voucherOwner: metadata.voucherOwner,
         _correlationId: metadata._correlationId,
       },
       {
@@ -106,6 +107,7 @@ class VoucherSuppliesRepository {
         price: metadata.price,
         buyerDeposit: metadata.depositBu,
         sellerDeposit: metadata.depositSe,
+        blockchainAnchored: true,
       },
       { new: true, upsert: true }
     );
@@ -235,7 +237,8 @@ class VoucherSuppliesRepository {
   async getVoucherSupplyDetails(voucher, voucherSupplyDetailsList) {
     const voucherSupply = await this.getVoucherSupplyById(voucher.supplyID);
     if (!voucherSupply) {
-      throw new Error("Voucher supply not found");
+      // if we are to support vouchers, committed outside of the reference-app - they would not get a supplyID, hence the whole collection with VoucherSupplyDetails would not be returned, if we throw an error.
+      return;
     }
 
     const voucherSupplyDetails = {

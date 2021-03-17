@@ -146,129 +146,6 @@ describe("Vouchers Resource", () => {
   });
 
   context("on PATCH", () => {
-    it("updateVoucherStatus - returns 200 and voucher updated success status", async () => {
-      const expectedPropertyName = "updated";
-
-      // CREATE VOUCHER SUPPLY
-      const [
-        token,
-        voucherSupplyData,
-        imageFilePath,
-      ] = await prerequisites.createVoucherSupplyData();
-      const [
-        voucherSupplyId,
-        voucherSupplyOwner,
-      ] = await prerequisites.createVoucherSupply(
-        token,
-        voucherSupplyData,
-        imageFilePath
-      );
-      // END CREATE VOUCHER SUPPLY
-
-      // COMMIT TO BUY
-      const voucherMetadata = prerequisites.createVoucherMetadata(
-        voucherSupplyOwner
-      );
-      const [, createVoucherResponseBody] = await prerequisites.createVoucher(
-        token,
-        voucherSupplyId,
-        voucherMetadata
-      );
-      // END COMMIT TO BUY
-
-      const newStatus = validVoucherStatuses[0]; // change to guaranteed valid status
-      const voucherId = createVoucherResponseBody.voucherID;
-
-      const response = await api
-        .withToken(token)
-        .vouchers()
-        .updateStatus(voucherId, newStatus);
-
-      const propertyNames = Object.getOwnPropertyNames(response.body);
-
-      expect(response.status).to.eql(200);
-      expect(propertyNames).to.include(expectedPropertyName);
-      expect(response.body[expectedPropertyName]).to.eql(true);
-    });
-
-    it("updateVoucherStatus - returns 404 when invalid voucher id", async () => {
-      // CREATE VOUCHER SUPPLY
-      const [
-        token,
-        voucherSupplyData,
-        imageFilePath,
-      ] = await prerequisites.createVoucherSupplyData();
-      const [
-        voucherSupplyId,
-        voucherSupplyOwner,
-      ] = await prerequisites.createVoucherSupply(
-        token,
-        voucherSupplyData,
-        imageFilePath
-      );
-      // END CREATE VOUCHER SUPPLY
-
-      // COMMIT TO BUY
-      const voucherMetadata = prerequisites.createVoucherMetadata(
-        voucherSupplyOwner
-      );
-      await prerequisites.createVoucher(
-        token,
-        voucherSupplyId,
-        voucherMetadata
-      );
-      // END COMMIT TO BUY
-
-      const newStatus = validVoucherStatuses[0]; // change to guaranteed valid status
-      const voucherId = "FAKE_INVALID_VOUCHER_ID"; // force failure
-
-      const response = await api
-        .withToken(token)
-        .vouchers()
-        .updateStatus(voucherId, newStatus);
-
-      expect(response.status).to.eql(404);
-    });
-
-    it("updateVoucherStatus - returns 400 on voucher update to invalid status", async () => {
-      // CREATE VOUCHER SUPPLY
-      const [
-        token,
-        voucherSupplyData,
-        imageFilePath,
-      ] = await prerequisites.createVoucherSupplyData();
-      const [
-        voucherSupplyId,
-        voucherSupplyOwner,
-      ] = await prerequisites.createVoucherSupply(
-        token,
-        voucherSupplyData,
-        imageFilePath
-      );
-      // END CREATE VOUCHER SUPPLY
-
-      // COMMIT TO BUY
-      const voucherMetadata = prerequisites.createVoucherMetadata(
-        voucherSupplyOwner
-      );
-      const [, createVoucherResponseBody] = await prerequisites.createVoucher(
-        token,
-        voucherSupplyId,
-        voucherMetadata
-      );
-      // END COMMIT TO BUY
-
-      const newStatus = "FAKE_INVALID_STATUS_TEST"; // change to invalid status to force failure
-      const voucherId = createVoucherResponseBody.voucherID;
-
-      const response = await api
-        .withToken(token)
-        .vouchers()
-        .updateStatus(voucherId, newStatus);
-
-      expect(response.status).to.eql(400);
-    });
-
     it("updateVoucherDelivered - returns 200 and updated voucher id", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
@@ -305,7 +182,7 @@ describe("Vouchers Resource", () => {
       const voucherTokenId = voucherMetadata._tokenIdVoucher;
       const voucherIssuer = voucherSupplyOwner;
       const promiseId = Random.promiseId();
-      const supplyTokenId = voucherMetadata._tokenIdSupply;
+      const supplyTokenId = voucherSupplyData._tokenIdSupply;
       const voucherHolder = voucherMetadata._holder;
       const correlationId = voucherMetadata._correlationId;
 
@@ -698,6 +575,44 @@ describe("Vouchers Resource", () => {
 
       expect(createVoucherResponseCode).to.eql(200);
       expect(propertyNames).to.include(expectedPropertyName);
+    });
+
+    it("createVoucher - returns 400 if record with same user and correlationId already exits", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId,
+        voucherSupplyOwner,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY 1 Voucher
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+      // END COMMIT TO BUY
+
+      // TRY TO COMMIT ANOTHER VOUCHER WITH SAME VOUCHER METADATA TO FORCE FAILURE
+      const [createVoucherResponseCode] = await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+
+      expect(createVoucherResponseCode).to.eql(400);
     });
 
     it("createVoucher - returns 403 with forbidden (voucher holder doesn't match requesting address)", async () => {

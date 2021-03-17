@@ -62,6 +62,9 @@ const voucherSchema = new Schema({
   _promiseId: {
     type: String,
   },
+  blockchainAnchored: {
+    type: Boolean,
+  },
 });
 
 module.exports = mongoose.model(VOUCHER, voucherSchema);

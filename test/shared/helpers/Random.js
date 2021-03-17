@@ -3,6 +3,7 @@ const keythereum = require("keythereum");
 const ethers = require("ethers");
 const mongoose = require("mongoose");
 const keccak256 = require("keccak256");
+const { v4: uuidv4 } = require("uuid");
 
 const voucherStatuses = require("../../../src/utils/voucherStatuses");
 const User = require("../../../src/database/models/User");
@@ -223,11 +224,29 @@ class Random {
   }
 
   static uint256() {
-    const digits = [];
-    for (var i = 0; i < 77; i++) {
+    const digits = [1];
+    for (var i = 0; i < 76; i++) {
       digits.push(Random.digit());
     }
     return digits.join("");
+  }
+
+  static uuid() {
+    return uuidv4();
+  }
+
+  static file(overrides = {}) {
+    const defaultFileName = `${this.uuid()}.png`;
+    const defaultPath = "test/fixtures/valid-image.png";
+    const defaultMimeType = "image/png";
+    const defaultFolder = this.uuid();
+
+    return {
+      originalname: overrides.fileName || defaultFileName,
+      path: overrides.path || defaultPath,
+      mimetype: overrides.mimeType || defaultMimeType,
+      folder: overrides.folder || defaultFolder,
+    };
   }
 
   static voucherSupplyId() {
@@ -274,7 +293,7 @@ class Random {
 
   static fileRefUrl() {
     const bucketName = faker.random.alpha(10);
-    const subFolderName = faker.random.alpha(10);
+    const subFolderName = this.uuid();
     const fileName = faker.random.alpha(10);
 
     return `https://storage.googleapis.com/${bucketName}/${subFolderName}/${fileName}`;

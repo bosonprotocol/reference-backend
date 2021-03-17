@@ -11,7 +11,7 @@ describe("AuthenticationService", () => {
   context("generateToken", () => {
     it(
       "generates a token for the user using the configured " +
-        "token secret, and 180 days validity by default",
+        "token secret, and 7 days validity by default",
       () => {
         const tokenSecret = Random.tokenSecret();
 
@@ -32,7 +32,7 @@ describe("AuthenticationService", () => {
 
         expect(result.user).to.eql(address.toLowerCase());
         expect(result.role).to.eql(role);
-        expect(resultValidityInDays).to.eql(180);
+        expect(resultValidityInDays).to.eql(7);
       }
     );
 

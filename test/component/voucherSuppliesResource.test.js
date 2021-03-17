@@ -51,6 +51,73 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(201);
     });
 
+    it("createVoucherSupply - returns 400 if record with same user and correlationId already exits", async () => {
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      //CREATE VOUCHER SUPPLY
+      await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      //TRY TO CREATE VOUCHER SUPPLY WITH SAME METADATA TO ENFORCE FAILURE
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when invalid mime-type", async () => {
+      let [
+        token,
+        voucherSupplyData,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/malicious-fake-image.html";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when image size too small (<10KB)", async () => {
+      let [
+        token,
+        voucherSupplyData,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/less-than-10KB.png";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when image size too large (>5MB)", async () => {
+      let [
+        token,
+        voucherSupplyData,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/greater-than-5MB.jpg";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
     it("createVoucherSupply - returns 400 when invalid dates (start and/or end)", async () => {
       let [
         token,
@@ -241,6 +308,84 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
     });
 
+    it("updateVoucherSupply - returns 400 when invalid mime-type", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/malicious-fake-image.html";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupply - returns 400 when image size too small (<10KB)", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/less-than-10KB.png";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupply - returns 400 when image size too large (>5MB)", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/greater-than-5MB.jpg";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
+    });
+
     it("updateVoucherSupply - returns 400 with voucher supply does not exist (i.e. invalid ID)", async () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
@@ -296,7 +441,8 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("setVoucherSupplyMetaData - returns 400 and voucher supply doesn't exist", async () => {
+    //TODO if we are to support updates outside reference app, we should not have this test
+    xit("setVoucherSupplyMetaData - returns 400 and voucher supply doesn't exist", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -409,7 +555,6 @@ describe("Voucher Supplies Resource", () => {
         gcloudSecret,
         tokenSecret
       );
-
       // CREATE VOUCHER SUPPLY
       const [
         token,
@@ -478,6 +623,12 @@ describe("Voucher Supplies Resource", () => {
         voucherSupplyData,
         imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
+
+      const [
+        token1,
+        voucherSupplyData1,
+        imageFilePath1,
+      ] = await prerequisites.createVoucherSupplyData();
       const [
         voucherSupplyId1,
         voucherSupplyOwner1,
@@ -494,9 +645,9 @@ describe("Voucher Supplies Resource", () => {
         qty2,
         supplyTokenId2,
       ] = await prerequisites.createVoucherSupply(
-        token,
-        voucherSupplyData,
-        imageFilePath
+        token1,
+        voucherSupplyData1,
+        imageFilePath1
       );
       // END CREATE VOUCHER SUPPLIES
 

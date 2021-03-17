@@ -2,7 +2,6 @@
 const ApiError = require("../ApiError");
 
 const voucherUtils = require("../../utils/voucherUtils");
-const voucherStatuses = require("../../utils/voucherStatuses");
 
 class VouchersController {
   constructor(voucherSuppliesRepository, vouchersRepository) {
@@ -35,7 +34,9 @@ class VouchersController {
         `An error occurred while tried to get all vouchers for user: ${address}!`
       );
       console.error(error.message);
-      return next(`Error processing User Vouchers for user: ${address}`);
+      return next(
+        new ApiError(400, `Error processing User Vouchers for user: ${address}`)
+      );
     }
 
     res.status(200).send({ voucherData });
@@ -55,7 +56,9 @@ class VouchersController {
         `An error occurred while tried to get bought vouchers with Supply ID: [${supplyID}]!`
       );
       console.error(error.message);
-      return next(`Error fetching all buyers for Voucher: ${supplyID}`);
+      return next(
+        new ApiError(400, `Error fetching all buyers for Voucher: ${supplyID}`)
+      );
     }
     res.status(200).send({ vouchers });
   }
@@ -111,7 +114,12 @@ class VouchersController {
         `An error occurred while tried to fetch voucher details with ID: [${voucherID}]!`
       );
       console.error(error.message);
-      return next(`Error fetching Voucher Details for voucher: ${voucherID}`);
+      return next(
+        new ApiError(
+          400,
+          `Error fetching Voucher Details for voucher: ${voucherID}`
+        )
+      );
     }
     res.status(200).send({ voucher });
   }
@@ -123,10 +131,6 @@ class VouchersController {
 
     try {
       voucher = await this.vouchersRepository.createVoucher(metadata, supplyID);
-      //todo once EL are implemented this should be removed from here...
-      await this.voucherSuppliesRepository.decrementVoucherSupplyQty(
-        voucher.supplyID
-      );
     } catch (error) {
       console.error(error);
       return next(
@@ -140,47 +144,6 @@ class VouchersController {
     res.status(200).send({ voucherID: voucher.id });
   }
 
-  async validateVoucherStatus(req, res, next) {
-    const status = Array.isArray(req.body)
-      ? req.body[0].status
-      : req.body.status; // support keeper's body (array)
-
-    const validVoucherStatuses = Object.values(voucherStatuses); // extract as array
-
-    if (!validVoucherStatuses.includes(status)) {
-      return next(
-        new ApiError(
-          400,
-          `UPDATE voucher operation could not be completed with invalid status: ${status}`
-        )
-      );
-    }
-
-    next();
-  }
-
-  async updateVoucherStatus(req, res, next) {
-    const voucherID = res.locals.userVoucher.id;
-    const status = req.body.status;
-
-    try {
-      await this.vouchersRepository.updateVoucherStatus(voucherID, status);
-    } catch (error) {
-      console.error(
-        `An error occurred while tried to update voucher with ID: [${voucherID}]!`
-      );
-      console.error(error);
-      return next(
-        new ApiError(
-          400,
-          `UPDATE operation for voucher id: ${voucherID} could not be completed.`
-        )
-      );
-    }
-
-    res.status(200).send({ updated: true });
-  }
-
   /**
    * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
    */
@@ -191,7 +154,7 @@ class VouchersController {
       voucher = await this.vouchersRepository.updateVoucherDelivered(req.body);
 
       await this.voucherSuppliesRepository.decrementVoucherSupplyQty(
-        voucher.supplyID
+        req.body._tokenIdSupply
       );
     } catch (error) {
       console.error(error);

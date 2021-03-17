@@ -23,8 +23,13 @@
     "tests:app:format": "prettier --list-different \"test/**/*.js\"",
     "tests:app:format-fix": "prettier --write \"test/**/*.js\"",
     "tests:app:unit": "mocha --reporter spec \"test/unit/**/*.test.js\"",
+    "tests:app:integration": "mocha --reporter spec \"test/integration/**/*.test.js\"",
     "tests:app:persistence": "mocha --reporter spec \"test/persistence/**/*.test.js\"",
-    "tests:app:component": "mocha --reporter spec \"test/component/**/*.test.js\""
+    "tests:app:component": "mocha --reporter spec \"test/component/**/*.test.js\"",
+    "tests:app:unit:coverage": "nyc --all --no-clean --silent npm run tests:app:unit",
+    "tests:app:persistence:coverage": "nyc --all --no-clean --silent npm run tests:app:persistence",
+    "tests:app:component:coverage": "nyc --all --no-clean --silent npm run tests:app:component",
+    "tests:coverage:badge": "nyc report --reporter=json-summary --reporter=lcov && coverage-badge-creator"
   },
   "contributors": [
     "HristiyanG",
@@ -49,14 +54,18 @@
     "ethers": "^5.0.24",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
+    "form-data": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
+    "mock-express-request": "^0.2.2",
     "mongodb": "^3.5.8",
     "mongoose": "^5.9.19",
-    "multer": "^1.4.2"
+    "multer": "^1.4.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "coverage-badge-creator": "^1.0.4",
     "eslint": "^7.18.0",
     "eslint-config-prettier": "^7.2.0",
     "eth-sig-util": "^3.0.1",
@@ -66,6 +75,7 @@
     "keccak256": "^1.0.2",
     "keythereum": "^1.2.0",
     "mocha": "^8.2.1",
+    "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "superagent": "^6.1.0",
     "superagent-auth-bearer": "0.0.1"

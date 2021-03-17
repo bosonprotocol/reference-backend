@@ -1,5 +1,6 @@
 const chai = require("chai");
 chai.use(require("chai-as-promised"));
+const { validate: uuidValidate } = require("uuid");
 
 const expect = chai.expect;
 
@@ -26,6 +27,9 @@ describe("Voucher Supplies Repository", () => {
 
   context("createVoucherSupply", () => {
     it("stores the voucher supply when valid", async () => {
+      const uuidv4RegEx = /\/([0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12})\//;
+      const uuidExtractor = new RegExp(uuidv4RegEx);
+
       const voucherOwner = Random.address();
       const fileRef1 = Random.fileRef();
       const fileRef2 = Random.fileRef();
@@ -64,6 +68,11 @@ describe("Voucher Supplies Repository", () => {
       expect(voucherSupply._tokenIdSupply).to.eql(metadata._tokenIdSupply);
       expect(voucherSupply.visible).to.be.true;
       expect(voucherSupply.imagefiles).to.eql(fileRefs);
+
+      fileRefs.forEach((ref) => {
+        const uuid = uuidExtractor.exec(ref.url)[1];
+        expect(uuidValidate(uuid)).to.be.true;
+      });
     });
 
     it("fails when title is missing", async () => {
@@ -428,7 +437,7 @@ describe("Voucher Supplies Repository", () => {
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
       await voucherSuppliesRepository.decrementVoucherSupplyQty(
-        initialVoucherSupply._id
+        initialVoucherSupply._tokenIdSupply
       );
 
       const updatedVoucherSupply = await VoucherSupply.findOne({
@@ -476,10 +485,10 @@ describe("Voucher Supplies Repository", () => {
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
       await voucherSuppliesRepository.decrementVoucherSupplyQty(
-        initialVoucherSupply._id
+        initialVoucherSupply._tokenIdSupply
       );
       await voucherSuppliesRepository.decrementVoucherSupplyQty(
-        initialVoucherSupply._id
+        initialVoucherSupply._tokenIdSupply
       );
 
       const updatedVoucherSupply = await VoucherSupply.findOne({
@@ -1616,7 +1625,7 @@ describe("Voucher Supplies Repository", () => {
       });
     });
 
-    it("throws an error when the voucher supply does not exist", async () => {
+    it("returns an empty object if the voucher supply does not exist", async () => {
       const voucherMetadata = Random.voucherMetadata();
 
       const voucher = new Voucher({
@@ -1643,7 +1652,7 @@ describe("Voucher Supplies Repository", () => {
           voucher,
           voucherSupplyDetailsList
         )
-      ).to.be.rejectedWith("Voucher supply not found");
+      ).to.be.empty;
     });
   });
 });

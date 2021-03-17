@@ -1,93 +1,55 @@
-const ApiError = require("./../ApiError");
+const ApiError = require("../ApiError");
+const voucherStatuses = require("../../utils/voucherStatuses");
 
 class VoucherValidationMiddleware {
-  constructor(voucherSuppliesRepository) {
-    this.voucherSuppliesRepository = voucherSuppliesRepository;
+  constructor(vouchersRepository) {
+    this.vouchersRepository = vouchersRepository;
   }
 
-  async validateVoucherSupplyExists(req, res, next) {
-    let voucherSupply;
-    const voucherSupplyId = req.params.id;
+  async validateVoucherByCorrrelationIdDoesNotExist(req, res, next) {
+    let voucher;
+    const metadata = {
+      _holder: res.locals.address,
+      _correlationId: req.body._correlationId,
+    };
 
     try {
-      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
-        voucherSupplyId
+      voucher = await this.vouchersRepository.getVoucherByOwnerAndCorrelationId(
+        metadata
       );
+
+      if (voucher) {
+        throw new Error(
+          `VoucherSupply for User: ${res.locals.address} and CorrelationID: ${req.body._correlationId} already exits!`
+        );
+      }
     } catch (error) {
-      return next(
-        new ApiError(
-          404,
-          `VoucherSupply with ID: ${voucherSupplyId} does not exist!`
-        )
-      );
-    }
-
-    if (!voucherSupply) {
-      return next(
-        new ApiError(400, `Voucher with ID: ${voucherSupplyId} does not exist!`)
-      );
-    }
-
-    res.locals.voucherSupply = voucherSupply;
-
-    next();
-  }
-
-  async validateVoucherSupplyExistsByOwnerAndCorrelationId(req, res, next) {
-    let voucherSupply;
-
-    try {
-      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyByOwnerAndCorrelationId(
-        req.body
-      );
-    } catch (error) {
-      return next(
-        new ApiError(
-          404,
-          `VoucherSupply with Owner: ${req.body.voucherOwner} and CorrelationID: ${req.body._correlationId} does not exist!`
-        )
-      );
-    }
-
-    if (!voucherSupply) {
+      console.error(error.message);
       return next(
         new ApiError(
           400,
-          `Voucher with Owner: ${req.body.voucherOwner} and CorrelationID: ${req.body._correlationId} does not exist!`
+          `VoucherSupply for User: ${res.locals.address} and CorrelationID: ${req.body._correlationId} already exits!`
         )
       );
     }
 
-    res.locals.voucherSupply = voucherSupply;
-
     next();
   }
 
-  async validateCanDelete(req, res, next) {
-    if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
-      return next(new ApiError(401, "Unauthorized."));
-    }
-    next();
-  }
+  async validateVoucherStatus(req, res, next) {
+    const status = Array.isArray(req.body)
+      ? req.body[0].status
+      : req.body.status; // support keeper's body (array)
 
-  async validateCanUpdateVoucherSupply(req, res, next) {
-    if (res.locals.voucherSupply.voucherOwner !== res.locals.address) {
-      return next(new ApiError(401, "Unauthorized."));
-    }
+    const validVoucherStatuses = Object.values(voucherStatuses); // extract as array
 
-    next();
-  }
-
-  async validateDates(req, res, next) {
-    const start = new Date();
-    start.setHours(0, 0, 0, 0);
-
-    const today = new Date(start).getTime();
-    const startDateToMillis = new Date(req.body.startDate).getTime();
-    const endDateToMillis = new Date(req.body.expiryDate).getTime();
-
-    if (startDateToMillis < today || endDateToMillis < startDateToMillis) {
-      return next(new ApiError(400, "Invalid Dates."));
+    if (!validVoucherStatuses.includes(status)) {
+      return next(
+        new ApiError(
+          400,
+          `UPDATE voucher operation could not be completed with invalid status: ${status}`
+        )
+      );
     }
 
     next();

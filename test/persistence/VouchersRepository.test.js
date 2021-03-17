@@ -68,7 +68,7 @@ describe("Vouchers Repository", () => {
       await expect(
         vouchersRepository.createVoucher(metadata, voucherSupplyId)
       ).to.be.rejectedWith(
-        "Validation failed: supplyID: Path `supplyID` is required."
+        "Voucher validation failed: supplyID: Path `supplyID` is required."
       );
     });
 
@@ -86,7 +86,7 @@ describe("Vouchers Repository", () => {
       expect(voucher.supplyID).to.eql(voucherSupplyId);
     });
 
-    it("updates the voucher when it already exists", async () => {
+    it("creates new voucher if already exists", async () => {
       const voucherSupplyId = Random.documentId().toString();
       const voucherTokenId = Random.uint256();
 
@@ -105,76 +105,14 @@ describe("Vouchers Repository", () => {
       ).save();
 
       const vouchersRepository = new VouchersRepository();
-      const [before, after] = await Time.boundaries(() =>
-        vouchersRepository.createVoucher(metadata2, voucherSupplyId)
-      );
+      await vouchersRepository.createVoucher(metadata2, voucherSupplyId);
 
-      const voucher = await Voucher.findOne({
+      const vouchers = await Voucher.find({
         supplyID: voucherSupplyId,
       });
 
-      expect(voucher.supplyID).to.eql(voucherSupplyId);
-      expect(voucher._holder).to.eql(metadata2._holder.toLowerCase());
-      expect(voucher._tokenIdSupply).to.eql(metadata2._tokenIdSupply);
-      expect(voucher._tokenIdVoucher).to.eql(metadata2._tokenIdVoucher);
-      expect(voucher.voucherOwner).to.eql(metadata2._issuer.toLowerCase());
-      expect(voucher.actionDate.getTime()).to.be.greaterThan(before);
-      expect(voucher.actionDate.getTime()).to.be.lessThan(after);
-      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.greaterThan(
-        before
-      );
-      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.lessThan(
-        after
-      );
-      expect(voucher[voucherStatuses.CANCELLED]).to.be.null;
-      expect(voucher[voucherStatuses.COMPLAINED]).to.be.null;
-      expect(voucher[voucherStatuses.REDEEMED]).to.be.null;
-      expect(voucher[voucherStatuses.REFUNDED]).to.be.null;
-      expect(voucher[voucherStatuses.FINALIZED]).to.be.null;
-    });
-  });
-
-  context("updateVoucherStatus", () => {
-    Object.values(voucherStatuses).forEach((status) => {
-      context(` for ${status} status`, () => {
-        it(
-          `sets the current date on the status on the voucher ` +
-            "with the provided voucher ID when it exists",
-          async () => {
-            const savedVoucher = new Voucher(
-              Random.voucherAttributes({
-                [voucherStatuses.COMMITTED]: Date.now(),
-                [voucherStatuses.CANCELLED]: null,
-                [voucherStatuses.COMPLAINED]: null,
-                [voucherStatuses.REDEEMED]: null,
-                [voucherStatuses.REFUNDED]: null,
-                [voucherStatuses.FINALIZED]: null,
-              })
-            );
-            await savedVoucher.save();
-
-            const vouchersRepository = new VouchersRepository();
-            const [before, after] = await Time.boundaries(() =>
-              vouchersRepository.updateVoucherStatus(savedVoucher._id, status)
-            );
-
-            const foundVoucher = await Voucher.findById(savedVoucher._id);
-
-            expect(foundVoucher[status].getTime()).to.be.greaterThan(before);
-            expect(foundVoucher[status].getTime()).to.be.lessThan(after);
-          }
-        );
-
-        it("does nothing when no voucher exists for the provided voucher ID", async () => {
-          const vouchersRepository = new VouchersRepository();
-          await expect(
-            vouchersRepository.updateVoucherStatus(
-              Random.documentId().toString(),
-              status
-            )
-          ).to.be.rejectedWith("Voucher not found");
-        });
-      });
+      expect(vouchers.length).to.eq(2);
+      expect(vouchers[0].id).to.not.eql(vouchers[1].id);
     });
   });
 
