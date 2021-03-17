@@ -577,6 +577,10 @@ describe("Vouchers Resource", () => {
       expect(propertyNames).to.include(expectedPropertyName);
     });
 
+    xit("createVoucher - returns 400 if record with same user and correlationId already exits", async() => {
+
+    })
+
     it("createVoucher - returns 403 with forbidden (voucher holder doesn't match requesting address)", async () => {
       // CREATE VOUCHER SUPPLY
       const [
