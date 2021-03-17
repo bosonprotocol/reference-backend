@@ -51,7 +51,27 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(201);
     });
 
-    xit("createVoucherSupply - returns 400 if record with same user and correlationId already exits", async () => {});
+    it("createVoucherSupply - returns 400 if record with same user and correlationId already exits", async () => {
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      //CREATE VOUCHER SUPPLY
+      await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      //TRY TO CREATE VOUCHER SUPPLY WITH SAME METADATA TO ENFORCE FAILURE
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
 
     it("createVoucherSupply - returns 400 when invalid mime-type", async () => {
       let [
