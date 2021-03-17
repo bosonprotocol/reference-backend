@@ -50,6 +50,13 @@ class VoucherSuppliesModule {
         this.voucherValidationMiddleware.validateDates(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherValidationMiddleware.validateVoucherSupplyByCorrrelationIdDoesNotExist(
+          req,
+          res,
+          next
+        )
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.createVoucherSupply(req, res, next)
       )
     );
@@ -128,13 +135,14 @@ class VoucherSuppliesModule {
           next
         )
       ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExistsByOwnerAndCorrelationId(
-          req,
-          res,
-          next
-        )
-      ),
+      //TODO if we are to support updates outside reference app, we should not have this validator, since it will always reverts in such scenario
+      // ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+      //   this.voucherValidationMiddleware.validateVoucherSupplyExistsByOwnerAndCorrelationId(
+      //     req,
+      //     res,
+      //     next
+      //   )
+      // ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.eventValidationMiddleware.validateVoucherMetadata(req, res, next)
       ),

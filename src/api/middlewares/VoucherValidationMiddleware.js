@@ -33,6 +33,36 @@ class VoucherValidationMiddleware {
     next();
   }
 
+  async validateVoucherSupplyByCorrrelationIdDoesNotExist(req, res, next) {
+    let voucherSupply;
+    const metadata = {
+      voucherOwner: res.locals.address,
+      _correlationId: req.body._correlationId,
+    };
+
+    try {
+      voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyByOwnerAndCorrelationId(
+        metadata
+      );
+
+      if (voucherSupply) {
+        throw new Error(
+          `VoucherSupply for User: ${res.locals.address} and CorrelationID: ${req.body._correlationId} already exits!`
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+      return next(
+        new ApiError(
+          400,
+          `VoucherSupply for User: ${res.locals.address} and CorrelationID: ${req.body._correlationId} already exits!`
+        )
+      );
+    }
+
+    next();
+  }
+
   async validateVoucherSupplyExistsByOwnerAndCorrelationId(req, res, next) {
     let voucherSupply;
 

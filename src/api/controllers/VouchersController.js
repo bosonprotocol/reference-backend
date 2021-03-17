@@ -164,6 +164,36 @@ class VouchersController {
     next();
   }
 
+  async validateVoucherByCorrrelationIdDoesNotExist(req, res, next) {
+    let voucher;
+    const metadata = {
+      _holder: res.locals.address,
+      _correlationId: req.body._correlationId,
+    };
+
+    try {
+      voucher = await this.vouchersRepository.getVoucherByOwnerAndCorrelationId(
+        metadata
+      );
+
+      if (voucher) {
+        throw new Error(
+          `VoucherSupply for User: ${res.locals.address} and CorrelationID: ${req.body._correlationId} already exits!`
+        );
+      }
+    } catch (error) {
+      console.error(error.message);
+      return next(
+        new ApiError(
+          400,
+          `VoucherSupply for User: ${res.locals.address} and CorrelationID: ${req.body._correlationId} already exits!`
+        )
+      );
+    }
+
+    next();
+  }
+
   /**
    * @notice This function is triggered while event 'LogVoucherDelivered' is emitted
    */

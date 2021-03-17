@@ -96,6 +96,13 @@ class VouchersRepository {
   async getVoucherByVoucherTokenId(voucherTokenId) {
     return Voucher.findOne({ _tokenIdVoucher: voucherTokenId });
   }
+
+  async getVoucherByOwnerAndCorrelationId(metadata) {
+    return Voucher.findOne({
+      _holder: metadata._holder,
+      _correlationId: metadata._correlationId,
+    });
+  }
 }
 
 module.exports = VouchersRepository;
