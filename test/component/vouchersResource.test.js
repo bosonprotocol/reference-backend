@@ -577,6 +577,44 @@ describe("Vouchers Resource", () => {
       expect(propertyNames).to.include(expectedPropertyName);
     });
 
+    it("createVoucher - returns 400 if record with same user and correlationId already exits", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId,
+        voucherSupplyOwner,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY 1 Voucher
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+      // END COMMIT TO BUY
+
+      // TRY TO COMMIT ANOTHER VOUCHER WITH SAME VOUCHER METADATA TO FORCE FAILURE
+      const [createVoucherResponseCode] = await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+
+      expect(createVoucherResponseCode).to.eql(400);
+    });
+
     it("createVoucher - returns 403 with forbidden (voucher holder doesn't match requesting address)", async () => {
       // CREATE VOUCHER SUPPLY
       const [

@@ -51,6 +51,28 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(201);
     });
 
+    it("createVoucherSupply - returns 400 if record with same user and correlationId already exits", async () => {
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      //CREATE VOUCHER SUPPLY
+      await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      //TRY TO CREATE VOUCHER SUPPLY WITH SAME METADATA TO ENFORCE FAILURE
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
     it("createVoucherSupply - returns 400 when invalid mime-type", async () => {
       let [
         token,
@@ -419,7 +441,8 @@ describe("Voucher Supplies Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
-    it("setVoucherSupplyMetaData - returns 400 and voucher supply doesn't exist", async () => {
+    //TODO if we are to support updates outside reference app, we should not have this test
+    xit("setVoucherSupplyMetaData - returns 400 and voucher supply doesn't exist", async () => {
       const gcloudToken = await prerequisites.getGCloudToken(
         gcloudSecret,
         tokenSecret
@@ -600,6 +623,12 @@ describe("Voucher Supplies Resource", () => {
         voucherSupplyData,
         imageFilePath,
       ] = await prerequisites.createVoucherSupplyData();
+
+      const [
+        token1,
+        voucherSupplyData1,
+        imageFilePath1,
+      ] = await prerequisites.createVoucherSupplyData();
       const [
         voucherSupplyId1,
         voucherSupplyOwner1,
@@ -616,9 +645,9 @@ describe("Voucher Supplies Resource", () => {
         qty2,
         supplyTokenId2,
       ] = await prerequisites.createVoucherSupply(
-        token,
-        voucherSupplyData,
-        imageFilePath
+        token1,
+        voucherSupplyData1,
+        imageFilePath1
       );
       // END CREATE VOUCHER SUPPLIES
 

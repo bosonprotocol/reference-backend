@@ -1,6 +1,7 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const VouchersController = require("../api/controllers/VouchersController");
 const UserValidationMiddleware = require("../api/middlewares/UserValidationMiddleware");
+const VoucherValidationMiddleware = require("../api/middlewares/VoucherValidationMiddleware");
 const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
 
 class VouchersModule {
@@ -8,6 +9,7 @@ class VouchersModule {
     userAuthenticationMiddleware,
     userValidationMiddleware,
     eventValidationMiddleware,
+    voucherValidationMiddleware,
     voucherSuppliesRepository,
     vouchersRepository,
     vouchersController,
@@ -21,6 +23,9 @@ class VouchersModule {
     this.vouchersController =
       vouchersController ||
       new VouchersController(voucherSuppliesRepository, vouchersRepository);
+    this.voucherValidationMiddleware =
+      voucherValidationMiddleware ||
+      new VoucherValidationMiddleware(vouchersRepository);
   }
 
   mountPoint() {
@@ -45,6 +50,13 @@ class VouchersModule {
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userValidationMiddleware.validateMetadata(req, res, next)
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.voucherValidationMiddleware.validateVoucherByCorrrelationIdDoesNotExist(
+          req,
+          res,
+          next
+        )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.commitToBuy(req, res, next)
@@ -144,7 +156,7 @@ class VouchersModule {
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.vouchersController.validateVoucherStatus(req, res, next)
+        this.voucherValidationMiddleware.validateVoucherStatus(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.updateStatusFromKeepers(req, res, next)
