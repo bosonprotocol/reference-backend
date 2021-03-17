@@ -182,7 +182,7 @@ describe("Vouchers Resource", () => {
       const voucherTokenId = voucherMetadata._tokenIdVoucher;
       const voucherIssuer = voucherSupplyOwner;
       const promiseId = Random.promiseId();
-      const supplyTokenId = voucherMetadata._tokenIdSupply;
+      const supplyTokenId = voucherSupplyData._tokenIdSupply;
       const voucherHolder = voucherMetadata._holder;
       const correlationId = voucherMetadata._correlationId;
 
