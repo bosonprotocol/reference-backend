@@ -3,7 +3,7 @@ const FileStore = require("../services/FileStore");
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
 const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware");
-const VoucherValidationMiddleware = require("../api/middlewares/VoucherValidationMiddleware");
+const VoucherSupplyValidationMiddleware = require("../api/middlewares/VoucherSupplyValidationMiddleware");
 const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
 
 class VoucherSuppliesModule {
@@ -11,7 +11,7 @@ class VoucherSuppliesModule {
     configurationService,
     userAuthenticationMiddleware,
     voucherImageStorageMiddleware,
-    voucherValidationMiddleware,
+    voucherSupplyValidationMiddleware,
     eventValidationMiddleware,
     voucherSuppliesRepository,
     voucherSuppliesController,
@@ -25,9 +25,9 @@ class VoucherSuppliesModule {
         "fileToUpload",
         new FileStore(configurationService.vouchersBucket)
       );
-    this.voucherValidationMiddleware =
-      voucherValidationMiddleware ||
-      new VoucherValidationMiddleware(voucherSuppliesRepository);
+    this.voucherSupplyValidationMiddleware =
+      voucherSupplyValidationMiddleware ||
+      new VoucherSupplyValidationMiddleware(voucherSuppliesRepository);
     this.voucherSuppliesController =
       voucherSuppliesController ||
       new VoucherSuppliesController(voucherSuppliesRepository);
@@ -47,10 +47,10 @@ class VoucherSuppliesModule {
         this.voucherImageStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateDates(req, res, next)
+        this.voucherSupplyValidationMiddleware.validateDates(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyByCorrrelationIdDoesNotExist(
+        this.voucherSupplyValidationMiddleware.validateVoucherSupplyByCorrrelationIdDoesNotExist(
           req,
           res,
           next
@@ -64,7 +64,7 @@ class VoucherSuppliesModule {
     router.get(
       "/:id",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+        this.voucherSupplyValidationMiddleware.validateVoucherSupplyExists(
           req,
           res,
           next
@@ -137,7 +137,7 @@ class VoucherSuppliesModule {
       ),
       //TODO if we are to support updates outside reference app, we should not have this validator, since it will always reverts in such scenario
       // ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-      //   this.voucherValidationMiddleware.validateVoucherSupplyExistsByOwnerAndCorrelationId(
+      //   this.voucherSupplyValidationMiddleware.validateVoucherSupplyExistsByOwnerAndCorrelationId(
       //     req,
       //     res,
       //     next
@@ -202,14 +202,14 @@ class VoucherSuppliesModule {
         this.voucherImageStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+        this.voucherSupplyValidationMiddleware.validateVoucherSupplyExists(
           req,
           res,
           next
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateCanUpdateVoucherSupply(
+        this.voucherSupplyValidationMiddleware.validateCanUpdateVoucherSupply(
           req,
           res,
           next
@@ -226,14 +226,14 @@ class VoucherSuppliesModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+        this.voucherSupplyValidationMiddleware.validateVoucherSupplyExists(
           req,
           res,
           next
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateCanDelete(req, res, next)
+        this.voucherSupplyValidationMiddleware.validateCanDelete(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.deleteVoucherSupply(req, res, next)
@@ -246,14 +246,14 @@ class VoucherSuppliesModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherSupplyExists(
+        this.voucherSupplyValidationMiddleware.validateVoucherSupplyExists(
           req,
           res,
           next
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateCanDelete(req, res, next)
+        this.voucherSupplyValidationMiddleware.validateCanDelete(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSuppliesController.deleteImage(req, res, next)

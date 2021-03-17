@@ -2,7 +2,6 @@
 const ApiError = require("../ApiError");
 
 const voucherUtils = require("../../utils/voucherUtils");
-const voucherStatuses = require("../../utils/voucherStatuses");
 
 class VouchersController {
   constructor(voucherSuppliesRepository, vouchersRepository) {
@@ -143,57 +142,6 @@ class VouchersController {
     }
 
     res.status(200).send({ voucherID: voucher.id });
-  }
-
-  //TODO This should be in separate middleware
-  async validateVoucherStatus(req, res, next) {
-    const status = Array.isArray(req.body)
-      ? req.body[0].status
-      : req.body.status; // support keeper's body (array)
-
-    const validVoucherStatuses = Object.values(voucherStatuses); // extract as array
-
-    if (!validVoucherStatuses.includes(status)) {
-      return next(
-        new ApiError(
-          400,
-          `UPDATE voucher operation could not be completed with invalid status: ${status}`
-        )
-      );
-    }
-
-    next();
-  }
-
-  //TODO This should be in separate middleware
-  async validateVoucherByCorrrelationIdDoesNotExist(req, res, next) {
-    let voucher;
-    const metadata = {
-      _holder: res.locals.address,
-      _correlationId: req.body._correlationId,
-    };
-
-    try {
-      voucher = await this.vouchersRepository.getVoucherByOwnerAndCorrelationId(
-        metadata
-      );
-
-      if (voucher) {
-        throw new Error(
-          `VoucherSupply for User: ${res.locals.address} and CorrelationID: ${req.body._correlationId} already exits!`
-        );
-      }
-    } catch (error) {
-      console.error(error.message);
-      return next(
-        new ApiError(
-          400,
-          `VoucherSupply for User: ${res.locals.address} and CorrelationID: ${req.body._correlationId} already exits!`
-        )
-      );
-    }
-
-    next();
   }
 
   /**
