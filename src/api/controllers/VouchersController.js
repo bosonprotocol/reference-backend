@@ -145,7 +145,6 @@ class VouchersController {
     res.status(200).send({ voucherID: voucher.id });
   }
 
-
   //TODO This should be in separate middleware
   async validateVoucherStatus(req, res, next) {
     const status = Array.isArray(req.body)

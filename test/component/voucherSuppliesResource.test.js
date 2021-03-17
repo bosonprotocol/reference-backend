@@ -51,9 +51,7 @@ describe("Voucher Supplies Resource", () => {
       expect(response.status).to.eql(201);
     });
 
-    xit("createVoucherSupply - returns 400 if record with same user and correlationId already exits", async() => {
-
-    })
+    xit("createVoucherSupply - returns 400 if record with same user and correlationId already exits", async () => {});
 
     it("createVoucherSupply - returns 400 when invalid mime-type", async () => {
       let [
