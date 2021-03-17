@@ -30,4 +30,4 @@ export INCLUDE_COVERAGE="true"
 git config --global user.email "ci@redeemeum.com"
 git config --global user.name "Redeemeum CI"
 git add .
-git commit -m "Update coverage badge [ci skip]"
+git diff --staged --quiet || git commit -m "Update coverage badge [ci skip]"
