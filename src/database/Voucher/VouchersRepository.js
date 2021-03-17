@@ -6,27 +6,25 @@ const voucherStatuses = require("../../utils/voucherStatuses");
 // TODO: Discuss lowercase holder address consistency
 class VouchersRepository {
   async createVoucher(metadata, voucherSupplyId) {
-    return Voucher.findOneAndUpdate(
-      { _tokenIdVoucher: metadata._tokenIdVoucher },
-      {
-        supplyID: voucherSupplyId,
-        _holder: metadata._holder.toLowerCase(),
-        _tokenIdSupply: metadata._tokenIdSupply,
-        _tokenIdVoucher: metadata._tokenIdVoucher,
-        [voucherStatuses.COMMITTED]: new Date().getTime(),
-        [voucherStatuses.CANCELLED]: null,
-        [voucherStatuses.COMPLAINED]: null,
-        [voucherStatuses.REDEEMED]: null,
-        [voucherStatuses.REFUNDED]: null,
-        [voucherStatuses.EXPIRED]: null,
-        [voucherStatuses.FINALIZED]: null,
-        voucherOwner: metadata._issuer.toLowerCase(),
-        actionDate: new Date().getTime(),
-        _correlationId: metadata._correlationId,
-        blockchainAnchored: false,
-      },
-      { new: true, upsert: true, runValidators: true }
-    );
+    const voucher = new Voucher({
+      supplyID: voucherSupplyId,
+      _holder: metadata._holder.toLowerCase(),
+      _tokenIdSupply: metadata._tokenIdSupply,
+      _tokenIdVoucher: metadata._tokenIdVoucher,
+      [voucherStatuses.COMMITTED]: new Date().getTime(),
+      [voucherStatuses.CANCELLED]: null,
+      [voucherStatuses.COMPLAINED]: null,
+      [voucherStatuses.REDEEMED]: null,
+      [voucherStatuses.REFUNDED]: null,
+      [voucherStatuses.EXPIRED]: null,
+      [voucherStatuses.FINALIZED]: null,
+      voucherOwner: metadata._issuer.toLowerCase(),
+      actionDate: new Date().getTime(),
+      _correlationId: metadata._correlationId,
+      blockchainAnchored: false,
+    });
+
+    return voucher.save();
   }
 
   async updateVoucherDelivered(metadata) {

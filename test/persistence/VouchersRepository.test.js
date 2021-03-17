@@ -68,7 +68,7 @@ describe("Vouchers Repository", () => {
       await expect(
         vouchersRepository.createVoucher(metadata, voucherSupplyId)
       ).to.be.rejectedWith(
-        "Validation failed: supplyID: Path `supplyID` is required."
+        "Voucher validation failed: supplyID: Path `supplyID` is required."
       );
     });
 
@@ -86,7 +86,7 @@ describe("Vouchers Repository", () => {
       expect(voucher.supplyID).to.eql(voucherSupplyId);
     });
 
-    it("updates the voucher when it already exists", async () => {
+    it("creates new voucher if already exists", async () => {
       const voucherSupplyId = Random.documentId().toString();
       const voucherTokenId = Random.uint256();
 
@@ -105,32 +105,14 @@ describe("Vouchers Repository", () => {
       ).save();
 
       const vouchersRepository = new VouchersRepository();
-      const [before, after] = await Time.boundaries(() =>
-        vouchersRepository.createVoucher(metadata2, voucherSupplyId)
-      );
+      await vouchersRepository.createVoucher(metadata2, voucherSupplyId);
 
-      const voucher = await Voucher.findOne({
+      const vouchers = await Voucher.find({
         supplyID: voucherSupplyId,
       });
 
-      expect(voucher.supplyID).to.eql(voucherSupplyId);
-      expect(voucher._holder).to.eql(metadata2._holder.toLowerCase());
-      expect(voucher._tokenIdSupply).to.eql(metadata2._tokenIdSupply);
-      expect(voucher._tokenIdVoucher).to.eql(metadata2._tokenIdVoucher);
-      expect(voucher.voucherOwner).to.eql(metadata2._issuer.toLowerCase());
-      expect(voucher.actionDate.getTime()).to.be.greaterThan(before);
-      expect(voucher.actionDate.getTime()).to.be.lessThan(after);
-      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.greaterThan(
-        before
-      );
-      expect(voucher[voucherStatuses.COMMITTED].getTime()).to.be.lessThan(
-        after
-      );
-      expect(voucher[voucherStatuses.CANCELLED]).to.be.null;
-      expect(voucher[voucherStatuses.COMPLAINED]).to.be.null;
-      expect(voucher[voucherStatuses.REDEEMED]).to.be.null;
-      expect(voucher[voucherStatuses.REFUNDED]).to.be.null;
-      expect(voucher[voucherStatuses.FINALIZED]).to.be.null;
+      expect(vouchers.length).to.eq(2);
+      expect(vouchers[0].id).to.not.eql(vouchers[1].id);
     });
   });
 
