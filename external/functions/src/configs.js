@@ -17,7 +17,7 @@ const configs = {
     UPDATE_STATUS_URL: `${apiUrl}/vouchers/update-status-from-keepers`,
     WITHDRAW_VOUCHER_URL: `${apiUrl}/payments/create-payment`,
     GCLOUD_SECRET: functions.config().dev.gcloudsecret,
-    GAS_LIMIT: "3000000",
+    GAS_LIMIT: "6000000",
   },
   demo: {
     VOUCHER_KERNEL_ADDRESS: functions.config().demo.voucherkerneladdress,
@@ -31,7 +31,7 @@ const configs = {
     UPDATE_STATUS_URL: `${demoApiUrl}/vouchers/update-status-from-keepers`,
     WITHDRAW_VOUCHER_URL: `${demoApiUrl}/payments/create-payment`,
     GCLOUD_SECRET: functions.config().demo.gcloudsecret,
-    GAS_LIMIT: "3000000",
+    GAS_LIMIT: "6000000",
   },
   playground: {
     VOUCHER_KERNEL_ADDRESS: functions.config().playground.voucherkerneladdress,
@@ -45,7 +45,7 @@ const configs = {
     UPDATE_STATUS_URL: `${playgroundApiUrl}/vouchers/update-status-from-keepers`,
     WITHDRAW_VOUCHER_URL: `${playgroundApiUrl}/payments/create-payment`,
     GCLOUD_SECRET: functions.config().playground.gcloudsecret,
-    GAS_LIMIT: "3000000",
+    GAS_LIMIT: "6000000",
   },
 };
 

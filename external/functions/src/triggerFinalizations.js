@@ -68,7 +68,10 @@ exports.scheduledKeepersFinalizationsPlayground = functions.https.onRequest(
       infura: playground.INFURA_API_KEY,
     });
 
-    const executor = new ethers.Wallet(playground.EXECUTOR_PRIVATE_KEY, provider);
+    const executor = new ethers.Wallet(
+      playground.EXECUTOR_PRIVATE_KEY,
+      provider
+    );
 
     axios.defaults.headers.common = {
       Authorization: `Bearer ${playground.GCLOUD_SECRET}`,
@@ -107,6 +110,32 @@ async function triggerFinalizations(executor, config) {
     let voucher = res.data.vouchers[i];
     let voucherID = voucher._tokenIdVoucher;
 
+    console.log(`Voucher: ${voucherID}. The finalization has started.`);
+
+    try {
+      let voucherStatusTx = await voucherKernelContractExecutor.getVoucherStatus(
+        voucherID
+      );
+      let status = voucherStatusTx[0];
+
+      let isFinalized = utils.isStatus(status, utils.IDX_FINAL);
+
+      if (isFinalized && !voucher.FINALIZED) {
+        const payload = [
+          {
+            _tokenIdVoucher: voucherID,
+            status: "FINALIZED",
+          },
+        ];
+        await axios.patch(config.UPDATE_STATUS_URL, payload);
+        console.log(`Voucher: ${voucherID}. Database updated.`);
+        continue;
+      }
+    } catch (error) {
+      console.error(error);
+      continue;
+    }
+
     if (
       voucher.FINALIZED ||
       FINALIZATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)
@@ -114,8 +143,6 @@ async function triggerFinalizations(executor, config) {
       console.log(`Voucher: ${voucherID} is already finalized`);
       continue;
     }
-
-    console.log(`Voucher: ${voucherID}. The finalization has started.`);
 
     let txOrder;
     let receipt;

@@ -1,3 +1,7 @@
+const ONE = 1;
+const IDX_FINAL = 1;
+const IDX_EXPIRE = 4;
+
 async function findEventByName(txReceipt, eventName, ...eventFields) {
   if (typeof txReceipt !== "object" || txReceipt === null) return;
 
@@ -26,6 +30,13 @@ async function findEventByName(txReceipt, eventName, ...eventFields) {
   return eventsArr;
 }
 
+function isStatus(_status, idx) {
+  return (_status >> idx) & (ONE == 1);
+}
+
 module.exports = {
+  IDX_FINAL,
+  IDX_EXPIRE,
   findEventByName,
+  isStatus,
 };

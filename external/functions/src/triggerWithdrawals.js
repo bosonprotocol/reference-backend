@@ -65,7 +65,10 @@ exports.scheduledKeepersWithdrawalsPlayground = functions.https.onRequest(
       infura: playground.INFURA_API_KEY,
     });
 
-    const executor = new ethers.Wallet(playground.EXECUTOR_PRIVATE_KEY, provider);
+    const executor = new ethers.Wallet(
+      playground.EXECUTOR_PRIVATE_KEY,
+      provider
+    );
 
     axios.defaults.headers.common = {
       Authorization: `Bearer ${playground.GCLOUD_SECRET}`,

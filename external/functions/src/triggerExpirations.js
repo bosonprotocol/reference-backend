@@ -65,7 +65,10 @@ exports.scheduledKeepersExpirationsPlayground = functions.https.onRequest(
       infura: playground.INFURA_API_KEY,
     });
 
-    const executor = new ethers.Wallet(playground.EXECUTOR_PRIVATE_KEY, provider);
+    const executor = new ethers.Wallet(
+      playground.EXECUTOR_PRIVATE_KEY,
+      provider
+    );
 
     axios.defaults.headers.common = {
       Authorization: `Bearer ${playground.GCLOUD_SECRET}`,
@@ -102,12 +105,13 @@ async function triggerExpirations(executor, config) {
 
   for (let i = 0; i < res.data.vouchers.length; i++) {
     let voucher = res.data.vouchers[i];
+    let voucherStatus; // 0 - status, 1 - isPaymentReleased, 2 - isDepositsReleased
     let voucherID = voucher._tokenIdVoucher;
     let isStatusCommit = false;
 
     try {
       // eslint-disable-next-line no-await-in-loop
-      let voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
+      voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
         voucherID
       );
       isStatusCommit = voucherStatus[0] === (0 | (1 << COMMIT_IDX)); // condition is borrowed from helper contract
@@ -128,6 +132,26 @@ async function triggerExpirations(executor, config) {
     console.log(
       `Voucher: ${voucherID} is with commit status. The expiration is triggered.`
     );
+
+    try {
+      let isExpired = utils.isStatus(voucherStatus[0], utils.IDX_EXPIRE);
+
+      if (isExpired && !voucher.EXPIRED) {
+        const payload = [
+          {
+            _tokenIdVoucher: voucherID,
+            status: "EXPIRED",
+          },
+        ];
+        await axios.patch(config.UPDATE_STATUS_URL, payload);
+        console.log(`Voucher: ${voucherID}. Database updated.`);
+        continue;
+      }
+    } catch (error) {
+      console.error(error);
+      continue;
+    }
+
     let receipt;
 
     try {
