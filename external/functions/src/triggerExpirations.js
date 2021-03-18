@@ -109,6 +109,10 @@ async function triggerExpirations(executor, config) {
     let voucherID = voucher._tokenIdVoucher;
     let isStatusCommit = false;
 
+    if (!voucher.blockchainAnchored) {
+      continue;
+    }
+
     try {
       // eslint-disable-next-line no-await-in-loop
       voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(

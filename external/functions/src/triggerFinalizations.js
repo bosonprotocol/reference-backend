@@ -110,6 +110,10 @@ async function triggerFinalizations(executor, config) {
     let voucher = res.data.vouchers[i];
     let voucherID = voucher._tokenIdVoucher;
 
+    if (!voucher.blockchainAnchored) {
+      continue;
+    }
+
     console.log(`Voucher: ${voucherID}. The finalization has started.`);
 
     try {

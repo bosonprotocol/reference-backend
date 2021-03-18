@@ -112,6 +112,10 @@ async function triggerWithdrawals(executor, config) {
     let voucherID = voucher._tokenIdVoucher;
     let isPaymentAndDepositsReleased;
 
+    if (!voucher.blockchainAnchored) {
+      continue;
+    }
+
     try {
       let voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
         voucherID
