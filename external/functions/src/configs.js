@@ -2,6 +2,7 @@ const functions = require("firebase-functions");
 
 const apiUrl = functions.config().dev.apiurl;
 const demoApiUrl = functions.config().demo.apiurl;
+const playgroundApiUrl = functions.config().playground.apiurl;
 
 const configs = {
   dev: {
@@ -30,6 +31,20 @@ const configs = {
     UPDATE_STATUS_URL: `${demoApiUrl}/vouchers/update-status-from-keepers`,
     WITHDRAW_VOUCHER_URL: `${demoApiUrl}/payments/create-payment`,
     GCLOUD_SECRET: functions.config().demo.gcloudsecret,
+    GAS_LIMIT: "3000000",
+  },
+  playground: {
+    VOUCHER_KERNEL_ADDRESS: functions.config().playground.voucherkerneladdress,
+    CASHIER_ADDRESS: functions.config().playground.cashieraddress,
+    EXECUTOR_PRIVATE_KEY: functions.config().playground.executorsecret,
+    NETWORK_NAME: functions.config().playground.networkname,
+    ETHERSCAN_API_KEY: functions.config().playground.etherscanapikey,
+    INFURA_API_KEY: functions.config().playground.infuraapikey,
+    API_URL: playgroundApiUrl,
+    ALL_VOUCHERS_URL: `${playgroundApiUrl}/vouchers/all`,
+    UPDATE_STATUS_URL: `${playgroundApiUrl}/vouchers/update-status-from-keepers`,
+    WITHDRAW_VOUCHER_URL: `${playgroundApiUrl}/payments/create-payment`,
+    GCLOUD_SECRET: functions.config().playground.gcloudsecret,
     GAS_LIMIT: "3000000",
   },
 };

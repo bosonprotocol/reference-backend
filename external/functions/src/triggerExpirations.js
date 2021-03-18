@@ -5,7 +5,7 @@ const ethers = require("ethers");
 const configs = require("./configs");
 const utils = require("./utils");
 
-const VoucherKernel = require("../../abis/VoucherKernel.json");
+const VoucherKernel = require("../abis/VoucherKernel.json");
 
 const COMMIT_IDX = 7; // usingHelpers contract
 
@@ -52,6 +52,27 @@ exports.scheduledKeepersExpirationsDemo = functions.https.onRequest(
 
     // Expiration process
     await triggerExpirations(executor, demo);
+
+    response.send("Expiration process was executed successfully!");
+  }
+);
+
+exports.scheduledKeepersExpirationsPlayground = functions.https.onRequest(
+  async (request, response) => {
+    const playground = configs("playground");
+    const provider = ethers.getDefaultProvider(playground.NETWORK_NAME, {
+      etherscan: playground.ETHERSCAN_API_KEY,
+      infura: playground.INFURA_API_KEY,
+    });
+
+    const executor = new ethers.Wallet(playground.EXECUTOR_PRIVATE_KEY, provider);
+
+    axios.defaults.headers.common = {
+      Authorization: `Bearer ${playground.GCLOUD_SECRET}`,
+    };
+
+    // Expiration process
+    await triggerExpirations(executor, playground);
 
     response.send("Expiration process was executed successfully!");
   }

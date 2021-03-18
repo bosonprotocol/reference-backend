@@ -5,8 +5,8 @@ const ethers = require("ethers");
 const configs = require("./configs");
 const utils = require("./utils");
 
-const VoucherKernel = require("../../abis/VoucherKernel.json");
-const Cashier = require("../../abis/Cashier.json");
+const VoucherKernel = require("../abis/VoucherKernel.json");
+const Cashier = require("../abis/Cashier.json");
 
 const WITHDRAWAL_BLACKLISTED_VOUCHER_IDS = [
   "57896044618658097711785492504343953936503180973527497460166655619477842952194",
@@ -52,6 +52,27 @@ exports.scheduledKeepersWithdrawalsDemo = functions.https.onRequest(
 
     // Withdrawal process
     await triggerWithdrawals(executor, demo);
+
+    response.send("Withdrawal process was executed successfully!");
+  }
+);
+
+exports.scheduledKeepersWithdrawalsPlayground = functions.https.onRequest(
+  async (request, response) => {
+    const playground = configs("playground");
+    const provider = ethers.getDefaultProvider(playground.NETWORK_NAME, {
+      etherscan: playground.ETHERSCAN_API_KEY,
+      infura: playground.INFURA_API_KEY,
+    });
+
+    const executor = new ethers.Wallet(playground.EXECUTOR_PRIVATE_KEY, provider);
+
+    axios.defaults.headers.common = {
+      Authorization: `Bearer ${playground.GCLOUD_SECRET}`,
+    };
+
+    // Withdrawal process
+    await triggerWithdrawals(executor, playground);
 
     response.send("Withdrawal process was executed successfully!");
   }
