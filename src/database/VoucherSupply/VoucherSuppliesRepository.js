@@ -39,6 +39,7 @@ class VoucherSuppliesRepository {
       _correlationId: metadata._correlationId,
       _tokenIdSupply: metadata._tokenIdSupply,
       imagefiles: fileRefs,
+      _paymentType: metadata._paymentType,
     });
 
     return voucherSupply.save();
