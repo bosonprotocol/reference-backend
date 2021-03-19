@@ -127,9 +127,12 @@ async function triggerExpirations(executor, config) {
     }
 
     if (
-      !isStatusCommit ||
-      EXPIRATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)
+      !isStatusCommit && (!!(voucher.FINALIZED) || !!(voucher.EXPIRED))
     ) {
+      continue;
+    }
+
+    if (!await shouldTriggerExpiration(config, executor, voucherID)) {
       continue;
     }
 
@@ -208,4 +211,26 @@ async function triggerExpirations(executor, config) {
     : "triggerExpirations function finished successfully";
 
   console.info(infoMsg);
+}
+
+async function getCurrTimestamp(provider) {
+  let blockNumber = await provider.getBlockNumber()
+  let block = await provider.getBlock(blockNumber)
+
+  return block.timestamp
+}
+
+async function getVoucherValidTo(config, executor, voucherId) {
+  const vk = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor)
+  const promiseKey = await vk.getPromiseIdFromVoucherId(voucherId)
+
+  return (await vk.promises(promiseKey)).validTo.toString()
+}
+
+
+async function shouldTriggerExpiration(config, executor, voucherId) {
+  let currTimestamp = await getCurrTimestamp(executor.provider)
+  let voucherValidTo = await getVoucherValidTo(config, executor, voucherId)
+
+  return voucherValidTo < currTimestamp
 }
