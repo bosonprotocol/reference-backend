@@ -2,6 +2,7 @@
 const functions = require("firebase-functions");
 const axios = require("axios").default;
 const ethers = require("ethers");
+const BN = ethers.BigNumber.from;
 
 const configs = require("./configs");
 const utils = require("./utils");
@@ -110,21 +111,36 @@ async function triggerFinalizations(executor, config) {
     let voucher = res.data.vouchers[i];
     let voucherID = voucher._tokenIdVoucher;
 
-    if (!voucher.blockchainAnchored) {
+    if (!voucher.blockchainAnchored || !!(voucher.FINALIZED)) {
+      continue;
+    }
+
+    let voucherStatus;
+
+    try {
+      voucherStatus = await voucherKernelContractExecutor.vouchersStatus(
+        voucherID
+      );
+    } catch (e) {
+      hasErrors = true;
+      console.error(
+        `Error while checking voucher status toward the contract. Error: ${e}`
+      );
       continue;
     }
 
     console.log(`Voucher: ${voucherID}. The finalization has started.`);
 
     try {
-      let voucherStatusTx = await voucherKernelContractExecutor.getVoucherStatus(
-        voucherID
-      );
-      let status = voucherStatusTx[0];
+      let status = voucherStatus.status;
 
       let isFinalized = utils.isStatus(status, utils.IDX_FINAL);
 
-      if (isFinalized && !voucher.FINALIZED) {
+      if (isFinalized) {
+        console.log(
+          `Voucher: ${voucherID} is with finalized, but the DB was not updated while the event was triggered. Updating Database only.`
+        );
+
         const payload = [
           {
             _tokenIdVoucher: voucherID,
@@ -141,10 +157,13 @@ async function triggerFinalizations(executor, config) {
     }
 
     if (
-      voucher.FINALIZED ||
       FINALIZATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)
     ) {
       console.log(`Voucher: ${voucherID} is already finalized`);
+      continue;
+    }
+
+    if (!await shouldTriggerFinalization(config, executor, voucherID, voucherStatus)) {
       continue;
     }
 
@@ -202,4 +221,45 @@ async function triggerFinalizations(executor, config) {
     : "triggerFinalizations function finished successfully";
 
   console.info(infoMsg);
+}
+
+async function shouldTriggerFinalization(config, executor, voucherId, voucherStatus) {
+  let currTimestamp = await utils.getCurrTimestamp(executor.provider)
+  let voucherValidTo = await utils.getVoucherValidTo(config, executor, voucherId)
+
+  const complainPeriod = await utils.getComplainPeriod(config, executor)
+  const cancelFaultPeriod = await utils.getCancelFaultPeriod(config, executor)
+
+  let mark = false
+
+  if (utils.isStatus(voucherStatus.status, utils.IDX_COMPLAIN)) {
+    if (utils.isStatus(voucherStatus.status, utils.IDX_CANCEL_FAULT)) {
+      mark = true
+    }
+    else if (BN(currTimestamp).gte(BN(voucherStatus.cancelFaultPeriodStart).add(cancelFaultPeriod))) {
+      mark = true
+    }
+  } else if ( //here
+    utils.isStatus(voucherStatus.status, utils.IDX_CANCEL_FAULT) &&
+    BN(currTimestamp).gte(BN(voucherStatus.complainPeriodStart).add(complainPeriod))
+  ) {
+      //if COF: then final after complain period
+      mark = true;
+  } else if (
+      utils.isStateRedemptionSigned(voucherStatus.status) || utils.isStateRefunded(voucherStatus.status)
+  ) {
+      //if RDM/RFND NON_COMPLAIN: then final after complainPeriodStart + complainPeriod
+      if (
+        BN(currTimestamp).gte(BN(voucherStatus.complainPeriodStart).add(complainPeriod))
+      ) {
+          mark = true;
+      }
+  } else if (utils.isStateExpired(voucherStatus.status)) {
+      //if EXP NON_COMPLAIN: then final after validTo + complainPeriod
+      if (BN(currTimestamp).gte(BN(voucherValidTo).add(complainPeriod))) {
+          mark = true;
+      }
+  }
+
+  return mark
 }

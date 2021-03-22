@@ -4,9 +4,9 @@ const axios = require('axios').default;
 const ethers = require('ethers');
 const provider = new ethers.providers.InfuraProvider(process.env.NETWORK, [process.env.INFURA_API_KEY]);
 
-const ERC1155ERC721 = require("../abis/ERC1155ERC721.json");
-const VoucherKernel = require("../abis/VoucherKernel.json");
-const BosonRouter = require("../abis/BosonRouter.json")
+const ERC1155ERC721 = require("./abis/ERC1155ERC721.json");
+const VoucherKernel = require("./abis/VoucherKernel.json");
+const BosonRouter = require("./abis/BosonRouter.json")
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 

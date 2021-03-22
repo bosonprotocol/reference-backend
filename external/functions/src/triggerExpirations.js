@@ -7,8 +7,6 @@ const utils = require("./utils");
 
 const VoucherKernel = require("../abis/VoucherKernel.json");
 
-const COMMIT_IDX = 7; // usingHelpers contract
-
 const EXPIRATION_BLACKLISTED_VOUCHER_IDS = [
   "57896044618658097711785492504343953937183745707369374387093404834341379375105",
   "57896044618658097711785492504343953940926851743499697485190525516090829701121",
@@ -109,7 +107,7 @@ async function triggerExpirations(executor, config) {
     let voucherID = voucher._tokenIdVoucher;
     let isStatusCommit = false;
 
-    if (!voucher.blockchainAnchored) {
+    if (!voucher.blockchainAnchored || !!(voucher.EXPIRED)) {
       continue;
     }
 
@@ -118,32 +116,23 @@ async function triggerExpirations(executor, config) {
       voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
         voucherID
       );
-      isStatusCommit = voucherStatus[0] === (0 | (1 << COMMIT_IDX)); // condition is borrowed from helper contract
+      isStatusCommit = utils.isStateCommitted(voucherStatus[0]);
     } catch (e) {
       hasErrors = true;
       console.error(
         `Error while checking voucher status toward the contract. Error: ${e}`
       );
-    }
-
-    if (
-      !isStatusCommit && !!(voucher.EXPIRED)
-    ) {
       continue;
     }
-
-    if (!await shouldTriggerExpiration(config, executor, voucherID)) {
-      continue;
-    }
-
-    console.log(
-      `Voucher: ${voucherID} is with commit status. The expiration is triggered.`
-    );
 
     try {
       let isExpired = utils.isStatus(voucherStatus[0], utils.IDX_EXPIRE);
 
-      if (isExpired && !voucher.EXPIRED) {
+      if (isExpired) {
+        console.log(
+          `Voucher: ${voucherID} is expired, but the DB was not updated while the event was triggered. Updating Database only.`
+        );
+
         const payload = [
           {
             _tokenIdVoucher: voucherID,
@@ -159,7 +148,15 @@ async function triggerExpirations(executor, config) {
       continue;
     }
 
+    if (!isStatusCommit || !await shouldTriggerExpiration(config, executor, voucherID)) {
+      continue;
+    }
+
     let receipt;
+
+    console.log(
+      `Voucher: ${voucherID} is with commit status. The expiration is triggered.`
+    );
 
     try {
       let txOrder = await voucherKernelContractExecutor.triggerExpiration(
@@ -213,24 +210,9 @@ async function triggerExpirations(executor, config) {
   console.info(infoMsg);
 }
 
-async function getCurrTimestamp(provider) {
-  let blockNumber = await provider.getBlockNumber()
-  let block = await provider.getBlock(blockNumber)
-
-  return block.timestamp
-}
-
-async function getVoucherValidTo(config, executor, voucherId) {
-  const vk = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor)
-  const promiseKey = await vk.getPromiseIdFromVoucherId(voucherId)
-
-  return (await vk.promises(promiseKey)).validTo.toString()
-}
-
-
 async function shouldTriggerExpiration(config, executor, voucherId) {
-  let currTimestamp = await getCurrTimestamp(executor.provider)
-  let voucherValidTo = await getVoucherValidTo(config, executor, voucherId)
+  let currTimestamp = await utils.getCurrTimestamp(executor.provider)
+  let voucherValidTo = await utils.getVoucherValidTo(config, executor, voucherId)
 
   return voucherValidTo < currTimestamp
 }
