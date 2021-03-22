@@ -7,12 +7,6 @@ const utils = require("./utils");
 
 const VoucherKernel = require("../abis/VoucherKernel.json");
 
-const EXPIRATION_BLACKLISTED_VOUCHER_IDS = [
-  "57896044618658097711785492504343953937183745707369374387093404834341379375105",
-  "57896044618658097711785492504343953940926851743499697485190525516090829701121",
-  "57896044618658097711785492504343953942968545945025328265970773160681438969857",
-];
-
 exports.scheduledKeepersExpirationsDev = functions.https.onRequest(
   async (request, response) => {
     const dev = configs("dev");
@@ -112,7 +106,7 @@ async function triggerExpirations(executor, config) {
       continue;
     }
 
-    if (!!(voucher.EXPIRED)) {
+    if (voucher.EXPIRED) {
       console.log(`Voucher: ${voucherID} is already expired`);
       continue;
     }
@@ -154,7 +148,10 @@ async function triggerExpirations(executor, config) {
       continue;
     }
 
-    if (!isStatusCommit || !await shouldTriggerExpiration(config, executor, voucherID)) {
+    if (
+      !isStatusCommit ||
+      !(await shouldTriggerExpiration(config, executor, voucherID))
+    ) {
       continue;
     }
 
@@ -217,8 +214,12 @@ async function triggerExpirations(executor, config) {
 }
 
 async function shouldTriggerExpiration(config, executor, voucherId) {
-  let currTimestamp = await utils.getCurrTimestamp(executor.provider)
-  let voucherValidTo = await utils.getVoucherValidTo(config, executor, voucherId)
+  let currTimestamp = await utils.getCurrTimestamp(executor.provider);
+  let voucherValidTo = await utils.getVoucherValidTo(
+    config,
+    executor,
+    voucherId
+  );
 
-  return voucherValidTo < currTimestamp
+  return voucherValidTo < currTimestamp;
 }

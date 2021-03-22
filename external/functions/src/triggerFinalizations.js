@@ -9,13 +9,6 @@ const utils = require("./utils");
 
 const VoucherKernel = require("../abis/VoucherKernel.json");
 
-const FINALIZATION_BLACKLISTED_VOUCHER_IDS = [
-  "57896044618658097711785492504343953936503180973527497460166655619477842952194",
-  "57896044618658097711785492504343953937183745707369374387093404834341379375105",
-  "57896044618658097711785492504343953940926851743499697485190525516090829701121",
-  "57896044618658097711785492504343953942968545945025328265970773160681438969857",
-];
-
 exports.scheduledKeepersFinalizationsDev = functions.https.onRequest(
   async (request, response) => {
     const dev = configs("dev");
@@ -116,9 +109,9 @@ async function triggerFinalizations(executor, config) {
       continue;
     }
 
-    if (!!(voucher.FINALIZED)) {
+    if (voucher.FINALIZED) {
       console.log(`Voucher: ${voucherID} is already finalized`);
-      continue
+      continue;
     }
 
     let voucherStatus;
@@ -162,7 +155,14 @@ async function triggerFinalizations(executor, config) {
       continue;
     }
 
-    if (!await shouldTriggerFinalization(config, executor, voucherID, voucherStatus)) {
+    if (
+      !(await shouldTriggerFinalization(
+        config,
+        executor,
+        voucherID,
+        voucherStatus
+      ))
+    ) {
       continue;
     }
 
@@ -222,43 +222,61 @@ async function triggerFinalizations(executor, config) {
   console.info(infoMsg);
 }
 
-async function shouldTriggerFinalization(config, executor, voucherId, voucherStatus) {
-  let currTimestamp = await utils.getCurrTimestamp(executor.provider)
-  let voucherValidTo = await utils.getVoucherValidTo(config, executor, voucherId)
+async function shouldTriggerFinalization(
+  config,
+  executor,
+  voucherId,
+  voucherStatus
+) {
+  let currTimestamp = await utils.getCurrTimestamp(executor.provider);
+  let voucherValidTo = await utils.getVoucherValidTo(
+    config,
+    executor,
+    voucherId
+  );
 
-  const complainPeriod = await utils.getComplainPeriod(config, executor)
-  const cancelFaultPeriod = await utils.getCancelFaultPeriod(config, executor)
+  const complainPeriod = await utils.getComplainPeriod(config, executor);
+  const cancelFaultPeriod = await utils.getCancelFaultPeriod(config, executor);
 
-  let mark = false
+  let mark = false;
 
   if (utils.isStatus(voucherStatus.status, utils.IDX_COMPLAIN)) {
     if (utils.isStatus(voucherStatus.status, utils.IDX_CANCEL_FAULT)) {
-      mark = true
-    }
-    else if (BN(currTimestamp).gte(BN(voucherStatus.cancelFaultPeriodStart).add(cancelFaultPeriod))) {
-      mark = true
-    }
-  } else if ( //here
-    utils.isStatus(voucherStatus.status, utils.IDX_CANCEL_FAULT) &&
-    BN(currTimestamp).gte(BN(voucherStatus.complainPeriodStart).add(complainPeriod))
-  ) {
-      //if COF: then final after complain period
       mark = true;
+    } else if (
+      BN(currTimestamp).gte(
+        BN(voucherStatus.cancelFaultPeriodStart).add(cancelFaultPeriod)
+      )
+    ) {
+      mark = true;
+    }
   } else if (
-      utils.isStateRedemptionSigned(voucherStatus.status) || utils.isStateRefunded(voucherStatus.status)
+    //here
+    utils.isStatus(voucherStatus.status, utils.IDX_CANCEL_FAULT) &&
+    BN(currTimestamp).gte(
+      BN(voucherStatus.complainPeriodStart).add(complainPeriod)
+    )
   ) {
-      //if RDM/RFND NON_COMPLAIN: then final after complainPeriodStart + complainPeriod
-      if (
-        BN(currTimestamp).gte(BN(voucherStatus.complainPeriodStart).add(complainPeriod))
-      ) {
-          mark = true;
-      }
+    //if COF: then final after complain period
+    mark = true;
+  } else if (
+    utils.isStateRedemptionSigned(voucherStatus.status) ||
+    utils.isStateRefunded(voucherStatus.status)
+  ) {
+    //if RDM/RFND NON_COMPLAIN: then final after complainPeriodStart + complainPeriod
+    if (
+      BN(currTimestamp).gte(
+        BN(voucherStatus.complainPeriodStart).add(complainPeriod)
+      )
+    ) {
+      mark = true;
+    }
   } else if (utils.isStateExpired(voucherStatus.status)) {
-      //if EXP NON_COMPLAIN: then final after validTo + complainPeriod
-      if (BN(currTimestamp).gte(BN(voucherValidTo).add(complainPeriod))) {
-          mark = true;
-      }
+    //if EXP NON_COMPLAIN: then final after validTo + complainPeriod
+    if (BN(currTimestamp).gte(BN(voucherValidTo).add(complainPeriod))) {
+      mark = true;
+    }
   }
 
-  return mark
+  return mark;
 }

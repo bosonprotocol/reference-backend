@@ -8,13 +8,6 @@ const utils = require("./utils");
 const VoucherKernel = require("../abis/VoucherKernel.json");
 const Cashier = require("../abis/Cashier.json");
 
-const WITHDRAWAL_BLACKLISTED_VOUCHER_IDS = [
-  "57896044618658097711785492504343953936503180973527497460166655619477842952194",
-  "57896044618658097711785492504343953937183745707369374387093404834341379375105",
-  "57896044618658097711785492504343953940926851743499697485190525516090829701121",
-  "57896044618658097711785492504343953942968545945025328265970773160681438969857",
-];
-
 exports.scheduledKeepersWithdrawalsDev = functions.https.onRequest(
   async (request, response) => {
     const dev = configs("dev");
@@ -129,10 +122,7 @@ async function triggerWithdrawals(executor, config) {
       continue;
     }
 
-    if (
-      isPaymentAndDepositsReleased ||
-      WITHDRAWAL_BLACKLISTED_VOUCHER_IDS.includes(voucherID)
-    ) {
+    if (isPaymentAndDepositsReleased) {
       console.log(
         `Voucher: ${voucherID} - a payment and deposits withdrawal completed `
       );

@@ -1,11 +1,11 @@
-const ethers = require('ethers')
+const ethers = require("ethers");
 const VoucherKernel = require("../abis/VoucherKernel.json");
 
 const ONE = 1;
 
 const IDX_COMMIT = 7;
 const IDX_REDEEM = 6;
-const IDX_REFUND = 5
+const IDX_REFUND = 5;
 const IDX_EXPIRE = 4;
 const IDX_COMPLAIN = 3;
 const IDX_CANCEL_FAULT = 2;
@@ -44,27 +44,38 @@ function isStatus(_status, idx) {
 }
 
 async function getComplainPeriod(config, executor) {
-  const vk = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor)
+  const vk = new ethers.Contract(
+    config.VOUCHER_KERNEL_ADDRESS,
+    VoucherKernel.abi,
+    executor
+  );
   return await vk.complainPeriod();
-
 }
 
 async function getCancelFaultPeriod(config, executor) {
-  const vk = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor)
+  const vk = new ethers.Contract(
+    config.VOUCHER_KERNEL_ADDRESS,
+    VoucherKernel.abi,
+    executor
+  );
   return await vk.cancelFaultPeriod();
 }
 
 async function getVoucherValidTo(config, executor, voucherId) {
-  const vk = new ethers.Contract(config.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, executor)
-  const promiseKey = await vk.getPromiseIdFromVoucherId(voucherId)
-  return (await vk.promises(promiseKey)).validTo.toString()
+  const vk = new ethers.Contract(
+    config.VOUCHER_KERNEL_ADDRESS,
+    VoucherKernel.abi,
+    executor
+  );
+  const promiseKey = await vk.getPromiseIdFromVoucherId(voucherId);
+  return (await vk.promises(promiseKey)).validTo.toString();
 }
 
 async function getCurrTimestamp(provider) {
-  let blockNumber = await provider.getBlockNumber()
-  let block = await provider.getBlock(blockNumber)
+  let blockNumber = await provider.getBlockNumber();
+  let block = await provider.getBlock(blockNumber);
 
-  return block.timestamp
+  return block.timestamp;
 }
 
 function isStateCommitted(status) {
@@ -72,15 +83,15 @@ function isStateCommitted(status) {
 }
 
 function isStateRedemptionSigned(status) {
-  return status == setChange(setChange(0, IDX_COMMIT), IDX_REDEEM)
+  return status == setChange(setChange(0, IDX_COMMIT), IDX_REDEEM);
 }
 
 function isStateRefunded(status) {
-  return status == setChange(setChange(0, IDX_COMMIT), IDX_REFUND)
+  return status == setChange(setChange(0, IDX_COMMIT), IDX_REFUND);
 }
 
 function isStateExpired(status) {
-  return status == setChange(setChange(0, IDX_COMMIT), IDX_EXPIRE)
+  return status == setChange(setChange(0, IDX_COMMIT), IDX_EXPIRE);
 }
 
 function setChange(status, changeIdx) {
@@ -101,5 +112,5 @@ module.exports = {
   isStateCommitted,
   isStateRedemptionSigned,
   isStateRefunded,
-  isStateExpired
+  isStateExpired,
 };
