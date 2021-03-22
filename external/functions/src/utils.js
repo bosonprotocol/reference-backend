@@ -1,3 +1,4 @@
+const ethers = require('ethers')
 const VoucherKernel = require("../abis/VoucherKernel.json");
 
 const ONE = 1;
