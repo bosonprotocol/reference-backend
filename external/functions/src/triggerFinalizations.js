@@ -111,8 +111,14 @@ async function triggerFinalizations(executor, config) {
     let voucher = res.data.vouchers[i];
     let voucherID = voucher._tokenIdVoucher;
 
-    if (!voucher.blockchainAnchored || !!(voucher.FINALIZED)) {
+    if (!voucher.blockchainAnchored) {
+      console.log(`Voucher: ${voucherID} is not anchored on blockchain`);
       continue;
+    }
+
+    if (!!(voucher.FINALIZED)) {
+      console.log(`Voucher: ${voucherID} is already finalized`);
+      continue
     }
 
     let voucherStatus;
@@ -153,13 +159,6 @@ async function triggerFinalizations(executor, config) {
       }
     } catch (error) {
       console.error(error);
-      continue;
-    }
-
-    if (
-      FINALIZATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)
-    ) {
-      console.log(`Voucher: ${voucherID} is already finalized`);
       continue;
     }
 

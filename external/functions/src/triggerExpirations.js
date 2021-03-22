@@ -107,7 +107,13 @@ async function triggerExpirations(executor, config) {
     let voucherID = voucher._tokenIdVoucher;
     let isStatusCommit = false;
 
-    if (!voucher.blockchainAnchored || !!(voucher.EXPIRED)) {
+    if (!voucher.blockchainAnchored) {
+      console.log(`Voucher: ${voucherID} is not anchored on blockchain`);
+      continue;
+    }
+
+    if (!!(voucher.EXPIRED)) {
+      console.log(`Voucher: ${voucherID} is already expired`);
       continue;
     }
 
@@ -152,11 +158,11 @@ async function triggerExpirations(executor, config) {
       continue;
     }
 
-    let receipt;
-
     console.log(
       `Voucher: ${voucherID} is with commit status. The expiration is triggered.`
     );
+
+    let receipt;
 
     try {
       let txOrder = await voucherKernelContractExecutor.triggerExpiration(
