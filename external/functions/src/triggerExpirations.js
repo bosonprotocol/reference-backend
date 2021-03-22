@@ -127,7 +127,7 @@ async function triggerExpirations(executor, config) {
     }
 
     if (
-      !isStatusCommit && (!!(voucher.FINALIZED) || !!(voucher.EXPIRED))
+      !isStatusCommit && !!(voucher.EXPIRED)
     ) {
       continue;
     }
