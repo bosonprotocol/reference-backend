@@ -106,6 +106,7 @@ async function triggerWithdrawals(executor, config) {
     let isPaymentAndDepositsReleased;
 
     if (!voucher.blockchainAnchored) {
+      console.log(`Voucher: ${voucherID} is not anchored on blockchain`);
       continue;
     }
 

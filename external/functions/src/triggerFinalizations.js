@@ -251,7 +251,6 @@ async function shouldTriggerFinalization(
       mark = true;
     }
   } else if (
-    //here
     utils.isStatus(voucherStatus.status, utils.IDX_CANCEL_FAULT) &&
     BN(currTimestamp).gte(
       BN(voucherStatus.complainPeriodStart).add(complainPeriod)
