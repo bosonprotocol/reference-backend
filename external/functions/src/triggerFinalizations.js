@@ -228,8 +228,8 @@ async function shouldTriggerFinalization(
   voucherId,
   voucherStatus
 ) {
-  let currTimestamp = await utils.getCurrTimestamp(executor.provider);
-  let voucherValidTo = await utils.getVoucherValidTo(
+  const currTimestamp = await utils.getCurrTimestamp(executor.provider);
+  const voucherValidTo = await utils.getVoucherValidTo(
     config,
     executor,
     voucherId
