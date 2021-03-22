@@ -18,8 +18,8 @@ class MongooseClient {
       {
         ...options,
         dbName: this.configurationService.databaseName,
-        user: this.configurationService.databaseUsername,
-        pass: this.configurationService.databasePassword,
+        // user: this.configurationService.databaseUsername,
+        // pass: this.configurationService.databasePassword,
       }
     );
   }

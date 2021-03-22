@@ -491,8 +491,9 @@ describe("Voucher Supplies Repository", () => {
         voucherSuppliesRepository.decrementVoucherSupplyQty(
           initialVoucherSupply._tokenIdSupply
         )
-      ).to.be.rejectedWith("VoucherSupply validation failed: qty: Qty must be a positive number");;
-      
+      ).to.be.rejectedWith(
+        "VoucherSupply validation failed: qty: Qty must be a positive number"
+      );
     });
   });
 
