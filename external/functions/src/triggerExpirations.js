@@ -5,15 +5,7 @@ const ethers = require("ethers");
 const configs = require("./configs");
 const utils = require("./utils");
 
-const VoucherKernel = require("../../abis/VoucherKernel.json");
-
-const COMMIT_IDX = 7; // usingHelpers contract
-
-const EXPIRATION_BLACKLISTED_VOUCHER_IDS = [
-  "57896044618658097711785492504343953937183745707369374387093404834341379375105",
-  "57896044618658097711785492504343953940926851743499697485190525516090829701121",
-  "57896044618658097711785492504343953942968545945025328265970773160681438969857",
-];
+const VoucherKernel = require("../abis/VoucherKernel.json");
 
 exports.scheduledKeepersExpirationsDev = functions.https.onRequest(
   async (request, response) => {
@@ -57,6 +49,30 @@ exports.scheduledKeepersExpirationsDemo = functions.https.onRequest(
   }
 );
 
+exports.scheduledKeepersExpirationsPlayground = functions.https.onRequest(
+  async (request, response) => {
+    const playground = configs("playground");
+    const provider = ethers.getDefaultProvider(playground.NETWORK_NAME, {
+      etherscan: playground.ETHERSCAN_API_KEY,
+      infura: playground.INFURA_API_KEY,
+    });
+
+    const executor = new ethers.Wallet(
+      playground.EXECUTOR_PRIVATE_KEY,
+      provider
+    );
+
+    axios.defaults.headers.common = {
+      Authorization: `Bearer ${playground.GCLOUD_SECRET}`,
+    };
+
+    // Expiration process
+    await triggerExpirations(executor, playground);
+
+    response.send("Expiration process was executed successfully!");
+  }
+);
+
 async function triggerExpirations(executor, config) {
   let hasErrors = false;
   let voucherKernelContractExecutor = new ethers.Contract(
@@ -81,25 +97,60 @@ async function triggerExpirations(executor, config) {
 
   for (let i = 0; i < res.data.vouchers.length; i++) {
     let voucher = res.data.vouchers[i];
+    let voucherStatus; // 0 - status, 1 - isPaymentReleased, 2 - isDepositsReleased
     let voucherID = voucher._tokenIdVoucher;
     let isStatusCommit = false;
 
+    if (!voucher.blockchainAnchored) {
+      console.log(`Voucher: ${voucherID} is not anchored on blockchain`);
+      continue;
+    }
+
+    if (voucher.EXPIRED) {
+      console.log(`Voucher: ${voucherID} is already expired`);
+      continue;
+    }
+
     try {
       // eslint-disable-next-line no-await-in-loop
-      let voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
+      voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
         voucherID
       );
-      isStatusCommit = voucherStatus[0] === (0 | (1 << COMMIT_IDX)); // condition is borrowed from helper contract
+      isStatusCommit = utils.isStateCommitted(voucherStatus[0]);
     } catch (e) {
       hasErrors = true;
       console.error(
         `Error while checking voucher status toward the contract. Error: ${e}`
       );
+      continue;
+    }
+
+    try {
+      let isExpired = utils.isStatus(voucherStatus[0], utils.IDX_EXPIRE);
+
+      if (isExpired) {
+        console.log(
+          `Voucher: ${voucherID} is expired, but the DB was not updated while the event was triggered. Updating Database only.`
+        );
+
+        const payload = [
+          {
+            _tokenIdVoucher: voucherID,
+            status: "EXPIRED",
+          },
+        ];
+        await axios.patch(config.UPDATE_STATUS_URL, payload);
+        console.log(`Voucher: ${voucherID}. Database updated.`);
+        continue;
+      }
+    } catch (error) {
+      console.error(error);
+      continue;
     }
 
     if (
       !isStatusCommit ||
-      EXPIRATION_BLACKLISTED_VOUCHER_IDS.includes(voucherID)
+      !(await shouldTriggerExpiration(config, executor, voucherID))
     ) {
       continue;
     }
@@ -107,6 +158,7 @@ async function triggerExpirations(executor, config) {
     console.log(
       `Voucher: ${voucherID} is with commit status. The expiration is triggered.`
     );
+
     let receipt;
 
     try {
@@ -159,4 +211,15 @@ async function triggerExpirations(executor, config) {
     : "triggerExpirations function finished successfully";
 
   console.info(infoMsg);
+}
+
+async function shouldTriggerExpiration(config, executor, voucherId) {
+  let currTimestamp = await utils.getCurrTimestamp(executor.provider);
+  let voucherValidTo = await utils.getVoucherValidTo(
+    config,
+    executor,
+    voucherId
+  );
+
+  return voucherValidTo < currTimestamp;
 }
