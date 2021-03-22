@@ -62,7 +62,7 @@ class VouchersRepository {
     return Voucher.findOneAndUpdate(
       { _tokenIdVoucher: voucherTokenId },
       {
-        [status]: new Date().getTime(),
+        [status]: Date.now(),
       },
       { useFindAndModify: false, new: true }
     );

@@ -83,13 +83,17 @@ class VoucherSuppliesRepository {
       throw new Error("Voucher supply not found");
     }
 
-    return VoucherSupply.findByIdAndUpdate(
-      voucherSupply.id,
-      {
-        qty: --voucherSupply.qty,
-      },
-      { useFindAndModify: false, new: true }
-    );
+    // return VoucherSupply.findByIdAndUpdate(
+    //   voucherSupply.id,
+    //   {
+    //     qty: --voucherSupply.qty,
+    //   },
+    //   { useFindAndModify: false, new: true }
+    // );
+
+    voucherSupply.qty = --voucherSupply.qty;
+
+    return await voucherSupply.save();
   }
 
   async setVoucherSupplyMeta(metadata) {

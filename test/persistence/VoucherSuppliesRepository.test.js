@@ -466,8 +466,7 @@ describe("Voucher Supplies Repository", () => {
       ).to.be.rejectedWith("Voucher supply not found");
     });
 
-    // TODO: not sure if this is behaviour we want
-    it("allows the quantity to be decremented below zero", async () => {
+    it("Does not allow the quantity to be decremented below zero", async () => {
       const voucherOwner = Random.address();
       const fileRefs = [Random.fileRef(), Random.fileRef()];
       const metadata = Random.voucherSupplyMetadata({ qty: 1 });
@@ -487,15 +486,13 @@ describe("Voucher Supplies Repository", () => {
       await voucherSuppliesRepository.decrementVoucherSupplyQty(
         initialVoucherSupply._tokenIdSupply
       );
-      await voucherSuppliesRepository.decrementVoucherSupplyQty(
-        initialVoucherSupply._tokenIdSupply
-      );
 
-      const updatedVoucherSupply = await VoucherSupply.findOne({
-        voucherOwner,
-      });
-
-      expect(updatedVoucherSupply.qty).to.eql(-1);
+      await expect(
+        voucherSuppliesRepository.decrementVoucherSupplyQty(
+          initialVoucherSupply._tokenIdSupply
+        )
+      ).to.be.rejectedWith("VoucherSupply validation failed: qty: Qty must be a positive number");;
+      
     });
   });
 

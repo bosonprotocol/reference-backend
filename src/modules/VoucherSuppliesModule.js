@@ -43,9 +43,9 @@ class VoucherSuppliesModule {
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
-      ),
+      // ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+      //   this.voucherImageStorageMiddleware.storeFiles(req, res, next)
+      // ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSupplyValidationMiddleware.validateDates(req, res, next)
       ),
