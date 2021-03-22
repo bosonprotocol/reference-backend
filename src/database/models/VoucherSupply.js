@@ -101,9 +101,6 @@ const voucherSchema = new Schema({
   blockchainAnchored: {
     type: Boolean,
   },
-  updatedAt: {
-    type: Date,
-  },
 });
 
 voucherSchema.plugin(updateIfCurrentPlugin);
