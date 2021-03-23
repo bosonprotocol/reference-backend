@@ -36,7 +36,7 @@ class VouchersRepository {
 
     if (!voucher) {
       throw new Error(
-        `Voucher with ID: ${metadata._tokenIdSupply} does not exits`
+        `Voucher with ID: ${metadata._tokenIdSupply} does not exist`
       );
     }
 

@@ -94,6 +94,10 @@ class VoucherSuppliesRepository {
       _correlationId: metadata._correlationId,
     });
 
+    if (!voucherSupply) {
+      throw new Error(`Voucher Supply with ID ${metadata._tokenIdSupply} does not exist!`)
+    }
+
     voucherSupply._tokenIdSupply = metadata._tokenIdSupply;
     voucherSupply._paymentType = metadata._paymentType;
     voucherSupply._promiseId = metadata._promiseId;
