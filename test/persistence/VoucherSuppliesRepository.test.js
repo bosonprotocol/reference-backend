@@ -75,7 +75,7 @@ describe("Voucher Supplies Repository", () => {
       });
     });
 
-    it("fails when title is missing", async () => {
+    it("Should not fail if title is missing", async () => {
       const voucherOwner = Random.address();
       const fileRef1 = Random.fileRef();
       const fileRef2 = Random.fileRef();
@@ -86,15 +86,13 @@ describe("Voucher Supplies Repository", () => {
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
-      await expect(
-        voucherSuppliesRepository.createVoucherSupply(
-          metadata,
-          fileRefs,
-          voucherOwner
-        )
-      ).to.be.rejectedWith(
-        "VoucherSupply validation failed: title: Path `title` is required."
+      const response = await voucherSuppliesRepository.createVoucherSupply(
+        metadata,
+        fileRefs,
+        voucherOwner
       );
+
+      expect(response.title).to.be.null;
     });
 
     it("trims the title when including whitespace", async () => {

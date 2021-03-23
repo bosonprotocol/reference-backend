@@ -28,20 +28,18 @@ class VouchersRepository {
   }
 
   async updateVoucherDelivered(metadata) {
-    return Voucher.findOneAndUpdate(
-      {
-        _correlationId: metadata._correlationId,
-        _holder: metadata._holder.toLowerCase(),
-        _tokenIdSupply: metadata._tokenIdSupply,
-      },
-      {
-        _tokenIdVoucher: metadata._tokenIdVoucher,
-        _promiseId: metadata._promiseId,
-        voucherOwner: metadata._issuer,
-        blockchainAnchored: true,
-      },
-      { new: true, upsert: true }
-    );
+    const voucher = await Voucher.findOne({
+      _correlationId: metadata._correlationId,
+      _holder: metadata._holder.toLowerCase(),
+      _tokenIdSupply: metadata._tokenIdSupply,
+    });
+
+    voucher._tokenIdVoucher = metadata._tokenIdVoucher;
+    voucher._promiseId = metadata._promiseId;
+    voucher.voucherOwner = metadata._issuer;
+    voucher.blockchainAnchored = true;
+
+    return await voucher.save();
   }
 
   async updateVoucherOnCommonEvent(voucherID, metadata) {
@@ -59,13 +57,9 @@ class VouchersRepository {
     if (!voucher) {
       throw new Error("Voucher not found");
     }
-    return Voucher.findOneAndUpdate(
-      { _tokenIdVoucher: voucherTokenId },
-      {
-        [status]: Date.now(),
-      },
-      { useFindAndModify: false, new: true }
-    );
+
+    voucher[status] = Date.now();
+    return await voucher.save();
   }
 
   async getAllVouchers() {
