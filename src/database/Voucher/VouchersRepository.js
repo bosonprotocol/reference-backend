@@ -34,6 +34,12 @@ class VouchersRepository {
       _tokenIdSupply: metadata._tokenIdSupply,
     });
 
+    if (!voucher) {
+      throw new Error(
+        `Voucher with ID: ${metadata._tokenIdSupply} does not exits`
+      );
+    }
+
     voucher._tokenIdVoucher = metadata._tokenIdVoucher;
     voucher._promiseId = metadata._promiseId;
     voucher.voucherOwner = metadata._issuer;
@@ -43,13 +49,12 @@ class VouchersRepository {
   }
 
   async updateVoucherOnCommonEvent(voucherID, metadata) {
-    return Voucher.findByIdAndUpdate(
-      voucherID,
-      {
-        ...metadata,
-      },
-      { new: true, upsert: true }
-    );
+    const voucher = await Voucher.findById(voucherID);
+    for (const prop in metadata) {
+      voucher[prop] = metadata[prop];
+    }
+
+    return await voucher.save();
   }
 
   async updateStatusFromKeepers(voucherTokenId, status) {
