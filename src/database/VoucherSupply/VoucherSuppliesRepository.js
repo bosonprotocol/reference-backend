@@ -95,7 +95,9 @@ class VoucherSuppliesRepository {
     });
 
     if (!voucherSupply) {
-      throw new Error(`Voucher Supply with ID ${metadata._tokenIdSupply} does not exist!`)
+      throw new Error(
+        `Voucher Supply with ID ${metadata._tokenIdSupply} does not exist!`
+      );
     }
 
     voucherSupply._tokenIdSupply = metadata._tokenIdSupply;
