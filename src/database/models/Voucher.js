@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const collections = require("../collections.json");
 const VOUCHER = collections.VOUCHER;
+const { updateIfCurrentPlugin } = require("mongoose-update-if-current");
 
 // TODO: discuss whether action date is needed
 const voucherSchema = new Schema({
@@ -66,5 +67,7 @@ const voucherSchema = new Schema({
     type: Boolean,
   },
 });
+
+voucherSchema.plugin(updateIfCurrentPlugin);
 
 module.exports = mongoose.model(VOUCHER, voucherSchema);
