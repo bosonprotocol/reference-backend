@@ -75,7 +75,7 @@ describe("Voucher Supplies Repository", () => {
       });
     });
 
-    it("fails when title is missing", async () => {
+    it("Should not fail if title is missing", async () => {
       const voucherOwner = Random.address();
       const fileRef1 = Random.fileRef();
       const fileRef2 = Random.fileRef();
@@ -86,15 +86,13 @@ describe("Voucher Supplies Repository", () => {
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
 
-      await expect(
-        voucherSuppliesRepository.createVoucherSupply(
-          metadata,
-          fileRefs,
-          voucherOwner
-        )
-      ).to.be.rejectedWith(
-        "VoucherSupply validation failed: title: Path `title` is required."
+      const response = await voucherSuppliesRepository.createVoucherSupply(
+        metadata,
+        fileRefs,
+        voucherOwner
       );
+
+      expect(response.title).to.be.null;
     });
 
     it("trims the title when including whitespace", async () => {
@@ -466,8 +464,7 @@ describe("Voucher Supplies Repository", () => {
       ).to.be.rejectedWith("Voucher supply not found");
     });
 
-    // TODO: not sure if this is behaviour we want
-    it("allows the quantity to be decremented below zero", async () => {
+    it("Does not allow the quantity to be decremented below zero", async () => {
       const voucherOwner = Random.address();
       const fileRefs = [Random.fileRef(), Random.fileRef()];
       const metadata = Random.voucherSupplyMetadata({ qty: 1 });
@@ -487,15 +484,14 @@ describe("Voucher Supplies Repository", () => {
       await voucherSuppliesRepository.decrementVoucherSupplyQty(
         initialVoucherSupply._tokenIdSupply
       );
-      await voucherSuppliesRepository.decrementVoucherSupplyQty(
-        initialVoucherSupply._tokenIdSupply
+
+      await expect(
+        voucherSuppliesRepository.decrementVoucherSupplyQty(
+          initialVoucherSupply._tokenIdSupply
+        )
+      ).to.be.rejectedWith(
+        "VoucherSupply validation failed: qty: Qty must be a positive number"
       );
-
-      const updatedVoucherSupply = await VoucherSupply.findOne({
-        voucherOwner,
-      });
-
-      expect(updatedVoucherSupply.qty).to.eql(-1);
     });
   });
 

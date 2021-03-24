@@ -2,12 +2,14 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const collections = require("../collections.json");
+const { updateIfCurrentPlugin } = require("mongoose-update-if-current");
+
 const VOUCHER_SUPPLY = collections.VOUCHER_SUPPLY;
 
 const voucherSchema = new Schema({
   title: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   qty: {
@@ -53,33 +55,33 @@ const voucherSchema = new Schema({
   },
   location: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   contact: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   conditions: {
     type: String,
-    required: true,
+    required: false,
     trim: true,
   },
   imagefiles: {
     type: Array,
-    required: true,
+    required: false,
   },
   voucherOwner: {
     type: String,
-    required: true,
+    required: false,
   },
   voucherStatus: {
     type: String,
   },
   visible: {
     type: Boolean,
-    required: true,
+    required: false,
   },
   _tokenIdSupply: {
     type: String,
@@ -100,5 +102,7 @@ const voucherSchema = new Schema({
     type: Boolean,
   },
 });
+
+voucherSchema.plugin(updateIfCurrentPlugin);
 
 module.exports = mongoose.model(VOUCHER_SUPPLY, voucherSchema);

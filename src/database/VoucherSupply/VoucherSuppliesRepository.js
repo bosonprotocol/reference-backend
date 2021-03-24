@@ -39,6 +39,7 @@ class VoucherSuppliesRepository {
       _correlationId: metadata._correlationId,
       _tokenIdSupply: metadata._tokenIdSupply,
       imagefiles: fileRefs,
+      _paymentType: metadata._paymentType,
     });
 
     return voucherSupply.save();
@@ -82,35 +83,35 @@ class VoucherSuppliesRepository {
       throw new Error("Voucher supply not found");
     }
 
-    return VoucherSupply.findByIdAndUpdate(
-      voucherSupply.id,
-      {
-        qty: --voucherSupply.qty,
-      },
-      { useFindAndModify: false, new: true }
-    );
+    voucherSupply.qty = --voucherSupply.qty;
+
+    return await voucherSupply.save();
   }
 
   async setVoucherSupplyMeta(metadata) {
-    return VoucherSupply.findOneAndUpdate(
-      {
-        voucherOwner: metadata.voucherOwner,
-        _correlationId: metadata._correlationId,
-      },
-      {
-        _tokenIdSupply: metadata._tokenIdSupply,
-        _paymentType: metadata._paymentType,
-        _promiseId: metadata._promiseId,
-        qty: metadata.qty,
-        startDate: metadata.validFrom,
-        expiryDate: metadata.validTo,
-        price: metadata.price,
-        buyerDeposit: metadata.depositBu,
-        sellerDeposit: metadata.depositSe,
-        blockchainAnchored: true,
-      },
-      { new: true, upsert: true }
-    );
+    let voucherSupply = await VoucherSupply.findOne({
+      voucherOwner: metadata.voucherOwner,
+      _correlationId: metadata._correlationId,
+    });
+
+    if (!voucherSupply) {
+      throw new Error(
+        `Voucher Supply with ID ${metadata._tokenIdSupply} does not exist!`
+      );
+    }
+
+    voucherSupply._tokenIdSupply = metadata._tokenIdSupply;
+    voucherSupply._paymentType = metadata._paymentType;
+    voucherSupply._promiseId = metadata._promiseId;
+    voucherSupply.qty = metadata.qty;
+    voucherSupply.startDate = metadata.validFrom;
+    voucherSupply.expiryDate = metadata.validTo;
+    voucherSupply.price = metadata.price;
+    voucherSupply.buyerDeposit = metadata.buyerDeposit;
+    voucherSupply.sellerDeposit = metadata.sellerDeposit;
+    voucherSupply.blockchainAnchored = true;
+
+    return await voucherSupply.save();
   }
 
   async updateSupplyMeta(metadata) {

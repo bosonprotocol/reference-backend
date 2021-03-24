@@ -13,3 +13,8 @@ exports.triggerWithdrawalsDev =
 exports.triggerExpirationsDemo = triggerExpirations.scheduledKeepersExpirationsDemo;
 exports.triggerFinalizationsDemo = triggerFinalizations.scheduledKeepersFinalizationsDemo;
 exports.triggerWithdrawalsDemo = triggerWithdrawals.scheduledKeepersWithdrawalsDemo;
+
+// Playground cloud functions
+exports.triggerExpirationsPlayground = triggerExpirations.scheduledKeepersExpirationsPlayground;
+exports.triggerFinalizationsPlayground = triggerFinalizations.scheduledKeepersFinalizationsPlayground;
+exports.triggerWithdrawalsPlayground = triggerWithdrawals.scheduledKeepersWithdrawalsPlayground;
