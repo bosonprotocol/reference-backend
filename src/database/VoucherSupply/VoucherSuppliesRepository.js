@@ -11,7 +11,7 @@ const standardFields = [
   "startDate",
   "qty",
   "visible",
-  "_paymentType"
+  "_paymentType",
 ];
 
 // TODO: Rename to VoucherSet/VoucherSets throughout

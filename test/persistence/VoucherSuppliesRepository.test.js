@@ -937,6 +937,7 @@ describe("Voucher Supplies Repository", () => {
         startDate: ownerVoucherSupply2.startDate,
         qty: ownerVoucherSupply2.qty,
         visible: ownerVoucherSupply2.visible,
+        _paymentType: ownerVoucherSupply2._paymentType,
       });
       expect(ownerVoucherSupplies[1]).to.eql({
         _id: ownerVoucherSupply1._id,
@@ -949,6 +950,7 @@ describe("Voucher Supplies Repository", () => {
         startDate: ownerVoucherSupply1.startDate,
         qty: ownerVoucherSupply1.qty,
         visible: ownerVoucherSupply1.visible,
+        _paymentType: ownerVoucherSupply1._paymentType,
       });
     });
 
@@ -1108,6 +1110,7 @@ describe("Voucher Supplies Repository", () => {
           startDate: ownerActiveVoucherSupply2.startDate,
           qty: ownerActiveVoucherSupply2.qty,
           visible: ownerActiveVoucherSupply2.visible,
+          _paymentType: ownerActiveVoucherSupply2._paymentType,
         });
         expect(ownerVoucherSupplies[1]).to.eql({
           _id: ownerActiveVoucherSupply1._id,
@@ -1120,6 +1123,7 @@ describe("Voucher Supplies Repository", () => {
           startDate: ownerActiveVoucherSupply1.startDate,
           qty: ownerActiveVoucherSupply1.qty,
           visible: ownerActiveVoucherSupply1.visible,
+          _paymentType: ownerActiveVoucherSupply1._paymentType,
         });
       }
     );
@@ -1368,6 +1372,7 @@ describe("Voucher Supplies Repository", () => {
           startDate: ownerInactiveVoucherSupply3.startDate,
           qty: ownerInactiveVoucherSupply3.qty,
           visible: ownerInactiveVoucherSupply3.visible,
+          _paymentType: ownerInactiveVoucherSupply3._paymentType,
         });
         expect(ownerVoucherSupplies[1]).to.eql({
           _id: ownerInactiveVoucherSupply2._id,
@@ -1380,6 +1385,7 @@ describe("Voucher Supplies Repository", () => {
           startDate: ownerInactiveVoucherSupply2.startDate,
           qty: ownerInactiveVoucherSupply2.qty,
           visible: ownerInactiveVoucherSupply2.visible,
+          _paymentType: ownerInactiveVoucherSupply2._paymentType,
         });
         expect(ownerVoucherSupplies[2]).to.eql({
           _id: ownerInactiveVoucherSupply1._id,
@@ -1392,6 +1398,7 @@ describe("Voucher Supplies Repository", () => {
           startDate: ownerInactiveVoucherSupply1.startDate,
           qty: ownerInactiveVoucherSupply1.qty,
           visible: ownerInactiveVoucherSupply1.visible,
+          _paymentType: ownerInactiveVoucherSupply1._paymentType,
         });
       }
     );
@@ -1551,6 +1558,7 @@ describe("Voucher Supplies Repository", () => {
         [voucherStatuses.FINALIZED]: "",
         voucherOwner: voucherMetadata1._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
+        _paymentType: voucherSupply1._paymentType,
       });
 
       const voucherMetadata2 = Random.voucherMetadata();
@@ -1568,6 +1576,7 @@ describe("Voucher Supplies Repository", () => {
         [voucherStatuses.FINALIZED]: "",
         voucherOwner: voucherMetadata2._issuer.toLowerCase(),
         actionDate: new Date().getTime(),
+        _paymentType: voucherSupply2._paymentType,
       });
 
       const voucherSupplyDetailsList = [];
@@ -1600,7 +1609,9 @@ describe("Voucher Supplies Repository", () => {
         FINALIZED: voucher1.FINALIZED,
         REDEEMED: voucher1.REDEEMED,
         REFUNDED: voucher1.REFUNDED,
+        paymentType: voucherSupply1._paymentType,
       });
+
       expect(voucherSupplyDetailsList[1]).to.eql({
         _id: voucher2.id,
         title: voucherSupply2.title,
@@ -1618,6 +1629,7 @@ describe("Voucher Supplies Repository", () => {
         FINALIZED: voucher2.FINALIZED,
         REDEEMED: voucher2.REDEEMED,
         REFUNDED: voucher2.REFUNDED,
+        paymentType: voucherSupply2._paymentType,
       });
     });
 
