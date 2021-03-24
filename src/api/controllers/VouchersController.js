@@ -108,7 +108,7 @@ class VouchersController {
         buyerDeposit: voucherSupply.buyerDeposit,
         sellerDeposit: voucherSupply.sellerDeposit,
         voucherOwner: voucherSupply.voucherOwner,
-        paymentType: voucherSupply._paymentType
+        paymentType: voucherSupply._paymentType,
       };
     } catch (error) {
       console.error(
