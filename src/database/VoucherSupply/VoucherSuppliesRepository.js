@@ -11,6 +11,7 @@ const standardFields = [
   "startDate",
   "qty",
   "visible",
+  "_paymentType",
 ];
 
 // TODO: Rename to VoucherSet/VoucherSets throughout
@@ -252,6 +253,7 @@ class VoucherSuppliesRepository {
       price: voucherSupply.price,
       expiryDate: voucherSupply.expiryDate,
       visible: voucherSupply.visible,
+      paymentType: voucherSupply._paymentType,
       CANCELLED: voucher.CANCELLED,
       COMMITTED: voucher.COMMITTED,
       COMPLAINED: voucher.COMPLAINED,

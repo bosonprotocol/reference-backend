@@ -80,7 +80,7 @@ class Random {
   }
 
   static quantity() {
-    return faker.random.number({ min: 0, max: 20 });
+    return faker.random.number({ min: 1, max: 20 });
   }
 
   static category() {
@@ -283,6 +283,7 @@ class Random {
       conditions: Random.conditions(),
       _correlationId: Random.uint256(),
       _tokenIdSupply: Random.uint256(),
+      _paymentType: Random.paymentType(),
       ...overrides,
     };
   }
@@ -348,7 +349,7 @@ class Random {
   }
 
   static paymentType() {
-    return faker.random.number({ min: 0, max: 2 });
+    return faker.random.number({ min: 1, max: 4 });
   }
 
   static paymentMetadata(overrides = {}) {
