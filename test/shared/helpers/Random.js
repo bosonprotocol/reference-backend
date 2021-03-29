@@ -30,7 +30,7 @@ class Random {
   static address() {
     const keyDetails = keythereum.create();
 
-    return ethers.utils.computeAddress(keyDetails.privateKey);
+    return ethers.utils.computeAddress(keyDetails.privateKey).toLowerCase();
   }
 
   static transactionHash() {
@@ -284,6 +284,7 @@ class Random {
       _correlationId: Random.uint256(),
       _tokenIdSupply: Random.uint256(),
       _paymentType: Random.paymentType(),
+      blockchainAnchored: true,
       ...overrides,
     };
   }
@@ -316,6 +317,7 @@ class Random {
       _issuer: Random.address(),
       _correlationId: Random.uint256(),
       ...overrides,
+      blockchainAnchored: true,
     };
   }
 

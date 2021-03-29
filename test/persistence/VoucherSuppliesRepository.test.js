@@ -878,6 +878,39 @@ describe("Voucher Supplies Repository", () => {
 
       expect(voucherSupplies).to.eql([]);
     });
+
+    it("returns an empty array when voucher sets are not blockchainAnchored", async () => {
+      const voucherOwner1 = Random.address();
+      const fileRefs1 = [Random.fileRef(), Random.fileRef()];
+      const metadata1 = Random.voucherSupplyMetadata({
+        blockchainAnchored: false,
+      });
+
+      const voucherOwner2 = Random.address();
+      const fileRefs2 = [Random.fileRef(), Random.fileRef()];
+      const metadata2 = Random.voucherSupplyMetadata({
+        blockchainAnchored: false,
+      });
+
+      await new VoucherSupply({
+        ...metadata1,
+        voucherOwner: voucherOwner1,
+        imagefiles: fileRefs1,
+        visible: true,
+      }).save();
+
+      await new VoucherSupply({
+        ...metadata2,
+        voucherOwner: voucherOwner2,
+        imagefiles: fileRefs2,
+        visible: true,
+      }).save();
+
+      const voucherSuppliesRepository = new VoucherSuppliesRepository();
+      const voucherSupplies = await voucherSuppliesRepository.getAllVoucherSupplies();
+
+      expect(voucherSupplies.length).to.eql(0);
+    });
   });
 
   context("getAllVoucherSuppliesByOwner", () => {
@@ -995,6 +1028,37 @@ describe("Voucher Supplies Repository", () => {
       );
 
       expect(owner1VoucherSupplies).to.eql([]);
+    });
+
+    it("returns empty list when voucher sets are not blockchainAnchored", async () => {
+      const voucherOwner1 = Random.address();
+
+      const ownerVoucherSupply1 = new VoucherSupply({
+        ...Random.voucherSupplyMetadata({
+          blockchainAnchored: false,
+        }),
+        voucherOwner: voucherOwner1,
+        imagefiles: [Random.fileRef(), Random.fileRef()],
+        visible: true,
+      });
+      const ownerVoucherSupply2 = new VoucherSupply({
+        ...Random.voucherSupplyMetadata({
+          blockchainAnchored: false,
+        }),
+        voucherOwner: voucherOwner1,
+        imagefiles: [Random.fileRef(), Random.fileRef()],
+        visible: true,
+      });
+
+      await ownerVoucherSupply1.save();
+      await ownerVoucherSupply2.save();
+
+      const voucherSuppliesRepository = new VoucherSuppliesRepository();
+      const ownerVoucherSupplies = await voucherSuppliesRepository.getAllVoucherSuppliesByOwner(
+        voucherOwner1
+      );
+
+      expect(ownerVoucherSupplies.length).to.eql(0);
     });
   });
 
@@ -1258,6 +1322,26 @@ describe("Voucher Supplies Repository", () => {
 
       expect(owner1VoucherSupplies).to.eql([]);
     });
+
+    it("returns empty list when voucher supply is not blockchainAnchored", async () => {
+      const voucherOwner = Random.address();
+
+      new VoucherSupply({
+        ...Random.voucherSupplyMetadata({
+          blockchainAnchored: false,
+        }),
+        voucherOwner: voucherOwner,
+        imagefiles: [Random.fileRef(), Random.fileRef()],
+        visible: true,
+      }).save();
+
+      const voucherSuppliesRepository = new VoucherSuppliesRepository();
+      const voucherOwnerSupplies = await voucherSuppliesRepository.getActiveVoucherSuppliesByOwner(
+        voucherOwner
+      );
+
+      expect(voucherOwnerSupplies).to.eql([]);
+    });
   });
 
   context("getInactiveVoucherSuppliesByOwner", () => {
@@ -1514,6 +1598,36 @@ describe("Voucher Supplies Repository", () => {
       );
 
       expect(owner1VoucherSupplies).to.eql([]);
+    });
+
+    it("returns empty list when voucher supply is not blockchainAnchored", async () => {
+      const voucherOwner = Random.address();
+      const unavailableQuantity = 0;
+      const alreadyExpiredDate = Random.pastDateUnixMillis();
+      const notYetExpiredDate = Random.futureDateUnixMillis();
+      const alreadyStartedDate = Random.pastDateUnixMillisBefore(
+        alreadyExpiredDate
+      );
+
+      new VoucherSupply({
+        ...Random.voucherSupplyMetadata({
+          startDate: alreadyStartedDate,
+          expiryDate: notYetExpiredDate,
+          qty: unavailableQuantity,
+          offeredDate: Date.now(),
+          blockchainAnchored: false,
+        }),
+        voucherOwner: voucherOwner,
+        imagefiles: [Random.fileRef(), Random.fileRef()],
+        visible: true,
+      }).save();
+
+      const voucherSuppliesRepository = new VoucherSuppliesRepository();
+      const voucherOwnerSupplies = await voucherSuppliesRepository.getInactiveVoucherSuppliesByOwner(
+        voucherOwner
+      );
+
+      expect(voucherOwnerSupplies).to.eql([]);
     });
   });
 

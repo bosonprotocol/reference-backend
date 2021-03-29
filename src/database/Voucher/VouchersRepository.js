@@ -68,20 +68,22 @@ class VouchersRepository {
   }
 
   async getAllVouchers() {
-    return Voucher.find({});
+    return Voucher.find({ blockchainAnchored: true });
   }
 
   async getAllVouchersByVoucherSupplyIdAndOwner(voucherSupplyId, owner) {
     return Voucher.where("supplyID")
       .equals(voucherSupplyId)
       .where("voucherOwner")
-      .equals(owner);
+      .equals(owner)
+      .where("blockchainAnchored")
+      .equals(true);
     // removed for POC to be able to show table with statuses when cancel or fault is executed
     // .where(status.CANCELLED).equals('')
   }
 
   async getAllVouchersByHolder(holder) {
-    return Voucher.find({ _holder: holder }).sort({
+    return Voucher.find({ _holder: holder, blockchainAnchored: true }).sort({
       actionDate: "desc",
     });
   }
