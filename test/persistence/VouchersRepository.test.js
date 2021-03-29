@@ -160,7 +160,7 @@ describe("Vouchers Repository", () => {
   });
 
   context("getAllVouchers", () => {
-    xit("returns all vouchers in insertion order", async () => {
+    it("returns all vouchers in insertion order", async () => {
       const voucherSupplyId1 = Random.documentId().toString();
       const voucherSupplyId2 = Random.documentId().toString();
       const voucherSupplyId3 = Random.documentId().toString();
