@@ -316,8 +316,8 @@ class Random {
       _holder: Random.address(),
       _issuer: Random.address(),
       _correlationId: Random.uint256(),
-      ...overrides,
       blockchainAnchored: true,
+      ...overrides,
     };
   }
 
