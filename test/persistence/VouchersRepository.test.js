@@ -383,28 +383,33 @@ describe("Vouchers Repository", () => {
 
       const savedVoucher1 = new Voucher(
         Random.voucherAttributes({
+          ...Random.voucherMetadata(),
           _holder: voucherHolder1,
           actionDate: Date.now() - 10000,
         })
       );
       const savedVoucher2 = new Voucher(
         Random.voucherAttributes({
+          ...Random.voucherMetadata(),
           _holder: voucherHolder2,
         })
       );
       const savedVoucher3 = new Voucher(
         Random.voucherAttributes({
+          ...Random.voucherMetadata(),
           _holder: voucherHolder1,
           actionDate: Date.now() - 5000,
         })
       );
       const savedVoucher4 = new Voucher(
         Random.voucherAttributes({
+          ...Random.voucherMetadata(),
           _holder: voucherHolder2,
         })
       );
       const savedVoucher5 = new Voucher(
         Random.voucherAttributes({
+          ...Random.voucherMetadata(),
           _holder: voucherHolder1,
           actionDate: Date.now() - 15000,
         })
@@ -429,6 +434,42 @@ describe("Vouchers Repository", () => {
       expect(vouchers[0].toObject()).to.eql(foundVoucher3.toObject());
       expect(vouchers[1].toObject()).to.eql(foundVoucher1.toObject());
       expect(vouchers[2].toObject()).to.eql(foundVoucher5.toObject());
+    });
+
+    it("returns empty list when vouchers are not blockchainAnchored", async () => {
+      const voucherHolder1 = Random.address().toLowerCase();
+
+      const savedVoucher1 = new Voucher(
+        Random.voucherAttributes({
+          actionDate: Date.now() - 10000,
+          _holder: voucherHolder1,
+        })
+      );
+
+      const savedVoucher2 = new Voucher(
+        Random.voucherAttributes({
+          _holder: voucherHolder1,
+          actionDate: Date.now() - 5000,
+        })
+      );
+
+      const savedVoucher3 = new Voucher(
+        Random.voucherAttributes({
+          _holder: voucherHolder1,
+          actionDate: Date.now() - 15000,
+        })
+      );
+
+      await savedVoucher1.save();
+      await savedVoucher2.save();
+      await savedVoucher3.save();
+
+      const vouchersRepository = new VouchersRepository();
+      const vouchers = await vouchersRepository.getAllVouchersByHolder(
+        voucherHolder1
+      );
+
+      expect(vouchers.length).to.eql(0);
     });
 
     it("returns empty list when no vouchers for holder", async () => {
