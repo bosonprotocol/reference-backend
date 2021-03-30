@@ -20,13 +20,15 @@ const standardFields = [
 // TODO: Discuss lowercase owner address consistency
 class VoucherSuppliesRepository {
   async createVoucherSupply(metadata, fileRefs, voucherOwner) {
+    console.log("her: ", new Date(Number(metadata.startDate)));
+
     const voucherSupply = new VoucherSupply({
       title: metadata.title,
       qty: metadata.qty,
       category: metadata.category,
-      startDate: metadata.startDate,
-      expiryDate: metadata.expiryDate,
-      offeredDate: metadata.offeredDate,
+      startDate: new Date(Number(metadata.startDate)),
+      expiryDate: new Date(Number(metadata.expiryDate)),
+      offeredDate: new Date(Number(metadata.offeredDate)),
       price: metadata.price,
       buyerDeposit: metadata.buyerDeposit,
       sellerDeposit: metadata.sellerDeposit,
