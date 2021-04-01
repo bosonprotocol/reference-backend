@@ -194,12 +194,14 @@ class VoucherSuppliesRepository {
   }
 
   async getAllVoucherSupplies() {
-    return VoucherSupply.find({});
+    return VoucherSupply.find({ blockchainAnchored: true });
   }
 
   async getAllVoucherSuppliesByOwner(owner) {
     return VoucherSupply.where("voucherOwner")
       .equals(owner)
+      .where("blockchainAnchored")
+      .equals(true)
       .select(standardFields)
       .sort({ offeredDate: "desc" })
       .lean();
@@ -216,6 +218,8 @@ class VoucherSuppliesRepository {
       .gte(today)
       .where("qty")
       .gt(0)
+      .where("blockchainAnchored")
+      .equals(true)
       .select(standardFields)
       .sort({ offeredDate: "desc" })
       .lean();
@@ -226,6 +230,8 @@ class VoucherSuppliesRepository {
 
     return VoucherSupply.where("voucherOwner")
       .equals(owner.toLowerCase())
+      .where("blockchainAnchored")
+      .equals(true)
       .or([
         { startDate: { $gte: today } },
         { expiryDate: { $lte: today } },
