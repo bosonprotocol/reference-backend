@@ -15,13 +15,13 @@ class EventsRepository {
   }
 
   async create({
-    eventName,
+    name,
     address: address,
     _correlationId,
     _tokenId,
   }) {
     const event = new Event({
-      eventName,
+      name,
       address: address,
       _correlationId,
       _tokenId
@@ -38,7 +38,7 @@ class EventsRepository {
 
   async findByCorrelationId(metadata) {
     const event = await Event.findOne({
-      eventName: metadata.eventName,
+      name: metadata.name,
       _correlationId: metadata._correlationId,
       address: metadata.address
     })
@@ -52,7 +52,7 @@ class EventsRepository {
 
   async findByTokenId(metadata) {
     const event = await Event.findOne({
-      eventName: metadata.eventName,
+      name: metadata.name,
       _tokenId: metadata._tokenId
     })
 

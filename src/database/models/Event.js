@@ -6,7 +6,7 @@ const collections = require("../collections.json");
 const EVENT = collections.EVENT;
 
 const voucherSchema = new Schema({
-  eventName: {
+  name: {
     type: String,
     required: true,
     trim: true,

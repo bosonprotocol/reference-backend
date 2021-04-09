@@ -85,7 +85,7 @@ class EventValidationMiddleware {
 
     try {
       const metadata = {
-        eventName: req.body.eventName,
+        name: req.body.name,
         _correlationId: req.body._correlationId,
         address: req.body.address.toLowerCase()
       }
@@ -105,7 +105,7 @@ class EventValidationMiddleware {
 
     try {
       const metadata = {
-        eventName: req.body.eventName,
+        name: req.body.name,
         _tokenId: req.body._tokenId
       }
       

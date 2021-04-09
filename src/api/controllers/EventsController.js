@@ -11,7 +11,7 @@ class EventsController {
 
     try {
       const metadata = {
-        eventName: req.body.eventName,
+        name: req.body.name,
         address: address,
         _correlationId: req.body._correlationId ? req.body._correlationId : null,
         _tokenId: req.body._tokenId ? req.body._tokenId : null 
