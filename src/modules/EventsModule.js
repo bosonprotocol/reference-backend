@@ -1,6 +1,6 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const EventsController = require("../api/controllers/EventsController");
-const EventValidationMiddleware = require('../api/middlewares/EventValidationMiddleware')
+const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
 
 class EventsModule {
   constructor({
@@ -10,9 +10,10 @@ class EventsModule {
     eventsController,
   }) {
     this.userAuthenticationMiddleware = userAuthenticationMiddleware;
-    this.eventValidationMiddleware = 
-      eventValidationMiddleware || new EventValidationMiddleware(eventsRepository);
-    this.eventsController = 
+    this.eventValidationMiddleware =
+      eventValidationMiddleware ||
+      new EventValidationMiddleware(eventsRepository);
+    this.eventsController =
       eventsController || new EventsController(eventsRepository);
   }
 
@@ -20,7 +21,7 @@ class EventsModule {
     return "/events";
   }
 
-  //TODO Should getters be accessed by admins only? 
+  //TODO Should getters be accessed by admins only?
   addRoutesTo(router) {
     router.post(
       "/create",
@@ -63,12 +64,12 @@ class EventsModule {
         )
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-      this.eventValidationMiddleware.validateEventExistsByTokenId(
-        req,
-        res,
-        next
-      )
-    ),
+        this.eventValidationMiddleware.validateEventExistsByTokenId(
+          req,
+          res,
+          next
+        )
+      ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.eventsController.updateByTokenId(req, res, next)
       )
@@ -80,7 +81,7 @@ class EventsModule {
         this.eventsController.getAll(req, res, next)
       )
     );
-    
+
     router.get(
       "/detected",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>

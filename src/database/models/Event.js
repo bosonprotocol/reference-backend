@@ -25,7 +25,8 @@ const voucherSchema = new Schema({
     type: String,
     required: false,
   },
-  _tokenId: { //_tokenIdSupply || _tokenIdVoucher
+  _tokenId: {
+    //_tokenIdSupply || _tokenIdVoucher
     type: String,
     required: false,
   },
