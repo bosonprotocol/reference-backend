@@ -2,18 +2,6 @@
 const Event = require("../models/Event");
 
 class EventsRepository {
-  async createExpectedEvent(metadata) {
-    const event = new Event({
-      _tokenIdVoucher: metadata._tokenIdVoucher,
-      _to: metadata._to,
-      _payment: metadata._payment,
-      _type: metadata._type,
-      txHash: metadata.txHash,
-    });
-
-    await event.save();
-  }
-
   async create({ name, address: address, _correlationId, _tokenId }) {
     const event = new Event({
       name,
@@ -39,7 +27,7 @@ class EventsRepository {
 
     if (!event) {
       throw new Error(
-        `Event with Correlation Id: ${metadata._correlationId} for User: ${metadata.address} does not exist!`
+        `Event ${metadata.name} with Correlation Id: ${metadata._correlationId} for User: ${metadata.address} does not exist!`
       );
     }
 
@@ -54,7 +42,7 @@ class EventsRepository {
 
     if (!event) {
       throw new Error(
-        `Event with Token Id: ${metadata._tokenId} for User: ${metadata.address} does not exist!`
+        `Event ${metadata.name} with Token Id: ${metadata._tokenId} does not exist!`
       );
     }
 

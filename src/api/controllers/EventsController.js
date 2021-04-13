@@ -29,29 +29,25 @@ class EventsController {
   }
 
   async updateByCorrelationId(req, res, next) {
-    let event;
-
     try {
-      event = await this.eventsRepository.update(res.locals.event);
+      await this.eventsRepository.update(res.locals.event);
     } catch (error) {
       console.log(error.message);
       return next(new ApiError(400, "Bad request!"));
     }
 
-    res.status(200).send({ eventId: event.id });
+    res.status(200).send({ updated: true });
   }
 
   async updateByTokenId(req, res, next) {
-    let event;
-
     try {
-      event = await this.eventsRepository.update(res.locals.event);
+      await this.eventsRepository.update(res.locals.event);
     } catch (error) {
       console.log(error.message);
       return next(new ApiError(400, "Bad request!"));
     }
 
-    res.status(200).send({ eventId: event.id });
+    res.status(200).send({ updated: true });
   }
 
   async getAll(req, res, next) {
@@ -64,13 +60,11 @@ class EventsController {
       return next(new ApiError(400, "Bad request!"));
     }
 
-    res
-      .status(200)
-      .send({
-        succeeded: detected.length,
-        failed: failed.length,
-        events: [...detected, ...failed],
-      });
+    res.status(200).send({
+      succeeded: detected.length,
+      failed: failed.length,
+      events: [...detected, ...failed],
+    });
   }
 
   async getDetected(req, res, next) {

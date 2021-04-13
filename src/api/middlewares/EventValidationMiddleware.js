@@ -79,6 +79,14 @@ class EventValidationMiddleware {
     next();
   }
 
+  async validateEventMetadata(req, res, next) {
+    if (!req.body._correlationId && !req.body._tokenId) {
+      return next(new ApiError(400, "Bad request."));
+    }
+
+    next();
+  }
+
   async validateEventExistsByCorrelationId(req, res, next) {
     let event;
 

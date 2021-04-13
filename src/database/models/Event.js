@@ -14,10 +14,9 @@ const voucherSchema = new Schema({
   address: {
     type: String,
     required: true,
-    trim: true,
   },
   eventDetected: {
-    type: String,
+    type: Boolean,
     required: true,
     default: false,
   },
@@ -25,8 +24,8 @@ const voucherSchema = new Schema({
     type: String,
     required: false,
   },
+  //_tokenIdSupply || _tokenIdVoucher
   _tokenId: {
-    //_tokenIdSupply || _tokenIdVoucher
     type: String,
     required: false,
   },

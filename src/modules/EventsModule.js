@@ -29,6 +29,9 @@ class EventsModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
+        this.eventValidationMiddleware.validateEventMetadata(req, res, next)
+      ),
+      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.eventsController.create(req, res, next)
       )
     );
