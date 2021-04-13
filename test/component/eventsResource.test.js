@@ -120,6 +120,36 @@ describe("Events Resource", () => {
       expect(response.body[expectedPropertyName]).to.eql(true);
     });
 
+    it("updateEventByCorrelationId - returns 400 if voucher is not found", async () => {
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      const metadata = Random.eventMetadata({
+        _tokenId: "",
+        address: account.address,
+      });
+
+      await api.withToken(token).events().createEvent(metadata);
+
+      const updatedData = {
+        name: "INVALID_EVENT_NAME",
+        address: metadata.address,
+        _correlationId: metadata._correlationId,
+      };
+
+      const response = await api
+        .withToken(gcloudToken)
+        .events()
+        .updateByCorrelationId(updatedData);
+
+      expect(response.status).to.eql(400);
+    });
+
     it("updateEventByTokenId - returns 200 and voucher updated success status", async () => {
       const account = Random.account();
       const token = await prerequisites.getUserToken(account);
@@ -152,6 +182,35 @@ describe("Events Resource", () => {
       expect(response.status).to.eql(200);
       expect(propertyNames).to.include(expectedPropertyName);
       expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    it("updateEventByTokenId - returns 400 if voucher is not found", async () => {
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      const metadata = Random.eventMetadata({
+        address: account.address,
+        _correlationId: "",
+      });
+
+      await api.withToken(token).events().createEvent(metadata);
+
+      const updatedData = {
+        name: metadata.name,
+        _tokenId: "INVALID_TOKEN_ID",
+      };
+
+      const response = await api
+        .withToken(gcloudToken)
+        .events()
+        .updateByTokenId(updatedData);
+
+      expect(response.status).to.eql(400);
     });
   });
 
