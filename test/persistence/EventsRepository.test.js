@@ -9,7 +9,7 @@ const Event = require("../../src/database/models/Event");
 const Random = require("../shared/helpers/Random");
 const Database = require("../shared/helpers/Database");
 
-describe("Payments Repository", () => {
+describe("Events Repository", () => {
   before(async () => {
     await Database.connect();
   });
