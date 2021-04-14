@@ -2,6 +2,10 @@ const ApiError = require("../ApiError");
 const { BigNumber } = require("ethers");
 
 class EventValidationMiddleware {
+  constructor(eventRepository) {
+    this.eventRepository = eventRepository;
+  }
+
   async validateUserVoucherMetadata(req, res, next) {
     if (!req.body) {
       console.error("Empty body sent while, trying to update a user voucher!");
@@ -72,6 +76,53 @@ class EventValidationMiddleware {
       return next(new ApiError(400, "Bad request."));
     }
 
+    next();
+  }
+
+  async validateEventMetadata(req, res, next) {
+    if (!req.body._correlationId && !req.body._tokenId) {
+      return next(new ApiError(400, "Bad request."));
+    }
+
+    next();
+  }
+
+  async validateEventExistsByCorrelationId(req, res, next) {
+    let event;
+
+    try {
+      const metadata = {
+        name: req.body.name,
+        _correlationId: req.body._correlationId,
+        address: req.body.address.toLowerCase(),
+      };
+
+      event = await this.eventRepository.findByCorrelationId(metadata);
+    } catch (error) {
+      console.log(error.message);
+      return next(new ApiError(400, "Bad request."));
+    }
+
+    res.locals.event = event;
+    next();
+  }
+
+  async validateEventExistsByTokenId(req, res, next) {
+    let event;
+
+    try {
+      const metadata = {
+        name: req.body.name,
+        _tokenId: req.body._tokenId,
+      };
+
+      event = await this.eventRepository.findByTokenId(metadata);
+    } catch (error) {
+      console.log(error.message);
+      return next(new ApiError(400, "Bad request."));
+    }
+
+    res.locals.event = event;
     next();
   }
 }

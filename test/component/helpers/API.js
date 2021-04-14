@@ -307,6 +307,52 @@ class PaymentsResource {
   }
 }
 
+class EventsResource {
+  constructor(serverAddress, token) {
+    this.serverAddress = serverAddress;
+    this.absoluteServerRoute = `${serverAddress}/events`;
+    this.token = token;
+  }
+
+  getAll() {
+    return superagent.get(`${this.absoluteServerRoute}/all`).ok(() => true);
+  }
+
+  getDetected() {
+    return superagent
+      .get(`${this.absoluteServerRoute}/detected`)
+      .ok(() => true);
+  }
+
+  getFailed() {
+    return superagent.get(`${this.absoluteServerRoute}/failed`).ok(() => true);
+  }
+
+  createEvent(data) {
+    return superagent
+      .post(`${this.absoluteServerRoute}/create`)
+      .authBearer(this.token)
+      .ok(() => true)
+      .send(data);
+  }
+
+  updateByCorrelationId(data) {
+    return superagent
+      .patch(`${this.absoluteServerRoute}/update-by-correlation-id`)
+      .authBearer(this.token)
+      .ok(() => true)
+      .send(data);
+  }
+
+  updateByTokenId(data) {
+    return superagent
+      .patch(`${this.absoluteServerRoute}/update-by-token-id`)
+      .authBearer(this.token)
+      .ok(() => true)
+      .send(data);
+  }
+}
+
 class API {
   constructor(serverAddress) {
     this.serverAddress = serverAddress;
@@ -340,6 +386,10 @@ class API {
 
   administration() {
     return new AdministrationResource(this.serverAddress, this.token);
+  }
+
+  events() {
+    return new EventsResource(this.serverAddress, this.token);
   }
 
   payments() {

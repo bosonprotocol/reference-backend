@@ -198,6 +198,23 @@ class Random {
     return faker.random.arrayElement(["new", "used"]);
   }
 
+  static eventName() {
+    const events = [
+      "LogVoucherDelivered",
+      "LogOrderCreated",
+      "LogVoucherSetFaultCancel",
+      "LogVoucherFaultCancel",
+      "LogVoucherComplain",
+      "LogVoucherRedeemed",
+      "LogVoucherRefunded",
+      "Transfer",
+      "TransferSingle",
+      "TransferBatch",
+    ];
+
+    return events[faker.random.number({ min: 0, max: 9 })];
+  }
+
   static digit() {
     return faker.random.arrayElement([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
   }
@@ -361,6 +378,18 @@ class Random {
       _payment: Random.monetaryAmount(),
       _type: Random.paymentType(),
       txHash: Random.transactionHash(),
+      ...overrides,
+    };
+  }
+
+  static eventMetadata(overrides = {}) {
+    const account = Random.account();
+
+    return {
+      name: Random.eventName(),
+      address: account.address,
+      _correlationId: Random.uint256(),
+      _tokenId: Random.uint256(),
       ...overrides,
     };
   }

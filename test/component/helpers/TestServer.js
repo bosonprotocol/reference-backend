@@ -9,6 +9,7 @@ const UsersRepository = require("../../../src/database/User/UsersRepository");
 const VouchersRepository = require("../../../src/database/Voucher/VouchersRepository");
 const VoucherSuppliesRepository = require("../../../src/database/VoucherSupply/VoucherSuppliesRepository");
 const PaymentsRepository = require("../../../src/database/Payment/PaymentsRepository");
+const EventsRepository = require("../../../src/database/Event/EventsRepository");
 
 const AdministratorAuthenticationMiddleware = require("../../../src/api/middlewares/AdministratorAuthenticationMiddleware");
 const UserAuthenticationMiddleware = require("../../../src/api/middlewares/UserAuthenticationMiddleware");
@@ -17,6 +18,7 @@ const UsersModule = require("../../../src/modules/UsersModule");
 const VoucherSuppliesModule = require("../../../src/modules/VoucherSuppliesModule");
 const VouchersModule = require("../../../src/modules/VouchersModule");
 const PaymentsModule = require("../../../src/modules/PaymentsModule");
+const EventsModule = require("../../../src/modules/EventsModule");
 const AdministrationModule = require("../../../src/modules/AdministrationModule");
 const HealthModule = require("../../../src/modules/HealthModule");
 
@@ -62,6 +64,7 @@ class TestServer {
     const vouchersRepository = new VouchersRepository();
     const voucherSuppliesRepository = new VoucherSuppliesRepository();
     const paymentsRepository = new PaymentsRepository();
+    const eventsRepository = new EventsRepository();
 
     const administratorAuthenticationMiddleware = new AdministratorAuthenticationMiddleware(
       authenticationService,
@@ -85,6 +88,7 @@ class TestServer {
       vouchersRepository,
       voucherSuppliesRepository,
       paymentsRepository,
+      eventsRepository,
 
       administratorAuthenticationMiddleware,
       userAuthenticationMiddleware,
@@ -96,6 +100,7 @@ class TestServer {
     const voucherSuppliesModule = new VoucherSuppliesModule(dependencies);
     const vouchersModule = new VouchersModule(dependencies);
     const paymentsModule = new PaymentsModule(dependencies);
+    const eventsModule = new EventsModule(dependencies);
     const administrationModule = new AdministrationModule(dependencies);
 
     return new Server()
@@ -105,6 +110,7 @@ class TestServer {
       .withModule(voucherSuppliesModule)
       .withModule(vouchersModule)
       .withModule(paymentsModule)
+      .withModule(eventsModule)
       .withModule(administrationModule)
       .start(resolvedPort);
   }
