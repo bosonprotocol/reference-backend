@@ -166,13 +166,17 @@ class VoucherSuppliesController {
   }
 
   async createVoucherSupply(req, res, next) {
+    const metadata = {
+      ...req.body,
+      location: res.locals.location,
+    };
     const fileRefs = req.fileRefs;
     const voucherOwner = res.locals.address;
     let voucherSupply;
 
     try {
       voucherSupply = await this.voucherSuppliesRepository.createVoucherSupply(
-        req.body,
+        metadata,
         fileRefs,
         voucherOwner
       );
@@ -188,6 +192,10 @@ class VoucherSuppliesController {
   }
 
   async updateVoucherSupply(req, res, next) {
+    const metadata = {
+      ...req.body,
+      location: res.locals.location,
+    };
     const fileRefs = req.fileRefs;
     const voucherOwner = res.locals.address;
     const voucher = res.locals.voucherSupply;
@@ -195,7 +203,7 @@ class VoucherSuppliesController {
     try {
       await this.voucherSuppliesRepository.updateVoucherSupply(
         voucher,
-        req.body,
+        metadata,
         fileRefs
       );
     } catch (error) {

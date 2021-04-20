@@ -31,7 +31,12 @@ class VoucherSuppliesRepository {
       buyerDeposit: metadata.buyerDeposit,
       sellerDeposit: metadata.sellerDeposit,
       description: metadata.description,
-      location: metadata.location,
+      location: {
+        country: metadata.location.country,
+        city: metadata.location.city,
+        streetAddress: metadata.location.streetAddress,
+        postcode: metadata.location.postcode,
+      },
       contact: metadata.contact,
       conditions: metadata.conditions,
       voucherOwner: voucherOwner,
@@ -56,19 +61,48 @@ class VoucherSuppliesRepository {
     await VoucherSupply.findByIdAndUpdate(
       voucherSupply.id,
       {
-        title: metadata.title,
-        qty: metadata.qty,
-        category: metadata.category,
-        startDate: metadata.startDate,
-        expiryDate: metadata.expiryDate,
-        offeredDate: metadata.offeredDate,
-        price: metadata.price,
-        buyerDeposit: metadata.buyerDeposit,
-        sellerDeposit: metadata.sellerDeposit,
-        description: metadata.description,
-        location: metadata.location,
-        contact: metadata.contact,
-        conditions: metadata.conditions,
+        title: metadata.title ? metadata.title : voucherSupply.title,
+        qty: metadata.qty ? metadata.qty : voucherSupply.qty,
+        category: metadata.category
+          ? metadata.category
+          : voucherSupply.category,
+        startDate: metadata.startDate
+          ? metadata.startDate
+          : voucherSupply.startDate,
+        expiryDate: metadata.expiryDate
+          ? metadata.expiryDate
+          : voucherSupply.expiryDate,
+        offeredDate: metadata.offeredDate
+          ? metadata.offeredDate
+          : voucherSupply.offeredDate,
+        price: metadata.price ? metadata.price : voucherSupply.price,
+        buyerDeposit: metadata.buyerDeposit
+          ? metadata.buyerDeposit
+          : voucherSupply.buyerDeposit,
+        sellerDeposit: metadata.sellerDeposit
+          ? metadata.sellerDeposit
+          : voucherSupply.sellerDeposit,
+        description: metadata.description
+          ? metadata.description
+          : voucherSupply.description,
+        location: {
+          country: metadata.location.country
+            ? metadata.location.country
+            : voucherSupply.location.country,
+          city: metadata.location.city
+            ? metadata.location.city
+            : voucherSupply.location.city,
+          streetAddress: metadata.location.streetAddress
+            ? metadata.location.streetAddress
+            : voucherSupply.location.streetAddress,
+          postcode: metadata.location.postcode
+            ? metadata.location.postcode
+            : voucherSupply.location.postcode,
+        },
+        contact: metadata.contact ? metadata.contact : voucherSupply.contact,
+        conditions: metadata.conditions
+          ? metadata.conditions
+          : voucherSupply.conditions,
         imagefiles: updatedImages,
         voucherOwner: currentOwner,
         visible: currentVisibility,

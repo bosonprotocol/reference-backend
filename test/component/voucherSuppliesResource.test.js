@@ -152,6 +152,131 @@ describe("Voucher Supplies Resource", () => {
 
       expect(response.status).to.eql(400);
     });
+
+    it("createVoucherSupply - returns 400 when empty string for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: "",
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when empty object for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify({}),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when empty array for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify([]),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when null for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify(null),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when invalid properties for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify({
+          country: "country",
+          city: "city",
+          streetAddress: "streetAddress",
+          fail: "FAIL",
+        }),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when more properties for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify({
+          country: "country",
+          city: "city",
+          streetAddress: "streetAddress",
+          postcode: "metadata.location.postcode",
+          additionalProp: "cause failure",
+        }),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
   });
 
   context("on GET", () => {
@@ -298,7 +423,7 @@ describe("Voucher Supplies Resource", () => {
       const response = await api
         .withToken(token)
         .voucherSupplies()
-        .update(voucherSupplyId, newImageFilePath);
+        .update(voucherSupplyId, voucherSupplyData, newImageFilePath);
 
       const propertyNames = Object.getOwnPropertyNames(response.body);
       // END OF UPDATE
@@ -328,7 +453,7 @@ describe("Voucher Supplies Resource", () => {
       const response = await api
         .withToken(token)
         .voucherSupplies()
-        .update(voucherSupplyId, newImageFilePath);
+        .update(voucherSupplyId, voucherSupplyData, newImageFilePath);
       // END OF UPDATE
 
       expect(response.status).to.eql(400);
@@ -354,7 +479,7 @@ describe("Voucher Supplies Resource", () => {
       const response = await api
         .withToken(token)
         .voucherSupplies()
-        .update(voucherSupplyId, newImageFilePath);
+        .update(voucherSupplyId, voucherSupplyData, newImageFilePath);
       // END OF UPDATE
 
       expect(response.status).to.eql(400);
@@ -380,7 +505,7 @@ describe("Voucher Supplies Resource", () => {
       const response = await api
         .withToken(token)
         .voucherSupplies()
-        .update(voucherSupplyId, newImageFilePath);
+        .update(voucherSupplyId, voucherSupplyData, newImageFilePath);
       // END OF UPDATE
 
       expect(response.status).to.eql(400);
@@ -395,7 +520,7 @@ describe("Voucher Supplies Resource", () => {
       const response = await api
         .withToken(token)
         .voucherSupplies()
-        .update(randomVoucherSupplyId, newImageFilePath);
+        .update(randomVoucherSupplyId, {}, newImageFilePath);
 
       expect(response.status).to.eql(400);
     });
