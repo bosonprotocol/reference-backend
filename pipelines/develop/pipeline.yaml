@@ -108,7 +108,8 @@ jobs:
     serial: true
     plan:
       - in_parallel:
-          - get: updated-source
+          - get: source
+            resource: updated-source
             trigger: true
             passed:
               - test
