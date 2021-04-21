@@ -7,3 +7,5 @@ vars:
   deployment_identifier: "%{hiera('deployment_identifier')}"
 
   storage_bucket_name: "%{hiera('storage_bucket_name')}"
+
+  allowed_account_ids: "%{hiera('storage_bucket_allowed_account_ids')}"

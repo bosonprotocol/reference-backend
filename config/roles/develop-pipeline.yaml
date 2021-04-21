@@ -5,6 +5,10 @@ vars:
 
   node_builder_image_repository_url: "%{hiera('node_builder_image_repository_url')}"
 
+  storage_bucket_name: "%{hiera('ci_storage_bucket_name')}"
+  storage_bucket_region: "%{hiera('ci_storage_bucket_region')}"
+  storage_bucket_encryption: "%{hiera('ci_storage_bucket_encryption')}"
+
   ci_provisioning_role_arn: "%{hiera('ci_provisioning_role_arn')}"
   ci_deployment_type: "%{hiera('ci_deployment_type')}"
   ci_deployment_label: "%{hiera('ci_deployment_label')}"

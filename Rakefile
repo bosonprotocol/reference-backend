@@ -266,7 +266,9 @@ namespace :tests do
 
     desc "Run all unit tests"
     task :unit => [:'app:dependencies:install'] do
-      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:unit:coverage' : 'tests:app:unit'
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ?
+        'tests:app:unit:coverage' :
+        'tests:app:unit'
       sh('npm', 'run', script_name)
     end
 
@@ -297,7 +299,9 @@ namespace :tests do
 
       Rake::Task['database:contextual:ensure'].invoke(*args)
 
-      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:persistence:coverage' : 'tests:app:persistence'
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ?
+        'tests:app:persistence:coverage' :
+        'tests:app:persistence'
       sh(database_overrides_for(configuration, args),
          'npm', 'run', script_name)
     end
@@ -312,7 +316,9 @@ namespace :tests do
 
       Rake::Task['database:contextual:ensure'].invoke(*args)
 
-      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:component:coverage' : 'tests:app:component'
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ?
+        'tests:app:component:coverage' :
+        'tests:app:component'
       sh(database_overrides_for(configuration, args),
          'npm', 'run', script_name)
     end
@@ -323,6 +329,22 @@ namespace :tests do
         sh('npm', 'run', 'tests:coverage:badge')
       end
     end
+  end
+end
+
+namespace :image_repository do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'reference backend image repository',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'image-repository'))
+
+    t.source_directory = 'infra/image-repository'
+    t.work_directory = 'build'
+
+    t.backend_config = configuration.backend_config
+    t.vars = configuration.vars
   end
 end
 
