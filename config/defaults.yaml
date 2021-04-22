@@ -7,7 +7,7 @@ deployment_identifier: "%{deployment_type}-%{deployment_label}"
 
 source_repository_name: "bosonprotocol/reference-backend"
 source_repository_url: "git@github.com:%{hiera('source_repository_name')}.git"
-source_repository_branch: "develop"
+source_repository_branch: "deployment-pipeline"
 
 image_repository_name: "bsn/reference-backend"
 

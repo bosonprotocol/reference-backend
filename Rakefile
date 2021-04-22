@@ -1,11 +1,18 @@
 require 'git'
 require 'confidante'
-require 'rake_docker'
 require 'rake_terraform'
 require 'ruby_terraform/output'
+require 'rake_docker'
 require 'rake_fly'
+require 'rake_factory/kernel_extensions'
+require 'shivers'
 
 configuration = Confidante.configuration
+version = Shivers::Version.from_file('build/version')
+
+Docker.options = {
+  read_timeout: 300
+}
 
 RakeFly.define_installation_tasks(version: '6.7.2')
 RakeTerraform.define_installation_tasks(
@@ -348,6 +355,60 @@ namespace :image_repository do
   end
 end
 
+namespace :image do
+  RakeDocker.define_image_tasks(
+    image_name: 'reference-backend',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'image-repository'))
+
+    t.work_directory = 'build/images'
+
+    t.copy_spec = [
+      'image/Dockerfile',
+      'image/docker-entrypoint.sh',
+      'src/',
+      'app.js',
+      'package.json',
+      'package-lock.json'
+    ]
+    t.create_spec = [
+      { content: version.to_s, to: 'VERSION' },
+      { content: version.to_docker_tag, to: 'TAG' }
+    ]
+
+    t.repository_name = configuration.image_repository_name
+    t.repository_url = dynamic do
+      JSON.parse(
+        RubyTerraform::Output.for(
+          name: 'repository_url',
+          source_directory: 'infra/image-repository',
+          work_directory: 'build',
+          backend_config: configuration.backend_config
+        )
+      )
+    end
+
+    t.credentials = dynamic do
+      RakeDocker::Authentication::ECR.new do |c|
+        c.region = configuration.region
+        c.registry_id =
+          JSON.parse(
+            RubyTerraform::Output.for(
+              name: 'registry_id',
+              source_directory: 'infra/image-repository',
+              work_directory: 'build',
+              backend_config: configuration.backend_config
+            )
+          )
+      end.call
+    end
+
+    t.tags = [version.to_docker_tag, 'latest']
+  end
+end
+
 namespace :ci do
   RakeFly.define_authentication_tasks(
     namespace: :authentication,
@@ -381,7 +442,7 @@ namespace :ci do
 
       t.target = configuration.concourse_team
       t.team = configuration.concourse_team
-      t.pipeline = "reference-backend-develop"
+      t.pipeline = "reference-backend-next"
 
       t.config = 'pipelines/develop/pipeline.yaml'
 
