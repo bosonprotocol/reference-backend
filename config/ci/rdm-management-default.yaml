@@ -3,7 +3,7 @@ ci_account_id: "%{hiera('rdm_management_account_id')}"
 
 ci_deployment_identifier: "%{ci_deployment_type}-%{ci_deployment_label}"
 
-ci_storage_bucket_name: "rdm-%{hiera('component')}-%{hiera('ci_deployment_identifier')}"
+ci_storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('ci_deployment_identifier')}"
 ci_storage_bucket_region: "%{hiera('region')}"
 ci_storage_bucket_encryption: "AES256"
 
