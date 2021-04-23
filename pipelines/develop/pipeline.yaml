@@ -60,6 +60,7 @@ groups:
       - build
       - test
       - provision-image-repository
+      - publish-image
 
 jobs:
   - name: build
