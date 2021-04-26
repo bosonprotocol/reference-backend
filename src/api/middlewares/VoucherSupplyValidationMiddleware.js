@@ -127,7 +127,8 @@ class VoucherSupplyValidationMiddleware {
     const expectedLocationProps = [
       "country",
       "city",
-      "streetAddress",
+      "addressLineOne",
+      "addressLineTwo",
       "postcode",
     ];
 

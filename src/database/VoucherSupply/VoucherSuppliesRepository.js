@@ -34,7 +34,8 @@ class VoucherSuppliesRepository {
       location: {
         country: metadata.location.country,
         city: metadata.location.city,
-        streetAddress: metadata.location.streetAddress,
+        addressLineOne: metadata.location.addressLineOne,
+        addressLineTwo: metadata.location.addressLineTwo,
         postcode: metadata.location.postcode,
       },
       contact: metadata.contact,
@@ -92,9 +93,12 @@ class VoucherSuppliesRepository {
           city: metadata.location.city
             ? metadata.location.city
             : voucherSupply.location.city,
-          streetAddress: metadata.location.streetAddress
-            ? metadata.location.streetAddress
-            : voucherSupply.location.streetAddress,
+          addressLineOne: metadata.location.addressLineOne
+            ? metadata.location.addressLineOne
+            : voucherSupply.location.addressLineOne,
+          addressLineTwo: metadata.location.addressLineTwo
+            ? metadata.location.addressLineTwo
+            : voucherSupply.location.addressLineTwo,
           postcode: metadata.location.postcode
             ? metadata.location.postcode
             : voucherSupply.location.postcode,

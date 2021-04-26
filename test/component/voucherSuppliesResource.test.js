@@ -240,7 +240,8 @@ describe("Voucher Supplies Resource", () => {
         location: JSON.stringify({
           country: "country",
           city: "city",
-          streetAddress: "streetAddress",
+          addressLineOne: "addressLineOne",
+          addressLineTwo: "addressLineTwo",
           fail: "FAIL",
         }),
       }); // force failure
@@ -264,7 +265,8 @@ describe("Voucher Supplies Resource", () => {
         location: JSON.stringify({
           country: "country",
           city: "city",
-          streetAddress: "streetAddress",
+          address_line_one: "address_line_one",
+          address_line_two: "address_line_two",
           postcode: "metadata.location.postcode",
           additionalProp: "cause failure",
         }),

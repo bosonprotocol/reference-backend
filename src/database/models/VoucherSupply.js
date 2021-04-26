@@ -65,7 +65,12 @@ const voucherSchema = new Schema({
       required: false,
       trim: true,
     },
-    streetAddress: {
+    addressLineOne: {
+      type: String,
+      required: false,
+      trim: true,
+    },
+    addressLineTwo: {
       type: String,
       required: false,
       trim: true,

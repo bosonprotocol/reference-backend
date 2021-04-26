@@ -190,7 +190,8 @@ class Random {
     return JSON.stringify({
       country: faker.address.country(),
       city: faker.address.city(),
-      streetAddress: faker.address.streetAddress(),
+      addressLineOne: faker.address.streetAddress(),
+      addressLineTwo: faker.address.streetAddress(),
       postcode: faker.address.zipCode(),
     });
   }
