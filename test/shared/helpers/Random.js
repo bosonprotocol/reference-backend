@@ -187,7 +187,13 @@ class Random {
   }
 
   static location() {
-    return faker.address.city();
+    return JSON.stringify({
+      country: faker.address.country(),
+      city: faker.address.city(),
+      addressLineOne: faker.address.streetAddress(),
+      addressLineTwo: faker.address.streetAddress(),
+      postcode: faker.address.zipCode(),
+    });
   }
 
   static contact() {
