@@ -115,9 +115,10 @@ class VoucherSuppliesResource {
       .ok(() => true);
   }
 
-  async update(voucherSupplyId, imageFilePath) {
+  async update(voucherSupplyId, data, imageFilePath) {
     return superagent
       .patch(`${this.absoluteServerRoute}/${voucherSupplyId}`)
+      .field(data)
       .attach("fileToUpload", imageFilePath)
       .authBearer(this.token)
       .ok(() => true);

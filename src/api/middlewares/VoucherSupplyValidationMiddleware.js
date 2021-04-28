@@ -122,6 +122,57 @@ class VoucherSupplyValidationMiddleware {
 
     next();
   }
+
+  async validateLocation(req, res, next) {
+    const expectedLocationProps = [
+      "country",
+      "city",
+      "addressLineOne",
+      "addressLineTwo",
+      "postcode",
+    ];
+
+    if (!req.body.location) {
+      return next(new ApiError(400, "Location missing!"));
+    }
+
+    let parsedLocation;
+    try {
+      parsedLocation = JSON.parse(req.body.location);
+    } catch (error) {
+      return next(new ApiError(400, "Bad request!"));
+    }
+
+    const isObject =
+      typeof parsedLocation === "object" && parsedLocation !== null;
+
+    if (!isObject) {
+      return next(new ApiError(400, "Provided Location is not an Object!"));
+    }
+
+    if (Object.keys(parsedLocation).length !== expectedLocationProps.length) {
+      return next(
+        new ApiError(
+          400,
+          "Location object properties does not correspond to the required length!"
+        )
+      );
+    }
+
+    const receivedLocationProps = Object.getOwnPropertyNames(parsedLocation);
+    if (
+      expectedLocationProps.sort().join(",") !==
+      receivedLocationProps.sort().join(",")
+    ) {
+      return next(
+        new ApiError(400, "Location must contain all required fields")
+      );
+    }
+
+    res.locals.location = parsedLocation;
+
+    next();
+  }
 }
 
 module.exports = VoucherSupplyValidationMiddleware;
