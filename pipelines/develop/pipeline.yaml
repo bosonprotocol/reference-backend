@@ -61,6 +61,9 @@ groups:
       - test
       - provision-image-repository
       - publish-image
+  - name: development-plutonium
+    jobs:
+      - provision-development-plutonium-database
 
 jobs:
   - name: build
@@ -175,6 +178,33 @@ jobs:
           cache_tag: latest
           tag: image-build-directory/TAG
           tag_as_latest: true
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-development-plutonium-database
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            resource: updated-source
+            trigger: true
+            passed:
+              - publish-image
+          - get: version
+            params:
+              pre: rc
+          - get: node-builder-image
+      - task: provision-database
+        image: node-builder-image
+        file: source/pipelines/develop/provision-database/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
+          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
 
     on_success: *on_success
     on_failure: *on_failure

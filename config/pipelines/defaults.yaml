@@ -2,3 +2,7 @@
 ci_provisioning_role_arn: "arn:aws:iam::%{hiera('rdm_management_account_id')}:role/cross-account-admin-role"
 ci_deployment_type: "%{ci_deployment_type}"
 ci_deployment_label: "%{ci_deployment_label}"
+
+development_plutonium_provisioning_role_arn: "arn:aws:iam::%{hiera('rdm_development_plutonium_account_id')}:role/cross-account-admin-role"
+development_plutonium_deployment_type: "rdm-development"
+development_plutonium_deployment_label: "plutonium"
