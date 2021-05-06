@@ -64,6 +64,7 @@ groups:
   - name: development-plutonium
     jobs:
       - provision-development-plutonium-database
+      - provision-development-plutonium-service
 
 jobs:
   - name: build
