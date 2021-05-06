@@ -14,6 +14,11 @@ database_password: "%{hiera('database_service_user_password')}"
 database_type: "deployed"
 
 # State
+domain_state_bucket_name: "bsn-aws-application-account-bsn-development-potassium"
+domain_state_key: "common/deployment-state/default.tfstate"
+domain_state_bucket_region: "%{hiera('region')}"
+domain_state_bucket_is_encrypted: "true"
+
 network_state_bucket_name: "bsn-application-network-bsn-development-palladium"
 network_state_key: "network/deployment-state/default.tfstate"
 network_state_bucket_region: "%{hiera('region')}"
@@ -28,3 +33,8 @@ database_state_bucket_name: "%{hiera('storage_bucket_name')}"
 database_state_key: "database/deployment-state/default.tfstate"
 database_state_bucket_region: "%{hiera('region')}"
 database_state_bucket_is_encrypted: "true"
+
+service_state_bucket_name: "%{hiera('storage_bucket_name')}"
+service_state_key: "service/deployment-state/default.tfstate"
+service_state_bucket_region: "%{hiera('region')}"
+service_state_bucket_is_encrypted: "true"
