@@ -15,16 +15,26 @@ if [ -z "$AWS_S3_ENV_FILE_OBJECT_PATH" ]; then
   exit 1
 fi
 
+echo "PATH ---------------"
 echo "$PATH"
+
+echo "/usr/local ---------------"
 ls -la /usr/local
+
+echo "/usr/local/bin ---------------"
 ls -la /usr/local/bin
-ls -la /usr/local/aws
+
+echo "/usr/local/aws-cli ---------------"
+ls -la /usr/local/aws-cli
 
 # Fetch and source env file
 eval $(aws s3 cp \
     --sse AES256 \
     --region "$AWS_S3_BUCKET_REGION" \
     "$AWS_S3_ENV_FILE_OBJECT_PATH" - | sed 's/^/export /')
+
+echo "ENV ---------------"
+env
 
 # Run service
 cd /opt/reference-backend
