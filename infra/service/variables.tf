@@ -12,6 +12,15 @@ variable "service_name" {}
 variable "container_http_port" {}
 variable "host_http_port" {}
 
+variable "token_secret" {}
+variable "gcloud_secret" {}
+variable "image_storage_bucket_name" {}
+
+variable "database_connection_string" {}
+variable "database_username" {}
+variable "database_password" {}
+variable "database_name" {}
+
 variable "domain_state_bucket_name" {}
 variable "domain_state_key" {}
 variable "domain_state_bucket_region" {}

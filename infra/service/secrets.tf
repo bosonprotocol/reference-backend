@@ -15,7 +15,14 @@ data "template_file" "env_file" {
   template = file("${path.root}/envfiles/service.env.tpl")
 
   vars = {
+    token_secret = var.token_secret
+    gcloud_secret = var.gcloud_secret
+    image_storage_bucket_name = var.image_storage_bucket_name
 
+    database_connection_string = var.database_connection_string
+    database_username = var.database_username
+    database_password = var.database_password
+    database_name = var.database_name
   }
 }
 
