@@ -21,7 +21,6 @@ vars:
   superadmin_username: "%{hiera('superadmin_username')}"
   superadmin_password: "%{hiera('superadmin_password')}"
 
-  database_connection_string: "%{hiera('database_connection_string')}"
   database_username: "%{hiera('database_username')}"
   database_password: "%{hiera('database_password')}"
   database_name: "%{hiera('database_name')}"
@@ -35,6 +34,11 @@ vars:
   network_state_bucket_name: "%{hiera('network_state_bucket_name')}"
   network_state_bucket_is_encrypted: "%{hiera('network_state_bucket_is_encrypted')}"
   network_state_key: "%{hiera('network_state_key')}"
+
+  database_state_bucket_name: "%{hiera('database_state_bucket_name')}"
+  database_state_key: "%{hiera('database_state_key')}"
+  database_state_bucket_region: "%{hiera('database_state_bucket_region')}"
+  database_state_bucket_is_encrypted: "%{hiera('database_state_bucket_is_encrypted')}"
 
   cluster_state_bucket_region: "%{hiera('cluster_state_bucket_region')}"
   cluster_state_bucket_name: "%{hiera('cluster_state_bucket_name')}"

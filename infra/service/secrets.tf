@@ -22,7 +22,7 @@ data "template_file" "env_file" {
     superadmin_username = var.superadmin_username
     superadmin_password = var.superadmin_password
 
-    database_connection_string = var.database_connection_string
+    database_connection_string = data.terraform_remote_state.database.outputs.connection_string
     database_username = var.database_username
     database_password = var.database_password
     database_name = var.database_name

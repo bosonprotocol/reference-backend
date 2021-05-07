@@ -19,7 +19,6 @@ variable "image_storage_bucket_name" {}
 variable "superadmin_username" {}
 variable "superadmin_password" {}
 
-variable "database_connection_string" {}
 variable "database_username" {}
 variable "database_password" {}
 variable "database_name" {}
@@ -38,6 +37,11 @@ variable "cluster_state_bucket_name" {}
 variable "cluster_state_key" {}
 variable "cluster_state_bucket_region" {}
 variable "cluster_state_bucket_is_encrypted" {}
+
+variable "database_state_bucket_name" {}
+variable "database_state_key" {}
+variable "database_state_bucket_region" {}
+variable "database_state_bucket_is_encrypted" {}
 
 variable "image_repository_state_bucket_name" {}
 variable "image_repository_state_key" {}
