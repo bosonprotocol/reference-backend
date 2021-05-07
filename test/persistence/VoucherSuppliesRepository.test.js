@@ -34,7 +34,9 @@ describe("Voucher Supplies Repository", () => {
       const fileRef1 = Random.fileRef();
       const fileRef2 = Random.fileRef();
       const fileRefs = [fileRef1, fileRef2];
-      const metadata = Random.voucherSupplyMetadata();
+      const metadata = Random.voucherSupplyMetadata({
+        location: JSON.parse(Random.location()),
+      });
 
       const voucherSuppliesRepository = new VoucherSuppliesRepository();
       await voucherSuppliesRepository.createVoucherSupply(
@@ -260,8 +262,12 @@ describe("Voucher Supplies Repository", () => {
       const fileRef2 = Random.fileRef();
       const fileRefs = [fileRef1, fileRef2];
 
-      const metadata1 = Random.voucherSupplyMetadata();
-      const metadata2 = Random.voucherSupplyMetadata();
+      const metadata1 = Random.voucherSupplyMetadata({
+        location: JSON.parse(Random.location()),
+      });
+      const metadata2 = Random.voucherSupplyMetadata({
+        location: JSON.parse(Random.location()),
+      });
 
       await new VoucherSupply({
         ...metadata1,
@@ -362,7 +368,9 @@ describe("Voucher Supplies Repository", () => {
       const fileRef2 = Random.fileRef();
       const fileRefs = [fileRef1, fileRef2];
 
-      const metadata = Random.voucherSupplyMetadata();
+      const metadata = Random.voucherSupplyMetadata({
+        location: JSON.parse(Random.location()),
+      });
 
       const initialVoucherSupply = new VoucherSupply({
         ...metadata,
