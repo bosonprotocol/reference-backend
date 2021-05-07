@@ -14,6 +14,8 @@ image_repository_name: "bsn/reference-backend"
 storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}"
 storage_bucket_encryption: "AES256"
 
+secrets_bucket_name: "%{hiera('storage_bucket_name')}"
+
 admin_role_name: "cross-account-admin-role"
 
 rdm_management_account_id: "031036423983"

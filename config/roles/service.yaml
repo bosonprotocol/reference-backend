@@ -10,9 +10,9 @@ vars:
 
   version_number: "%{hiera('version_number')}"
 
-  service_name: "token-distribution"
-  container_http_port: "80"
-  host_http_port: "8001"
+  service_name: "reference-backend"
+  container_http_port: "3000"
+  host_http_port: "3000"
 
   domain_state_bucket_region: "%{hiera('domain_state_bucket_region')}"
   domain_state_bucket_name: "%{hiera('domain_state_bucket_name')}"
