@@ -461,7 +461,7 @@ namespace :ci do
 
       t.target = configuration.concourse_team
       t.team = configuration.concourse_team
-      t.pipeline = "reference-backend-next"
+      t.pipeline = "reference-backend-develop"
 
       t.config = 'pipelines/develop/pipeline.yaml'
 
