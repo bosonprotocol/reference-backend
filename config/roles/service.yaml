@@ -18,6 +18,9 @@ vars:
   gcloud_secret: "%{hiera('gcloud_secret')}"
   image_storage_bucket_name: "%{hiera('image_storage_bucket_name')}"
 
+  superadmin_username: "%{hiera('superadmin_username')}"
+  superadmin_password: "%{hiera('superadmin_password')}"
+
   database_connection_string: "%{hiera('database_connection_string')}"
   database_username: "%{hiera('database_username')}"
   database_password: "%{hiera('database_password')}"

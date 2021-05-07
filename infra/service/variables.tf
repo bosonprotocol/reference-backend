@@ -16,6 +16,9 @@ variable "token_secret" {}
 variable "gcloud_secret" {}
 variable "image_storage_bucket_name" {}
 
+variable "superadmin_username" {}
+variable "superadmin_password" {}
+
 variable "database_connection_string" {}
 variable "database_username" {}
 variable "database_password" {}

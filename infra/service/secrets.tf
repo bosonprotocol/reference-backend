@@ -19,6 +19,9 @@ data "template_file" "env_file" {
     gcloud_secret = var.gcloud_secret
     image_storage_bucket_name = var.image_storage_bucket_name
 
+    superadmin_username = var.superadmin_username
+    superadmin_password = var.superadmin_password
+
     database_connection_string = var.database_connection_string
     database_username = var.database_username
     database_password = var.database_password
