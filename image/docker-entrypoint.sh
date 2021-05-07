@@ -27,4 +27,6 @@ eval $(aws s3 cp \
     "$AWS_S3_ENV_FILE_OBJECT_PATH" - | sed 's/^/export /')
 
 # Run service
+cd /opt/reference-backend
+
 node ./dist/app.js
