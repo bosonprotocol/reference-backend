@@ -1,0 +1,46 @@
+---
+# General
+storage_bucket_allowed_account_ids:
+  - "%{hiera('bsn_development_potassium_account_id')}"
+
+database_version: "4.4"
+database_instance_size_name: "M10"
+database_allow_cidrs:
+  - "10.0.0.0/8"
+
+database_name: "api"
+database_username: "%{hiera('database_service_user_username')}"
+database_password: "%{hiera('database_service_user_password')}"
+
+database_type: "deployed"
+
+# State
+domain_state_bucket_name: "bsn-aws-application-account-bsn-development-potassium"
+domain_state_key: "common/deployment-state/default.tfstate"
+domain_state_bucket_region: "%{hiera('region')}"
+domain_state_bucket_is_encrypted: "true"
+
+network_state_bucket_name: "bsn-application-network-bsn-development-palladium"
+network_state_key: "network/deployment-state/default.tfstate"
+network_state_bucket_region: "%{hiera('region')}"
+network_state_bucket_is_encrypted: "true"
+
+cluster_state_bucket_name: "bsn-application-cluster-bsn-development-tennessine"
+cluster_state_key: "cluster/deployment-state/default.tfstate"
+cluster_state_bucket_region: "%{hiera('region')}"
+cluster_state_bucket_is_encrypted: "true"
+
+image_repository_state_bucket_name: "bsn-%{hiera('component')}-rdm-management-default"
+image_repository_state_key: "image-repository/deployment-state/default.tfstate"
+image_repository_state_bucket_region: "%{hiera('region')}"
+image_repository_state_bucket_is_encrypted: "true"
+
+database_state_bucket_name: "%{hiera('storage_bucket_name')}"
+database_state_key: "database/deployment-state/default.tfstate"
+database_state_bucket_region: "%{hiera('region')}"
+database_state_bucket_is_encrypted: "true"
+
+service_state_bucket_name: "%{hiera('storage_bucket_name')}"
+service_state_key: "service/deployment-state/default.tfstate"
+service_state_bucket_region: "%{hiera('region')}"
+service_state_bucket_is_encrypted: "true"

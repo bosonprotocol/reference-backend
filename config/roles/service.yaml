@@ -1,0 +1,57 @@
+---
+vars:
+  region: "%{hiera('region')}"
+  component: "%{hiera('component')}"
+  deployment_identifier: "%{hiera('deployment_identifier')}"
+
+  service_desired_count: 3
+
+  secrets_bucket_name: "%{hiera('secrets_bucket_name')}"
+
+  version_number: "%{hiera('version_number')}"
+
+  service_name: "reference-backend"
+  container_http_port: "3000"
+  host_http_port: "3000"
+
+  token_secret: "%{hiera('token_secret')}"
+  gcloud_secret: "%{hiera('gcloud_secret')}"
+  image_storage_bucket_name: "%{hiera('image_storage_bucket_name')}"
+
+  superadmin_username: "%{hiera('superadmin_username')}"
+  superadmin_password: "%{hiera('superadmin_password')}"
+
+  database_username: "%{hiera('database_username')}"
+  database_password: "%{hiera('database_password')}"
+  database_name: "%{hiera('database_name')}"
+
+  domain_state_bucket_region: "%{hiera('domain_state_bucket_region')}"
+  domain_state_bucket_name: "%{hiera('domain_state_bucket_name')}"
+  domain_state_bucket_is_encrypted: "%{hiera('domain_state_bucket_is_encrypted')}"
+  domain_state_key: "%{hiera('domain_state_key')}"
+
+  network_state_bucket_region: "%{hiera('network_state_bucket_region')}"
+  network_state_bucket_name: "%{hiera('network_state_bucket_name')}"
+  network_state_bucket_is_encrypted: "%{hiera('network_state_bucket_is_encrypted')}"
+  network_state_key: "%{hiera('network_state_key')}"
+
+  database_state_bucket_name: "%{hiera('database_state_bucket_name')}"
+  database_state_key: "%{hiera('database_state_key')}"
+  database_state_bucket_region: "%{hiera('database_state_bucket_region')}"
+  database_state_bucket_is_encrypted: "%{hiera('database_state_bucket_is_encrypted')}"
+
+  cluster_state_bucket_region: "%{hiera('cluster_state_bucket_region')}"
+  cluster_state_bucket_name: "%{hiera('cluster_state_bucket_name')}"
+  cluster_state_bucket_is_encrypted: "%{hiera('cluster_state_bucket_is_encrypted')}"
+  cluster_state_key: "%{hiera('cluster_state_key')}"
+
+  image_repository_state_bucket_region: "%{hiera('image_repository_state_bucket_region')}"
+  image_repository_state_bucket_name: "%{hiera('image_repository_state_bucket_name')}"
+  image_repository_state_bucket_is_encrypted: "%{hiera('image_repository_state_bucket_is_encrypted')}"
+  image_repository_state_key: "%{hiera('image_repository_state_key')}"
+
+backend_config:
+  region: "%{hiera('service_state_bucket_region')}"
+  bucket: "%{hiera('service_state_bucket_name')}"
+  encrypt: "%{hiera('service_state_bucket_is_encrypted')}"
+  key: "%{hiera('service_state_key')}"

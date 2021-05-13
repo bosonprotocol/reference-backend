@@ -6,4 +6,4 @@ gem 'rake_docker', '~> 2.13'
 gem 'rake_fly', '~> 2.7'
 gem 'git', '~> 1.8'
 gem 'confidante', '~> 0.27'
-
+gem 'shivers', '~> 0.5'

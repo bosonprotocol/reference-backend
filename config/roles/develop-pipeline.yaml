@@ -3,11 +3,24 @@ vars:
   source_repository_url: "%{hiera('source_repository_url')}"
   source_repository_branch: "%{hiera('source_repository_branch')}"
 
+  app_image_repository_url: "%{hiera('app_image_repository_url')}"
   node_builder_image_repository_url: "%{hiera('node_builder_image_repository_url')}"
+
+  storage_bucket_name: "%{hiera('ci_storage_bucket_name')}"
+  storage_bucket_region: "%{hiera('ci_storage_bucket_region')}"
+  storage_bucket_encryption: "%{hiera('ci_storage_bucket_encryption')}"
 
   ci_provisioning_role_arn: "%{hiera('ci_provisioning_role_arn')}"
   ci_deployment_type: "%{hiera('ci_deployment_type')}"
   ci_deployment_label: "%{hiera('ci_deployment_label')}"
+
+  development_plutonium_provisioning_role_arn: "%{hiera('development_plutonium_provisioning_role_arn')}"
+  development_plutonium_deployment_type: "%{hiera('development_plutonium_deployment_type')}"
+  development_plutonium_deployment_label: "%{hiera('development_plutonium_deployment_label')}"
+
+  production_oganesson_provisioning_role_arn: "%{hiera('production_oganesson_provisioning_role_arn')}"
+  production_oganesson_deployment_type: "%{hiera('production_oganesson_deployment_type')}"
+  production_oganesson_deployment_label: "%{hiera('production_oganesson_deployment_label')}"
 
   slack_success_channel: "#builds"
   slack_success_message: "<%{hiera('concourse_url')}/builds/$BUILD_ID|$BUILD_TEAM_NAME:$BUILD_PIPELINE_NAME:$BUILD_JOB_NAME [$BUILD_NAME]> _successful_! :clap:."

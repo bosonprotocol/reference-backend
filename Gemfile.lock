@@ -124,6 +124,8 @@ GEM
     shikashi (0.6.0)
       evalhook (>= 0.6.0)
       getsource (>= 0.1.0)
+    shivers (0.5.0)
+      semantic (~> 1.6)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     zeitwerk (2.4.2)
@@ -140,6 +142,7 @@ DEPENDENCIES
   rake_docker (~> 2.13)
   rake_fly (~> 2.7)
   rake_terraform (~> 1.13)
+  shivers (~> 0.5)
 
 BUNDLED WITH
    2.2.14
