@@ -1,7 +1,14 @@
+const coerceArray = (value) => value && value.split(",");
+
+const coerceNumber = (value) => value && Number(value);
+
 const coerceUndefined = (environmentVariableValue) =>
   environmentVariableValue !== "undefined"
     ? environmentVariableValue
     : undefined;
+
+const TEN_KILOBYTES_IN_KILOBYTES = 10;
+const FIVE_MEGABYTES_IN_KILOBYTES = 5 * 1024;
 
 class ConfigurationService {
   constructor(overrides = {}) {
@@ -52,10 +59,39 @@ class ConfigurationService {
     );
   }
 
-  get vouchersBucket() {
+  get imageUploadStorageBucketName() {
     return (
-      this.overrides.vouchersBucket ||
+      this.overrides.imageUploadStorageBucketName ||
       coerceUndefined(process.env.VOUCHERS_BUCKET)
+    );
+  }
+
+  get imageUploadSupportedMimeTypes() {
+    return (
+      this.overrides.imageUploadSupportedMimeTypes ||
+      coerceArray(
+        coerceUndefined(process.env.IMAGE_UPLOAD_SUPPORTED_MIME_TYPES)
+      ) || ["image/jpeg", "image/png"]
+    );
+  }
+
+  get imageUploadMinimumFileSizeInKB() {
+    return (
+      this.overrides.imageUploadMinimumFileSizeInKB ||
+      coerceNumber(
+        coerceUndefined(process.env.IMAGE_UPLOAD_MINIMUM_FILE_SIZE_IN_KB)
+      ) ||
+      TEN_KILOBYTES_IN_KILOBYTES
+    );
+  }
+
+  get imageUploadMaximumFileSizeInKB() {
+    return (
+      this.overrides.imageUploadMaximumFileSizeInKB ||
+      coerceNumber(
+        coerceUndefined(process.env.IMAGE_UPLOAD_MAXIMUM_FILE_SIZE_IN_KB)
+      ) ||
+      FIVE_MEGABYTES_IN_KILOBYTES
     );
   }
 

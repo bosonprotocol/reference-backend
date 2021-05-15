@@ -4,14 +4,20 @@ const { v4: uuidv4 } = require("uuid");
 const ApiError = require("../../api/ApiError");
 
 class FileStorageMiddleware {
-  constructor(fieldName, fileStore) {
+  constructor(
+    fieldName,
+    allowedMimeTypes,
+    minimumFileSizeInKB,
+    maximumFileSizeInKB,
+    fileStore
+  ) {
     const maximumAllowedFiles = 10;
     const storage = multer.diskStorage({});
     const uploader = multer({ storage });
 
-    this.allowedMimeTypes = ["image/jpeg", "image/png"]; // TODO move to config
-    this.minimumFileSizeInKB = 10; // TODO move to config
-    this.maximumFileSizeInKB = 5 * 1024; // TODO move to config
+    this.allowedMimeTypes = allowedMimeTypes;
+    this.minimumFileSizeInKB = minimumFileSizeInKB;
+    this.maximumFileSizeInKB = maximumFileSizeInKB;
 
     this.delegate = uploader.array(fieldName, maximumAllowedFiles);
     this.fileStore = fileStore;

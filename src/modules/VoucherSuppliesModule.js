@@ -23,7 +23,10 @@ class VoucherSuppliesModule {
       voucherImageStorageMiddleware ||
       new FileStorageMiddleware(
         "fileToUpload",
-        new FileStore(configurationService.vouchersBucket)
+        configurationService.imageUploadSupportedMimeTypes,
+        configurationService.imageUploadMinimumFileSizeInKB,
+        configurationService.imageUploadMaximumFileSizeInKB,
+        new FileStore(configurationService.imageUploadStorageBucketName)
       );
     this.voucherSupplyValidationMiddleware =
       voucherSupplyValidationMiddleware ||
@@ -46,9 +49,12 @@ class VoucherSuppliesModule {
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherImageStorageMiddleware.storeFiles(req, res, next)
       ),
-      //TODO Do we need all location fields to be required? Do we need to revert if specified location is not in a valid format
-      //Normally there should not be anything to worry since we muse ensure all correct data is sent from the client but just as further think about it
-      //(This is not a blockchain mandatory field, hence a successful tx could be executed and then we revert here)
+      // TODO Do we need all location fields to be required? Do we need to
+      // revert if specified location is not in a valid format.
+      // Normally there should not be anything to worry since we muse ensure all
+      // correct data is sent from the client but just as further think about it
+      // (This is not a blockchain mandatory field, hence a successful tx could
+      // be executed and then we revert here)
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSupplyValidationMiddleware.validateLocation(req, res, next)
       ),

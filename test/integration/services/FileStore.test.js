@@ -15,7 +15,7 @@ describe("FileStore", function () {
   context("store()", () => {
     it("uploads the file in google cloud storage using the specified location", async () => {
       const configurationService = new ConfigurationService();
-      const bucketName = configurationService.vouchersBucket;
+      const bucketName = configurationService.imageUploadStorageBucketName;
       const bucket = new Storage().bucket(bucketName);
 
       const folder = Random.uuid();

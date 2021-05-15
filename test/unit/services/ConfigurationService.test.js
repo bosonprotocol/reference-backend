@@ -160,27 +160,123 @@ describe("ConfigurationService", () => {
     });
   });
 
-  context("for vouchers bucket", () => {
+  context("for image storage bucket", () => {
     it("uses environment variable by default", () => {
       withEnv("VOUCHERS_BUCKET", "some-bucket", () => {
         const configurationService = new ConfigurationService();
-        expect(configurationService.vouchersBucket).to.eql("some-bucket");
+        expect(configurationService.imageUploadStorageBucketName).to.eql(
+          "some-bucket"
+        );
       });
     });
 
     it("uses the provided override when supplied", () => {
       withEnv("VOUCHERS_BUCKET", "some-bucket", () => {
         const configurationService = new ConfigurationService({
-          vouchersBucket: "some-other-bucket",
+          imageUploadStorageBucketName: "some-other-bucket",
         });
-        expect(configurationService.vouchersBucket).to.eql("some-other-bucket");
+        expect(configurationService.imageUploadStorageBucketName).to.eql(
+          "some-other-bucket"
+        );
       });
     });
 
     it("returns undefined when no environment variable or override", () => {
       const configurationService = new ConfigurationService();
 
-      expect(configurationService.vouchersBucket).to.be.undefined;
+      expect(configurationService.imageUploadStorageBucketName).to.be.undefined;
+    });
+  });
+
+  context("for image storage mime types", () => {
+    it("uses environment variable by default", () => {
+      withEnv(
+        "IMAGE_UPLOAD_SUPPORTED_MIME_TYPES",
+        "image/gif,image/png",
+        () => {
+          const configurationService = new ConfigurationService();
+          expect(configurationService.imageUploadSupportedMimeTypes).to.eql([
+            "image/gif",
+            "image/png",
+          ]);
+        }
+      );
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv(
+        "IMAGE_UPLOAD_SUPPORTED_MIME_TYPES",
+        "image/gif,image/png",
+        () => {
+          const configurationService = new ConfigurationService({
+            imageUploadSupportedMimeTypes: ["image/jpeg"],
+          });
+          expect(configurationService.imageUploadSupportedMimeTypes).to.eql([
+            "image/jpeg",
+          ]);
+        }
+      );
+    });
+
+    it("returns jpeg or png when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.imageUploadSupportedMimeTypes).to.eql([
+        "image/jpeg",
+        "image/png",
+      ]);
+    });
+  });
+
+  context("for image storage minimum file size", () => {
+    it("uses environment variable by default", () => {
+      withEnv("IMAGE_UPLOAD_MINIMUM_FILE_SIZE_IN_KB", "15", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.imageUploadMinimumFileSizeInKB).to.eql(15);
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("IMAGE_UPLOAD_MINIMUM_FILE_SIZE_IN_KB", "10", () => {
+        const configurationService = new ConfigurationService({
+          imageUploadMinimumFileSizeInKB: 20,
+        });
+        expect(configurationService.imageUploadMinimumFileSizeInKB).to.eql(20);
+      });
+    });
+
+    it("returns 10KBs when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.imageUploadMinimumFileSizeInKB).to.eql(10);
+    });
+  });
+
+  context("for image storage maximum file size", () => {
+    it("uses environment variable by default", () => {
+      withEnv("IMAGE_UPLOAD_MAXIMUM_FILE_SIZE_IN_KB", "10240", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.imageUploadMaximumFileSizeInKB).to.eql(
+          10240
+        );
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("IMAGE_UPLOAD_MAXIMUM_FILE_SIZE_IN_KB", "5120", () => {
+        const configurationService = new ConfigurationService({
+          imageUploadMaximumFileSizeInKB: 7168,
+        });
+        expect(configurationService.imageUploadMaximumFileSizeInKB).to.eql(
+          7168
+        );
+      });
+    });
+
+    it("returns 5120KBs when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.imageUploadMaximumFileSizeInKB).to.eql(5120);
     });
   });
 

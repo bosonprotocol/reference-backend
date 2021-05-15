@@ -18,6 +18,9 @@ describe("FileStorageMiddleware", () => {
   context("storeFiles", () => {
     it("adds a file reference on successful file store", async () => {
       const fieldName = "fileToUpload";
+      const allowedMimeTypes = ["image/png"];
+      const minimumFileSizeInKB = 10;
+      const maximumFileSizeInKB = 5 * 1024;
 
       const formData = new FormData();
       formData.append("title", "some-voucher");
@@ -40,6 +43,9 @@ describe("FileStorageMiddleware", () => {
       const fileStore = FakeFileStore.successful();
       const fileStorageMiddleware = new FileStorageMiddleware(
         fieldName,
+        allowedMimeTypes,
+        minimumFileSizeInKB,
+        maximumFileSizeInKB,
         fileStore
       );
       const storeFiles = Promises.promisify(
@@ -59,6 +65,9 @@ describe("FileStorageMiddleware", () => {
 
     it("does not add a file reference on failed file store", async () => {
       const fieldName = "fileToUpload";
+      const allowedMimeTypes = ["image/png"];
+      const minimumFileSizeInKB = 10;
+      const maximumFileSizeInKB = 5 * 1024;
 
       const formData = new FormData();
       formData.append("title", "some-voucher");
@@ -81,6 +90,9 @@ describe("FileStorageMiddleware", () => {
       const fileStore = FakeFileStore.failure();
       const fileStorageMiddleware = new FileStorageMiddleware(
         fieldName,
+        allowedMimeTypes,
+        minimumFileSizeInKB,
+        maximumFileSizeInKB,
         fileStore
       );
       const storeFiles = Promises.promisify(
