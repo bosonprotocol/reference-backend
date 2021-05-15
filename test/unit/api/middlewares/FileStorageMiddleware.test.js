@@ -19,6 +19,7 @@ describe("FileStorageMiddleware", () => {
     it("adds a file reference on successful file store", async () => {
       const fieldName = "fileToUpload";
       const allowedMimeTypes = ["image/png"];
+      const maximumFiles = 5;
       const minimumFileSizeInKB = 10;
       const maximumFileSizeInKB = 5 * 1024;
 
@@ -44,6 +45,7 @@ describe("FileStorageMiddleware", () => {
       const fileStorageMiddleware = new FileStorageMiddleware(
         fieldName,
         allowedMimeTypes,
+        maximumFiles,
         minimumFileSizeInKB,
         maximumFileSizeInKB,
         fileStore
@@ -66,6 +68,7 @@ describe("FileStorageMiddleware", () => {
     it("does not add a file reference on failed file store", async () => {
       const fieldName = "fileToUpload";
       const allowedMimeTypes = ["image/png"];
+      const maximumFiles = 5;
       const minimumFileSizeInKB = 10;
       const maximumFileSizeInKB = 5 * 1024;
 
@@ -91,6 +94,7 @@ describe("FileStorageMiddleware", () => {
       const fileStorageMiddleware = new FileStorageMiddleware(
         fieldName,
         allowedMimeTypes,
+        maximumFiles,
         minimumFileSizeInKB,
         maximumFileSizeInKB,
         fileStore

@@ -78,6 +78,7 @@ class TestServer {
     const voucherImageStorageMiddleware = new FileStorageMiddleware(
       "fileToUpload",
       configurationService.imageUploadSupportedMimeTypes,
+      configurationService.imageUploadMaximumFiles,
       configurationService.imageUploadMinimumFileSizeInKB,
       configurationService.imageUploadMaximumFileSizeInKB,
       fakeVoucherImageFileStore

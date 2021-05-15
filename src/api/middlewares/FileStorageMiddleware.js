@@ -7,11 +7,11 @@ class FileStorageMiddleware {
   constructor(
     fieldName,
     allowedMimeTypes,
+    maximumFiles,
     minimumFileSizeInKB,
     maximumFileSizeInKB,
     fileStore
   ) {
-    const maximumAllowedFiles = 10;
     const storage = multer.diskStorage({});
     const uploader = multer({ storage });
 
@@ -19,7 +19,7 @@ class FileStorageMiddleware {
     this.minimumFileSizeInKB = minimumFileSizeInKB;
     this.maximumFileSizeInKB = maximumFileSizeInKB;
 
-    this.delegate = uploader.array(fieldName, maximumAllowedFiles);
+    this.delegate = uploader.array(fieldName, maximumFiles);
     this.fileStore = fileStore;
   }
 

@@ -95,6 +95,14 @@ class ConfigurationService {
     );
   }
 
+  get imageUploadMaximumFiles() {
+    return (
+      this.overrides.imageUploadMaximumFiles ||
+      coerceNumber(coerceUndefined(process.env.IMAGE_UPLOAD_MAXIMUM_FILES)) ||
+      10
+    );
+  }
+
   get superadminUsername() {
     return (
       this.overrides.superadminUsername ||

@@ -24,6 +24,7 @@ class VoucherSuppliesModule {
       new FileStorageMiddleware(
         "fileToUpload",
         configurationService.imageUploadSupportedMimeTypes,
+        configurationService.imageUploadMaximumFiles,
         configurationService.imageUploadMinimumFileSizeInKB,
         configurationService.imageUploadMaximumFileSizeInKB,
         new FileStore(configurationService.imageUploadStorageBucketName)

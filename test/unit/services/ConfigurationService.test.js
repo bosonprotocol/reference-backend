@@ -160,7 +160,7 @@ describe("ConfigurationService", () => {
     });
   });
 
-  context("for image storage bucket", () => {
+  context("for image upload storage bucket name", () => {
     it("uses environment variable by default", () => {
       withEnv("VOUCHERS_BUCKET", "some-bucket", () => {
         const configurationService = new ConfigurationService();
@@ -188,7 +188,7 @@ describe("ConfigurationService", () => {
     });
   });
 
-  context("for image storage mime types", () => {
+  context("for image upload supported mime types", () => {
     it("uses environment variable by default", () => {
       withEnv(
         "IMAGE_UPLOAD_SUPPORTED_MIME_TYPES",
@@ -228,7 +228,7 @@ describe("ConfigurationService", () => {
     });
   });
 
-  context("for image storage minimum file size", () => {
+  context("for image upload minimum file size", () => {
     it("uses environment variable by default", () => {
       withEnv("IMAGE_UPLOAD_MINIMUM_FILE_SIZE_IN_KB", "15", () => {
         const configurationService = new ConfigurationService();
@@ -252,7 +252,7 @@ describe("ConfigurationService", () => {
     });
   });
 
-  context("for image storage maximum file size", () => {
+  context("for image upload maximum file size", () => {
     it("uses environment variable by default", () => {
       withEnv("IMAGE_UPLOAD_MAXIMUM_FILE_SIZE_IN_KB", "10240", () => {
         const configurationService = new ConfigurationService();
@@ -277,6 +277,30 @@ describe("ConfigurationService", () => {
       const configurationService = new ConfigurationService();
 
       expect(configurationService.imageUploadMaximumFileSizeInKB).to.eql(5120);
+    });
+  });
+
+  context("for image upload maximum files", () => {
+    it("uses environment variable by default", () => {
+      withEnv("IMAGE_UPLOAD_MAXIMUM_FILES", "15", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.imageUploadMaximumFiles).to.eql(15);
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("IMAGE_UPLOAD_MAXIMUM_FILES", "15", () => {
+        const configurationService = new ConfigurationService({
+          imageUploadMaximumFiles: 20,
+        });
+        expect(configurationService.imageUploadMaximumFiles).to.eql(20);
+      });
+    });
+
+    it("returns 10 when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.imageUploadMaximumFiles).to.eql(10);
     });
   });
 
