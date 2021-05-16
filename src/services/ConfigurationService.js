@@ -59,6 +59,14 @@ class ConfigurationService {
     );
   }
 
+  get imageUploadFileFieldName() {
+    return (
+      this.overrides.imageUploadFileFieldName ||
+      coerceUndefined(process.env.IMAGE_UPLOAD_FILE_FIELD_NAME) ||
+      "fileToUpload"
+    );
+  }
+
   get imageUploadStorageBucketName() {
     return (
       this.overrides.imageUploadStorageBucketName ||

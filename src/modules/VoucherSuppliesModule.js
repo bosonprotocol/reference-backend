@@ -1,10 +1,11 @@
 const FileStore = require("../services/FileStore");
 
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
-const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
+const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
+const FileValidator = require("../services/FileValidator");
 const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware");
 const VoucherSupplyValidationMiddleware = require("../api/middlewares/VoucherSupplyValidationMiddleware");
-const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
+const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
 
 class VoucherSuppliesModule {
   constructor({
@@ -22,11 +23,8 @@ class VoucherSuppliesModule {
     this.voucherImageStorageMiddleware =
       voucherImageStorageMiddleware ||
       new FileStorageMiddleware(
-        "fileToUpload",
-        configurationService.imageUploadSupportedMimeTypes,
-        configurationService.imageUploadMaximumFiles,
-        configurationService.imageUploadMinimumFileSizeInKB,
-        configurationService.imageUploadMaximumFileSizeInKB,
+        configurationService,
+        new FileValidator(configurationService),
         new FileStore(configurationService.imageUploadStorageBucketName)
       );
     this.voucherSupplyValidationMiddleware =

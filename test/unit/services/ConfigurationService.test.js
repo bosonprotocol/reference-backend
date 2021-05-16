@@ -160,6 +160,36 @@ describe("ConfigurationService", () => {
     });
   });
 
+  context("for image upload file field name", () => {
+    it("uses environment variable by default", () => {
+      withEnv("IMAGE_UPLOAD_FILE_FIELD_NAME", "someField", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.imageUploadFileFieldName).to.eql(
+          "someField"
+        );
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("IMAGE_UPLOAD_FILE_FIELD_NAME", "someField", () => {
+        const configurationService = new ConfigurationService({
+          imageUploadFileFieldName: "otherField",
+        });
+        expect(configurationService.imageUploadFileFieldName).to.eql(
+          "otherField"
+        );
+      });
+    });
+
+    it("returns fileToUpload when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.imageUploadFileFieldName).to.eql(
+        "fileToUpload"
+      );
+    });
+  });
+
   context("for image upload storage bucket name", () => {
     it("uses environment variable by default", () => {
       withEnv("VOUCHERS_BUCKET", "some-bucket", () => {

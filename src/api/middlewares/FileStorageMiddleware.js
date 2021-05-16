@@ -1,83 +1,44 @@
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 
-const ApiError = require("../../api/ApiError");
+const ApiError = require("../ApiError");
 
 class FileStorageMiddleware {
-  constructor(
-    fieldName,
-    allowedMimeTypes,
-    maximumFiles,
-    minimumFileSizeInKB,
-    maximumFileSizeInKB,
-    fileStore
-  ) {
+  constructor(configurationService, fileValidator, fileStore) {
     const storage = multer.diskStorage({});
     const uploader = multer({ storage });
 
-    this.allowedMimeTypes = allowedMimeTypes;
-    this.minimumFileSizeInKB = minimumFileSizeInKB;
-    this.maximumFileSizeInKB = maximumFileSizeInKB;
-
-    this.delegate = uploader.array(fieldName, maximumFiles);
+    this.delegate = uploader.array(
+      configurationService.imageUploadFileFieldName,
+      configurationService.imageUploadMaximumFiles
+    );
+    this.fileValidator = fileValidator;
     this.fileStore = fileStore;
   }
 
-  validFileTypes(files) {
-    for (let i = 0; i < files.length; i++) {
-      const mimetype = files[i].mimetype;
-      const fileSizeInKB = files[i].size / 1024;
-
-      // Check file type
-      if (!this.allowedMimeTypes.includes(mimetype)) {
-        return false;
-      }
-
-      // Check minimum file limit
-      if (fileSizeInKB < this.minimumFileSizeInKB) {
-        return false;
-      }
-
-      // Check maximum file limit
-      if (fileSizeInKB > this.maximumFileSizeInKB) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   async storeFiles(req, res, next) {
+    req.fileRefs = [];
+
     this.delegate(req, res, async () => {
       if (!req.files) next();
 
-      if (!this.validFileTypes(req.files)) {
+      if (req.files.some((file) => !this.fileValidator.isValid(file))) {
         return next(
           new ApiError(400, "Invalid file type for voucher set image.")
         );
       }
 
-      const fileRefs = [];
-
       try {
-        const folder = uuidv4();
+        req.fileRefs = await Promise.all(
+          req.files.map((file) =>
+            this.fileStore.store({ ...file, folder: uuidv4() })
+          )
+        );
 
-        for (let i = 0; i < req.files.length; i++) {
-          const file = req.files[i];
-
-          const fileRef = await this.fileStore.store({
-            ...file,
-            folder,
-          });
-
-          fileRefs.push(fileRef);
-        }
+        next();
       } catch (err) {
         next(err);
       }
-
-      req.fileRefs = fileRefs;
-
-      next();
     });
   }
 }

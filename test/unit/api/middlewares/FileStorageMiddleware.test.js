@@ -1,15 +1,19 @@
 const chai = require("chai");
-const { expect } = chai;
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
+
+const { expect } = chai;
+
 const fs = require("fs");
 const path = require("path");
 const MockExpressRequest = require("mock-express-request");
 const FormData = require("form-data");
 
 const FakeFileStore = require("../../../shared/fakes/services/FakeFileStore");
+const FileValidator = require("../../../../src/services/FileValidator");
 const FileStorageMiddleware = require("../../../../src/api/middlewares/FileStorageMiddleware");
 const Promises = require("../../../shared/helpers/Promises");
+const ConfigurationService = require("../../../../src/services/ConfigurationService");
 
 const uuidV4Regex =
   "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b";
@@ -17,11 +21,11 @@ const uuidV4Regex =
 describe("FileStorageMiddleware", () => {
   context("storeFiles", () => {
     it("adds a file reference on successful file store", async () => {
-      const fieldName = "fileToUpload";
-      const allowedMimeTypes = ["image/png"];
-      const maximumFiles = 5;
-      const minimumFileSizeInKB = 10;
-      const maximumFileSizeInKB = 5 * 1024;
+      const fieldName = "image";
+
+      const configurationService = new ConfigurationService({
+        imageUploadFileFieldName: fieldName,
+      });
 
       const formData = new FormData();
       formData.append("title", "some-voucher");
@@ -42,12 +46,10 @@ describe("FileStorageMiddleware", () => {
       const response = {};
 
       const fileStore = FakeFileStore.successful();
+      const fileValidator = new FileValidator(configurationService);
       const fileStorageMiddleware = new FileStorageMiddleware(
-        fieldName,
-        allowedMimeTypes,
-        maximumFiles,
-        minimumFileSizeInKB,
-        maximumFileSizeInKB,
+        configurationService,
+        fileValidator,
         fileStore
       );
       const storeFiles = Promises.promisify(
@@ -66,11 +68,11 @@ describe("FileStorageMiddleware", () => {
     });
 
     it("does not add a file reference on failed file store", async () => {
-      const fieldName = "fileToUpload";
-      const allowedMimeTypes = ["image/png"];
-      const maximumFiles = 5;
-      const minimumFileSizeInKB = 10;
-      const maximumFileSizeInKB = 5 * 1024;
+      const fieldName = "image";
+
+      const configurationService = new ConfigurationService({
+        imageUploadFileFieldName: fieldName,
+      });
 
       const formData = new FormData();
       formData.append("title", "some-voucher");
@@ -91,12 +93,10 @@ describe("FileStorageMiddleware", () => {
       const response = {};
 
       const fileStore = FakeFileStore.failure();
+      const fileValidator = new FileValidator(configurationService);
       const fileStorageMiddleware = new FileStorageMiddleware(
-        fieldName,
-        allowedMimeTypes,
-        maximumFiles,
-        minimumFileSizeInKB,
-        maximumFileSizeInKB,
+        configurationService,
+        fileValidator,
         fileStore
       );
       const storeFiles = Promises.promisify(
