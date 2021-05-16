@@ -23,8 +23,13 @@ class VoucherSuppliesModule {
     this.voucherImageStorageMiddleware =
       voucherImageStorageMiddleware ||
       new FileStorageMiddleware(
-        configurationService,
-        new FileValidator(configurationService),
+        configurationService.imageUploadFileFieldName,
+        configurationService.imageUploadMaximumFiles,
+        new FileValidator(
+          configurationService.imageUploadSupportedMimeTypes,
+          configurationService.imageUploadMinimumFileSizeInKB,
+          configurationService.imageUploadMaximumFileSizeInKB
+        ),
         new FileStore(configurationService.imageUploadStorageBucketName)
       );
     this.voucherSupplyValidationMiddleware =
@@ -61,7 +66,7 @@ class VoucherSuppliesModule {
         this.voucherSupplyValidationMiddleware.validateDates(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherSupplyValidationMiddleware.validateVoucherSupplyByCorrrelationIdDoesNotExist(
+        this.voucherSupplyValidationMiddleware.validateVoucherSupplyByCorrelationIdDoesNotExist(
           req,
           res,
           next

@@ -6,7 +6,7 @@ class VoucherValidationMiddleware {
     this.vouchersRepository = vouchersRepository;
   }
 
-  async validateVoucherByCorrrelationIdDoesNotExist(req, res, next) {
+  async validateVoucherByCorrelationIdDoesNotExist(req, res, next) {
     let voucher;
     const metadata = {
       _holder: res.locals.address,

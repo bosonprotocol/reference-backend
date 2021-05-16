@@ -56,10 +56,15 @@ class TestServer {
       this.configurationOverrides
     );
     const authenticationService = new AuthenticationService(
-      configurationService
+      configurationService.tokenSecret
     );
 
-    const mongooseClient = new MongooseClient(configurationService);
+    const mongooseClient = new MongooseClient(
+      configurationService.databaseConnectionString,
+      configurationService.databaseName,
+      configurationService.databaseUsername,
+      configurationService.databasePassword
+    );
 
     const usersRepository = new UsersRepository();
     const vouchersRepository = new VouchersRepository();
@@ -72,13 +77,18 @@ class TestServer {
       usersRepository
     );
     const userAuthenticationMiddleware = new UserAuthenticationMiddleware(
-      configurationService,
+      configurationService.gcloudSecret,
       authenticationService
     );
-    const fileValidator = new FileValidator(configurationService);
     const fakeVoucherImageFileStore = new FakeFileStore();
+    const fileValidator = new FileValidator(
+      configurationService.imageUploadSupportedMimeTypes,
+      configurationService.imageUploadMinimumFileSizeInKB,
+      configurationService.imageUploadMaximumFileSizeInKB
+    );
     const voucherImageStorageMiddleware = new FileStorageMiddleware(
-      configurationService,
+      configurationService.imageUploadFileFieldName,
+      configurationService.imageUploadMaximumFiles,
       fileValidator,
       fakeVoucherImageFileStore
     );

@@ -1,10 +1,8 @@
 class FileValidator {
-  constructor(configurationService) {
-    this.allowedMimeTypes = configurationService.imageUploadSupportedMimeTypes;
-    this.minimumFileSizeInKB =
-      configurationService.imageUploadMinimumFileSizeInKB;
-    this.maximumFileSizeInKB =
-      configurationService.imageUploadMaximumFileSizeInKB;
+  constructor(allowedMimeTypes, minimumFileSizeInKB, maximumFileSizeInKB) {
+    this.allowedMimeTypes = allowedMimeTypes;
+    this.minimumFileSizeInKB = minimumFileSizeInKB;
+    this.maximumFileSizeInKB = maximumFileSizeInKB;
   }
 
   isValid(file) {

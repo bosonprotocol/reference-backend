@@ -33,7 +33,7 @@ class VoucherSupplyValidationMiddleware {
     next();
   }
 
-  async validateVoucherSupplyByCorrrelationIdDoesNotExist(req, res, next) {
+  async validateVoucherSupplyByCorrelationIdDoesNotExist(req, res, next) {
     let voucherSupply;
     const metadata = {
       voucherOwner: res.locals.address,
