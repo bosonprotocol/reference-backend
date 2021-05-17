@@ -44,3 +44,8 @@ service_state_bucket_name: "%{hiera('storage_bucket_name')}"
 service_state_key: "service/deployment-state/default.tfstate"
 service_state_bucket_region: "%{hiera('region')}"
 service_state_bucket_is_encrypted: "true"
+
+functions_state_bucket_name: "%{hiera('storage_bucket_name')}"
+functions_state_key: "functions/deployment-state/default.tfstate"
+functions_state_bucket_region: "%{hiera('region')}"
+functions_state_bucket_is_encrypted: "true"

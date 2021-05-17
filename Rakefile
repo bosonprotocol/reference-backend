@@ -339,6 +339,22 @@ namespace :tests do
   end
 end
 
+namespace :lambda do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'reference backend keepers lambda',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'functions'))
+
+    t.source_directory = 'infra/functions'
+    t.work_directory = 'build'
+
+    t.backend_config = configuration.backend_config
+    t.vars = configuration.vars
+  end
+end
+
 namespace :image_repository do
   RakeTerraform.define_command_tasks(
     configuration_name: 'reference backend image repository',
