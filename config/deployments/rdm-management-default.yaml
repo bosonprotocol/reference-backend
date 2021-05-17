@@ -37,3 +37,8 @@ image_repository_state_bucket_name: "%{hiera('storage_bucket_name')}"
 image_repository_state_key: "image-repository/deployment-state/default.tfstate"
 image_repository_state_bucket_region: "%{hiera('region')}"
 image_repository_state_bucket_is_encrypted: "true"
+
+image_storage_bucket_state_bucket_name: "%{hiera('storage_bucket_name')}"
+image_storage_bucket_state_key: "image-storage-bucket/deployment-state/default.tfstate"
+image_storage_bucket_state_bucket_region: "%{hiera('region')}"
+image_storage_bucket_state_bucket_is_encrypted: "true"

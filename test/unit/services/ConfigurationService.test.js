@@ -191,17 +191,28 @@ describe("ConfigurationService", () => {
   });
 
   context("for image upload storage bucket name", () => {
-    it("uses environment variable by default", () => {
-      withEnv("VOUCHERS_BUCKET", "some-bucket", () => {
+    it("uses new environment variable by default", () => {
+      withEnv("IMAGE_UPLOAD_STORAGE_BUCKET_NAME", "some-new-bucket", () => {
+        withEnv('VOUCHERS_BUCKET', 'some-old-bucket', () => {
+          const configurationService = new ConfigurationService();
+          expect(configurationService.imageUploadStorageBucketName).to.eql(
+            "some-new-bucket"
+          );
+        })
+      });
+    });
+
+    it("uses old environment variable if new not set", () => {
+      withEnv("VOUCHERS_BUCKET", "some-old-bucket", () => {
         const configurationService = new ConfigurationService();
         expect(configurationService.imageUploadStorageBucketName).to.eql(
-          "some-bucket"
+          "some-old-bucket"
         );
       });
     });
 
     it("uses the provided override when supplied", () => {
-      withEnv("VOUCHERS_BUCKET", "some-bucket", () => {
+      withEnv("IMAGE_UPLOAD_STORAGE_BUCKET_NAME", "some-bucket", () => {
         const configurationService = new ConfigurationService({
           imageUploadStorageBucketName: "some-other-bucket",
         });

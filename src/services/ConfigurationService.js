@@ -70,6 +70,7 @@ class ConfigurationService {
   get imageUploadStorageBucketName() {
     return (
       this.overrides.imageUploadStorageBucketName ||
+      coerceUndefined(process.env.IMAGE_UPLOAD_STORAGE_BUCKET_NAME) ||
       coerceUndefined(process.env.VOUCHERS_BUCKET)
     );
   }

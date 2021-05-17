@@ -9,6 +9,6 @@ environment:
   TOKEN_SECRET: "%{hiera('token_secret')}"
   GCLOUD_SECRET: "%{hiera('gcloud_secret')}"
 
-  VOUCHERS_BUCKET: "%{hiera('image_storage_bucket_name')}"
+  VOUCHERS_BUCKET: "%{hiera('gcp_image_storage_bucket_name')}"
 
   GOOGLE_APPLICATION_CREDENTIALS: "%{hiera('google_application_credentials')}"
