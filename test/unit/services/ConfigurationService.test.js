@@ -190,6 +190,30 @@ describe("ConfigurationService", () => {
     });
   });
 
+  context("for image upload storage engine", () => {
+    it("uses environment variable by default", () => {
+      withEnv("IMAGE_UPLOAD_STORAGE_ENGINE", "AWS", () => {
+        const configurationService = new ConfigurationService();
+        expect(configurationService.imageUploadStorageEngine).to.eql("AWS");
+      });
+    });
+
+    it("uses the provided override when supplied", () => {
+      withEnv("IMAGE_UPLOAD_STORAGE_ENGINE", "AWS", () => {
+        const configurationService = new ConfigurationService({
+          imageUploadStorageEngine: "GCP",
+        });
+        expect(configurationService.imageUploadStorageEngine).to.eql("GCP");
+      });
+    });
+
+    it("returns GCP when no environment variable or override", () => {
+      const configurationService = new ConfigurationService();
+
+      expect(configurationService.imageUploadStorageEngine).to.eql("GCP");
+    });
+  });
+
   context("for image upload storage bucket name", () => {
     it("uses new environment variable by default", () => {
       withEnv("IMAGE_UPLOAD_STORAGE_BUCKET_NAME", "some-new-bucket", () => {

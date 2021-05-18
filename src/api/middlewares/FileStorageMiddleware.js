@@ -11,12 +11,11 @@ class FileStorageMiddleware {
 
   async storeFiles(req, res, next) {
     this.delegate(req, res, () => {
-      console.log("==========================");
-
       req.files = req.files || [];
 
       if (req.files.some((file) => !this.validator.isValid(file))) {
         return this.storage._removeFiles(req, req.files, () => {
+          req.files = [];
           return next(new ApiError(400, "Invalid file."));
         });
       }

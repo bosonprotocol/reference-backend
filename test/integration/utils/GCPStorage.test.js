@@ -25,10 +25,10 @@ describe("GCPStorage", function () {
 
       const file = {
         fieldname: "whatever",
-        originalname: "valid-image.png",
+        originalname: "valid-image-1.png",
         encoding: "7bit",
         mimetype: "image/png",
-        stream: fs.createReadStream("test/fixtures/valid-image.png"),
+        stream: fs.createReadStream("test/fixtures/valid-image-1.png"),
       };
       const request = new MockExpressRequest();
       const handleFile = Promises.promisify(storage._handleFile, storage);
@@ -62,10 +62,10 @@ describe("GCPStorage", function () {
     });
 
     it("uploads the file to Google Cloud Storage", async () => {
-      const source = await Streams.readBinary(
-        fs.createReadStream("test/fixtures/valid-image.png")
+      const source = await Streams.readBinaryPromise(
+        fs.createReadStream("test/fixtures/valid-image-1.png")
       );
-      const object = await Streams.readBinary(
+      const object = await Streams.readBinaryPromise(
         gcpStorage.bucket(bucketName).file(info.key).createReadStream()
       );
 
@@ -102,7 +102,7 @@ describe("GCPStorage", function () {
       await gcpStorage
         .bucket(bucketName)
         .file(key)
-        .save(fs.readFileSync("test/fixtures/valid-image.png"), {
+        .save(fs.readFileSync("test/fixtures/valid-image-1.png"), {
           predefinedAcl: "publicread",
           metadata: {
             contentType: "image/png",
@@ -139,7 +139,7 @@ describe("GCPStorage", function () {
       await gcpStorage
         .bucket(bucketName)
         .file(key1)
-        .save(fs.readFileSync("test/fixtures/valid-image.png"), {
+        .save(fs.readFileSync("test/fixtures/valid-image-1.png"), {
           predefinedAcl: "publicread",
           metadata: {
             contentType: "image/png",

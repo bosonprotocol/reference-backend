@@ -1,3 +1,4 @@
+const Streams = require("../../helpers/Streams");
 const { v4: uuidv4 } = require("uuid");
 
 class FakeStorage {
@@ -11,33 +12,59 @@ class FakeStorage {
 
   constructor(errorMessage = null) {
     this.errorMessage = errorMessage;
-    this.files = [];
+    this.handleFileCalls = [];
+    this.removeFileCalls = [];
+    this.removeFilesCalls = [];
   }
 
   _handleFile(req, file, cb) {
-    if (this.errorMessage) {
-      cb(new Error(this.errorMessage));
-    }
+    Streams.readBinary(file.stream, (err, data) => {
+      if (this.errorMessage) {
+        cb(new Error(this.errorMessage));
+      }
 
-    this.files.push({
-      file,
-    });
+      const info = {
+        size: data.length,
+        bucket: uuidv4(),
+        key: uuidv4(),
+        location: `https://example.com/${file.originalname}`,
+        contentType: file.mimetype,
+      };
 
-    cb(null, {
-      size: 51200,
-      bucket: uuidv4(),
-      key: uuidv4(),
-      location: `https://example.com/${file.originalname}`,
-      contentType: "image/png",
+      this.handleFileCalls.push({
+        file: {
+          ...file,
+          ...info,
+          data,
+        },
+      });
+
+      cb(null, info);
     });
   }
 
   _removeFile(req, file, cb) {
-    cb();
+    if (this.errorMessage) {
+      cb(new Error(this.errorMessage));
+    }
+
+    this.removeFileCalls.push({
+      file,
+    });
+
+    cb(null);
   }
 
   _removeFiles(req, files, cb) {
-    cb();
+    if (this.errorMessage) {
+      cb(new Error(this.errorMessage));
+    }
+
+    this.removeFilesCalls.push({
+      files,
+    });
+
+    cb(null);
   }
 }
 

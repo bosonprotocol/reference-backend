@@ -26,10 +26,10 @@ describe("AWSS3Storage", function () {
 
       const file = {
         fieldname: "whatever",
-        originalname: "valid-image.png",
+        originalname: "valid-image-1.png",
         encoding: "7bit",
         mimetype: "image/png",
-        stream: fs.createReadStream("test/fixtures/valid-image.png"),
+        stream: fs.createReadStream("test/fixtures/valid-image-1.png"),
       };
       const request = new MockExpressRequest();
       const handleFile = Promises.promisify(storage._handleFile, storage);
@@ -63,10 +63,10 @@ describe("AWSS3Storage", function () {
     });
 
     it("uploads the file to S3", async () => {
-      const source = await Streams.readBinary(
-        fs.createReadStream("test/fixtures/valid-image.png")
+      const source = await Streams.readBinaryPromise(
+        fs.createReadStream("test/fixtures/valid-image-1.png")
       );
-      const object = await Streams.readBinary(
+      const object = await Streams.readBinaryPromise(
         s3
           .getObject({
             Bucket: bucketName,
@@ -130,7 +130,7 @@ describe("AWSS3Storage", function () {
         .upload({
           Bucket: bucketName,
           Key: key,
-          Body: fs.createReadStream("test/fixtures/valid-image.png"),
+          Body: fs.createReadStream("test/fixtures/valid-image-1.png"),
           ServerSideEncryption: "AES256",
         })
         .promise();
@@ -172,7 +172,7 @@ describe("AWSS3Storage", function () {
         .upload({
           Bucket: bucketName,
           Key: key1,
-          Body: fs.createReadStream("test/fixtures/valid-image.png"),
+          Body: fs.createReadStream("test/fixtures/valid-image-1.png"),
           ServerSideEncryption: "AES256",
         })
         .promise();

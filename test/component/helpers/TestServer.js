@@ -23,7 +23,7 @@ const AdministrationModule = require("../../../src/modules/AdministrationModule"
 const HealthModule = require("../../../src/modules/HealthModule");
 
 const Ports = require("../../shared/helpers/Ports");
-const FakeFileStore = require("../../shared/fakes/utils/FakeStorage");
+const FakeStorage = require("../../shared/fakes/utils/FakeStorage");
 const FileValidator = require("../../../src/services/FileValidator");
 const FileStorageMiddleware = require("../../../src/api/middlewares/FileStorageMiddleware");
 
@@ -80,17 +80,17 @@ class TestServer {
       configurationService.gcloudSecret,
       authenticationService
     );
-    const fakeVoucherImageFileStore = new FakeFileStore();
+    const fakeStorage = new FakeStorage();
     const fileValidator = new FileValidator(
       configurationService.imageUploadSupportedMimeTypes,
       configurationService.imageUploadMinimumFileSizeInKB,
       configurationService.imageUploadMaximumFileSizeInKB
     );
-    const voucherImageStorageMiddleware = new FileStorageMiddleware(
+    const imageUploadStorageMiddleware = new FileStorageMiddleware(
       configurationService.imageUploadFileFieldName,
       configurationService.imageUploadMaximumFiles,
       fileValidator,
-      fakeVoucherImageFileStore
+      fakeStorage
     );
 
     const dependencies = {
@@ -105,7 +105,7 @@ class TestServer {
 
       administratorAuthenticationMiddleware,
       userAuthenticationMiddleware,
-      voucherImageStorageMiddleware,
+      imageUploadStorageMiddleware,
     };
 
     const healthModule = new HealthModule(dependencies);

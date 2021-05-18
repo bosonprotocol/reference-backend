@@ -1,6 +1,6 @@
-const Promises = require("../../shared/helpers/Promises");
+const Promises = require("./Promises");
 
-const readBinary = Promises.promisify((stream, cb) => {
+const readBinary = (stream, cb) => {
   let data = "";
 
   stream.setEncoding("binary");
@@ -11,6 +11,8 @@ const readBinary = Promises.promisify((stream, cb) => {
   stream.on("end", () => {
     return cb(null, data);
   });
-});
+};
 
-module.exports = { readBinary };
+const readBinaryPromise = Promises.promisify(readBinary);
+
+module.exports = { readBinary, readBinaryPromise };

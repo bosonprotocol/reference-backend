@@ -14,6 +14,8 @@ database_password: "%{hiera('database_service_user_password')}"
 
 database_type: "deployed"
 
+image_upload_storage_engine: "AWS"
+
 # State
 domain_state_bucket_name: "bsn-aws-application-account-bsn-development-potassium"
 domain_state_key: "common/deployment-state/default.tfstate"

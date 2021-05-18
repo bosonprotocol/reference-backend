@@ -22,6 +22,8 @@ database_password: "%{hiera('database_service_user_password')}"
 
 database_type: "deployed"
 
+image_upload_storage_engine: "AWS"
+
 # State
 network_state_bucket_name: "rdm-tooling-network-rdm-management-default"
 network_state_key: "network/deployment-state/default.tfstate"

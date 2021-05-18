@@ -1,4 +1,5 @@
-const FileStore = require("../utils/GCPStorage");
+const GCPStorage = require("../utils/GCPStorage");
+const AWSS3Storage = require("../utils/AWSS3Storage");
 
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
@@ -7,21 +8,29 @@ const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware"
 const VoucherSupplyValidationMiddleware = require("../api/middlewares/VoucherSupplyValidationMiddleware");
 const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
 
+const storageEngines = {
+  GCP: GCPStorage,
+  AWS: AWSS3Storage,
+};
+
 class VoucherSuppliesModule {
   constructor({
     configurationService,
     userAuthenticationMiddleware,
-    voucherImageStorageMiddleware,
+    imageUploadStorageMiddleware,
     voucherSupplyValidationMiddleware,
     eventValidationMiddleware,
     voucherSuppliesRepository,
     voucherSuppliesController,
   }) {
+    const imageUploadStorageEngine =
+      configurationService.imageUploadStorageEngine;
+
     this.userAuthenticationMiddleware = userAuthenticationMiddleware;
     this.eventValidationMiddleware =
       eventValidationMiddleware || new EventValidationMiddleware();
-    this.voucherImageStorageMiddleware =
-      voucherImageStorageMiddleware ||
+    this.imageUploadStorageMiddleware =
+      imageUploadStorageMiddleware ||
       new FileStorageMiddleware(
         configurationService.imageUploadFileFieldName,
         configurationService.imageUploadMaximumFiles,
@@ -30,7 +39,9 @@ class VoucherSuppliesModule {
           configurationService.imageUploadMinimumFileSizeInKB,
           configurationService.imageUploadMaximumFileSizeInKB
         ),
-        new FileStore(configurationService.imageUploadStorageBucketName)
+        new storageEngines[imageUploadStorageEngine](
+          configurationService.imageUploadStorageBucketName
+        )
       );
     this.voucherSupplyValidationMiddleware =
       voucherSupplyValidationMiddleware ||
@@ -51,7 +62,7 @@ class VoucherSuppliesModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
+        this.imageUploadStorageMiddleware.storeFiles(req, res, next)
       ),
       // TODO Do we need all location fields to be required? Do we need to
       // revert if specified location is not in a valid format.
@@ -215,7 +226,7 @@ class VoucherSuppliesModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
+        this.imageUploadStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSupplyValidationMiddleware.validateLocation(req, res, next)
