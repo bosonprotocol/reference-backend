@@ -9,13 +9,11 @@ const path = require("path");
 const MockExpressRequest = require("mock-express-request");
 const FormData = require("form-data");
 
-const FakeFileStore = require("../../../shared/fakes/services/FakeFileStore");
+const FakeStorage = require("../../../shared/fakes/utils/FakeStorage");
 const FileValidator = require("../../../../src/services/FileValidator");
 const FileStorageMiddleware = require("../../../../src/api/middlewares/FileStorageMiddleware");
 const Promises = require("../../../shared/helpers/Promises");
-
-const uuidV4Regex =
-  "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b";
+const RegExps = require("../../../shared/helpers/RegExps");
 
 describe("FileStorageMiddleware", () => {
   context("storeFiles", () => {
@@ -44,8 +42,8 @@ describe("FileStorageMiddleware", () => {
 
       const response = {};
 
-      const fileStore = FakeFileStore.successful();
-      const fileValidator = new FileValidator(
+      const storage = FakeStorage.successful();
+      const validator = new FileValidator(
         allowedMimeTypes,
         minimumFileSizeInKB,
         maximumFileSizeInKB
@@ -53,22 +51,21 @@ describe("FileStorageMiddleware", () => {
       const fileStorageMiddleware = new FileStorageMiddleware(
         fieldName,
         maximumFiles,
-        fileValidator,
-        fileStore
+        validator,
+        storage
       );
       const storeFiles = Promises.promisify(
         fileStorageMiddleware.storeFiles,
         fileStorageMiddleware
       );
 
-      await storeFiles(request, response);
+      console.log(await storeFiles(request, response));
       const imagePathRegEx = new RegExp(
-        `https://example.com/${uuidV4Regex}/valid-image\\.png`
+        `https://example.com/${RegExps.uuidV4Pattern}/valid-image\\.png`
       );
 
       expect(request.files.length).to.eql(1);
-      expect(request.fileRefs.length).to.eql(1);
-      expect(request.fileRefs[0].url).to.match(imagePathRegEx);
+      expect(request.files[0].location).to.match(imagePathRegEx);
     });
 
     it("does not add a file reference on failed file store", async () => {
@@ -96,8 +93,8 @@ describe("FileStorageMiddleware", () => {
 
       const response = {};
 
-      const fileStore = FakeFileStore.failure();
-      const fileValidator = new FileValidator(
+      const storage = FakeStorage.failure();
+      const validator = new FileValidator(
         allowedMimeTypes,
         minimumFileSizeInKB,
         maximumFileSizeInKB
@@ -105,8 +102,8 @@ describe("FileStorageMiddleware", () => {
       const fileStorageMiddleware = new FileStorageMiddleware(
         fieldName,
         maximumFiles,
-        fileValidator,
-        fileStore
+        validator,
+        storage
       );
 
       const storeFiles = Promises.promisify(
@@ -117,7 +114,6 @@ describe("FileStorageMiddleware", () => {
       await expect(storeFiles(request, response)).to.eventually.be.rejected;
 
       expect(request.files.length).to.eql(1);
-      expect(request.fileRefs.length).to.eql(0);
     });
   });
 });

@@ -193,12 +193,12 @@ describe("ConfigurationService", () => {
   context("for image upload storage bucket name", () => {
     it("uses new environment variable by default", () => {
       withEnv("IMAGE_UPLOAD_STORAGE_BUCKET_NAME", "some-new-bucket", () => {
-        withEnv('VOUCHERS_BUCKET', 'some-old-bucket', () => {
+        withEnv("VOUCHERS_BUCKET", "some-old-bucket", () => {
           const configurationService = new ConfigurationService();
           expect(configurationService.imageUploadStorageBucketName).to.eql(
             "some-new-bucket"
           );
-        })
+        });
       });
     });
 

@@ -1,4 +1,4 @@
-const FileStore = require("../services/FileStore");
+const FileStore = require("../utils/GCPStorage");
 
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");

@@ -170,7 +170,10 @@ class VoucherSuppliesController {
       ...req.body,
       location: res.locals.location,
     };
-    const fileRefs = req.fileRefs;
+    const fileRefs = req.files.map((file) => ({
+      url: file.location,
+      type: "image",
+    }));
     const voucherOwner = res.locals.address;
     let voucherSupply;
 
@@ -196,7 +199,10 @@ class VoucherSuppliesController {
       ...req.body,
       location: res.locals.location,
     };
-    const fileRefs = req.fileRefs;
+    const fileRefs = req.files.map((file) => ({
+      url: file.location,
+      type: "image",
+    }));
     const voucherOwner = res.locals.address;
     const voucher = res.locals.voucherSupply;
 

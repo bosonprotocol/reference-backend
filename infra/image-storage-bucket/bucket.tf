@@ -4,6 +4,7 @@ module "storage_bucket" {
   source  = "infrablocks/encrypted-bucket/aws"
   version = "1.6.0"
 
+  acl = "public-read"
   bucket_name = var.image_storage_bucket_name
 
   tags = {

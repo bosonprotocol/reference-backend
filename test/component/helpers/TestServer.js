@@ -23,7 +23,7 @@ const AdministrationModule = require("../../../src/modules/AdministrationModule"
 const HealthModule = require("../../../src/modules/HealthModule");
 
 const Ports = require("../../shared/helpers/Ports");
-const FakeFileStore = require("../../shared/fakes/services/FakeFileStore");
+const FakeFileStore = require("../../shared/fakes/utils/FakeStorage");
 const FileValidator = require("../../../src/services/FileValidator");
 const FileStorageMiddleware = require("../../../src/api/middlewares/FileStorageMiddleware");
 
