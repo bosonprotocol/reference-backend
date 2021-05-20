@@ -14,6 +14,8 @@ database_password: "%{hiera('database_service_user_password')}"
 
 database_type: "deployed"
 
+image_upload_storage_engine: "AWS"
+
 # State
 domain_state_bucket_name: "bsn-aws-application-account-bsn-production-lutetium"
 domain_state_key: "common/deployment-state/default.tfstate"
@@ -34,6 +36,11 @@ image_repository_state_bucket_name: "bsn-%{hiera('component')}-rdm-management-de
 image_repository_state_key: "image-repository/deployment-state/default.tfstate"
 image_repository_state_bucket_region: "%{hiera('region')}"
 image_repository_state_bucket_is_encrypted: "true"
+
+image_storage_bucket_state_bucket_name: "%{hiera('storage_bucket_name')}"
+image_storage_bucket_state_key: "image-storage-bucket/deployment-state/default.tfstate"
+image_storage_bucket_state_bucket_region: "%{hiera('region')}"
+image_storage_bucket_state_bucket_is_encrypted: "true"
 
 database_state_bucket_name: "%{hiera('storage_bucket_name')}"
 database_state_key: "database/deployment-state/default.tfstate"

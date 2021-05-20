@@ -2,8 +2,8 @@
 const ApiError = require("./../ApiError");
 
 class UserAuthenticationMiddleware {
-  constructor(configurationService, authenticationService) {
-    this.configurationService = configurationService;
+  constructor(gcloudSecret, authenticationService) {
+    this.gcloudSecret = gcloudSecret;
     this.authenticationService = authenticationService;
   }
 
@@ -35,7 +35,7 @@ class UserAuthenticationMiddleware {
 
     try {
       const payload = this.authenticationService.verifyToken(token);
-      if (payload.token !== this.configurationService.gcloudSecret) {
+      if (payload.token !== this.gcloudSecret) {
         return next(new ApiError(403, "Forbidden."));
       }
     } catch (error) {

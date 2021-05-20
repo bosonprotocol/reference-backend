@@ -8,20 +8,25 @@ const options = {
 };
 
 class MongooseClient {
-  constructor(configurationService) {
-    this.configurationService = configurationService;
+  constructor(
+    databaseConnectionString,
+    databaseName,
+    databaseUsername,
+    databasePassword
+  ) {
+    this.databaseConnectionString = databaseConnectionString;
+    this.databaseName = databaseName;
+    this.databaseUsername = databaseUsername;
+    this.databasePassword = databasePassword;
   }
 
   connect() {
-    return mongoose.connect(
-      this.configurationService.databaseConnectionString,
-      {
-        ...options,
-        dbName: this.configurationService.databaseName,
-        user: this.configurationService.databaseUsername,
-        pass: this.configurationService.databasePassword,
-      }
-    );
+    return mongoose.connect(this.databaseConnectionString, {
+      ...options,
+      dbName: this.databaseName,
+      user: this.databaseUsername,
+      pass: this.databasePassword,
+    });
   }
 }
 

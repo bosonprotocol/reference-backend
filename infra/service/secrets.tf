@@ -17,7 +17,9 @@ data "template_file" "env_file" {
   vars = {
     token_secret = var.token_secret
     gcloud_secret = var.gcloud_secret
-    image_storage_bucket_name = var.image_storage_bucket_name
+
+    image_upload_storage_engine = var.image_upload_storage_engine
+    image_upload_storage_bucket_name = var.image_upload_storage_bucket_name
 
     superadmin_username = var.superadmin_username
     superadmin_password = var.superadmin_password

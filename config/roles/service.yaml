@@ -16,7 +16,9 @@ vars:
 
   token_secret: "%{hiera('token_secret')}"
   gcloud_secret: "%{hiera('gcloud_secret')}"
-  image_storage_bucket_name: "%{hiera('image_storage_bucket_name')}"
+
+  image_upload_storage_engine: "%{hiera('image_upload_storage_engine')}"
+  image_upload_storage_bucket_name: "%{hiera('image_storage_bucket_name')}"
 
   superadmin_username: "%{hiera('superadmin_username')}"
   superadmin_password: "%{hiera('superadmin_password')}"
