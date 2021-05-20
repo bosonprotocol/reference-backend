@@ -9,4 +9,5 @@ GCLOUD_SECRET="${gcloud_secret}"
 SUPERADMIN_USERNAME="${superadmin_username}"
 SUPERADMIN_PASSWORD="${superadmin_password}"
 
-VOUCHERS_BUCKET="${image_storage_bucket_name}"
+IMAGE_UPLOAD_STORAGE_ENGINE="${image_upload_storage_engine}"
+IMAGE_UPLOAD_STORAGE_BUCKET_NAME="${image_upload_storage_bucket_name}"

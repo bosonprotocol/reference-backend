@@ -25,9 +25,17 @@ const AdministrationModule = require("./src/modules/AdministrationModule");
 const HealthModule = require("./src/modules/HealthModule");
 
 const configurationService = new ConfigurationService();
-const authenticationService = new AuthenticationService(configurationService);
 
-const mongooseClient = new MongooseClient(configurationService);
+const authenticationService = new AuthenticationService(
+  configurationService.tokenSecret
+);
+
+const mongooseClient = new MongooseClient(
+  configurationService.databaseConnectionString,
+  configurationService.databaseName,
+  configurationService.databaseUsername,
+  configurationService.databasePassword
+);
 
 const usersRepository = new UsersRepository();
 const vouchersRepository = new VouchersRepository();
@@ -40,7 +48,7 @@ const administratorAuthenticationMiddleware = new AdministratorAuthenticationMid
   usersRepository
 );
 const userAuthenticationMiddleware = new UserAuthenticationMiddleware(
-  configurationService,
+  configurationService.gcloudSecret,
   authenticationService
 );
 

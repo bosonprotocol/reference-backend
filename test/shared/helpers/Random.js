@@ -260,7 +260,7 @@ class Random {
 
   static file(overrides = {}) {
     const defaultFileName = `${this.uuid()}.png`;
-    const defaultPath = "test/fixtures/valid-image.png";
+    const defaultPath = "test/fixtures/valid-image-1.png";
     const defaultMimeType = "image/png";
     const defaultFolder = this.uuid();
 

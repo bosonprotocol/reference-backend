@@ -1,29 +1,47 @@
-const FileStore = require("../services/FileStore");
+const GCPStorage = require("../utils/GCPStorage");
+const AWSS3Storage = require("../utils/AWSS3Storage");
 
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
-const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
+const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
+const FileValidator = require("../services/FileValidator");
 const FileStorageMiddleware = require("../api/middlewares/FileStorageMiddleware");
 const VoucherSupplyValidationMiddleware = require("../api/middlewares/VoucherSupplyValidationMiddleware");
-const EventValidationMiddleware = require("../api/middlewares/EventValidationMiddleware");
+const VoucherSuppliesController = require("../api/controllers/VoucherSuppliesController");
+
+const storageEngines = {
+  GCP: GCPStorage,
+  AWS: AWSS3Storage,
+};
 
 class VoucherSuppliesModule {
   constructor({
     configurationService,
     userAuthenticationMiddleware,
-    voucherImageStorageMiddleware,
+    imageUploadStorageMiddleware,
     voucherSupplyValidationMiddleware,
     eventValidationMiddleware,
     voucherSuppliesRepository,
     voucherSuppliesController,
   }) {
+    const imageUploadStorageEngine =
+      configurationService.imageUploadStorageEngine;
+
     this.userAuthenticationMiddleware = userAuthenticationMiddleware;
     this.eventValidationMiddleware =
       eventValidationMiddleware || new EventValidationMiddleware();
-    this.voucherImageStorageMiddleware =
-      voucherImageStorageMiddleware ||
+    this.imageUploadStorageMiddleware =
+      imageUploadStorageMiddleware ||
       new FileStorageMiddleware(
-        "fileToUpload",
-        new FileStore(configurationService.vouchersBucket)
+        configurationService.imageUploadFileFieldName,
+        configurationService.imageUploadMaximumFiles,
+        new FileValidator(
+          configurationService.imageUploadSupportedMimeTypes,
+          configurationService.imageUploadMinimumFileSizeInKB,
+          configurationService.imageUploadMaximumFileSizeInKB
+        ),
+        new storageEngines[imageUploadStorageEngine](
+          configurationService.imageUploadStorageBucketName
+        )
       );
     this.voucherSupplyValidationMiddleware =
       voucherSupplyValidationMiddleware ||
@@ -44,11 +62,14 @@ class VoucherSuppliesModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
+        this.imageUploadStorageMiddleware.storeFiles(req, res, next)
       ),
-      //TODO Do we need all location fields to be required? Do we need to revert if specified location is not in a valid format
-      //Normally there should not be anything to worry since we muse ensure all correct data is sent from the client but just as further think about it
-      //(This is not a blockchain mandatory field, hence a successful tx could be executed and then we revert here)
+      // TODO Do we need all location fields to be required? Do we need to
+      // revert if specified location is not in a valid format.
+      // Normally there should not be anything to worry since we muse ensure all
+      // correct data is sent from the client but just as further think about it
+      // (This is not a blockchain mandatory field, hence a successful tx could
+      // be executed and then we revert here)
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSupplyValidationMiddleware.validateLocation(req, res, next)
       ),
@@ -56,7 +77,7 @@ class VoucherSuppliesModule {
         this.voucherSupplyValidationMiddleware.validateDates(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherSupplyValidationMiddleware.validateVoucherSupplyByCorrrelationIdDoesNotExist(
+        this.voucherSupplyValidationMiddleware.validateVoucherSupplyByCorrelationIdDoesNotExist(
           req,
           res,
           next
@@ -205,7 +226,7 @@ class VoucherSuppliesModule {
         this.userAuthenticationMiddleware.authenticateToken(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherImageStorageMiddleware.storeFiles(req, res, next)
+        this.imageUploadStorageMiddleware.storeFiles(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.voucherSupplyValidationMiddleware.validateLocation(req, res, next)

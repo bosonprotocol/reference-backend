@@ -1,6 +1,5 @@
 const { expect } = require("chai");
 
-const ConfigurationService = require("../../../src/services/ConfigurationService");
 const AuthenticationService = require("../../../src/services/AuthenticationService");
 const userRoles = require("../../../src/database/User/userRoles");
 
@@ -18,12 +17,7 @@ describe("AuthenticationService", () => {
         const address = Random.address();
         const role = userRoles.USER;
         const user = Random.user({ address, role });
-        const configurationService = new ConfigurationService({
-          tokenSecret,
-        });
-        const authenticationService = new AuthenticationService(
-          configurationService
-        );
+        const authenticationService = new AuthenticationService(tokenSecret);
 
         const token = authenticationService.generateToken(user);
 
@@ -48,12 +42,7 @@ describe("AuthenticationService", () => {
 
         const validityInSeconds = 300;
 
-        const configurationService = new ConfigurationService({
-          tokenSecret,
-        });
-        const authenticationService = new AuthenticationService(
-          configurationService
-        );
+        const authenticationService = new AuthenticationService(tokenSecret);
 
         const token = authenticationService.generateToken(
           user,
@@ -76,12 +65,7 @@ describe("AuthenticationService", () => {
       const role = Random.userRole();
       const tokenSecret = Random.tokenSecret();
 
-      const configurationService = new ConfigurationService({
-        tokenSecret,
-      });
-      const authenticationService = new AuthenticationService(
-        configurationService
-      );
+      const authenticationService = new AuthenticationService(tokenSecret);
 
       const token = Tokens.sign(
         {
@@ -103,11 +87,8 @@ describe("AuthenticationService", () => {
       const signingTokenSecret = Random.tokenSecret();
       const verifyingTokenSecret = Random.tokenSecret();
 
-      const configurationService = new ConfigurationService({
-        tokenSecret: verifyingTokenSecret,
-      });
       const authenticationService = new AuthenticationService(
-        configurationService
+        verifyingTokenSecret
       );
 
       const token = Tokens.sign(

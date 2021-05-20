@@ -79,7 +79,7 @@ class Prerequisites {
       ...voucherSupplyMetadata,
       voucherOwner: voucherSupplyOwner,
     };
-    const imageFilePath = "test/fixtures/valid-image.png";
+    const imageFilePath = "test/fixtures/valid-image-1.png";
 
     return [token, voucherSupplyData, imageFilePath];
   }

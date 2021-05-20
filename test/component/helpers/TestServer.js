@@ -23,7 +23,8 @@ const AdministrationModule = require("../../../src/modules/AdministrationModule"
 const HealthModule = require("../../../src/modules/HealthModule");
 
 const Ports = require("../../shared/helpers/Ports");
-const FakeFileStore = require("../../shared/fakes/services/FakeFileStore");
+const FakeStorage = require("../../shared/fakes/utils/FakeStorage");
+const FileValidator = require("../../../src/services/FileValidator");
 const FileStorageMiddleware = require("../../../src/api/middlewares/FileStorageMiddleware");
 
 class TestServer {
@@ -55,10 +56,15 @@ class TestServer {
       this.configurationOverrides
     );
     const authenticationService = new AuthenticationService(
-      configurationService
+      configurationService.tokenSecret
     );
 
-    const mongooseClient = new MongooseClient(configurationService);
+    const mongooseClient = new MongooseClient(
+      configurationService.databaseConnectionString,
+      configurationService.databaseName,
+      configurationService.databaseUsername,
+      configurationService.databasePassword
+    );
 
     const usersRepository = new UsersRepository();
     const vouchersRepository = new VouchersRepository();
@@ -71,13 +77,20 @@ class TestServer {
       usersRepository
     );
     const userAuthenticationMiddleware = new UserAuthenticationMiddleware(
-      configurationService,
+      configurationService.gcloudSecret,
       authenticationService
     );
-    const fakeVoucherImageFileStore = new FakeFileStore();
-    const voucherImageStorageMiddleware = new FileStorageMiddleware(
-      "fileToUpload",
-      fakeVoucherImageFileStore
+    const fakeStorage = new FakeStorage();
+    const fileValidator = new FileValidator(
+      configurationService.imageUploadSupportedMimeTypes,
+      configurationService.imageUploadMinimumFileSizeInKB,
+      configurationService.imageUploadMaximumFileSizeInKB
+    );
+    const imageUploadStorageMiddleware = new FileStorageMiddleware(
+      configurationService.imageUploadFileFieldName,
+      configurationService.imageUploadMaximumFiles,
+      fileValidator,
+      fakeStorage
     );
 
     const dependencies = {
@@ -92,7 +105,7 @@ class TestServer {
 
       administratorAuthenticationMiddleware,
       userAuthenticationMiddleware,
-      voucherImageStorageMiddleware,
+      imageUploadStorageMiddleware,
     };
 
     const healthModule = new HealthModule(dependencies);

@@ -11,7 +11,12 @@ const Event = require("../../../src/database/models/Event");
 class Database {
   static async connect() {
     const configurationService = new ConfigurationService();
-    const mongooseClient = new MongooseClient(configurationService);
+    const mongooseClient = new MongooseClient(
+      configurationService.databaseConnectionString,
+      configurationService.databaseName,
+      configurationService.databaseUsername,
+      configurationService.databasePassword
+    );
 
     return mongooseClient.connect();
   }

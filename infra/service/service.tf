@@ -11,7 +11,6 @@ data "template_file" "image" {
   }
 }
 
-
 data "template_file" "task_container_definitions" {
   template = file("${path.root}/container-definitions/service.json.tpl")
 
@@ -38,6 +37,8 @@ module "service" {
   vpc_id = data.aws_vpc.vpc.id
 
   service_task_container_definitions = data.template_file.task_container_definitions.rendered
+
+  service_role = aws_iam_role.service_role.arn
 
   service_name = var.service_name
   service_image = data.template_file.image.rendered

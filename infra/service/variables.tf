@@ -14,7 +14,9 @@ variable "host_http_port" {}
 
 variable "token_secret" {}
 variable "gcloud_secret" {}
-variable "image_storage_bucket_name" {}
+
+variable "image_upload_storage_engine" {}
+variable "image_upload_storage_bucket_name" {}
 
 variable "superadmin_username" {}
 variable "superadmin_password" {}

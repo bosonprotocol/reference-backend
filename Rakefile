@@ -4,6 +4,7 @@ require 'rake_terraform'
 require 'ruby_terraform/output'
 require 'rake_docker'
 require 'rake_fly'
+require 'rake_gpg'
 require 'rake_factory/kernel_extensions'
 require 'shivers'
 
@@ -41,6 +42,34 @@ task :build_fix => [
   :"tests:app:lint_fix",
   :"tests:app:format_fix"
 ]
+
+namespace :keys do
+  namespace :app do
+    namespace :passphrase do
+      task :generate do
+        File.open('config/secrets/app/gpg.passphrase', 'w') do |f|
+          f.write(SecureRandom.base64(36))
+        end
+      end
+    end
+
+    namespace :gpg do
+      RakeGPG.define_generate_key_task(
+          output_directory: 'config/secrets/app',
+          name_prefix: 'gpg',
+          armor: false,
+          owner_name: 'Boson Protocol Maintainers',
+          owner_email: 'maintainers@bosonprotocol.io',
+          owner_comment: 'Service key'
+      ) do |t|
+        t.passphrase =
+            File.read('config/secrets/app/gpg.passphrase')
+      end
+    end
+
+    task generate: %w[passphrase:generate gpg:generate]
+  end
+end
 
 task :test, [:deployment_type, :deployment_label] do |_, args|
   [
@@ -422,6 +451,22 @@ namespace :image do
     end
 
     t.tags = [version.to_docker_tag, 'latest']
+  end
+end
+
+namespace :image_storage_bucket do
+  RakeTerraform.define_command_tasks(
+      configuration_name: 'reference backend image storage bucket',
+      argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+        configuration.for_scope(args.to_h.merge(role: 'image-storage-bucket'))
+
+    t.source_directory = 'infra/image-storage-bucket'
+    t.work_directory = 'build'
+
+    t.backend_config = configuration.backend_config
+    t.vars = configuration.vars
   end
 end
 
