@@ -1,5 +1,5 @@
 resource "aws_iam_user" "image_storage" {
-  name = var.image_storage_user_name
+  name = substr(var.image_storage_user_name, 0, 64)
 
   tags = {
     DeploymentType = var.deployment_type
