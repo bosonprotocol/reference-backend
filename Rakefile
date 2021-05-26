@@ -384,22 +384,6 @@ namespace :image_repository do
   end
 end
 
-namespace :image_storage_bucket do
-  RakeTerraform.define_command_tasks(
-    configuration_name: 'reference backend image storage bucket',
-    argument_names: %i[deployment_type deployment_label]
-  ) do |t, args|
-    configuration =
-      configuration.for_scope(args.to_h.merge(role: 'image-repository'))
-
-    t.source_directory = 'infra/image-storage-bucket'
-    t.work_directory = 'build'
-
-    t.backend_config = configuration.backend_config
-    t.vars = configuration.vars
-  end
-end
-
 namespace :image do
   RakeDocker.define_image_tasks(
     image_name: 'reference-backend',
