@@ -312,7 +312,7 @@ jobs:
           - get: node-builder-image
       - task: provision-image-storage-bucket
         image: node-builder-image
-        file: source/pipelines/develop/provision-database/task.yaml
+        file: source/pipelines/develop/provision-image-storage-bucket/task.yaml
         params:
           GPG_KEY: ((gpg_key))
           PROVISIONING_ROLE_ARN: ((production_oganesson_provisioning_role_arn))
