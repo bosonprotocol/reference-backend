@@ -282,10 +282,10 @@ jobs:
             resource: updated-source
             trigger: true
             passed:
-              - provision-development-plutonium-database
+              - provision-development-plutonium-image-storage-bucket
           - get: version
             passed:
-              - provision-development-plutonium-database
+              - provision-development-plutonium-image-storage-bucket
           - get: node-builder-image
       - task: provision-service
         image: node-builder-image
@@ -388,10 +388,10 @@ jobs:
             resource: updated-source
             trigger: true
             passed:
-              - provision-production-oganesson-database
+              - provision-production-oganesson-image-storage-bucket
           - get: version
             passed:
-              - provision-production-oganesson-database
+              - provision-production-oganesson-image-storage-bucket
           - get: node-builder-image
       - task: provision-service
         image: node-builder-image
