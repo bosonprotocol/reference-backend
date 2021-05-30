@@ -62,6 +62,7 @@ groups:
       - provision-keepers-image-repository
       - provision-image-repository
       - publish-image
+      - publish-image-keepers
   - name: development-plutonium
     jobs:
       - provision-development-plutonium-functions
@@ -218,6 +219,39 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
+  - name: publish-image-keepers
+    plan:
+      - in_parallel:
+          - get: source
+            resource: updated-source
+            trigger: true
+            passed:
+              - publish-image
+          - put: version
+            params:
+              pre: rc
+          - get: node-builder-image
+      - task: publish-image-keepers
+        image: node-builder-image
+        file: source/pipelines/develop/publish-image-keepers/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((ci_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((ci_deployment_type))
+          DEPLOYMENT_LABEL: ((ci_deployment_label))
+      - put: app-image
+        params:
+          build: image-build-directory
+          cache: true
+          cache_tag: latest
+          tag: image-build-directory/TAG
+          tag_as_latest: true
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
   - name: provision-development-plutonium-functions
     serial: true
     plan:
@@ -226,10 +260,10 @@ jobs:
             resource: updated-source
             trigger: true
             passed:
-              - publish-image
+              - publish-image-keepers
           - get: version
             passed:
-              - publish-image
+              - publish-image-keepers
           - get: node-builder-image
       - task: provision-functions
         image: node-builder-image
