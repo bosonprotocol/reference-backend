@@ -12,6 +12,10 @@ image_repository_allowed_role_arns:
   - "%{hiera('development_tennessine_cluster_instance_role_arn')}"
   - "%{hiera('production_gold_cluster_instance_role_arn')}"
 
+keepers_image_repository_allowed_role_arns:
+  - "%{hiera('development_tennessine_cluster_instance_role_arn')}"
+  - "%{hiera('production_gold_cluster_instance_role_arn')}"
+
 database_version: "4.4"
 database_instance_size_name: "M10"
 database_allow_cidrs:

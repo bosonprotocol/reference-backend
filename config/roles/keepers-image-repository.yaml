@@ -1,0 +1,13 @@
+---
+vars:
+  region: "%{hiera('region')}"
+
+  repository_name: "%{hiera('keepers_image_repository_name')}"
+
+  allowed_role_arns: "%{hiera('keepers_image_repository_allowed_role_arns')}"
+
+backend_config:
+  bucket: "%{hiera('keepers_image_repository_state_bucket_name')}"
+  key: "%{hiera('keepers_image_repository_state_key')}"
+  region: "%{hiera('keepers_image_repository_state_bucket_region')}"
+  encrypt: "%{hiera('keepers_image_repository_state_bucket_is_encrypted')}"

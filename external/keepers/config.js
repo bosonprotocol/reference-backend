@@ -20,7 +20,10 @@ const routes = {
     updateSupplyOnTransfer: `${apiUrl}/voucher-sets/update-supply-ontransfer`,
     commitToBuy: `${apiUrl}/vouchers/commit-to-buy`,
     updateVoucherDelivered: `${apiUrl}/vouchers/update-voucher-delivered`,
-    updateVoucherOnCommonEvent: `${apiUrl}/vouchers/update-from-common-event`
+    updateVoucherOnCommonEvent: `${apiUrl}/vouchers/update-from-common-event`,
+    //events-statistics
+    updateEventByCorrId: `${apiUrl}/events/update-by-correlation-id`,
+    updateEventBeTokenId: `${apiUrl}/events/update-by-token-id`,
 }
 
 const statuses = {
@@ -32,7 +35,8 @@ const statuses = {
 
 const errors = {
     ECONNREFUSED: 'ECONNREFUSED',
-    NOT_FOUND: 404
+    NOT_FOUND: 404,
+    BAD_REQUEST: 400
 }
 
 module.exports = {
