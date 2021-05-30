@@ -326,7 +326,7 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-development-oganesson-functions
+  - name: provision-production-oganesson-functions
     serial: true
     plan:
       - in_parallel:
@@ -360,10 +360,10 @@ jobs:
           - get: source
             resource: updated-source
             passed:
-              - provision-development-oganesson-functions
+              - provision-production-oganesson-functions
           - get: version
             passed:
-              - provision-development-oganesson-functions
+              - provision-production-oganesson-functions
           - get: node-builder-image
       - task: provision-database
         image: node-builder-image
