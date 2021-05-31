@@ -11,7 +11,7 @@ vars:
   version_number: "%{hiera('version_number')}"
 
   service_name: "keepers"
-  container_http_port: "3000"
+  container_http_port: "3001"
 
   token_contact_address: "%{hiera('token_contact_address')}"
   boson_router_contact_address: "%{hiera('boson_router_contact_address')}"
