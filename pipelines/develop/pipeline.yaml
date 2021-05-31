@@ -145,7 +145,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - test
@@ -169,7 +168,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-keepers-image-repository
@@ -192,7 +190,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-image-repository
@@ -225,7 +222,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - publish-image
@@ -259,7 +255,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - publish-image-keepers
@@ -286,7 +281,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-development-plutonium-functions
@@ -313,7 +307,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-development-plutonium-database
@@ -340,7 +333,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-development-plutonium-image-storage-bucket
@@ -367,7 +359,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-development-plutonium-keepers-service
@@ -394,7 +385,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-development-plutonium-service
@@ -421,7 +411,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             passed:
               - provision-production-oganesson-functions
           - get: version
@@ -447,7 +436,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             passed:
               - provision-production-oganesson-database
           - get: version
@@ -473,7 +461,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-production-oganesson-image-storage-bucket
@@ -500,7 +487,6 @@ jobs:
     plan:
       - in_parallel:
           - get: source
-            resource: updated-source
             trigger: true
             passed:
               - provision-production-oganesson-keepers-service

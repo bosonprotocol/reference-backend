@@ -492,7 +492,7 @@ namespace :image_keepers do
       { content: version.to_docker_tag, to: 'TAG' }
     ]
 
-    t.repository_name = configuration.image_repository_name
+    t.repository_name = configuration.keepers_image_repository_name
     t.repository_url = dynamic do
       JSON.parse(
         RubyTerraform::Output.for(
