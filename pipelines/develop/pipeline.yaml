@@ -68,12 +68,14 @@ groups:
       - provision-development-plutonium-functions
       - provision-development-plutonium-database
       - provision-development-plutonium-image-storage-bucket
+      - provision-development-plutonium-keepers-service
       - provision-development-plutonium-service
   - name: production-oganesson
     jobs:
       - provision-production-oganesson-functions
       - provision-production-oganesson-database
       - provision-production-oganesson-image-storage-bucket
+      - provision-production-oganesson-keepers-service
       - provision-production-oganesson-service
 
 jobs:
@@ -333,7 +335,7 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-development-plutonium-service
+  - name: provision-development-plutonium-keepers-service
     serial: true
     plan:
       - in_parallel:
@@ -345,6 +347,33 @@ jobs:
           - get: version
             passed:
               - provision-development-plutonium-image-storage-bucket
+          - get: node-builder-image
+      - task: provision-keepers-service
+        image: node-builder-image
+        file: source/pipelines/develop/provision-keepers-service/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
+          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-development-plutonium-service
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            resource: updated-source
+            trigger: true
+            passed:
+              - provision-development-plutonium-keepers-service
+          - get: version
+            passed:
+              - provision-development-plutonium-keepers-service
           - get: node-builder-image
       - task: provision-service
         image: node-builder-image
@@ -439,7 +468,7 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-production-oganesson-service
+  - name: provision-production-oganesson-keepers-service
     serial: true
     plan:
       - in_parallel:
@@ -451,6 +480,33 @@ jobs:
           - get: version
             passed:
               - provision-production-oganesson-image-storage-bucket
+          - get: node-builder-image
+      - task: provision-keepers-service
+        image: node-builder-image
+        file: source/pipelines/develop/provision-keepers-service/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
+          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-production-oganesson-service
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            resource: updated-source
+            trigger: true
+            passed:
+              - provision-production-oganesson-keepers-service
+          - get: version
+            passed:
+              - provision-production-oganesson-keepers-service
           - get: node-builder-image
       - task: provision-service
         image: node-builder-image
