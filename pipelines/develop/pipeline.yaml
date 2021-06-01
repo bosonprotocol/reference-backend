@@ -51,18 +51,6 @@ resources:
       access_key_id: ((aws_access_key_id))
       secret_access_key: ((aws_secret_access_key))
 
-  - name: keepers-version
-    type: semver
-    source:
-      driver: s3
-      initial_version: 0.1.0
-      bucket: ((storage_bucket_name))
-      key: keepers/metadata/version
-      region_name: ((storage_bucket_region))
-      server_side_encryption: ((storage_bucket_encryption))
-      access_key_id: ((aws_access_key_id))
-      secret_access_key: ((aws_secret_access_key))
-
   - name: notify-success
     type: slack-notification
     source:
@@ -244,9 +232,9 @@ jobs:
             trigger: true
             passed:
               - publish-image
-          - put: keepers-version
-            params:
-              pre: rc
+          - get: version
+            passed:
+              - publish-image
           - get: node-builder-image
       - task: publish-image-keepers
         image: node-builder-image
@@ -355,7 +343,7 @@ jobs:
             trigger: true
             passed:
               - provision-development-plutonium-image-storage-bucket
-          - get: keepers-version
+          - get: version
             passed:
               - provision-development-plutonium-image-storage-bucket
           - get: node-builder-image
@@ -483,7 +471,7 @@ jobs:
             trigger: true
             passed:
               - provision-production-oganesson-image-storage-bucket
-          - get: keepers-version
+          - get: version
             passed:
               - provision-production-oganesson-image-storage-bucket
           - get: node-builder-image
