@@ -2,19 +2,19 @@ data "aws_caller_identity" "caller" {}
 
 data "archive_file" "expirations_lambda" {
   type        = "zip"
-  source_dir = "${path.root}/../../../lambdas/triggerExpirations/src"
+  source_dir = "${path.cwd}/lambdas/triggerExpirations/src"
   output_path = "${path.root}/lambdas/triggerExpirations/triggerExpirations.zip"
 }
 
 data "archive_file" "finalizations_lambda" {
   type        = "zip"
-  source_dir = "${path.root}/../../../lambdas/triggerFinalizations/src"
+  source_dir = "${path.cwd}/lambdas/triggerFinalizations/src"
   output_path = "${path.root}/lambdas/triggerFinalizations/triggerFinalizations.zip"
 }
 
 data "archive_file" "withdrawals_lambda" {
   type        = "zip"
-  source_dir = "${path.root}/../../../lambdas/triggerWithdrawals/src"
+  source_dir = "${path.cwd}/lambdas/triggerWithdrawals/src"
   output_path = "${path.root}/lambdas/triggerWithdrawals/triggerWithdrawals.zip"
 }
 
@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "execution_policy" {
 
 module "expirations_lambda" {
   source = "infrablocks/lambda/aws"
-  version = "0.14.0"
+  version = "1.0.0"
 
   region = var.region
   account_id = data.aws_caller_identity.caller.account_id
@@ -104,7 +104,7 @@ module "expirations_lambda" {
 
 module "finalizations_lambda" {
   source = "infrablocks/lambda/aws"
-  version = "0.14.0"
+  version = "1.0.0"
 
   region = var.region
   account_id = data.aws_caller_identity.caller.account_id
@@ -131,7 +131,7 @@ module "finalizations_lambda" {
 
 module "withdrawals_lambda" {
   source = "infrablocks/lambda/aws"
-  version = "0.14.0"
+  version = "1.0.0"
 
   region = var.region
   account_id = data.aws_caller_identity.caller.account_id

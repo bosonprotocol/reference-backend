@@ -1,6 +1,6 @@
 module "cluster" {
   source  = "infrablocks/cluster/mongodbatlas"
-  version = "0.2.0"
+  version = "2.0.0"
 
   component             = var.component
   deployment_identifier = var.deployment_identifier
@@ -16,7 +16,6 @@ module "cluster" {
     disk_iops = null
     volume_type = null
     backup_enabled = true
-    encrypt_ebs_volume = true
     auto_scaling = {
       compute = {
         min_instance_size: null

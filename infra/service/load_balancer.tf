@@ -1,6 +1,6 @@
 module "load_balancer" {
   source = "infrablocks/application-load-balancer/aws"
-  version = "2.4.0-rc.1"
+  version = "3.0.0"
 
   component = var.component
   deployment_identifier = var.deployment_identifier
