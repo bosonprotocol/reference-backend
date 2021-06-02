@@ -384,6 +384,22 @@ namespace :lambda do
   end
 end
 
+namespace :keepers_image_repository do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'keepers image repository',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'keepers-image-repository'))
+
+    t.source_directory = 'infra/keepers-image-repository'
+    t.work_directory = 'build'
+
+    t.backend_config = configuration.backend_config
+    t.vars = configuration.vars
+  end
+end
+
 namespace :image_repository do
   RakeTerraform.define_command_tasks(
     configuration_name: 'reference backend image repository',
@@ -454,6 +470,59 @@ namespace :image do
   end
 end
 
+namespace :image_keepers do
+  RakeDocker.define_image_tasks(
+    image_name: 'keepers',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'keepers-image-repository'))
+
+    t.work_directory = 'build/images'
+
+    t.copy_spec = [
+      'image-keepers/Dockerfile',
+      'image-keepers/docker-entrypoint.sh',
+      'external/keepers/src/',
+      'external/keepers/package.json',
+      'external/keepers/package-lock.json'
+    ]
+    t.create_spec = [
+      { content: version.to_s, to: 'VERSION' },
+      { content: version.to_docker_tag, to: 'TAG' }
+    ]
+
+    t.repository_name = configuration.keepers_image_repository_name
+    t.repository_url = dynamic do
+      JSON.parse(
+        RubyTerraform::Output.for(
+          name: 'repository_url',
+          source_directory: 'infra/keepers-image-repository',
+          work_directory: 'build',
+          backend_config: configuration.backend_config
+        )
+      )
+    end
+
+    t.credentials = dynamic do
+      RakeDocker::Authentication::ECR.new do |c|
+        c.region = configuration.region
+        c.registry_id =
+          JSON.parse(
+            RubyTerraform::Output.for(
+              name: 'registry_id',
+              source_directory: 'infra/keepers-image-repository',
+              work_directory: 'build',
+              backend_config: configuration.backend_config
+            )
+          )
+      end.call
+    end
+
+    t.tags = [version.to_docker_tag, 'latest']
+  end
+end
+
 namespace :image_storage_bucket do
   RakeTerraform.define_command_tasks(
       configuration_name: 'reference backend image storage bucket',
@@ -482,6 +551,25 @@ namespace :service do
         .for_scope(args.to_h.merge(role: 'service'))
 
     t.source_directory = 'infra/service'
+    t.work_directory = 'build'
+
+    t.backend_config = service_configuration.backend_config
+    t.vars = service_configuration.vars
+  end
+end
+
+namespace :service_keepers do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'keepers',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    version_configuration = { version_number: version.to_docker_tag }
+    service_configuration =
+      configuration
+        .for_overrides(version_configuration)
+        .for_scope(args.to_h.merge(role: 'keepers-service'))
+
+    t.source_directory = 'infra/keepers-service'
     t.work_directory = 'build'
 
     t.backend_config = service_configuration.backend_config

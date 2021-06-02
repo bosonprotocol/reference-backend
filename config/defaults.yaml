@@ -10,6 +10,7 @@ source_repository_url: "git@github.com:%{hiera('source_repository_name')}.git"
 source_repository_branch: "develop"
 
 image_repository_name: "bsn/reference-backend"
+keepers_image_repository_name: "bsn/keepers"
 
 storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}"
 storage_bucket_encryption: "AES256"

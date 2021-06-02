@@ -17,3 +17,4 @@ node_builder_image_repository_url: "%{hiera('image_repository_base_url')}/%{hier
 
 app_image_repository_name: "%{hiera('image_repository_name')}"
 app_image_repository_url: "%{hiera('image_repository_base_url')}/%{hiera('app_image_repository_name')}"
+keepers_image_repository_url: "%{hiera('image_repository_base_url')}/%{hiera('keepers_image_repository_name')}"

@@ -4,6 +4,7 @@ vars:
   source_repository_branch: "%{hiera('source_repository_branch')}"
 
   app_image_repository_url: "%{hiera('app_image_repository_url')}"
+  keepers_image_repository_url: "%{hiera('keepers_image_repository_url')}"
   node_builder_image_repository_url: "%{hiera('node_builder_image_repository_url')}"
 
   storage_bucket_name: "%{hiera('ci_storage_bucket_name')}"

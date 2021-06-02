@@ -2,7 +2,7 @@ require('dotenv').config()
 
 const axios = require('axios').default;
 const ethers = require('ethers');
-const provider = new ethers.providers.InfuraProvider(process.env.NETWORK, [process.env.INFURA_API_KEY]);
+const provider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_URL);
 
 const ERC1155ERC721 = require("./abis/ERC1155ERC721.json");
 const VoucherKernel = require("./abis/VoucherKernel.json");
@@ -29,6 +29,8 @@ async function init() {
     }
 }
 
+const RETRIES = 5
+
 function retryUpdateWithSuccess(axiosMethod, route, metadata, retries) {
     return new Promise((resolve, _) => {
         setTimeout(async () => {
@@ -48,8 +50,9 @@ function retryUpdateWithSuccess(axiosMethod, route, metadata, retries) {
             
                 const apiOutage = error.code == errors.ECONNREFUSED
                 const recordNotFound = !!(error.response && error.response.status == errors.NOT_FOUND)
+                const badRequest = !!(error.response && error.response.status == errors.BAD_REQUEST)
 
-                if (apiOutage || recordNotFound) {
+                if (apiOutage || recordNotFound || badRequest) {
                     return resolve(retryUpdateWithSuccess(axiosMethod, route, metadata, retries - 1));
                 }
 
@@ -99,26 +102,44 @@ async function logOrderCreated() {
                 validFrom: (ethers.BigNumber.from(promiseDetails[3]).mul(1000)).toString(),
                 validTo: (ethers.BigNumber.from(promiseDetails[4]).mul(1000)).toString(),
                 price: promiseDetails[5].toString(),
-                depositSe: promiseDetails[6].toString(),
-                depositBu: promiseDetails[7].toString()
+                sellerDeposit: promiseDetails[6].toString(),
+                buyerDeposit: promiseDetails[7].toString()
             }
 
             await axios.patch(`${routes.setSupplyMeta}`, metadata)
-
-            logFinish(eventNames.LOG_ORDER_CREATED, _tokenIdSupply, errObj);
-        
         } catch (error) {
-
-            if (!await retryUpdateWithSuccess('patch', routes.setSupplyMeta, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.setSupplyMeta, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_ORDER_CREATED, _tokenIdSupply, errObj)
+                return
             }
         }
 
+        try {
+            metadata = {
+                name: eventNames.LOG_ORDER_CREATED,
+                _correlationId: _correlationId.toString(),
+                address: _voucherOwner.toLowerCase()
+            }
+
+            await axios.patch(routes.updateEventByCorrId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventByCorrId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+
+                logFinish(eventNames.LOG_ORDER_CREATED, _tokenIdSupply, errObj)
+                return
+            }
+        }
+
+        logFinish(eventNames.LOG_ORDER_CREATED, _tokenIdSupply, errObj);
     })
 }
 
@@ -138,19 +159,38 @@ async function logVoucherSetFaultCancel() {
             }
 
             await axios.patch(`${routes.updateSupplyOnCancel}`, metadata)
-
-            logFinish(eventNames.LOG_CANCEL_FAULT_VOUCHER_SET, _tokenIdSupply, errObj);
-        
         } catch (error) {
-            if (!await retryUpdateWithSuccess('patch', routes.updateSupplyOnCancel, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateSupplyOnCancel, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_CANCEL_FAULT_VOUCHER_SET, _tokenIdSupply, errObj)
+                return
             }
         }
+
+        try {
+            metadata = {
+                name: eventNames.LOG_CANCEL_FAULT_VOUCHER_SET,
+                _tokenId: _tokenIdSupply.toString()
+            }
+
+            await axios.patch(routes.updateEventBeTokenId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventBeTokenId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+
+                logFinish(eventNames.LOG_CANCEL_FAULT_VOUCHER_SET, _tokenIdSupply, errObj)
+                return
+            }
+        }
+
+        logFinish(eventNames.LOG_CANCEL_FAULT_VOUCHER_SET, _tokenIdSupply, errObj);
     })
 }
 
@@ -158,33 +198,57 @@ async function logVoucherDelivered() {
     VK.on(eventNames.LOG_VOUCHER_DELIVERED, async (_tokenIdSupply, _tokenIdVoucher, _issuer, _holder, _promiseId, _correlationId) => {
 
         let errObj = {hasError: false}
-
-        const metadata = {
-            _tokenIdSupply: _tokenIdSupply.toString(),
-            _tokenIdVoucher: _tokenIdVoucher.toString(),
-            _issuer: _issuer.toLowerCase(),
-            _holder: _holder.toLowerCase(),
-            _promiseId: _promiseId.toString(),
-            _correlationId: _correlationId.toString(),
-        }
+        let metadata;
 
         logStart(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher)
 
         try {
+            metadata = {
+                _tokenIdSupply: _tokenIdSupply.toString(),
+                _tokenIdVoucher: _tokenIdVoucher.toString(),
+                _issuer: _issuer.toLowerCase(),
+                _holder: _holder.toLowerCase(),
+                _promiseId: _promiseId.toString(),
+                _correlationId: _correlationId.toString(),
+            }
+
             await axios.patch(routes.updateVoucherDelivered, metadata)
 
-            logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj);
         } catch (error) {
 
-            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherDelivered, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherDelivered, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj)
+                return
             }
         }
+
+        try {
+            metadata = {
+                name: eventNames.LOG_VOUCHER_DELIVERED,
+                _correlationId: _correlationId.toString(),
+                address: _holder.toLowerCase()
+            }
+
+            await axios.patch(routes.updateEventByCorrId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventByCorrId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+    
+                logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj)
+                return
+            }
+        }
+
+
+        logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj);
 
     })
 }
@@ -193,30 +257,49 @@ async function logVoucherFaultCancel() {
     VK.on(eventNames.LOG_VOUCHER_CANCEL_FAULT, async (_tokenIdVoucher) => {
 
         let errObj = {hasError: false}
-
-        const metadata = {
-            _tokenIdVoucher: _tokenIdVoucher.toString(),
-            [statuses.CANCELLED]: new Date().getTime(),
-        }
+        let metadata;
 
         logStart(eventNames.LOG_VOUCHER_CANCEL_FAULT, _tokenIdVoucher)
 
         try {
+            metadata = {
+                _tokenIdVoucher: _tokenIdVoucher.toString(),
+                [statuses.CANCELLED]: new Date().getTime(),
+            }
             await axios.patch(routes.updateVoucherOnCommonEvent, metadata)
 
-            logFinish(eventNames.LOG_VOUCHER_CANCEL_FAULT, _tokenIdVoucher, errObj)
         } catch (error) {
 
-            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+                logFinish(eventNames.LOG_VOUCHER_CANCEL_FAULT, _tokenIdVoucher, errObj)
+                return
+            }
+        }
+
+        try {
+            metadata = {
+                name: eventNames.LOG_VOUCHER_CANCEL_FAULT,
+                _tokenId: _tokenIdVoucher.toString()
+            }
+
+            await axios.patch(routes.updateEventBeTokenId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventBeTokenId, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_VOUCHER_CANCEL_FAULT, _tokenIdVoucher, errObj)
+                return
             }
         }
 
+        logFinish(eventNames.LOG_VOUCHER_CANCEL_FAULT, _tokenIdVoucher, errObj)
     })
 }
 
@@ -224,29 +307,52 @@ async function logVoucherComplain() {
     VK.on(eventNames.LOG_VOUCHER_COMPLAIN, async (_tokenIdVoucher) => {
 
         let errObj = {hasError: false}
-
-        const metadata = {
-            _tokenIdVoucher: _tokenIdVoucher.toString(),
-            [statuses.COMPLAINED]: new Date().getTime(),
-        }
+        let metadata;
 
         logStart(eventNames.LOG_VOUCHER_COMPLAIN, _tokenIdVoucher)
 
         try {
+            metadata = {
+                _tokenIdVoucher: _tokenIdVoucher.toString(),
+                [statuses.COMPLAINED]: new Date().getTime(),
+            };
+
             await axios.patch(routes.updateVoucherOnCommonEvent, metadata)
 
-            logFinish(eventNames.LOG_VOUCHER_COMPLAIN, _tokenIdVoucher, errObj)
         } catch (error) {
 
-            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_VOUCHER_COMPLAIN, _tokenIdVoucher, errObj)
+                return
             }
         }
+
+        try {
+            metadata = {
+                name: eventNames.LOG_VOUCHER_COMPLAIN,
+                _tokenId: _tokenIdVoucher.toString()
+            }
+
+            await axios.patch(routes.updateEventBeTokenId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventBeTokenId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+
+                logFinish(eventNames.LOG_VOUCHER_COMPLAIN, _tokenIdVoucher, errObj)
+                return
+            }
+        }
+
+        logFinish(eventNames.LOG_VOUCHER_COMPLAIN, _tokenIdVoucher, errObj)
+
     })
 }
 
@@ -255,29 +361,50 @@ async function logVoucherRedeemed() {
 
         let errObj = {hasError: false}
 
-        const metadata = {
-            _tokenIdVoucher: _tokenIdVoucher.toString(),
-            _holder: _holder.toLowerCase(),
-            [statuses.REDEEMED]: new Date().getTime()
-        }
+        let metadata;
 
         logStart(eventNames.LOG_VOUCHER_REDEEMED, _tokenIdVoucher)
 
         try {
+            metadata = {
+                _tokenIdVoucher: _tokenIdVoucher.toString(),
+                _holder: _holder.toLowerCase(),
+                [statuses.REDEEMED]: new Date().getTime()
+            }
+
             await axios.patch(routes.updateVoucherOnCommonEvent, metadata)
-
-            logFinish(eventNames.LOG_VOUCHER_REDEEMED, _tokenIdVoucher, errObj)
-
         } catch (error) {
-            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_VOUCHER_REDEEMED, _tokenIdVoucher, errObj)
+                return
             }
         }
+
+        try {
+            metadata = {
+                name: eventNames.LOG_VOUCHER_REDEEMED,
+                _tokenId: _tokenIdVoucher.toString()
+            }
+
+            await axios.patch(routes.updateEventBeTokenId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventBeTokenId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+
+                logFinish(eventNames.LOG_VOUCHER_REDEEMED, _tokenIdVoucher, errObj)
+                return
+            }
+        }
+
+        logFinish(eventNames.LOG_VOUCHER_REDEEMED, _tokenIdVoucher, errObj)
     })
 }
 
@@ -286,29 +413,50 @@ async function logVoucherRefunded() {
 
         let errObj = {hasError: false}
 
-        const metadata = {
-            _tokenIdVoucher: _tokenIdVoucher.toString(),
-            [statuses.REFUNDED]: new Date().getTime()
-        }
+        let metadata;
 
         logStart(eventNames.LOG_VOUCHER_REFUNDED, _tokenIdVoucher)
 
         try {
+            metadata = {
+                _tokenIdVoucher: _tokenIdVoucher.toString(),
+                [statuses.REFUNDED]: new Date().getTime()
+            }
+
             await axios.patch(routes.updateVoucherOnCommonEvent, metadata)
-
-            logFinish(eventNames.LOG_VOUCHER_REFUNDED, _tokenIdVoucher, errObj)
-
         } catch (error) {
 
-            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_VOUCHER_REFUNDED, _tokenIdVoucher, errObj)
+                return
             }
         }
+
+        try {
+            metadata = {
+                name: eventNames.LOG_VOUCHER_REFUNDED,
+                _tokenId: _tokenIdVoucher.toString()
+            }
+
+            await axios.patch(routes.updateEventBeTokenId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventBeTokenId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+
+                logFinish(eventNames.LOG_VOUCHER_REFUNDED, _tokenIdVoucher, errObj)
+                return
+            }
+        }
+
+        logFinish(eventNames.LOG_VOUCHER_REFUNDED, _tokenIdVoucher, errObj)
     })
 }
 
@@ -334,19 +482,39 @@ async function logTransfer721() {
 
             await axios.patch(routes.updateVoucherOnCommonEvent, metadata)
 
-            logFinish(eventNames.LOG_TRANSFER_721, _tokenIdVoucher, errObj)
-
         } catch (error) {
 
-            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherOnCommonEvent, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_TRANSFER_721, _tokenIdVoucher, errObj)
+                return
             }
         }
+
+        try {
+            metadata = {
+                name: eventNames.LOG_TRANSFER_721,
+                _tokenId: _tokenIdVoucher.toString()
+            }
+
+            await axios.patch(routes.updateEventBeTokenId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventBeTokenId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+    
+                logFinish(eventNames.LOG_TRANSFER_721, _tokenIdVoucher, errObj)
+                return
+            }
+        }
+
+        logFinish(eventNames.LOG_TRANSFER_721, _tokenIdVoucher, errObj);
     })
 }
 
@@ -375,20 +543,39 @@ async function logTransferSingle1155() {
 
             await axios.patch(routes.updateSupplyOnTransfer, metadata)
 
-            logFinish(eventNames.LOG_TRANSFER_1155_SINGLE, _tokenIdSupply, errObj)
-
         } catch (error) {
 
-            if (!await retryUpdateWithSuccess('patch', routes.updateSupplyOnTransfer, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateSupplyOnTransfer, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_TRANSFER_1155_SINGLE, _tokenIdSupply, errObj)
+                return
             }
         }
 
+        try {
+            metadata = {
+                name: eventNames.LOG_TRANSFER_1155_SINGLE,
+                _tokenId: _tokenIdSupply.toString()
+            }
+
+            await axios.patch(routes.updateEventBeTokenId, metadata)
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventBeTokenId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+
+                logFinish(eventNames.LOG_TRANSFER_1155_SINGLE, _tokenIdSupply, errObj)
+                return
+            }
+        }
+
+        logFinish(eventNames.LOG_TRANSFER_1155_SINGLE, _tokenIdSupply, errObj)
     })
 }
 
@@ -417,19 +604,44 @@ async function logTransferBatch1155() {
 
             await axios.patch(routes.updateSupplyOnTransfer, metadata)
 
-            logFinish(eventNames.LOG_TRANSFER_1155_BATCH, _tokenIdSupplies, errObj)
-
         } catch (error) {
 
-            if (!await retryUpdateWithSuccess('patch', routes.updateSupplyOnTransfer, metadata, 5)) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateSupplyOnTransfer, metadata, RETRIES)) {
                 errObj = {
                     hasError: true,
                     error
                 }
 
                 logFinish(eventNames.LOG_TRANSFER_1155_BATCH, _tokenIdSupplies, errObj)
+                return
             }
         }
+
+        // TODO this will need a little rework if we are to support this from the reference app. (Event Statistics related)
+        // This is not the most accurate way for detecting the record, as the corrId might change (if new tx is mined for this user) in the mean time before we get the one this relates to 
+        try {
+            const oldOwnerCorrelationId = await BR.correlationIds(oldSupplyOwner);
+            metadata = {
+                name: eventNames.LOG_TRANSFER_1155_BATCH,
+                _correlationId: oldOwnerCorrelationId.toString(),
+                address: oldSupplyOwner.toLowerCase()
+            }
+
+            await axios.patch(routes.updateEventByCorrId, metadata)
+
+        } catch (error) {
+            if (!await retryUpdateWithSuccess('patch', routes.updateEventByCorrId, metadata, RETRIES)) {
+                errObj = {
+                    hasError: true,
+                    error
+                }
+
+                logFinish(eventNames.LOG_TRANSFER_1155_BATCH, _tokenIdSupplies, errObj)
+                return
+            }
+        }
+
+        logFinish(eventNames.LOG_TRANSFER_1155_BATCH, _tokenIdSupplies, errObj)
     })
 }
 
