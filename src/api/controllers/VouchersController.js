@@ -30,10 +30,10 @@ class VouchersController {
 
       await Promise.all(promises);
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while tried to get all vouchers for user: ${address}!`
       );
-      console.error(error.message);
+      console.log(error.message);
       return next(
         new ApiError(400, `Error processing User Vouchers for user: ${address}`)
       );
@@ -52,10 +52,10 @@ class VouchersController {
         owner
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while tried to get bought vouchers with Supply ID: [${supplyID}]!`
       );
-      console.error(error.message);
+      console.log(error.message);
       return next(
         new ApiError(400, `Error fetching all buyers for Voucher: ${supplyID}`)
       );
@@ -111,10 +111,10 @@ class VouchersController {
         paymentType: voucherSupply._paymentType,
       };
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while tried to fetch voucher details with ID: [${voucherID}]!`
       );
-      console.error(error.message);
+      console.log(error.message);
       return next(
         new ApiError(
           400,
@@ -133,7 +133,7 @@ class VouchersController {
     try {
       voucher = await this.vouchersRepository.createVoucher(metadata, supplyID);
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(
           400,
@@ -158,7 +158,7 @@ class VouchersController {
         req.body._tokenIdSupply
       );
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(
           400,
@@ -200,7 +200,7 @@ class VouchersController {
         req.body
       );
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(
           400,
@@ -222,10 +222,10 @@ class VouchersController {
         status
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while tried to finalize voucher with ID: [${tokenIdVoucher}]!`
       );
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(
           400,
@@ -243,8 +243,8 @@ class VouchersController {
     try {
       vouchers = await this.vouchersRepository.getAllVouchers();
     } catch (error) {
-      console.error(`An error occurred while tried to fetch all vouchers!`);
-      console.error(error);
+      console.log(`An error occurred while tried to fetch all vouchers!`);
+      console.log(error);
       return next(new ApiError(400, `Error fetching all vouchers.`));
     }
 

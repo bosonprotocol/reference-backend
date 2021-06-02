@@ -15,7 +15,7 @@ class ErrorHandlingMiddleware {
     } else {
       // This should not happen. If an error is thrown using NEXT it should be
       // API Error.
-      console.error(
+      console.log(
         "An error occurred. Normal error was thrown using next, and not " +
           `using API Error object - ${err}. Error stack: ${err.stack}`
       );
@@ -34,7 +34,7 @@ class ErrorHandlingMiddleware {
       try {
         await f(req, res, next);
       } catch (error) {
-        console.error(
+        console.log(
           `Something went wrong while executing request. ${error.stack}`
         );
         res.status(500).json("Internal Server Error");

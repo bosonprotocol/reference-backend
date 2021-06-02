@@ -48,7 +48,7 @@ class AdministrationController {
 
       await this.usersRepository.setUserToAdmin(address);
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(400, `Provided address: ${address} was not set as admin!`)
       );
@@ -70,7 +70,7 @@ class AdministrationController {
         voucherSupply.id
       );
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(400, `Voucher with ID: ${supplyID} does not exist!`)
       );
