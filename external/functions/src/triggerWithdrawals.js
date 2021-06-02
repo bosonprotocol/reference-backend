@@ -91,7 +91,7 @@ async function triggerWithdrawals(executor, config) {
   try {
     res = await axios.get(config.ALL_VOUCHERS_URL);
   } catch (e) {
-    console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
+    console.log(`Error while getting all vouchers from the DB. Error: ${e}`);
   }
 
   if (
@@ -117,7 +117,7 @@ async function triggerWithdrawals(executor, config) {
       isPaymentAndDepositsReleased = voucherStatus[1] && voucherStatus[2];
     } catch (e) {
       hasErrors = true;
-      console.error(
+      console.log(
         `Error while checking existing payments for a voucher from the DB. Error: ${e}`
       );
       continue;
@@ -142,7 +142,7 @@ async function triggerWithdrawals(executor, config) {
       receipt = await txOrder.wait();
     } catch (e) {
       hasErrors = true;
-      console.error(`Error while executing withdraw process. Error: ${e}`);
+      console.log(`Error while executing withdraw process. Error: ${e}`);
       continue;
     }
 
@@ -167,10 +167,10 @@ async function triggerWithdrawals(executor, config) {
       }
     } catch (e) {
       hasErrors = true;
-      console.error(
+      console.log(
         `Error while executing a create payment call to the backend . Error: ${e}`
       );
-      console.error(e);
+      console.log(e);
     }
 
     console.log(`Voucher: ${voucherID}. Database updated`);
