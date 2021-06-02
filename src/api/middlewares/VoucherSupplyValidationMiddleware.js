@@ -51,7 +51,7 @@ class VoucherSupplyValidationMiddleware {
         );
       }
     } catch (error) {
-      console.error(error.message);
+      console.log(error.message);
       return next(
         new ApiError(
           400,

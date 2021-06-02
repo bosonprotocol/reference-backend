@@ -13,7 +13,7 @@ class VoucherSuppliesController {
     let voucherSupply;
 
     if (typeof req.params.id === "undefined") {
-      console.error(`An error occurred while tried to fetch Voucher.`);
+      console.log(`An error occurred while tried to fetch Voucher.`);
       return next(new ApiError(400, "No VoucherID was presented"));
     }
 
@@ -27,10 +27,10 @@ class VoucherSuppliesController {
         voucherSupply.qty
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while tried to fetch Voucher Supply with ID: [${req.params.id}].`
       );
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(400, `Could not get voucher with ID: ${req.params.id}`)
       );
@@ -47,10 +47,10 @@ class VoucherSuppliesController {
     try {
       voucherSupplies = await this.voucherSuppliesRepository.getAllVoucherSupplies();
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while tried to fetch all voucher supplies!`
       );
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, `Error fetching all voucher supplies.`));
     }
 
@@ -74,10 +74,10 @@ class VoucherSuppliesController {
         );
       });
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while user [${owner}] tried to fetch Vouchers.`
       );
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, "Invalid operation"));
     }
 
@@ -93,10 +93,10 @@ class VoucherSuppliesController {
         buyer
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while user [${buyer}] tried to fetch Vouchers.`
       );
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, "Invalid operation"));
     }
 
@@ -116,10 +116,10 @@ class VoucherSuppliesController {
         address
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while user tried to fetch Supply Statuses.`
       );
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, "Bad request."));
     }
 
@@ -135,10 +135,10 @@ class VoucherSuppliesController {
         address
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while user tried to fetch Active Supplies.`
       );
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, "Bad request."));
     }
 
@@ -156,7 +156,7 @@ class VoucherSuppliesController {
         address
       );
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, "Bad request."));
     }
 
@@ -184,10 +184,10 @@ class VoucherSuppliesController {
         voucherOwner
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while user [${voucherOwner}] tried to create Voucher.`
       );
-      console.error(error.message);
+      console.log(error.message);
       return next(new ApiError(400, "Invalid voucher model"));
     }
 
@@ -213,10 +213,10 @@ class VoucherSuppliesController {
         fileRefs
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while user [${voucherOwner}] tried to update Voucher.`
       );
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, "Invalid voucher model"));
     }
 
@@ -230,10 +230,10 @@ class VoucherSuppliesController {
     try {
       await this.voucherSuppliesRepository.setVoucherSupplyMeta(req.body);
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while user [${req.body.voucherOwner}] tried to update Voucher.`
       );
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, "Invalid voucher model"));
     }
 
@@ -265,7 +265,7 @@ class VoucherSuppliesController {
             _correlationId: startCorrelationId + i,
           };
         } catch (error) {
-          console.error(
+          console.log(
             `Error while trying to convert vouchersSupply: ${JSON.stringify(
               vouchersSupplies[i]
             )} or quantity: ${JSON.stringify(quantities[i])} from BigNumber!`
@@ -280,10 +280,10 @@ class VoucherSuppliesController {
 
       await Promise.all(promises);
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while trying to update a voucher from Transfer event.`
       );
-      console.error(error.message);
+      console.log(error.message);
       return next(
         new ApiError(404, "Could not update the database from Transfer event!")
       );
@@ -304,10 +304,10 @@ class VoucherSuppliesController {
 
       await this.voucherSuppliesRepository.updateSupplyMeta(metadata);
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while trying to update a voucher from Cancel Voucher Set event.`
       );
-      console.error(error.message);
+      console.log(error.message);
       return next(
         new ApiError(404, "Could not update the database from Transfer event!")
       );
@@ -324,7 +324,7 @@ class VoucherSuppliesController {
         voucherSupply.id
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while user [${req.body.voucherOwner}] tried to delete Voucher.`
       );
       return next(new ApiError(400, "Invalid operation"));
@@ -343,10 +343,10 @@ class VoucherSuppliesController {
         imageUrl
       );
     } catch (error) {
-      console.error(
+      console.log(
         `An error occurred while image from document [${req.params.id}] was tried to be deleted.`
       );
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, "Invalid operation"));
     }
 
