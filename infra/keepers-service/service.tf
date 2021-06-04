@@ -38,7 +38,7 @@ data "template_file" "task_container_definitions" {
 
 module "service" {
   source  = "infrablocks/ecs-service/aws"
-  version = "3.2.0"
+  version = "4.1.0"
 
   component             = var.component
   deployment_identifier = var.deployment_identifier
