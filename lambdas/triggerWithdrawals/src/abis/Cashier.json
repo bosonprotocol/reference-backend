@@ -1,4 +1,5 @@
 {
+  "contractName": "Cashier",
   "abi": [
     {
       "inputs": [
@@ -78,6 +79,25 @@
         }
       ],
       "name": "LogDisasterStateSet",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_newTokenContract",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "_triggeredBy",
+          "type": "address"
+        }
+      ],
+      "name": "LogTokenContractSet",
       "type": "event"
     },
     {
@@ -195,22 +215,44 @@
       "type": "event"
     },
     {
-      "inputs": [],
-      "name": "bosonRouterAddress",
-      "outputs": [
+      "inputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "_account",
           "type": "address"
         }
       ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "name": "addEscrowAmount",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_token",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_newAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "addEscrowTokensAmount",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [],
-      "name": "disasterState",
+      "name": "canUnpause",
       "outputs": [
         {
           "internalType": "bool",
@@ -219,18 +261,17 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "_account",
           "type": "address"
         }
       ],
-      "name": "escrow",
+      "name": "getEscrowAmount",
       "outputs": [
         {
           "internalType": "uint256",
@@ -239,23 +280,22 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [
         {
           "internalType": "address",
-          "name": "",
+          "name": "_token",
           "type": "address"
         },
         {
           "internalType": "address",
-          "name": "",
+          "name": "_account",
           "type": "address"
         }
       ],
-      "name": "escrowTokens",
+      "name": "getEscrowTokensAmount",
       "outputs": [
         {
           "internalType": "uint256",
@@ -264,8 +304,58 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenSupplyId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "onERC1155Transfer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenIdVoucher",
+          "type": "uint256"
+        }
+      ],
+      "name": "onERC721Transfer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [],
@@ -278,8 +368,14 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "pause",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
     },
     {
       "inputs": [],
@@ -292,12 +388,44 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "type": "function"
     },
     {
       "inputs": [],
       "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_bosonRouterAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setBosonRouterAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "setDisasterState",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_tokensContractAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setTokenContractAddress",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -317,74 +445,7 @@
     },
     {
       "inputs": [],
-      "name": "voucherKernel",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "stateMutability": "payable",
-      "type": "receive",
-      "payable": true
-    },
-    {
-      "inputs": [],
-      "name": "pause",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
       "name": "unpause",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "canUnpause",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [],
-      "name": "setDisasterState",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "withdrawEthOnDisaster",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "token",
-          "type": "address"
-        }
-      ],
-      "name": "withdrawTokensOnDisaster",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -426,14 +487,8 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_bosonRouterAddress",
-          "type": "address"
-        }
-      ],
-      "name": "setBosonRouterAddress",
+      "inputs": [],
+      "name": "withdrawEthOnDisaster",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -442,87 +497,18 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_account",
+          "name": "token",
           "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_newAmount",
-          "type": "uint256"
         }
       ],
-      "name": "updateEscrowAmount",
+      "name": "withdrawTokensOnDisaster",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_newAmount",
-          "type": "uint256"
-        }
-      ],
-      "name": "updateEscrowTokensAmount",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
-        }
-      ],
-      "name": "getEscrowAmount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_token",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
-        }
-      ],
-      "name": "getEscrowTokensAmount",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function",
-      "constant": true
+      "stateMutability": "payable",
+      "type": "receive"
     }
   ]
 }

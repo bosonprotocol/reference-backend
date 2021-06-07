@@ -47,7 +47,7 @@ function retryUpdateWithSuccess(axiosMethod, route, metadata, retries) {
                     return resolve(true)
                 }
             } catch (error) {
-            
+
                 const apiOutage = error.code == errors.ECONNREFUSED
                 const recordNotFound = !!(error.response && error.response.status == errors.NOT_FOUND)
                 const badRequest = !!(error.response && error.response.status == errors.BAD_REQUEST)
@@ -88,10 +88,10 @@ async function logOrderCreated() {
         logStart(eventNames.LOG_ORDER_CREATED, _tokenIdSupply);
 
         try {
-
+            // ToDo: Expose getOrdersPromise
             const promiseId = await VK.ordersPromise(_tokenIdSupply.toString());
-            const promiseDetails = await VK.promises(promiseId)
-    
+            const promiseDetails = await VK.getPromiseData(promiseId)
+
             metadata = {
                 _tokenIdSupply: _tokenIdSupply.toString(),
                 voucherOwner: _voucherOwner.toLowerCase(),
@@ -155,7 +155,7 @@ async function logVoucherSetFaultCancel() {
             metadata = {
                 _tokenIdSupply: _tokenIdSupply.toString(),
                 voucherOwner: _voucherOwner.toLowerCase(),
-                qty: 0, 
+                qty: 0,
             }
 
             await axios.patch(`${routes.updateSupplyOnCancel}`, metadata)
@@ -241,7 +241,7 @@ async function logVoucherDelivered() {
                     hasError: true,
                     error
                 }
-    
+
                 logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj)
                 return
             }
@@ -462,7 +462,7 @@ async function logVoucherRefunded() {
 
 async function logTransfer721() {
     ERC1155721.on(eventNames.LOG_TRANSFER_721, async (_from, _to, _tokenIdVoucher) => {
-        
+
         let errObj = {hasError: false}
         let metadata;
 
@@ -472,7 +472,7 @@ async function logTransfer721() {
         logStart(eventNames.LOG_TRANSFER_721, _tokenIdVoucher)
 
         try {
-            const newOwnerCorrelationId = await BR.correlationIds(_to);
+            const newOwnerCorrelationId = await BR.getCorrelationId(_to);
 
              metadata = {
                 _holder: _to.toLowerCase(),
@@ -508,7 +508,7 @@ async function logTransfer721() {
                     hasError: true,
                     error
                 }
-    
+
                 logFinish(eventNames.LOG_TRANSFER_721, _tokenIdVoucher, errObj)
                 return
             }
@@ -532,7 +532,7 @@ async function logTransferSingle1155() {
 
         try {
 
-            const newOwnerCorrelationId = await BR.correlationIds(newSupplyOwner);
+            const newOwnerCorrelationId = await BR.getCorrelationId(newSupplyOwner);
 
             metadata = {
                 voucherOwner: newSupplyOwner.toLowerCase(),
@@ -593,7 +593,7 @@ async function logTransferBatch1155() {
 
         try {
 
-            const newOwnerCorrelationId = await BR.correlationIds(newSupplyOwner);
+            const newOwnerCorrelationId = await BR.getCorrelationId(newSupplyOwner);
 
             metadata = {
                 voucherOwner: newSupplyOwner.toLowerCase(),
@@ -618,9 +618,9 @@ async function logTransferBatch1155() {
         }
 
         // TODO this will need a little rework if we are to support this from the reference app. (Event Statistics related)
-        // This is not the most accurate way for detecting the record, as the corrId might change (if new tx is mined for this user) in the mean time before we get the one this relates to 
+        // This is not the most accurate way for detecting the record, as the corrId might change (if new tx is mined for this user) in the mean time before we get the one this relates to
         try {
-            const oldOwnerCorrelationId = await BR.correlationIds(oldSupplyOwner);
+            const oldOwnerCorrelationId = await BR.getCorrelationId(oldSupplyOwner);
             metadata = {
                 name: eventNames.LOG_TRANSFER_1155_BATCH,
                 _correlationId: oldOwnerCorrelationId.toString(),

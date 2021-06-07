@@ -49,7 +49,7 @@ async function getComplainPeriod(config, executor) {
     VoucherKernel.abi,
     executor
   );
-  return await vk.complainPeriod();
+  return await vk.getComplainPeriod();
 }
 
 async function getCancelFaultPeriod(config, executor) {
@@ -58,7 +58,7 @@ async function getCancelFaultPeriod(config, executor) {
     VoucherKernel.abi,
     executor
   );
-  return await vk.cancelFaultPeriod();
+  return await vk.getCancelFaultPeriod();
 }
 
 async function getVoucherValidTo(config, executor, voucherId) {
@@ -68,7 +68,7 @@ async function getVoucherValidTo(config, executor, voucherId) {
     executor
   );
   const promiseKey = await vk.getPromiseIdFromVoucherId(voucherId);
-  return (await vk.promises(promiseKey)).validTo.toString();
+  return (await vk.getPromiseData(promiseKey)).validTo.toString();
 }
 
 async function getCurrTimestamp(provider) {

@@ -9,13 +9,13 @@ const VoucherKernel = require("./abis/VoucherKernel.json");
 const utils = require("./utils");
 
 exports.handler = async (event) => {
- 
-    const dev = await getConfigParams(SecretIdDev, "dev");  
+
+    const dev = await getConfigParams(SecretIdDev, "dev");
     const provider = ethers.getDefaultProvider(dev.NETWORK_NAME, {
         etherscan: dev.ETHERSCAN_API_KEY,
         infura: dev.INFURA_API_KEY,
       });
-    
+
     const executor = new ethers.Wallet(dev.EXECUTOR_PRIVATE_KEY, provider);
 
     axios.defaults.headers.common = {
@@ -41,38 +41,38 @@ async function triggerFinalizations(executor, config) {
       executor
     );
     let res;
-  
+
     try {
       res = await axios.get(config.ALL_VOUCHERS_URL);
     } catch (e) {
       console.log(`Error while getting all vouchers from the DB. Error: ${e}`);
       return;
     }
-  
+
     if (
       typeof res === "undefined" ||
       !Object.prototype.hasOwnProperty.call(res, "data")
     )
       return;
-  
+
     for (let i = 0; i < res.data.vouchers.length; i++) {
       let voucher = res.data.vouchers[i];
       let voucherID = voucher._tokenIdVoucher;
-  
+
       if (!voucher.blockchainAnchored) {
         console.log(`Voucher: ${voucherID} is not anchored on blockchain`);
         continue;
       }
-  
+
       if (voucher.FINALIZED) {
         console.log(`Voucher: ${voucherID} is already finalized`);
         continue;
       }
-  
+
       let voucherStatus;
-  
+
       try {
-        voucherStatus = await voucherKernelContractExecutor.vouchersStatus(
+        voucherStatus = await voucherKernelContractExecutor.getVouchersStatus(
           voucherID
         );
       } catch (e) {
@@ -82,19 +82,19 @@ async function triggerFinalizations(executor, config) {
         );
         continue;
       }
-  
+
       console.log(`Voucher: ${voucherID}. The finalization has started.`);
-  
+
       try {
         let status = voucherStatus.status;
-  
+
         let isFinalized = utils.isStatus(status, utils.IDX_FINAL);
 
         if (isFinalized) {
           console.log(
             `Voucher: ${voucherID} is with finalized, but the DB was not updated while the event was triggered. Updating Database only.`
           );
-  
+
           const payload = [
             {
               _tokenIdVoucher: voucherID,
@@ -110,7 +110,7 @@ async function triggerFinalizations(executor, config) {
         console.log(error);
         continue;
       }
-  
+
       if (
         !(await shouldTriggerFinalization(
           config,
@@ -121,17 +121,17 @@ async function triggerFinalizations(executor, config) {
       ) {
         continue;
       }
-  
+
       let txOrder;
       let receipt;
-  
+
       try {
 
         txOrder = await voucherKernelContractExecutor.triggerFinalizeVoucher(
           voucherID,
           { gasLimit: config.GAS_LIMIT }
         );
-  
+
         receipt = await txOrder.wait();
       } catch (e) {
         hasErrors = true;
@@ -146,7 +146,7 @@ async function triggerFinalizations(executor, config) {
         "_tokenIdVoucher",
         "_triggeredBy"
       );
-  
+
       if (parsedEvent && parsedEvent[0]) {
         parsedEvent[0]._tokenIdVoucher = voucherID;
         const payload = [
@@ -155,12 +155,12 @@ async function triggerFinalizations(executor, config) {
             status: "FINALIZED",
           },
         ];
-  
+
         console.log(`Voucher: ${voucherID}. The finalization finished.`);
-  
+
         try {
           await axios.patch(config.UPDATE_STATUS_URL, payload);
-  
+
           console.log(`Voucher: ${voucherID}. Database updated.`);
         } catch (e) {
           hasErrors = true;
@@ -171,14 +171,14 @@ async function triggerFinalizations(executor, config) {
         }
       }
     }
-  
+
     let infoMsg = hasErrors
       ? "triggerFinalizations function finished with errors"
       : "triggerFinalizations function finished successfully";
-  
+
     console.info(infoMsg);
 }
-  
+
   async function shouldTriggerFinalization(
     config,
     executor,
@@ -194,7 +194,7 @@ async function triggerFinalizations(executor, config) {
 
     const complainPeriod = await utils.getComplainPeriod(config, executor);
     const cancelFaultPeriod = await utils.getCancelFaultPeriod(config, executor);
-  
+
     let mark = false;
 
     if (utils.isStatus(voucherStatus.status, utils.IDX_COMPLAIN)) {
@@ -202,7 +202,7 @@ async function triggerFinalizations(executor, config) {
         mark = true;
       } else if (
         BN(currTimestamp).gte(
-          BN(voucherStatus.cancelFaultPeriodStart).add(cancelFaultPeriod)
+          BN(voucherStatus.getCancelFaultPeriodStart).add(cancelFaultPeriod)
         )
       ) {
         mark = true;
@@ -233,6 +233,6 @@ async function triggerFinalizations(executor, config) {
         mark = true;
       }
     }
-  
+
     return mark;
 }
