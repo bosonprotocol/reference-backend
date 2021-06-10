@@ -128,7 +128,6 @@ class VoucherSupplyValidationMiddleware {
       "country",
       "city",
       "addressLineOne",
-      "addressLineTwo",
       "postcode",
     ];
 
@@ -150,7 +149,7 @@ class VoucherSupplyValidationMiddleware {
       return next(new ApiError(400, "Provided Location is not an Object!"));
     }
 
-    if (Object.keys(parsedLocation).length !== expectedLocationProps.length) {
+    if (Object.keys(parsedLocation).length < expectedLocationProps.length) {
       return next(
         new ApiError(
           400,
