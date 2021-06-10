@@ -124,10 +124,18 @@ class VoucherSupplyValidationMiddleware {
   }
 
   async validateLocation(req, res, next) {
-    const expectedLocationProps = [
+    const minExpectedLocationProps = [
       "country",
       "city",
       "addressLineOne",
+      "postcode",
+    ];
+
+    const maxExpectedLocationProps = [
+      "country",
+      "city",
+      "addressLineOne",
+      "addressLineTwo",
       "postcode",
     ];
 
@@ -149,7 +157,7 @@ class VoucherSupplyValidationMiddleware {
       return next(new ApiError(400, "Provided Location is not an Object!"));
     }
 
-    if (Object.keys(parsedLocation).length < expectedLocationProps.length) {
+    if (Object.keys(parsedLocation).length < minExpectedLocationProps.length) {
       return next(
         new ApiError(
           400,
@@ -160,8 +168,10 @@ class VoucherSupplyValidationMiddleware {
 
     const receivedLocationProps = Object.getOwnPropertyNames(parsedLocation);
     if (
-      expectedLocationProps.sort().join(",") !==
-      receivedLocationProps.sort().join(",")
+      minExpectedLocationProps.sort().join(",") !==
+        receivedLocationProps.sort().join(",") &&
+      maxExpectedLocationProps.sort().join(",") !==
+        receivedLocationProps.sort().join(",")
     ) {
       return next(
         new ApiError(400, "Location must contain all required fields")
