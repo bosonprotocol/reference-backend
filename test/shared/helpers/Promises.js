@@ -4,11 +4,11 @@ class Promises {
       return new Promise((resolve, reject) => {
         fn.apply(target, [
           ...arguments,
-          (err) => {
+          (err, ...args) => {
             if (err) {
               reject(err);
             }
-            resolve();
+            resolve(args);
           },
         ]);
       });

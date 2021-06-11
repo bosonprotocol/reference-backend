@@ -1,6 +1,6 @@
 module "aws-private-endpoint" {
   source  = "infrablocks/aws-private-endpoint/mongodbatlas"
-  version = "0.2.0"
+  version = "1.0.0"
 
   component             = var.component
   deployment_identifier = var.deployment_identifier

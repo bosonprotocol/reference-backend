@@ -2,8 +2,8 @@ const jwt = require("jsonwebtoken");
 const { utils } = require("ethers");
 
 class AuthenticationService {
-  constructor(configurationService) {
-    this.configurationService = configurationService;
+  constructor(tokenSecret) {
+    this.tokenSecret = tokenSecret;
   }
 
   isSignatureVerified(address, domain, types, message, signature) {
@@ -18,7 +18,7 @@ class AuthenticationService {
   }
 
   generateToken(user, expiresIn = "7d") {
-    const tokenSecret = this.configurationService.tokenSecret;
+    const tokenSecret = this.tokenSecret;
     const payload = { user: user.address.toLowerCase(), role: user.role };
     const options = { expiresIn };
 
@@ -26,7 +26,7 @@ class AuthenticationService {
   }
 
   verifyToken(token) {
-    const tokenSecret = this.configurationService.tokenSecret;
+    const tokenSecret = this.tokenSecret;
 
     return jwt.verify(token, tokenSecret);
   }

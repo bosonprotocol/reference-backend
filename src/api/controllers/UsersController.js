@@ -19,7 +19,7 @@ class UsersController {
         randomNonce
       );
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(400, `Could not preserve nonce for user: ${address}.`)
       );
@@ -52,7 +52,7 @@ class UsersController {
         return next(new ApiError(401, "Unauthorized."));
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(new ApiError(400, `Signature was not verified!`));
     }
 

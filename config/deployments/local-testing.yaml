@@ -1,7 +1,14 @@
 ---
+# General
 database_username: "admin"
 database_password: "secret"
 database_port: "27017"
 database_version: "4.4"
 
 database_type: "local"
+
+# State
+image_storage_bucket_state_bucket_name: "bsn-%{hiera('component')}-rdm-management-default"
+image_storage_bucket_state_key: "image-storage-bucket/deployment-state/%{hiera('deployment_identifier')}.tfstate"
+image_storage_bucket_state_bucket_region: "%{hiera('region')}"
+image_storage_bucket_state_bucket_is_encrypted: "true"

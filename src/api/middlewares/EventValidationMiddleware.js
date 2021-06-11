@@ -8,7 +8,7 @@ class EventValidationMiddleware {
 
   async validateUserVoucherMetadata(req, res, next) {
     if (!req.body) {
-      console.error("Empty body sent while, trying to update a user voucher!");
+      console.log("Empty body sent while, trying to update a user voucher!");
       return next(new ApiError(400, "Bad request."));
     }
 
@@ -16,7 +16,7 @@ class EventValidationMiddleware {
       !Object.prototype.hasOwnProperty.call(req.body, "_tokenIdVoucher") ||
       !req.body._tokenIdVoucher
     ) {
-      console.error("_tokenIdVoucher is empty!");
+      console.log("_tokenIdVoucher is empty!");
       return next(new ApiError(400, "Bad request."));
     }
 
@@ -28,12 +28,12 @@ class EventValidationMiddleware {
     const metadata = req.body;
 
     if (!metadata || Object.keys(metadata).length === 0) {
-      console.error("Empty body sent while, trying to update a voucher!");
+      console.log("Empty body sent while, trying to update a voucher!");
       return next(new ApiError(400, "Bad request."));
     }
 
     if (!metadata.voucherOwner) {
-      console.error("Does not have voucherOwner field!");
+      console.log("Does not have voucherOwner field!");
       return next(new ApiError(400, "Bad request."));
     }
 
@@ -42,19 +42,19 @@ class EventValidationMiddleware {
       !metadata.voucherSupplies ||
       !metadata.voucherSupplies.length
     ) {
-      console.error("Does not have voucherSupplies to update");
+      console.log("Does not have voucherSupplies to update");
       return next(new ApiError(400, "Bad request."));
     }
 
     if (!Object.prototype.hasOwnProperty.call(metadata, "_correlationId")) {
-      console.error("Does not have _correlationId to update");
+      console.log("Does not have _correlationId to update");
       return next(new ApiError(400, "Bad request."));
     }
 
     try {
       BigNumber.from(metadata._correlationId);
     } catch (error) {
-      console.error("Tx ID cannot be casted to BN!");
+      console.log("Tx ID cannot be casted to BN!");
       return next(new ApiError(400, "Bad request."));
     }
 
@@ -63,7 +63,7 @@ class EventValidationMiddleware {
 
   async validateVoucherMetadata(req, res, next) {
     if (!req.body || Object.keys(req.body).length === 0) {
-      console.error("Empty body sent while, trying to update a user voucher!");
+      console.log("Empty body sent while, trying to update a user voucher!");
       return next(new ApiError(400, "Bad request."));
     }
 
@@ -72,7 +72,7 @@ class EventValidationMiddleware {
       !Object.prototype.hasOwnProperty.call(req.body, "_tokenIdSupply") ||
       !req.body._tokenIdSupply
     ) {
-      console.error("_tokenIdSupply is missing!");
+      console.log("_tokenIdSupply is missing!");
       return next(new ApiError(400, "Bad request."));
     }
 

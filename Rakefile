@@ -1,16 +1,24 @@
 require 'git'
 require 'confidante'
-require 'rake_docker'
 require 'rake_terraform'
 require 'ruby_terraform/output'
+require 'rake_docker'
 require 'rake_fly'
+require 'rake_gpg'
+require 'rake_factory/kernel_extensions'
+require 'shivers'
 
 configuration = Confidante.configuration
+version = Shivers::Version.from_file('build/version')
+
+Docker.options = {
+  read_timeout: 300
+}
 
 RakeFly.define_installation_tasks(version: '6.7.2')
 RakeTerraform.define_installation_tasks(
   path: File.join(Dir.pwd, 'vendor', 'terraform'),
-  version: '0.14.7')
+  version: '0.15.4')
 
 task :default => [
   :build_fix,
@@ -34,6 +42,34 @@ task :build_fix => [
   :"tests:app:lint_fix",
   :"tests:app:format_fix"
 ]
+
+namespace :keys do
+  namespace :app do
+    namespace :passphrase do
+      task :generate do
+        File.open('config/secrets/app/gpg.passphrase', 'w') do |f|
+          f.write(SecureRandom.base64(36))
+        end
+      end
+    end
+
+    namespace :gpg do
+      RakeGPG.define_generate_key_task(
+          output_directory: 'config/secrets/app',
+          name_prefix: 'gpg',
+          armor: false,
+          owner_name: 'Boson Protocol Maintainers',
+          owner_email: 'maintainers@bosonprotocol.io',
+          owner_comment: 'Service key'
+      ) do |t|
+        t.passphrase =
+            File.read('config/secrets/app/gpg.passphrase')
+      end
+    end
+
+    task generate: %w[passphrase:generate gpg:generate]
+  end
+end
 
 task :test, [:deployment_type, :deployment_label] do |_, args|
   [
@@ -266,7 +302,9 @@ namespace :tests do
 
     desc "Run all unit tests"
     task :unit => [:'app:dependencies:install'] do
-      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:unit:coverage' : 'tests:app:unit'
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ?
+        'tests:app:unit:coverage' :
+        'tests:app:unit'
       sh('npm', 'run', script_name)
     end
 
@@ -297,7 +335,9 @@ namespace :tests do
 
       Rake::Task['database:contextual:ensure'].invoke(*args)
 
-      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:persistence:coverage' : 'tests:app:persistence'
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ?
+        'tests:app:persistence:coverage' :
+        'tests:app:persistence'
       sh(database_overrides_for(configuration, args),
          'npm', 'run', script_name)
     end
@@ -312,7 +352,9 @@ namespace :tests do
 
       Rake::Task['database:contextual:ensure'].invoke(*args)
 
-      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ? 'tests:app:component:coverage' : 'tests:app:component'
+      script_name = ENV["INCLUDE_COVERAGE"] == 'true' ?
+        'tests:app:component:coverage' :
+        'tests:app:component'
       sh(database_overrides_for(configuration, args),
          'npm', 'run', script_name)
     end
@@ -323,6 +365,215 @@ namespace :tests do
         sh('npm', 'run', 'tests:coverage:badge')
       end
     end
+  end
+end
+
+namespace :lambda do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'reference backend keepers lambda',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'functions'))
+
+    t.source_directory = 'infra/functions'
+    t.work_directory = 'build'
+
+    t.backend_config = configuration.backend_config
+    t.vars = configuration.vars
+  end
+end
+
+namespace :keepers_image_repository do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'keepers image repository',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'keepers-image-repository'))
+
+    t.source_directory = 'infra/keepers-image-repository'
+    t.work_directory = 'build'
+
+    t.backend_config = configuration.backend_config
+    t.vars = configuration.vars
+  end
+end
+
+namespace :image_repository do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'reference backend image repository',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'image-repository'))
+
+    t.source_directory = 'infra/image-repository'
+    t.work_directory = 'build'
+
+    t.backend_config = configuration.backend_config
+    t.vars = configuration.vars
+  end
+end
+
+namespace :image do
+  RakeDocker.define_image_tasks(
+    image_name: 'reference-backend',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'image-repository'))
+
+    t.work_directory = 'build/images'
+
+    t.copy_spec = [
+      'image/Dockerfile',
+      'image/docker-entrypoint.sh',
+      'src/',
+      'app.js',
+      'package.json',
+      'package-lock.json'
+    ]
+    t.create_spec = [
+      { content: version.to_s, to: 'VERSION' },
+      { content: version.to_docker_tag, to: 'TAG' }
+    ]
+
+    t.repository_name = configuration.image_repository_name
+    t.repository_url = dynamic do
+      JSON.parse(
+        RubyTerraform::Output.for(
+          name: 'repository_url',
+          source_directory: 'infra/image-repository',
+          work_directory: 'build',
+          backend_config: configuration.backend_config
+        )
+      )
+    end
+
+    t.credentials = dynamic do
+      RakeDocker::Authentication::ECR.new do |c|
+        c.region = configuration.region
+        c.registry_id =
+          JSON.parse(
+            RubyTerraform::Output.for(
+              name: 'registry_id',
+              source_directory: 'infra/image-repository',
+              work_directory: 'build',
+              backend_config: configuration.backend_config
+            )
+          )
+      end.call
+    end
+
+    t.tags = [version.to_docker_tag, 'latest']
+  end
+end
+
+namespace :image_keepers do
+  RakeDocker.define_image_tasks(
+    image_name: 'keepers',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+      configuration.for_scope(args.to_h.merge(role: 'keepers-image-repository'))
+
+    t.work_directory = 'build/images'
+
+    t.copy_spec = [
+      'image-keepers/Dockerfile',
+      'image-keepers/docker-entrypoint.sh',
+      'external/keepers/src/',
+      'external/keepers/package.json',
+      'external/keepers/package-lock.json'
+    ]
+    t.create_spec = [
+      { content: version.to_s, to: 'VERSION' },
+      { content: version.to_docker_tag, to: 'TAG' }
+    ]
+
+    t.repository_name = configuration.keepers_image_repository_name
+    t.repository_url = dynamic do
+      JSON.parse(
+        RubyTerraform::Output.for(
+          name: 'repository_url',
+          source_directory: 'infra/keepers-image-repository',
+          work_directory: 'build',
+          backend_config: configuration.backend_config
+        )
+      )
+    end
+
+    t.credentials = dynamic do
+      RakeDocker::Authentication::ECR.new do |c|
+        c.region = configuration.region
+        c.registry_id =
+          JSON.parse(
+            RubyTerraform::Output.for(
+              name: 'registry_id',
+              source_directory: 'infra/keepers-image-repository',
+              work_directory: 'build',
+              backend_config: configuration.backend_config
+            )
+          )
+      end.call
+    end
+
+    t.tags = [version.to_docker_tag, 'latest']
+  end
+end
+
+namespace :image_storage_bucket do
+  RakeTerraform.define_command_tasks(
+      configuration_name: 'reference backend image storage bucket',
+      argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    configuration =
+        configuration.for_scope(args.to_h.merge(role: 'image-storage-bucket'))
+
+    t.source_directory = 'infra/image-storage-bucket'
+    t.work_directory = 'build'
+
+    t.backend_config = configuration.backend_config
+    t.vars = configuration.vars
+  end
+end
+
+namespace :service do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'reference backend',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    version_configuration = { version_number: version.to_docker_tag }
+    service_configuration =
+      configuration
+        .for_overrides(version_configuration)
+        .for_scope(args.to_h.merge(role: 'service'))
+
+    t.source_directory = 'infra/service'
+    t.work_directory = 'build'
+
+    t.backend_config = service_configuration.backend_config
+    t.vars = service_configuration.vars
+  end
+end
+
+namespace :service_keepers do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'keepers',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    version_configuration = { version_number: version.to_docker_tag }
+    service_configuration =
+      configuration
+        .for_overrides(version_configuration)
+        .for_scope(args.to_h.merge(role: 'keepers-service'))
+
+    t.source_directory = 'infra/keepers-service'
+    t.work_directory = 'build'
+
+    t.backend_config = service_configuration.backend_config
+    t.vars = service_configuration.vars
   end
 end
 
