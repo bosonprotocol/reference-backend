@@ -114,6 +114,14 @@ resource "aws_cloudwatch_event_target" "expirations_lambda_event_target" {
   arn  = module.expirations_lambda.lambda_arn
 }
 
+resource "aws_lambda_permission" "expirations_lambda_permission" {
+    statement_id = "AllowExecutionFromCloudWatch"
+    action = "lambda:InvokeFunction"
+    function_name = "trigger-expirations"
+    principal = "events.amazonaws.com"
+    source_arn = aws_cloudwatch_event_rule.expirations_lambda_cron_schedule.arn
+}
+
 module "finalizations_lambda" {
   source = "infrablocks/lambda/aws"
   version = "1.0.0"
@@ -153,6 +161,14 @@ resource "aws_cloudwatch_event_target" "finalizations_lambda_event_target" {
   arn  = module.finalizations_lambda.lambda_arn
 }
 
+resource "aws_lambda_permission" "finalizations_lambda_permission" {
+    statement_id = "AllowExecutionFromCloudWatch"
+    action = "lambda:InvokeFunction"
+    function_name = "trigger-finalizations"
+    principal = "events.amazonaws.com"
+    source_arn = aws_cloudwatch_event_rule.finalizations_lambda_cron_schedule.arn
+}
+
 module "withdrawals_lambda" {
   source = "infrablocks/lambda/aws"
   version = "1.0.0"
@@ -190,4 +206,12 @@ resource "aws_cloudwatch_event_rule" "withdrawals_lambda_cron_schedule" {
 resource "aws_cloudwatch_event_target" "withdrawals_lambda_event_target" {
   rule = aws_cloudwatch_event_rule.withdrawals_lambda_cron_schedule.name
   arn  = module.withdrawals_lambda.lambda_arn
+}
+
+resource "aws_lambda_permission" "withdrawals_lambda_permission" {
+    statement_id = "AllowExecutionFromCloudWatch"
+    action = "lambda:InvokeFunction"
+    function_name = "trigger-withdrawals"
+    principal = "events.amazonaws.com"
+    source_arn = aws_cloudwatch_event_rule.withdrawals_lambda_cron_schedule.arn
 }
