@@ -102,6 +102,18 @@ module "expirations_lambda" {
   publish = "yes"
 }
 
+resource "aws_cloudwatch_event_rule" "expirations_lambda_cron_schedule" {
+  name                = replace("trigger-expirations-cron_schedule", "/(.{0,64}).*/", "$1")
+  description         = "This event will run according to a schedule for Lambda trigger-expirations"
+  schedule_expression = "rate(5 minutes)"
+  is_enabled          = true
+}
+
+resource "aws_cloudwatch_event_target" "expirations_lambda_event_target" {
+  rule = aws_cloudwatch_event_rule.expirations_lambda_cron_schedule.name
+  arn  = module.expirations_lambda.lambda_arn
+}
+
 module "finalizations_lambda" {
   source = "infrablocks/lambda/aws"
   version = "1.0.0"
@@ -129,6 +141,18 @@ module "finalizations_lambda" {
   publish = "yes"
 }
 
+resource "aws_cloudwatch_event_rule" "finalizations_lambda_cron_schedule" {
+  name                = replace("trigger-finalizations-cron_schedule", "/(.{0,64}).*/", "$1")
+  description         = "This event will run according to a schedule for Lambda trigger-finalizations"
+  schedule_expression = "rate(5 minutes)"
+  is_enabled          = true
+}
+
+resource "aws_cloudwatch_event_target" "finalizations_lambda_event_target" {
+  rule = aws_cloudwatch_event_rule.finalizations_lambda_cron_schedule.name
+  arn  = module.finalizations_lambda.lambda_arn
+}
+
 module "withdrawals_lambda" {
   source = "infrablocks/lambda/aws"
   version = "1.0.0"
@@ -154,4 +178,16 @@ module "withdrawals_lambda" {
   deploy_in_vpc = "no"
 
   publish = "yes"
+}
+
+resource "aws_cloudwatch_event_rule" "withdrawals_lambda_cron_schedule" {
+  name                = replace("trigger-withdrawals-cron_schedule", "/(.{0,64}).*/", "$1")
+  description         = "This event will run according to a schedule for Lambda trigger-withdrawals"
+  schedule_expression = "rate(5 minutes)"
+  is_enabled          = true
+}
+
+resource "aws_cloudwatch_event_target" "withdrawals_lambda_event_target" {
+  rule = aws_cloudwatch_event_rule.withdrawals_lambda_cron_schedule.name
+  arn  = module.withdrawals_lambda.lambda_arn
 }
