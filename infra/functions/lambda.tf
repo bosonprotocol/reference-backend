@@ -1,20 +1,68 @@
 data "aws_caller_identity" "caller" {}
 
+resource "null_resource" "expirations_lambda_build" {
+  triggers = {
+    source = base64sha256("${path.cwd}/lambdas/triggerExpirations/src")
+  }
+
+  provisioner "local-exec" {
+    command = "cd ${path.cwd}/lambdas/triggerExpirations/src && npm install"
+  }
+}
+
+data "null_data_source" "expirations_lambda_build_dep" {
+  inputs = {
+    source_dir = "${path.cwd}/lambdas/triggerExpirations/src"
+  }
+}
+
 data "archive_file" "expirations_lambda" {
   type        = "zip"
-  source_dir = "${path.cwd}/lambdas/triggerExpirations/src"
+  source_dir = data.null_data_source.expirations_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/lambdas/triggerExpirations/triggerExpirations.zip"
+}
+
+resource "null_resource" "finalizations_lambda_build" {
+  triggers = {
+    source = base64sha256("${path.cwd}/lambdas/triggerFinalizations/src")
+  }
+
+  provisioner "local-exec" {
+    command = "cd ${path.cwd}/lambdas/triggerFinalizations/src && npm install"
+  }
+}
+
+data "null_data_source" "finalizations_lambda_build_dep" {
+  inputs = {
+    source_dir = "${path.cwd}/lambdas/triggerFinalizations/src"
+  }
 }
 
 data "archive_file" "finalizations_lambda" {
   type        = "zip"
-  source_dir = "${path.cwd}/lambdas/triggerFinalizations/src"
+  source_dir = data.null_data_source.finalizations_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/lambdas/triggerFinalizations/triggerFinalizations.zip"
+}
+
+resource "null_resource" "withdrawals_lambda_build" {
+  triggers = {
+    source = base64sha256("${path.cwd}/lambdas/triggerWithdrawals/src")
+  }
+
+  provisioner "local-exec" {
+    command = "cd ${path.cwd}/lambdas/triggerWithdrawals/src && npm install"
+  }
+}
+
+data "null_data_source" "withdrawals_lambda_build_dep" {
+  inputs = {
+    source_dir = "${path.cwd}/lambdas/triggerWithdrawals/src"
+  }
 }
 
 data "archive_file" "withdrawals_lambda" {
   type        = "zip"
-  source_dir = "${path.cwd}/lambdas/triggerWithdrawals/src"
+  source_dir = data.null_data_source.withdrawals_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/lambdas/triggerWithdrawals/triggerWithdrawals.zip"
 }
 
@@ -100,6 +148,10 @@ module "expirations_lambda" {
   deploy_in_vpc = "no"
 
   publish = "yes"
+
+  depends_on = [
+    data.archive_file.expirations_lambda
+  ]
 }
 
 resource "aws_cloudwatch_event_rule" "expirations_lambda_cron_schedule" {
