@@ -2,7 +2,7 @@ const ethers = require("ethers");
 const axios = require("axios").default;
 
 const getConfigParams = require('./configs')
-const SecretIdDev = "keepersServiceSecrets"
+const SecretIdDev = "keepersServiceSecret"
 const BN = ethers.BigNumber.from;
 
 const VoucherKernel = require("./abis/VoucherKernel.json");

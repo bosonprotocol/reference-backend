@@ -1,8 +1,17 @@
+resource "aws_secretsmanager_secret" "keepers_secretsmanager_secret" {
+  name = "keepersServiceSecret"
+}
+
+resource "aws_secretsmanager_secret_version" "keepers_secretsmanager_secret_version" {
+  secret_id     = aws_secretsmanager_secret.keepers_secretsmanager_secret.id
+  secret_string = var.gcloud_secret
+}
+
 data "aws_caller_identity" "caller" {}
 
 resource "null_resource" "expirations_lambda_build" {
   triggers = {
-    source = base64sha256("${path.cwd}/lambdas/triggerExpirations/src")
+    updated_at = timestamp()
   }
 
   provisioner "local-exec" {
@@ -24,7 +33,7 @@ data "archive_file" "expirations_lambda" {
 
 resource "null_resource" "finalizations_lambda_build" {
   triggers = {
-    source = base64sha256("${path.cwd}/lambdas/triggerFinalizations/src")
+    updated_at = timestamp()
   }
 
   provisioner "local-exec" {
@@ -46,7 +55,7 @@ data "archive_file" "finalizations_lambda" {
 
 resource "null_resource" "withdrawals_lambda_build" {
   triggers = {
-    source = base64sha256("${path.cwd}/lambdas/triggerWithdrawals/src")
+    updated_at = timestamp()
   }
 
   provisioner "local-exec" {

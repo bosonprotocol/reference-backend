@@ -5,6 +5,8 @@ vars:
   component: "%{hiera('component')}"
   deployment_identifier: "%{hiera('deployment_identifier')}"
 
+  gcloud_secret: "%{hiera('gcloud_secret')}"
+
 backend_config:
   region: "%{hiera('functions_state_bucket_region')}"
   bucket: "%{hiera('functions_state_bucket_name')}"
