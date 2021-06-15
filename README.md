@@ -9,7 +9,7 @@ This is a reference application which demonstrates how to integrate Boson Protoc
 
 This reference application shows you how to build a p2p marketplace powered by Boson Protocol. Users can connect their wallets and list a set of items as a seller, as well as discover products that can be purchased as a buyer. The application also demonstrates how to the transaction lifecycle can be tracked and co-ordinated by both parties.
 
-Live demo running on the Rinkeby test network:
+Live demo running on the Rinkeby test network: \
 https://reference-app.bosonprotocol.io
 
 ---
