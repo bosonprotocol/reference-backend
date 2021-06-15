@@ -1,13 +1,32 @@
+data "aws_caller_identity" "caller" {}
+data "terraform_remote_state" "service" {
+  backend = "s3"
+
+  config = {
+    bucket  = var.service_state_bucket_name
+    key     = var.service_state_key
+    region  = var.service_state_bucket_region
+    encrypt = var.service_state_bucket_is_encrypted
+  }
+}
+
 resource "aws_secretsmanager_secret" "keepers_secretsmanager_secret" {
-  name = "keepersServiceSecret"
+  name = "keepersServiceSMSecrets"
 }
 
 resource "aws_secretsmanager_secret_version" "keepers_secretsmanager_secret_version" {
-  secret_id     = aws_secretsmanager_secret.keepers_secretsmanager_secret.id
-  secret_string = var.gcloud_secret
+  secret_id = aws_secretsmanager_secret.keepers_secretsmanager_secret.id
+  secret_string = jsonencode(tomap({
+    gcloudsecret         = var.gcloud_keepers_secret
+    cashieraddress       = var.cashier_address
+    executorsecret       = var.executor_secret
+    networkname          = "rinkeby"
+    etherscanapikey      = var.etherscan_apikey
+    infuraapikey         = var.infura_apikey
+    voucherkerneladdress = var.voucher_kernel_address
+    apiurl               = "https://${data.terraform_remote_state.service.outputs.address}"
+  }))
 }
-
-data "aws_caller_identity" "caller" {}
 
 resource "null_resource" "expirations_lambda_build" {
   triggers = {
@@ -27,7 +46,7 @@ data "null_data_source" "expirations_lambda_build_dep" {
 
 data "archive_file" "expirations_lambda" {
   type        = "zip"
-  source_dir = data.null_data_source.expirations_lambda_build_dep.outputs.source_dir
+  source_dir  = data.null_data_source.expirations_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/lambdas/triggerExpirations/triggerExpirations.zip"
 }
 
@@ -49,7 +68,7 @@ data "null_data_source" "finalizations_lambda_build_dep" {
 
 data "archive_file" "finalizations_lambda" {
   type        = "zip"
-  source_dir = data.null_data_source.finalizations_lambda_build_dep.outputs.source_dir
+  source_dir  = data.null_data_source.finalizations_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/lambdas/triggerFinalizations/triggerFinalizations.zip"
 }
 
@@ -71,7 +90,7 @@ data "null_data_source" "withdrawals_lambda_build_dep" {
 
 data "archive_file" "withdrawals_lambda" {
   type        = "zip"
-  source_dir = data.null_data_source.withdrawals_lambda_build_dep.outputs.source_dir
+  source_dir  = data.null_data_source.withdrawals_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/lambdas/triggerWithdrawals/triggerWithdrawals.zip"
 }
 
@@ -104,7 +123,7 @@ data "aws_iam_policy_document" "execution_policy" {
   }
 
   statement {
-    actions = ["iam:CreateServiceLinkedRole"]
+    actions   = ["iam:CreateServiceLinkedRole"]
     resources = ["arn:aws:iam::*:role/*"]
   }
 
@@ -133,26 +152,26 @@ data "aws_iam_policy_document" "execution_policy" {
 }
 
 module "expirations_lambda" {
-  source = "infrablocks/lambda/aws"
+  source  = "infrablocks/lambda/aws"
   version = "1.0.0"
 
-  region = var.region
-  account_id = data.aws_caller_identity.caller.account_id
-  component = var.component
+  region                = var.region
+  account_id            = data.aws_caller_identity.caller.account_id
+  component             = var.component
   deployment_identifier = var.deployment_identifier
 
   lambda_runtime = "nodejs14.x"
 
-  lambda_timeout = 15
+  lambda_timeout     = 15
   lambda_memory_size = 128
 
-  lambda_assume_role = data.aws_iam_policy_document.assume_role_policy.json
+  lambda_assume_role      = data.aws_iam_policy_document.assume_role_policy.json
   lambda_execution_policy = data.aws_iam_policy_document.execution_policy.json
 
-  lambda_description = "Expirations Lambda"
+  lambda_description   = "Expirations Lambda"
   lambda_function_name = "trigger-expirations"
-  lambda_handler = "index.handler"
-  lambda_zip_path = data.archive_file.expirations_lambda.output_path
+  lambda_handler       = "index.handler"
+  lambda_zip_path      = data.archive_file.expirations_lambda.output_path
 
   deploy_in_vpc = "no"
 
@@ -176,34 +195,34 @@ resource "aws_cloudwatch_event_target" "expirations_lambda_event_target" {
 }
 
 resource "aws_lambda_permission" "expirations_lambda_permission" {
-    statement_id = "AllowExecutionFromCloudWatch"
-    action = "lambda:InvokeFunction"
-    function_name = "trigger-expirations"
-    principal = "events.amazonaws.com"
-    source_arn = aws_cloudwatch_event_rule.expirations_lambda_cron_schedule.arn
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = "trigger-expirations"
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.expirations_lambda_cron_schedule.arn
 }
 
 module "finalizations_lambda" {
-  source = "infrablocks/lambda/aws"
+  source  = "infrablocks/lambda/aws"
   version = "1.0.0"
 
-  region = var.region
-  account_id = data.aws_caller_identity.caller.account_id
-  component = var.component
+  region                = var.region
+  account_id            = data.aws_caller_identity.caller.account_id
+  component             = var.component
   deployment_identifier = var.deployment_identifier
 
   lambda_runtime = "nodejs14.x"
 
-  lambda_timeout = 15
+  lambda_timeout     = 15
   lambda_memory_size = 128
 
-  lambda_assume_role = data.aws_iam_policy_document.assume_role_policy.json
+  lambda_assume_role      = data.aws_iam_policy_document.assume_role_policy.json
   lambda_execution_policy = data.aws_iam_policy_document.execution_policy.json
 
-  lambda_description = "Finalizations Lambda"
+  lambda_description   = "Finalizations Lambda"
   lambda_function_name = "trigger-finalizations"
-  lambda_handler = "index.handler"
-  lambda_zip_path = data.archive_file.finalizations_lambda.output_path
+  lambda_handler       = "index.handler"
+  lambda_zip_path      = data.archive_file.finalizations_lambda.output_path
 
   deploy_in_vpc = "no"
 
@@ -227,34 +246,34 @@ resource "aws_cloudwatch_event_target" "finalizations_lambda_event_target" {
 }
 
 resource "aws_lambda_permission" "finalizations_lambda_permission" {
-    statement_id = "AllowExecutionFromCloudWatch"
-    action = "lambda:InvokeFunction"
-    function_name = "trigger-finalizations"
-    principal = "events.amazonaws.com"
-    source_arn = aws_cloudwatch_event_rule.finalizations_lambda_cron_schedule.arn
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = "trigger-finalizations"
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.finalizations_lambda_cron_schedule.arn
 }
 
 module "withdrawals_lambda" {
-  source = "infrablocks/lambda/aws"
+  source  = "infrablocks/lambda/aws"
   version = "1.0.0"
 
-  region = var.region
-  account_id = data.aws_caller_identity.caller.account_id
-  component = var.component
+  region                = var.region
+  account_id            = data.aws_caller_identity.caller.account_id
+  component             = var.component
   deployment_identifier = var.deployment_identifier
 
   lambda_runtime = "nodejs14.x"
 
-  lambda_timeout = 15
+  lambda_timeout     = 15
   lambda_memory_size = 128
 
-  lambda_assume_role = data.aws_iam_policy_document.assume_role_policy.json
+  lambda_assume_role      = data.aws_iam_policy_document.assume_role_policy.json
   lambda_execution_policy = data.aws_iam_policy_document.execution_policy.json
 
-  lambda_description = "Withdrawals Lambda"
+  lambda_description   = "Withdrawals Lambda"
   lambda_function_name = "trigger-withdrawals"
-  lambda_handler = "index.handler"
-  lambda_zip_path = data.archive_file.withdrawals_lambda.output_path
+  lambda_handler       = "index.handler"
+  lambda_zip_path      = data.archive_file.withdrawals_lambda.output_path
 
   deploy_in_vpc = "no"
 
@@ -278,9 +297,9 @@ resource "aws_cloudwatch_event_target" "withdrawals_lambda_event_target" {
 }
 
 resource "aws_lambda_permission" "withdrawals_lambda_permission" {
-    statement_id = "AllowExecutionFromCloudWatch"
-    action = "lambda:InvokeFunction"
-    function_name = "trigger-withdrawals"
-    principal = "events.amazonaws.com"
-    source_arn = aws_cloudwatch_event_rule.withdrawals_lambda_cron_schedule.arn
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = "trigger-withdrawals"
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.withdrawals_lambda_cron_schedule.arn
 }
