@@ -199,6 +199,10 @@ module "finalizations_lambda" {
   deploy_in_vpc = "no"
 
   publish = "yes"
+
+  depends_on = [
+    data.archive_file.finalizations_lambda
+  ]
 }
 
 resource "aws_cloudwatch_event_rule" "finalizations_lambda_cron_schedule" {
@@ -246,6 +250,10 @@ module "withdrawals_lambda" {
   deploy_in_vpc = "no"
 
   publish = "yes"
+
+  depends_on = [
+    data.archive_file.withdrawals_lambda
+  ]
 }
 
 resource "aws_cloudwatch_event_rule" "withdrawals_lambda_cron_schedule" {
