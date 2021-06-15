@@ -2,7 +2,7 @@ const ethers = require("ethers");
 const axios = require("axios").default;
 
 const getConfigParams = require('./configs')
-const SecretIdDev = "keepersServiceSecrets"
+const SecretIdDev = "keepersServiceSMSecrets"
 const BN = ethers.BigNumber.from;
 
 const VoucherKernel = require("./abis/VoucherKernel.json");
@@ -45,7 +45,7 @@ async function triggerFinalizations(executor, config) {
     try {
       res = await axios.get(config.ALL_VOUCHERS_URL);
     } catch (e) {
-      console.error(`Error while getting all vouchers from the DB. Error: ${e}`);
+      console.log(`Error while getting all vouchers from the DB. Error: ${e}`);
       return;
     }
   
@@ -77,7 +77,7 @@ async function triggerFinalizations(executor, config) {
         );
       } catch (e) {
         hasErrors = true;
-        console.error(
+        console.log(
           `Error while checking voucher status toward the contract. Error: ${e}`
         );
         continue;
@@ -107,7 +107,7 @@ async function triggerFinalizations(executor, config) {
           continue;
         }
       } catch (error) {
-        console.error(error);
+        console.log(error);
         continue;
       }
   
@@ -135,7 +135,7 @@ async function triggerFinalizations(executor, config) {
         receipt = await txOrder.wait();
       } catch (e) {
         hasErrors = true;
-        console.error(
+        console.log(
           `Error while triggering finalization of the voucher. Error: ${e}`
         );
         continue;
@@ -165,7 +165,7 @@ async function triggerFinalizations(executor, config) {
         } catch (e) {
           hasErrors = true;
           console.log(e);
-          console.error(
+          console.log(
             `Error while updating the DB related to finalization of the voucher. Error: ${e}`
           );
         }

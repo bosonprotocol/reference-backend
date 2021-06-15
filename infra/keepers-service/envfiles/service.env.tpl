@@ -1,0 +1,5 @@
+TOKENS_CONTRACT_ADDRESS="${token_contact_address}"
+BOSON_ROUTER_CONTRACT_ADDRESS="${boson_router_contact_address}"
+VOUCHER_KERNEL_ADDRESS="${voucher_kernel_address}"
+GCLOUD_SECRET="${gcloud_keepers_secret}"
+ALCHEMY_URL="${alchemy_url}"

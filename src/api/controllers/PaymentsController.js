@@ -60,7 +60,7 @@ class PaymentsController {
         }
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(
           400,
@@ -99,7 +99,7 @@ class PaymentsController {
 
       await Promise.all(promises);
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(
           400,
@@ -121,7 +121,7 @@ class PaymentsController {
         tokenIdVoucher
       );
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(
         new ApiError(
           400,

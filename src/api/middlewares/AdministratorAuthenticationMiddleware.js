@@ -25,7 +25,7 @@ class AdministratorAuthenticationMiddleware {
 
       res.locals.address = payload.user;
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return next(new ApiError(403, "Forbidden."));
     }
 
