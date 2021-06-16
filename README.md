@@ -64,9 +64,8 @@ For instructions on how to get set up with these specific versions:
 ---
 ### Configuration
 Prior to running the application, you must set up a `.env` file in the project's root directory with the following environment variables:
-- `TOKEN_SECRET` - What is this?
-- `GCLOUD_SECRET` - Is this still needed if we're using AWS?
-- `VOUCHERS_BUCKET` - This is the name for the bucket to push images to.
+- `TOKEN_SECRET` - The token used to authenticate the user. Based on the verification with the secret, we derive the user's address.
+- `GCLOUD_SECRET` - The token used to authenticate requests from the Event Listeners and Keepers.
 
 ---
 ### Build
