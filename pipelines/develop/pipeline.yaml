@@ -177,7 +177,7 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - provision-keepers-image-repository
+              - test
           - get: node-builder-image
       - task: provision-image-repository
         image: node-builder-image
@@ -199,6 +199,7 @@ jobs:
           - get: source
             trigger: true
             passed:
+              - provision-keepers-image-repository
               - provision-image-repository
           - put: version
             params:
@@ -231,10 +232,9 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - publish-image
+              - provision-keepers-image-repository
+              - provision-image-repository
           - get: version
-            passed:
-              - publish-image
           - get: node-builder-image
       - task: publish-image-keepers
         image: node-builder-image
@@ -368,10 +368,8 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - provision-development-plutonium-keepers-service
+              - provision-development-plutonium-image-storage-bucket
           - get: version
-            passed:
-              - provision-development-plutonium-keepers-service
           - get: node-builder-image
       - task: provision-service
         image: node-builder-image
@@ -496,10 +494,8 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - provision-production-oganesson-keepers-service
+              - provision-production-oganesson-image-storage-bucket
           - get: version
-            passed:
-              - provision-production-oganesson-keepers-service
           - get: node-builder-image
       - task: provision-service
         image: node-builder-image

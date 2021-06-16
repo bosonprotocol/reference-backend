@@ -162,7 +162,7 @@ module "expirations_lambda" {
 
   lambda_runtime = "nodejs14.x"
 
-  lambda_timeout     = 15
+  lambda_timeout     = 900
   lambda_memory_size = 128
 
   lambda_assume_role      = data.aws_iam_policy_document.assume_role_policy.json
@@ -213,7 +213,7 @@ module "finalizations_lambda" {
 
   lambda_runtime = "nodejs14.x"
 
-  lambda_timeout     = 15
+  lambda_timeout     = 900
   lambda_memory_size = 128
 
   lambda_assume_role      = data.aws_iam_policy_document.assume_role_policy.json
@@ -264,7 +264,7 @@ module "withdrawals_lambda" {
 
   lambda_runtime = "nodejs14.x"
 
-  lambda_timeout     = 15
+  lambda_timeout     = 900
   lambda_memory_size = 128
 
   lambda_assume_role      = data.aws_iam_policy_document.assume_role_policy.json
