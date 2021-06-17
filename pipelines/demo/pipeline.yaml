@@ -70,13 +70,13 @@ groups:
       - provision-image-repository
       - publish-image
       - publish-image-keepers
-  - name: production-oganesson
+  - name: demo-mendelevium
     jobs:
-      - provision-production-oganesson-database
-      - provision-production-oganesson-image-storage-bucket
-      - provision-production-oganesson-keepers-service
-      - provision-production-oganesson-service
-      - provision-production-oganesson-functions
+      - provision-demo-mendelevium-database
+      - provision-demo-mendelevium-image-storage-bucket
+      - provision-demo-mendelevium-keepers-service
+      - provision-demo-mendelevium-service
+      - provision-demo-mendelevium-functions
 
 jobs:
   - name: build
@@ -250,7 +250,7 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-production-oganesson-database
+  - name: provision-demo-mendelevium-database
     serial: true
     plan:
       - in_parallel:
@@ -278,17 +278,17 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-production-oganesson-image-storage-bucket
+  - name: provision-demo-mendelevium-image-storage-bucket
     serial: true
     plan:
       - in_parallel:
           - get: source
             trigger: true
             passed:
-              - provision-production-oganesson-database
+              - provision-demo-mendelevium-database
           - get: version
             passed:
-              - provision-production-oganesson-database
+              - provision-demo-mendelevium-database
           - get: node-builder-image
       - task: provision-image-storage-bucket
         image: node-builder-image
@@ -304,17 +304,17 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-production-oganesson-keepers-service
+  - name: provision-demo-mendelevium-keepers-service
     serial: true
     plan:
       - in_parallel:
           - get: source
             trigger: true
             passed:
-              - provision-production-oganesson-image-storage-bucket
+              - provision-demo-mendelevium-image-storage-bucket
           - get: version
             passed:
-              - provision-production-oganesson-image-storage-bucket
+              - provision-demo-mendelevium-image-storage-bucket
           - get: node-builder-image
       - task: provision-keepers-service
         image: node-builder-image
@@ -330,14 +330,14 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-production-oganesson-service
+  - name: provision-demo-mendelevium-service
     serial: true
     plan:
       - in_parallel:
           - get: source
             trigger: true
             passed:
-              - provision-production-oganesson-keepers-service
+              - provision-demo-mendelevium-keepers-service
           - get: version
           - get: node-builder-image
       - task: provision-service
@@ -354,17 +354,17 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-production-oganesson-functions
+  - name: provision-demo-mendelevium-functions
     serial: true
     plan:
       - in_parallel:
           - get: source
             trigger: true
             passed:
-              - provision-production-oganesson-service
+              - provision-demo-mendelevium-service
           - get: version
             passed:
-              - provision-production-oganesson-service
+              - provision-demo-mendelevium-service
           - get: node-builder-image
       - task: provision-functions
         image: node-builder-image
