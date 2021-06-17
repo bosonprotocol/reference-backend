@@ -88,8 +88,7 @@ async function logOrderCreated() {
         logStart(eventNames.LOG_ORDER_CREATED, _tokenIdSupply);
 
         try {
-            // ToDo: Expose getOrdersPromise
-            const promiseId = await VK.ordersPromise(_tokenIdSupply.toString());
+            const promiseId = await VK.getPromiseIdFromSupplyId(_tokenIdSupply.toString());
             const promiseDetails = await VK.getPromiseData(promiseId)
 
             metadata = {
