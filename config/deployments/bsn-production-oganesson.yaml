@@ -1,6 +1,4 @@
 ---
-source_repository_branch: "demo"
-
 # General
 storage_bucket_allowed_account_ids:
   - "%{hiera('bsn_production_lutetium_account_id')}"

@@ -1,6 +1,4 @@
 ---
-source_repository_branch: "keepers-node-modules"
-
 # General
 storage_bucket_allowed_account_ids:
   - "%{hiera('bsn_development_potassium_account_id')}"
