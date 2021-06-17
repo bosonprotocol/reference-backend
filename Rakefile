@@ -28,8 +28,6 @@ task :default => [
 task :build => [
   :"app:lint",
   :"app:format",
-  :"functions:lint",
-  :"functions:format",
   :"tests:app:lint",
   :"tests:app:format"
 ]
@@ -37,8 +35,6 @@ task :build => [
 task :build_fix => [
   :"app:lint_fix",
   :"app:format_fix",
-  :"functions:lint_fix",
-  :"functions:format_fix",
   :"tests:app:lint_fix",
   :"tests:app:format_fix"
 ]
