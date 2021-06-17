@@ -7,10 +7,7 @@
 
 This is a reference application which demonstrates how to integrate Boson Protocol into a NodeJS back-end. This repository contains a MongoDB service as well as keeper functions & event listeners.
 
-This reference application shows you how to build a p2p marketplace powered by Boson Protocol. Users can connect their wallets and list a set of items as a seller, as well as discover products that can be purchased as a buyer. The application also demonstrates how to the transaction lifecycle can be tracked and co-ordinated by both parties.
-
-Live demo running on the Rinkeby test network: \
-https://reference-app.bosonprotocol.io
+This reference app may be used as a template for building your own marketplace powered by Boson Protocol. Users can connect their wallets and list a set of items as a seller, as well as discover products that can be purchased as a buyer. The application also demonstrates how to the transaction lifecycle can be tracked and co-ordinated by both parties.
 
 ---
 **Table of Contents**
@@ -46,7 +43,7 @@ The application architecture is as depicted below. There are various components 
 ### Prerequisites
 
 For local development of the reference-backend, your development machine will need a few
-tools installed.
+tools installed. These will allow you to run the ruby scripts (executed as `./go [args]`) to build and test the project.
 
 At a minimum, you'll need:
 * Node (12.20)
@@ -56,7 +53,8 @@ At a minimum, you'll need:
 * Git
 * Docker
 * direnv
-
+  * This easily allows environment variables to be switched when navigating between project directories (e.g. `contracts`, `reference-backend` and `reference-frontend`). You will be prompted to run `direnv allow` to enable this.
+  
 For instructions on how to get set up with these specific versions:
 * See the [OS X guide](docs/setup/osx.md) if you are on a Mac.
 * See the [Linux guide](docs/setup/linux.md) if you use a Linux distribution.
@@ -92,8 +90,8 @@ A task has been created which will:
  - Install any necessary dependencies
  - Provision a local database
  - Run the server locally
- - Run a local keepers service (dependent on local contracts deployment as described in the [`contracts`](https://github.com/bosonprotocol/contracts) repository).
- - Run local event listeners (dependent on local contracts deployment as described in the [`contracts`](https://github.com/bosonprotocol/contracts) repository).
+ - Run a local keepers service (dependent on local contracts deployment as described in the [`contracts`](https://github.com/bosonprotocol/contracts) repository - see "Run" section).
+ - Run local event listeners (dependent on local contracts deployment as described in the [`contracts`](https://github.com/bosonprotocol/contracts) repository - see "Run" section).
 
 This can be executed by running the following from the project root directory:
 ```shell
