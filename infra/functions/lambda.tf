@@ -48,6 +48,11 @@ data "archive_file" "expirations_lambda" {
   type        = "zip"
   source_dir  = data.null_data_source.expirations_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/external/lambdas/triggerExpirations/triggerExpirations.zip"
+
+  depends_on = [
+    data.null_data_source.expirations_lambda_build_dep,
+    null_resource.expirations_lambda_build
+  ]
 }
 
 resource "null_resource" "finalizations_lambda_build" {
@@ -70,6 +75,11 @@ data "archive_file" "finalizations_lambda" {
   type        = "zip"
   source_dir  = data.null_data_source.finalizations_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/external/lambdas/triggerFinalizations/triggerFinalizations.zip"
+
+  depends_on = [
+    data.null_data_source.finalizations_lambda_build_dep,
+    null_resource.finalizations_lambda_build
+  ]
 }
 
 resource "null_resource" "withdrawals_lambda_build" {
@@ -92,6 +102,11 @@ data "archive_file" "withdrawals_lambda" {
   type        = "zip"
   source_dir  = data.null_data_source.withdrawals_lambda_build_dep.outputs.source_dir
   output_path = "${path.root}/external/lambdas/triggerWithdrawals/triggerWithdrawals.zip"
+
+  depends_on = [
+    data.null_data_source.withdrawals_lambda_build_dep,
+    null_resource.withdrawals_lambda_build
+  ]
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
