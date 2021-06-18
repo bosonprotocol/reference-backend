@@ -28,87 +28,6 @@ resource "aws_secretsmanager_secret_version" "keepers_secretsmanager_secret_vers
   }))
 }
 
-resource "null_resource" "expirations_lambda_build" {
-  triggers = {
-    updated_at = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command = "cd ${path.cwd}/external/lambdas/triggerExpirations/src && npm install"
-  }
-}
-
-data "null_data_source" "expirations_lambda_build_dep" {
-  inputs = {
-    source_dir = "${path.cwd}/external/lambdas/triggerExpirations/src"
-  }
-}
-
-data "archive_file" "expirations_lambda" {
-  type        = "zip"
-  source_dir  = data.null_data_source.expirations_lambda_build_dep.outputs.source_dir
-  output_path = "${path.root}/external/lambdas/triggerExpirations/triggerExpirations.zip"
-
-  depends_on = [
-    data.null_data_source.expirations_lambda_build_dep,
-    null_resource.expirations_lambda_build
-  ]
-}
-
-resource "null_resource" "finalizations_lambda_build" {
-  triggers = {
-    updated_at = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command = "cd ${path.cwd}/external/lambdas/triggerFinalizations/src && npm install"
-  }
-}
-
-data "null_data_source" "finalizations_lambda_build_dep" {
-  inputs = {
-    source_dir = "${path.cwd}/external/lambdas/triggerFinalizations/src"
-  }
-}
-
-data "archive_file" "finalizations_lambda" {
-  type        = "zip"
-  source_dir  = data.null_data_source.finalizations_lambda_build_dep.outputs.source_dir
-  output_path = "${path.root}/external/lambdas/triggerFinalizations/triggerFinalizations.zip"
-
-  depends_on = [
-    data.null_data_source.finalizations_lambda_build_dep,
-    null_resource.finalizations_lambda_build
-  ]
-}
-
-resource "null_resource" "withdrawals_lambda_build" {
-  triggers = {
-    updated_at = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command = "cd ${path.cwd}/external/lambdas/triggerWithdrawals/src && npm install"
-  }
-}
-
-data "null_data_source" "withdrawals_lambda_build_dep" {
-  inputs = {
-    source_dir = "${path.cwd}/external/lambdas/triggerWithdrawals/src"
-  }
-}
-
-data "archive_file" "withdrawals_lambda" {
-  type        = "zip"
-  source_dir  = data.null_data_source.withdrawals_lambda_build_dep.outputs.source_dir
-  output_path = "${path.root}/external/lambdas/triggerWithdrawals/triggerWithdrawals.zip"
-
-  depends_on = [
-    data.null_data_source.withdrawals_lambda_build_dep,
-    null_resource.withdrawals_lambda_build
-  ]
-}
-
 data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -167,8 +86,7 @@ data "aws_iam_policy_document" "execution_policy" {
 }
 
 module "expirations_lambda" {
-  source  = "infrablocks/lambda/aws"
-  version = "1.0.0"
+  source  = "./modules/lambda"
 
   region                = var.region
   account_id            = data.aws_caller_identity.caller.account_id
@@ -176,6 +94,8 @@ module "expirations_lambda" {
   deployment_identifier = var.deployment_identifier
 
   lambda_runtime = "nodejs14.x"
+  lambda_code_output_path = "${path.module}/.terraform/archive_files/triggerExpirations.zip"
+  lambda_code_source_dir = "${path.cwd}/external/lambdas/triggerExpirations/src"
 
   lambda_timeout     = 900
   lambda_memory_size = 128
@@ -186,16 +106,10 @@ module "expirations_lambda" {
   lambda_description   = "Expirations Lambda"
   lambda_function_name = "trigger-expirations"
   lambda_handler       = "index.handler"
-  lambda_zip_path      = data.archive_file.expirations_lambda.output_path
 
   deploy_in_vpc = "no"
 
   publish = "yes"
-
-  depends_on = [
-    null_resource.withdrawals_lambda_build,
-    data.archive_file.expirations_lambda
-  ]
 }
 
 resource "aws_cloudwatch_event_rule" "expirations_lambda_cron_schedule" {
@@ -219,8 +133,7 @@ resource "aws_lambda_permission" "expirations_lambda_permission" {
 }
 
 module "finalizations_lambda" {
-  source  = "infrablocks/lambda/aws"
-  version = "1.0.0"
+  source  = "./modules/lambda"
 
   region                = var.region
   account_id            = data.aws_caller_identity.caller.account_id
@@ -228,6 +141,8 @@ module "finalizations_lambda" {
   deployment_identifier = var.deployment_identifier
 
   lambda_runtime = "nodejs14.x"
+  lambda_code_output_path = "${path.module}/.terraform/archive_files/triggerFinalizations.zip"
+  lambda_code_source_dir = "${path.cwd}/external/lambdas/triggerFinalizations/src"
 
   lambda_timeout     = 900
   lambda_memory_size = 128
@@ -238,16 +153,10 @@ module "finalizations_lambda" {
   lambda_description   = "Finalizations Lambda"
   lambda_function_name = "trigger-finalizations"
   lambda_handler       = "index.handler"
-  lambda_zip_path      = data.archive_file.finalizations_lambda.output_path
 
   deploy_in_vpc = "no"
 
   publish = "yes"
-
-  depends_on = [
-    null_resource.finalizations_lambda_build,
-    data.archive_file.finalizations_lambda
-  ]
 }
 
 resource "aws_cloudwatch_event_rule" "finalizations_lambda_cron_schedule" {
@@ -271,8 +180,7 @@ resource "aws_lambda_permission" "finalizations_lambda_permission" {
 }
 
 module "withdrawals_lambda" {
-  source  = "infrablocks/lambda/aws"
-  version = "1.0.0"
+  source  = "./modules/lambda"
 
   region                = var.region
   account_id            = data.aws_caller_identity.caller.account_id
@@ -280,6 +188,8 @@ module "withdrawals_lambda" {
   deployment_identifier = var.deployment_identifier
 
   lambda_runtime = "nodejs14.x"
+  lambda_code_output_path = "${path.module}/.terraform/archive_files/triggerWithdrawals.zip"
+  lambda_code_source_dir = "${path.cwd}/external/lambdas/triggerWithdrawals/src"
 
   lambda_timeout     = 900
   lambda_memory_size = 128
@@ -290,16 +200,10 @@ module "withdrawals_lambda" {
   lambda_description   = "Withdrawals Lambda"
   lambda_function_name = "trigger-withdrawals"
   lambda_handler       = "index.handler"
-  lambda_zip_path      = data.archive_file.withdrawals_lambda.output_path
 
   deploy_in_vpc = "no"
 
   publish = "yes"
-
-  depends_on = [
-    null_resource.withdrawals_lambda_build,
-    data.archive_file.withdrawals_lambda
-  ]
 }
 
 resource "aws_cloudwatch_event_rule" "withdrawals_lambda_cron_schedule" {
