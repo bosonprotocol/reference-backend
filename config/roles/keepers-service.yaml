@@ -17,7 +17,6 @@ vars:
   boson_router_contact_address: "%{hiera('boson_router_contact_address')}"
   voucher_kernel_address: "%{hiera('voucher_kernel_address')}"
   alchemy_url: "%{hiera('alchemy_url')}"
-  api_url: "TBC"
   gcloud_keepers_secret: "%{hiera('gcloud_keepers_secret')}"
 
   network_state_bucket_region: "%{hiera('network_state_bucket_region')}"
