@@ -193,6 +193,7 @@ module "expirations_lambda" {
   publish = "yes"
 
   depends_on = [
+    null_resource.withdrawals_lambda_build,
     data.archive_file.expirations_lambda
   ]
 }
@@ -244,6 +245,7 @@ module "finalizations_lambda" {
   publish = "yes"
 
   depends_on = [
+    null_resource.finalizations_lambda_build,
     data.archive_file.finalizations_lambda
   ]
 }
@@ -295,6 +297,7 @@ module "withdrawals_lambda" {
   publish = "yes"
 
   depends_on = [
+    null_resource.withdrawals_lambda_build,
     data.archive_file.withdrawals_lambda
   ]
 }
