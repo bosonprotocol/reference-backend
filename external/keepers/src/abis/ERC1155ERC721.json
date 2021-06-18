@@ -1,4 +1,5 @@
 {
+  "contractName": "ERC1155ERC721",
   "abi": [
     {
       "inputs": [],
@@ -61,7 +62,7 @@
         {
           "indexed": false,
           "internalType": "address",
-          "name": "_newBosonRouter",
+          "name": "_newCashier",
           "type": "address"
         },
         {
@@ -71,7 +72,7 @@
           "type": "address"
         }
       ],
-      "name": "LogBosonRouterSet",
+      "name": "LogCashierSet",
       "type": "event"
     },
     {
@@ -212,63 +213,14 @@
       "type": "event"
     },
     {
-      "inputs": [],
-      "name": "bosonRouterAddress",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "owner",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "voucherKernelAddress",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_from",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_tokenId",
-          "type": "uint256"
+          "internalType": "string",
+          "name": "_newRoute",
+          "type": "string"
         }
       ],
-      "name": "safeTransferFrom",
+      "name": "_set1155Route",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -276,27 +228,12 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_from",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_tokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
+          "internalType": "string",
+          "name": "_newRoute",
+          "type": "string"
         }
       ],
-      "name": "safeTransferFrom",
+      "name": "_set721Route",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -304,55 +241,12 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_from",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_tokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
+          "internalType": "string",
+          "name": "_newBase",
+          "type": "string"
         }
       ],
-      "name": "safeTransferFrom",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_from",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_tokenId",
-          "type": "uint256"
-        }
-      ],
-      "name": "transferFrom",
+      "name": "_setMetadataBase",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -371,58 +265,6 @@
         }
       ],
       "name": "approve",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_tokenId",
-          "type": "uint256"
-        }
-      ],
-      "name": "getApproved",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_from",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_to",
-          "type": "address"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "_tokenIds",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "uint256[]",
-          "name": "_values",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "bytes",
-          "name": "_data",
-          "type": "bytes"
-        }
-      ],
-      "name": "safeBatchTransferFrom",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -473,25 +315,6 @@
     {
       "inputs": [
         {
-          "internalType": "uint256",
-          "name": "_tokenId",
-          "type": "uint256"
-        }
-      ],
-      "name": "ownerOf",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
           "internalType": "address[]",
           "name": "_accounts",
           "type": "address[]"
@@ -517,18 +340,104 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_operator",
+          "name": "_account",
           "type": "address"
         },
         {
-          "internalType": "bool",
-          "name": "_approve",
-          "type": "bool"
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
         }
       ],
-      "name": "setApprovalForAll",
+      "name": "burn",
       "outputs": [],
       "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_account",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_tokenIds",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_values",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "burnBatch",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getApproved",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCashierAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getOwner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getVoucherKernelAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -553,25 +462,6 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "bytes4",
-          "name": "_interfaceId",
-          "type": "bytes4"
-        }
-      ],
-      "name": "supportsInterface",
-      "outputs": [
-        {
-          "internalType": "bool",
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "stateMutability": "pure",
       "type": "function"
     },
     {
@@ -655,33 +545,47 @@
       "type": "function"
     },
     {
-      "inputs": [
+      "inputs": [],
+      "name": "name",
+      "outputs": [
         {
-          "internalType": "address",
-          "name": "_account",
-          "type": "address"
-        },
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
         {
           "internalType": "uint256",
           "name": "_tokenId",
           "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "_value",
-          "type": "uint256"
         }
       ],
-      "name": "burn",
-      "outputs": [],
-      "stateMutability": "nonpayable",
+      "name": "ownerOf",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     },
     {
       "inputs": [
         {
           "internalType": "address",
-          "name": "_account",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
           "type": "address"
         },
         {
@@ -693,9 +597,14 @@
           "internalType": "uint256[]",
           "name": "_values",
           "type": "uint256[]"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_data",
+          "type": "bytes"
         }
       ],
-      "name": "burnBatch",
+      "name": "safeBatchTransferFrom",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -703,69 +612,145 @@
     {
       "inputs": [
         {
-          "internalType": "string",
-          "name": "_newBase",
-          "type": "string"
-        }
-      ],
-      "name": "_setMetadataBase",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
         {
-          "internalType": "string",
-          "name": "_newRoute",
-          "type": "string"
-        }
-      ],
-      "name": "_set1155Route",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_newRoute",
-          "type": "string"
-        }
-      ],
-      "name": "_set721Route",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
         {
           "internalType": "uint256",
           "name": "_tokenId",
           "type": "uint256"
         }
       ],
-      "name": "uri",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
     },
     {
-      "inputs": [],
-      "name": "name",
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_data",
+          "type": "bytes"
+        }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_value",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "_data",
+          "type": "bytes"
+        }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_operator",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "_approve",
+          "type": "bool"
+        }
+      ],
+      "name": "setApprovalForAll",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_cashierAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setCashierAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_voucherKernelAddress",
+          "type": "address"
+        }
+      ],
+      "name": "setVoucherKernelAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes4",
+          "name": "_interfaceId",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
       "outputs": [
         {
-          "internalType": "string",
-          "name": "_name",
-          "type": "string"
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
         }
       ],
       "stateMutability": "pure",
@@ -807,11 +792,21 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "_voucherKernelAddress",
+          "name": "_from",
           "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
         }
       ],
-      "name": "setVoucherKernelAddress",
+      "name": "transferFrom",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -819,14 +814,20 @@
     {
       "inputs": [
         {
-          "internalType": "address",
-          "name": "_bosonRouterAddress",
-          "type": "address"
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
         }
       ],
-      "name": "setBosonRouterAddress",
-      "outputs": [],
-      "stateMutability": "nonpayable",
+      "name": "uri",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
       "type": "function"
     }
   ]

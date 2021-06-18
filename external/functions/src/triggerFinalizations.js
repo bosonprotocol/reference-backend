@@ -117,7 +117,7 @@ async function triggerFinalizations(executor, config) {
     let voucherStatus;
 
     try {
-      voucherStatus = await voucherKernelContractExecutor.vouchersStatus(
+      voucherStatus = await voucherKernelContractExecutor.getVouchersStatus(
         voucherID
       );
     } catch (e) {
@@ -245,7 +245,7 @@ async function shouldTriggerFinalization(
       mark = true;
     } else if (
       BN(currTimestamp).gte(
-        BN(voucherStatus.cancelFaultPeriodStart).add(cancelFaultPeriod)
+        BN(voucherStatus.getCancelFaultPeriodStart).add(cancelFaultPeriod)
       )
     ) {
       mark = true;
