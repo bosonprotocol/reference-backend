@@ -72,18 +72,11 @@ groups:
       - publish-image-keepers
   - name: development-plutonium
     jobs:
-      - provision-development-plutonium-functions
       - provision-development-plutonium-database
       - provision-development-plutonium-image-storage-bucket
       - provision-development-plutonium-keepers-service
       - provision-development-plutonium-service
-  - name: production-oganesson
-    jobs:
-      - provision-production-oganesson-functions
-      - provision-production-oganesson-database
-      - provision-production-oganesson-image-storage-bucket
-      - provision-production-oganesson-keepers-service
-      - provision-production-oganesson-service
+      - provision-development-plutonium-functions
 
 jobs:
   - name: build
@@ -257,32 +250,6 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-development-plutonium-functions
-    serial: true
-    plan:
-      - in_parallel:
-          - get: source
-            trigger: true
-            passed:
-              - publish-image-keepers
-          - get: version
-            passed:
-              - publish-image-keepers
-          - get: node-builder-image
-      - task: provision-functions
-        image: node-builder-image
-        file: source/pipelines/develop/provision-functions/task.yaml
-        params:
-          GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
-          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
-
-    on_success: *on_success
-    on_failure: *on_failure
-    on_error: *on_error
-    on_abort: *on_abort
-
   - name: provision-development-plutonium-database
     serial: true
     plan:
@@ -290,10 +257,12 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - provision-development-plutonium-functions
+              - publish-image
+              - publish-image-keepers
           - get: version
             passed:
-              - provision-development-plutonium-functions
+              - publish-image
+              - publish-image-keepers
           - get: node-builder-image
       - task: provision-database
         image: node-builder-image
@@ -368,7 +337,7 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - provision-development-plutonium-image-storage-bucket
+              - provision-development-plutonium-keepers-service
           - get: version
           - get: node-builder-image
       - task: provision-service
@@ -385,7 +354,7 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-production-oganesson-functions
+  - name: provision-development-plutonium-functions
     serial: true
     plan:
       - in_parallel:
@@ -405,106 +374,6 @@ jobs:
           PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
           DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
           DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
-
-    on_success: *on_success
-    on_failure: *on_failure
-    on_error: *on_error
-    on_abort: *on_abort
-
-  - name: provision-production-oganesson-database
-    serial: true
-    plan:
-      - in_parallel:
-          - get: source
-            passed:
-              - provision-production-oganesson-functions
-          - get: version
-            passed:
-              - provision-production-oganesson-functions
-          - get: node-builder-image
-      - task: provision-database
-        image: node-builder-image
-        file: source/pipelines/develop/provision-database/task.yaml
-        params:
-          GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((production_oganesson_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((production_oganesson_deployment_type))
-          DEPLOYMENT_LABEL: ((production_oganesson_deployment_label))
-
-    on_success: *on_success
-    on_failure: *on_failure
-    on_error: *on_error
-    on_abort: *on_abort
-
-  - name: provision-production-oganesson-image-storage-bucket
-    serial: true
-    plan:
-      - in_parallel:
-          - get: source
-            passed:
-              - provision-production-oganesson-database
-          - get: version
-            passed:
-              - provision-production-oganesson-database
-          - get: node-builder-image
-      - task: provision-image-storage-bucket
-        image: node-builder-image
-        file: source/pipelines/develop/provision-image-storage-bucket/task.yaml
-        params:
-          GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((production_oganesson_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((production_oganesson_deployment_type))
-          DEPLOYMENT_LABEL: ((production_oganesson_deployment_label))
-
-    on_success: *on_success
-    on_failure: *on_failure
-    on_error: *on_error
-    on_abort: *on_abort
-
-  - name: provision-production-oganesson-keepers-service
-    serial: true
-    plan:
-      - in_parallel:
-          - get: source
-            trigger: true
-            passed:
-              - provision-production-oganesson-image-storage-bucket
-          - get: version
-            passed:
-              - provision-production-oganesson-image-storage-bucket
-          - get: node-builder-image
-      - task: provision-keepers-service
-        image: node-builder-image
-        file: source/pipelines/develop/provision-keepers-service/task.yaml
-        params:
-          GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
-          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
-
-    on_success: *on_success
-    on_failure: *on_failure
-    on_error: *on_error
-    on_abort: *on_abort
-
-  - name: provision-production-oganesson-service
-    serial: true
-    plan:
-      - in_parallel:
-          - get: source
-            trigger: true
-            passed:
-              - provision-production-oganesson-image-storage-bucket
-          - get: version
-          - get: node-builder-image
-      - task: provision-service
-        image: node-builder-image
-        file: source/pipelines/develop/provision-service/task.yaml
-        params:
-          GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((production_oganesson_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((production_oganesson_deployment_type))
-          DEPLOYMENT_LABEL: ((production_oganesson_deployment_label))
 
     on_success: *on_success
     on_failure: *on_failure

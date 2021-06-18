@@ -34,20 +34,20 @@ resource "null_resource" "expirations_lambda_build" {
   }
 
   provisioner "local-exec" {
-    command = "cd ${path.cwd}/lambdas/triggerExpirations/src && npm install"
+    command = "cd ${path.cwd}/external/lambdas/triggerExpirations/src && npm install"
   }
 }
 
 data "null_data_source" "expirations_lambda_build_dep" {
   inputs = {
-    source_dir = "${path.cwd}/lambdas/triggerExpirations/src"
+    source_dir = "${path.cwd}/external/lambdas/triggerExpirations/src"
   }
 }
 
 data "archive_file" "expirations_lambda" {
   type        = "zip"
   source_dir  = data.null_data_source.expirations_lambda_build_dep.outputs.source_dir
-  output_path = "${path.root}/lambdas/triggerExpirations/triggerExpirations.zip"
+  output_path = "${path.root}/external/lambdas/triggerExpirations/triggerExpirations.zip"
 }
 
 resource "null_resource" "finalizations_lambda_build" {
@@ -56,20 +56,20 @@ resource "null_resource" "finalizations_lambda_build" {
   }
 
   provisioner "local-exec" {
-    command = "cd ${path.cwd}/lambdas/triggerFinalizations/src && npm install"
+    command = "cd ${path.cwd}/external/lambdas/triggerFinalizations/src && npm install"
   }
 }
 
 data "null_data_source" "finalizations_lambda_build_dep" {
   inputs = {
-    source_dir = "${path.cwd}/lambdas/triggerFinalizations/src"
+    source_dir = "${path.cwd}/external/lambdas/triggerFinalizations/src"
   }
 }
 
 data "archive_file" "finalizations_lambda" {
   type        = "zip"
   source_dir  = data.null_data_source.finalizations_lambda_build_dep.outputs.source_dir
-  output_path = "${path.root}/lambdas/triggerFinalizations/triggerFinalizations.zip"
+  output_path = "${path.root}/external/lambdas/triggerFinalizations/triggerFinalizations.zip"
 }
 
 resource "null_resource" "withdrawals_lambda_build" {
@@ -78,20 +78,20 @@ resource "null_resource" "withdrawals_lambda_build" {
   }
 
   provisioner "local-exec" {
-    command = "cd ${path.cwd}/lambdas/triggerWithdrawals/src && npm install"
+    command = "cd ${path.cwd}/external/lambdas/triggerWithdrawals/src && npm install"
   }
 }
 
 data "null_data_source" "withdrawals_lambda_build_dep" {
   inputs = {
-    source_dir = "${path.cwd}/lambdas/triggerWithdrawals/src"
+    source_dir = "${path.cwd}/external/lambdas/triggerWithdrawals/src"
   }
 }
 
 data "archive_file" "withdrawals_lambda" {
   type        = "zip"
   source_dir  = data.null_data_source.withdrawals_lambda_build_dep.outputs.source_dir
-  output_path = "${path.root}/lambdas/triggerWithdrawals/triggerWithdrawals.zip"
+  output_path = "${path.root}/external/lambdas/triggerWithdrawals/triggerWithdrawals.zip"
 }
 
 data "aws_iam_policy_document" "assume_role_policy" {
