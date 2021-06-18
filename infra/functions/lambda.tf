@@ -192,7 +192,7 @@ module "withdrawals_lambda" {
   lambda_code_source_dir = "${path.cwd}/external/lambdas/triggerWithdrawals/src"
 
   lambda_timeout     = 900
-  lambda_memory_size = 128
+  lambda_memory_size = 256
 
   lambda_assume_role      = data.aws_iam_policy_document.assume_role_policy.json
   lambda_execution_policy = data.aws_iam_policy_document.execution_policy.json
