@@ -30,6 +30,7 @@ resource "aws_lambda_function" "lambda" {
   filename         = data.archive_file.file.output_path
   handler          = var.lambda_handler
   runtime          = var.lambda_runtime
+  source_code_hash = data.archive_file.file.output_base64sha256
 
   role = aws_iam_role.lambda_execution_role.arn
 

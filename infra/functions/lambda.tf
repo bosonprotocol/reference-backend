@@ -122,6 +122,8 @@ resource "aws_cloudwatch_event_rule" "expirations_lambda_cron_schedule" {
 resource "aws_cloudwatch_event_target" "expirations_lambda_event_target" {
   rule = aws_cloudwatch_event_rule.expirations_lambda_cron_schedule.name
   arn  = module.expirations_lambda.lambda_arn
+
+  depends_on = [module.expirations_lambda]
 }
 
 resource "aws_lambda_permission" "expirations_lambda_permission" {
@@ -169,6 +171,8 @@ resource "aws_cloudwatch_event_rule" "finalizations_lambda_cron_schedule" {
 resource "aws_cloudwatch_event_target" "finalizations_lambda_event_target" {
   rule = aws_cloudwatch_event_rule.finalizations_lambda_cron_schedule.name
   arn  = module.finalizations_lambda.lambda_arn
+
+  depends_on = [module.finalizations_lambda]
 }
 
 resource "aws_lambda_permission" "finalizations_lambda_permission" {
@@ -216,6 +220,8 @@ resource "aws_cloudwatch_event_rule" "withdrawals_lambda_cron_schedule" {
 resource "aws_cloudwatch_event_target" "withdrawals_lambda_event_target" {
   rule = aws_cloudwatch_event_rule.withdrawals_lambda_cron_schedule.name
   arn  = module.withdrawals_lambda.lambda_arn
+
+  depends_on = [module.withdrawals_lambda]
 }
 
 resource "aws_lambda_permission" "withdrawals_lambda_permission" {
