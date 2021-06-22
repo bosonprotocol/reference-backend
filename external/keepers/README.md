@@ -1,5 +1,5 @@
 # Keepers
-Keeper services for Boson Protocol
+Keeper services for Leptonite
 
 Whenever an event is emitted on the network the Keepers will catch the event and store the required information in the database respectively.
 
