@@ -1,8 +1,7 @@
-[![banner](docs/assets/banner.png)](https://bosonprotocol.io)
+[![banner](docs/assets/banner.png)](https://leptonite.io)
 
-<h1 align="center">Boson Protocol Reference Backend</h1>
+<h1 align="center">Leptonite - Powered by Boson Protocol</h1>
 
-![](https://img.shields.io/badge/Coverage-55%25-F2E96B.svg?prefix=$coverage$)
 [![Gitter chat](https://badges.gitter.im/bosonprotocol.png)](https://gitter.im/bosonprotocol/community)
 
 This is a reference application which demonstrates how to integrate Boson Protocol into a NodeJS back-end. This repository contains a MongoDB service as well as keeper functions & event listeners.
