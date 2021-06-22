@@ -11,21 +11,15 @@ const Cashier = require("./abis/Cashier.json");
 const utils = require("./utils");
 
 exports.handler = async (event) => {
- 
-    const dev = await getConfigParams(SecretIdDev, "dev");  
-    const provider = ethers.getDefaultProvider(dev.NETWORK_NAME, {
-        etherscan: dev.ETHERSCAN_API_KEY,
-        infura: dev.INFURA_API_KEY,
-      });
-    
-    const executor = new ethers.Wallet(dev.EXECUTOR_PRIVATE_KEY, provider);
+    const config = await getConfigParams(SecretIdDev, "dev");  
+    const executor = new ethers.Wallet(config.EXECUTOR_PRIVATE_KEY, config.PROVIDER);
 
     axios.defaults.headers.common = {
-      Authorization: `Bearer ${dev.GCLOUD_SECRET}`,
+      Authorization: `Bearer ${config.GCLOUD_SECRET}`,
     };
 
     // Withdrawal process
-    await triggerWithdrawals(executor, dev);
+    await triggerWithdrawals(executor, config);
 
     const response = {
         statusCode: 200,
