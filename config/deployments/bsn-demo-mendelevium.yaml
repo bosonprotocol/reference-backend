@@ -16,6 +16,11 @@ database_type: "deployed"
 
 image_upload_storage_engine: "AWS"
 
+voucher_kernel_address: "0x43A3Df919d5918bbB6300Fd2c20cCBF54221972e"
+token_contact_address: "0x3efc136c2F352bB0768029c115f9e518C61E6902"
+boson_router_contact_address: "0x55C7461087e476a1EE094847EE2401B26559FADC"
+cashier_address: "0xc5701331cf35EED5950CF770fd3316c1402C57f3"
+
 # State
 domain_state_bucket_name: "bsn-aws-application-account-bsn-development-potassium"
 domain_state_key: "common/deployment-state/default.tfstate"
