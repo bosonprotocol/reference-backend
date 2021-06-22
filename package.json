@@ -1,7 +1,8 @@
 {
-  "name": "redeemeum-api",
-  "description": "An example backend application for Boson Protocol",
+  "name": "leptonite-api",
+  "description": "A demo marketplace powered by Boson Protocol.",
   "keywords": [
+    "leptonite",
     "boson",
     "boson protocol",
     "reference",

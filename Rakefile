@@ -54,8 +54,8 @@ namespace :keys do
           output_directory: 'config/secrets/app',
           name_prefix: 'gpg',
           armor: false,
-          owner_name: 'Boson Protocol Maintainers',
-          owner_email: 'maintainers@bosonprotocol.io',
+          owner_name: 'Leptonite Maintainers',
+          owner_email: 'maintainers@leptonite.io',
           owner_comment: 'Service key'
       ) do |t|
         t.passphrase =

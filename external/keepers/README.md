@@ -1,2 +1,2 @@
 # keepers
-Keeper services for Boson Protocol
+Keeper services for Leptonite
