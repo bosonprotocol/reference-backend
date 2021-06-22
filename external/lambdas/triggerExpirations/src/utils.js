@@ -68,7 +68,7 @@ async function getVoucherValidTo(config, executor, voucherId) {
     executor
   );
   const promiseKey = await vk.getPromiseIdFromVoucherId(voucherId);
-  return (await vk.getPromiseData(promiseKey)).validTo.toString();
+  return (await vk.getPromiseData(promiseKey))[3].toString();
 }
 
 async function getCurrTimestamp(provider) {

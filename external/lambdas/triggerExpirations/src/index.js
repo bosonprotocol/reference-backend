@@ -9,21 +9,15 @@ const VoucherKernel = require("./abis/VoucherKernel.json");
 const utils = require("./utils");
 
 exports.handler = async (event) => {
- 
-    const dev = await getConfigParams(SecretIdDev, "dev");  
-    const provider = ethers.getDefaultProvider(dev.NETWORK_NAME, {
-        etherscan: dev.ETHERSCAN_API_KEY,
-        infura: dev.INFURA_API_KEY,
-      });
-    
-    const executor = new ethers.Wallet(dev.EXECUTOR_PRIVATE_KEY, provider);
+    const config = await getConfigParams(SecretIdDev, "dev");  
+    const executor = new ethers.Wallet(config.EXECUTOR_PRIVATE_KEY, config.PROVIDER);
 
     axios.defaults.headers.common = {
-      Authorization: `Bearer ${dev.GCLOUD_SECRET}`,
+      Authorization: `Bearer ${config.GCLOUD_SECRET}`,
     };
 
     // Expiration process
-    await triggerExpirations(executor, dev);
+    await triggerExpirations(executor, config);
 
     const response = {
         statusCode: 200,
@@ -112,6 +106,7 @@ async function triggerExpirations(executor, config) {
       !isStatusCommit ||
       !(await shouldTriggerExpiration(config, executor, voucherID))
     ) {
+      console.log(`Expiration still should not be triggered towards the contract for Voucher: ${voucherID}.`);
       continue;
     }
 

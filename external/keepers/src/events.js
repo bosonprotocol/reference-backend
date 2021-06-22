@@ -2,8 +2,8 @@ require('dotenv').config()
 
 const axios = require('axios').default;
 const ethers = require('ethers');
-const provider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_URL);
-
+const provider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_URL ? process.env.ALCHEMY_URL : ''); //if no url is provided, fallbacks to localhost:8545 
+ 
 const ERC1155ERC721 = require("./abis/ERC1155ERC721.json");
 const VoucherKernel = require("./abis/VoucherKernel.json");
 const BosonRouter = require("./abis/BosonRouter.json")
@@ -90,6 +90,7 @@ async function logOrderCreated() {
         try {
             const promiseId = await VK.getPromiseIdFromSupplyId(_tokenIdSupply.toString());
             const promiseDetails = await VK.getPromiseData(promiseId)
+            const orderCosts = await VK.getOrderCosts(_tokenIdSupply)
 
             metadata = {
                 _tokenIdSupply: _tokenIdSupply.toString(),
@@ -98,11 +99,11 @@ async function logOrderCreated() {
                 _paymentType: _paymentType.toString(),
                 _correlationId: _correlationId.toString(),
                 _promiseId: promiseDetails[0].toString(),
-                validFrom: (ethers.BigNumber.from(promiseDetails[3]).mul(1000)).toString(),
-                validTo: (ethers.BigNumber.from(promiseDetails[4]).mul(1000)).toString(),
-                price: promiseDetails[5].toString(),
-                sellerDeposit: promiseDetails[6].toString(),
-                buyerDeposit: promiseDetails[7].toString()
+                validFrom: (ethers.BigNumber.from(promiseDetails[2]).mul(1000)).toString(),
+                validTo: (ethers.BigNumber.from(promiseDetails[3]).mul(1000)).toString(),
+                price: orderCosts[0].toString(),
+                sellerDeposit: orderCosts[1].toString(),
+                buyerDeposit: orderCosts[2].toString()
             }
 
             await axios.patch(`${routes.setSupplyMeta}`, metadata)

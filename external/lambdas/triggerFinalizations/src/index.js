@@ -9,21 +9,15 @@ const VoucherKernel = require("./abis/VoucherKernel.json");
 const utils = require("./utils");
 
 exports.handler = async (event) => {
-
-    const dev = await getConfigParams(SecretIdDev, "dev");
-    const provider = ethers.getDefaultProvider(dev.NETWORK_NAME, {
-        etherscan: dev.ETHERSCAN_API_KEY,
-        infura: dev.INFURA_API_KEY,
-      });
-
-    const executor = new ethers.Wallet(dev.EXECUTOR_PRIVATE_KEY, provider);
+    const config = await getConfigParams(SecretIdDev, "dev");
+    const executor = new ethers.Wallet(config.EXECUTOR_PRIVATE_KEY, config.PROVIDER);
 
     axios.defaults.headers.common = {
-      Authorization: `Bearer ${dev.GCLOUD_SECRET}`,
+      Authorization: `Bearer ${config.GCLOUD_SECRET}`,
     };
 
     // Finalization process
-    await triggerFinalizations(executor, dev);
+    await triggerFinalizations(executor, config);
 
     const response = {
         statusCode: 200,
@@ -72,7 +66,7 @@ async function triggerFinalizations(executor, config) {
       let voucherStatus;
 
       try {
-        voucherStatus = await voucherKernelContractExecutor.getVouchersStatus(
+        voucherStatus = await voucherKernelContractExecutor.getVoucherStatus(
           voucherID
         );
       } catch (e) {
@@ -86,7 +80,7 @@ async function triggerFinalizations(executor, config) {
       console.log(`Voucher: ${voucherID}. The finalization has started.`);
 
       try {
-        let status = voucherStatus.status;
+        let status = voucherStatus[0];
 
         let isFinalized = utils.isStatus(status, utils.IDX_FINAL);
 
@@ -119,6 +113,7 @@ async function triggerFinalizations(executor, config) {
           voucherStatus
         ))
       ) {
+        console.log(`Finalization still should not be triggered towards the contract for Voucher: ${voucherID}.`);
         continue;
       }
 
@@ -197,37 +192,37 @@ async function triggerFinalizations(executor, config) {
 
     let mark = false;
 
-    if (utils.isStatus(voucherStatus.status, utils.IDX_COMPLAIN)) {
-      if (utils.isStatus(voucherStatus.status, utils.IDX_CANCEL_FAULT)) {
+    if (utils.isStatus(voucherStatus[0], utils.IDX_COMPLAIN)) {
+      if (utils.isStatus(voucherStatus[0], utils.IDX_CANCEL_FAULT)) {
         mark = true;
       } else if (
         BN(currTimestamp).gte(
-          BN(voucherStatus.getCancelFaultPeriodStart).add(cancelFaultPeriod)
+          BN(voucherStatus[4]).add(cancelFaultPeriod)
         )
       ) {
         mark = true;
       }
     } else if (
-      utils.isStatus(voucherStatus.status, utils.IDX_CANCEL_FAULT) &&
+      utils.isStatus(voucherStatus[0], utils.IDX_CANCEL_FAULT) &&
       BN(currTimestamp).gte(
-        BN(voucherStatus.complainPeriodStart).add(complainPeriod)
+        BN(voucherStatus[3]).add(complainPeriod)
       )
     ) {
       //if COF: then final after complain period
       mark = true;
     } else if (
-      utils.isStateRedemptionSigned(voucherStatus.status) ||
-      utils.isStateRefunded(voucherStatus.status)
+      utils.isStateRedemptionSigned(voucherStatus[0]) ||
+      utils.isStateRefunded(voucherStatus[0])
     ) {
       //if RDM/RFND NON_COMPLAIN: then final after complainPeriodStart + complainPeriod
       if (
         BN(currTimestamp).gte(
-          BN(voucherStatus.complainPeriodStart).add(complainPeriod)
+          BN(voucherStatus[3]).add(complainPeriod)
         )
       ) {
         mark = true;
       }
-    } else if (utils.isStateExpired(voucherStatus.status)) {
+    } else if (utils.isStateExpired(voucherStatus[0])) {
       //if EXP NON_COMPLAIN: then final after validTo + complainPeriod
       if (BN(currTimestamp).gte(BN(voucherValidTo).add(complainPeriod))) {
         mark = true;
