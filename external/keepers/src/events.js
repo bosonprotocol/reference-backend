@@ -24,12 +24,6 @@ async function init() {
     BR = new ethers.Contract(process.env.BOSON_ROUTER_CONTRACT_ADDRESS, BosonRouter.abi, provider);
     ERC1155721 = new ethers.Contract(process.env.TOKENS_CONTRACT_ADDRESS, ERC1155ERC721.abi, provider)
 
-    console.log('process.env.VOUCHER_KERNEL_ADDRESS: ', process.env.VOUCHER_KERNEL_ADDRESS);
-    console.log('process.env.BOSON_ROUTER_CONTRACT_ADDRESS: ', process.env.BOSON_ROUTER_CONTRACT_ADDRESS);
-    console.log('process.env.TOKENS_CONTRACT_ADDRESS: ', process.env.TOKENS_CONTRACT_ADDRESS);
-
-    console.log('provider: ', provider);
-
     axios.defaults.headers.common = {
         Authorization: `Bearer ${process.env.GCLOUD_SECRET}`
     }
