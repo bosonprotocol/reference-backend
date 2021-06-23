@@ -11,7 +11,7 @@ data "terraform_remote_state" "service" {
 }
 
 resource "aws_secretsmanager_secret" "keepers_secretsmanager_secret" {
-  name = "keepersServiceSMSecrets"
+  name = "keepersServiceSMSecrets-${var.deployment_identifier}"
 }
 
 resource "aws_secretsmanager_secret_version" "keepers_secretsmanager_secret_version" {
@@ -104,8 +104,12 @@ module "expirations_lambda" {
   lambda_execution_policy = data.aws_iam_policy_document.execution_policy.json
 
   lambda_description   = "Expirations Lambda"
-  lambda_function_name = "trigger-expirations"
+  lambda_function_name = "trigger-expirations-${var.deployment_identifier}"
   lambda_handler       = "index.handler"
+
+  lambda_environment_variables = {
+    SSM_SECRET = "keepersServiceSMSecrets-${var.deployment_identifier}"
+  }
 
   deploy_in_vpc = "no"
 
@@ -127,9 +131,8 @@ resource "aws_cloudwatch_event_target" "expirations_lambda_event_target" {
 }
 
 resource "aws_lambda_permission" "expirations_lambda_permission" {
-  statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = "trigger-expirations"
+  function_name = "trigger-expirations-${var.deployment_identifier}"
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.expirations_lambda_cron_schedule.arn
 }
@@ -153,8 +156,12 @@ module "finalizations_lambda" {
   lambda_execution_policy = data.aws_iam_policy_document.execution_policy.json
 
   lambda_description   = "Finalizations Lambda"
-  lambda_function_name = "trigger-finalizations"
+  lambda_function_name = "trigger-finalizations-${var.deployment_identifier}"
   lambda_handler       = "index.handler"
+
+  lambda_environment_variables = {
+    SSM_SECRET = "keepersServiceSMSecrets-${var.deployment_identifier}"
+  }
 
   deploy_in_vpc = "no"
 
@@ -176,9 +183,8 @@ resource "aws_cloudwatch_event_target" "finalizations_lambda_event_target" {
 }
 
 resource "aws_lambda_permission" "finalizations_lambda_permission" {
-  statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = "trigger-finalizations"
+  function_name = "trigger-finalizations-${var.deployment_identifier}"
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.finalizations_lambda_cron_schedule.arn
 }
@@ -202,8 +208,12 @@ module "withdrawals_lambda" {
   lambda_execution_policy = data.aws_iam_policy_document.execution_policy.json
 
   lambda_description   = "Withdrawals Lambda"
-  lambda_function_name = "trigger-withdrawals"
+  lambda_function_name = "trigger-withdrawals-${var.deployment_identifier}"
   lambda_handler       = "index.handler"
+
+  lambda_environment_variables = {
+    SSM_SECRET = "keepersServiceSMSecrets-${var.deployment_identifier}"
+  }
 
   deploy_in_vpc = "no"
 
@@ -225,9 +235,8 @@ resource "aws_cloudwatch_event_target" "withdrawals_lambda_event_target" {
 }
 
 resource "aws_lambda_permission" "withdrawals_lambda_permission" {
-  statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = "trigger-withdrawals"
+  function_name = "trigger-withdrawals-${var.deployment_identifier}"
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.withdrawals_lambda_cron_schedule.arn
 }

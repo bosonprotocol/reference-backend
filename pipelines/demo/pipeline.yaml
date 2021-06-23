@@ -74,8 +74,8 @@ groups:
     jobs:
       - provision-demo-mendelevium-database
       - provision-demo-mendelevium-image-storage-bucket
-      - provision-demo-mendelevium-keepers-service
       - provision-demo-mendelevium-service
+      - provision-demo-mendelevium-keepers-service
       - provision-demo-mendelevium-functions
 
 jobs:
@@ -299,7 +299,7 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-demo-mendelevium-keepers-service
+  - name: provision-demo-mendelevium-service
     serial: true
     plan:
       - in_parallel:
@@ -309,9 +309,9 @@ jobs:
               - provision-demo-mendelevium-image-storage-bucket
           - get: version
           - get: node-builder-image
-      - task: provision-keepers-service
+      - task: provision-service
         image: node-builder-image
-        file: source/pipelines/demo/provision-keepers-service/task.yaml
+        file: source/pipelines/demo/provision-service/task.yaml
         params:
           GPG_KEY: ((gpg_key))
           PROVISIONING_ROLE_ARN: ((demo_mendelevium_provisioning_role_arn))
@@ -323,19 +323,19 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-demo-mendelevium-service
+  - name: provision-demo-mendelevium-keepers-service
     serial: true
     plan:
       - in_parallel:
           - get: source
             trigger: true
             passed:
-              - provision-demo-mendelevium-keepers-service
+              - provision-demo-mendelevium-service
           - get: version
           - get: node-builder-image
-      - task: provision-service
+      - task: provision-keepers-service
         image: node-builder-image
-        file: source/pipelines/demo/provision-service/task.yaml
+        file: source/pipelines/demo/provision-keepers-service/task.yaml
         params:
           GPG_KEY: ((gpg_key))
           PROVISIONING_ROLE_ARN: ((demo_mendelevium_provisioning_role_arn))
@@ -354,7 +354,7 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - provision-demo-mendelevium-service
+              - provision-demo-mendelevium-keepers-service
           - get: version
           - get: node-builder-image
       - task: provision-functions

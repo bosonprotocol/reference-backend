@@ -74,8 +74,8 @@ groups:
     jobs:
       - provision-development-plutonium-database
       - provision-development-plutonium-image-storage-bucket
-      - provision-development-plutonium-keepers-service
       - provision-development-plutonium-service
+      - provision-development-plutonium-keepers-service
       - provision-development-plutonium-functions
 
 jobs:
@@ -299,7 +299,7 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-development-plutonium-keepers-service
+  - name: provision-development-plutonium-service
     serial: true
     plan:
       - in_parallel:
@@ -309,9 +309,9 @@ jobs:
               - provision-development-plutonium-image-storage-bucket
           - get: version
           - get: node-builder-image
-      - task: provision-keepers-service
+      - task: provision-service
         image: node-builder-image
-        file: source/pipelines/develop/provision-keepers-service/task.yaml
+        file: source/pipelines/develop/provision-service/task.yaml
         params:
           GPG_KEY: ((gpg_key))
           PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
@@ -323,19 +323,19 @@ jobs:
     on_error: *on_error
     on_abort: *on_abort
 
-  - name: provision-development-plutonium-service
+  - name: provision-development-plutonium-keepers-service
     serial: true
     plan:
       - in_parallel:
           - get: source
             trigger: true
             passed:
-              - provision-development-plutonium-keepers-service
+              - provision-development-plutonium-service
           - get: version
           - get: node-builder-image
-      - task: provision-service
+      - task: provision-keepers-service
         image: node-builder-image
-        file: source/pipelines/develop/provision-service/task.yaml
+        file: source/pipelines/develop/provision-keepers-service/task.yaml
         params:
           GPG_KEY: ((gpg_key))
           PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
@@ -354,7 +354,7 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - provision-development-plutonium-service
+              - provision-development-plutonium-keepers-service
           - get: version
           - get: node-builder-image
       - task: provision-functions
