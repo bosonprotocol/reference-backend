@@ -266,9 +266,9 @@ jobs:
         file: source/pipelines/demo/provision-database/task.yaml
         params:
           GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
-          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+          PROVISIONING_ROLE_ARN: ((demo_mendelevium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((demo_mendelevium_deployment_type))
+          DEPLOYMENT_LABEL: ((demo_mendelevium_deployment_label))
 
     on_success: *on_success
     on_failure: *on_failure
@@ -290,9 +290,9 @@ jobs:
         file: source/pipelines/demo/provision-image-storage-bucket/task.yaml
         params:
           GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
-          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+          PROVISIONING_ROLE_ARN: ((demo_mendelevium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((demo_mendelevium_deployment_type))
+          DEPLOYMENT_LABEL: ((demo_mendelevium_deployment_label))
 
     on_success: *on_success
     on_failure: *on_failure
@@ -314,9 +314,9 @@ jobs:
         file: source/pipelines/demo/provision-keepers-service/task.yaml
         params:
           GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
-          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+          PROVISIONING_ROLE_ARN: ((demo_mendelevium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((demo_mendelevium_deployment_type))
+          DEPLOYMENT_LABEL: ((demo_mendelevium_deployment_label))
 
     on_success: *on_success
     on_failure: *on_failure
@@ -338,9 +338,9 @@ jobs:
         file: source/pipelines/demo/provision-service/task.yaml
         params:
           GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
-          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+          PROVISIONING_ROLE_ARN: ((demo_mendelevium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((demo_mendelevium_deployment_type))
+          DEPLOYMENT_LABEL: ((demo_mendelevium_deployment_label))
 
     on_success: *on_success
     on_failure: *on_failure
@@ -362,9 +362,9 @@ jobs:
         file: source/pipelines/demo/provision-functions/task.yaml
         params:
           GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
-          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+          PROVISIONING_ROLE_ARN: ((demo_mendelevium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((demo_mendelevium_deployment_type))
+          DEPLOYMENT_LABEL: ((demo_mendelevium_deployment_label))
 
     on_success: *on_success
     on_failure: *on_failure
