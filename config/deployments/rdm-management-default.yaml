@@ -6,14 +6,17 @@ storage_bucket_allowed_account_ids:
   - "%{hiera('bsn_production_lutetium_account_id')}"
 
 development_tennessine_cluster_instance_role_arn: "arn:aws:iam::384010198059:role/terraform-20210413135553345900000003"
+demo_selenium_cluster_instance_role_arn: "arn:aws:iam::384010198059:role/terraform-20210623150921670400000003"
 production_gold_cluster_instance_role_arn: "arn:aws:iam::371854298993:role/terraform-20210413135959680100000003"
 
 image_repository_allowed_role_arns:
   - "%{hiera('development_tennessine_cluster_instance_role_arn')}"
+  - "%{hiera('demo_selenium_cluster_instance_role_arn')}"
   - "%{hiera('production_gold_cluster_instance_role_arn')}"
 
 keepers_image_repository_allowed_role_arns:
   - "%{hiera('development_tennessine_cluster_instance_role_arn')}"
+  - "%{hiera('demo_selenium_cluster_instance_role_arn')}"
   - "%{hiera('production_gold_cluster_instance_role_arn')}"
 
 database_version: "4.4"
