@@ -15,7 +15,6 @@ variable "token_contact_address" {}
 variable "boson_router_contact_address" {}
 variable "voucher_kernel_address" {}
 variable "alchemy_url" {}
-variable "api_url" {}
 variable "gcloud_keepers_secret" {}
 
 variable "network_state_bucket_name" {}

@@ -9,7 +9,6 @@ class Server {
 
     this.app.use(express.json());
     this.app.use(function (req, res, next) {
-      console.log("Time:", Date.now());
       next();
     });
     this.app.use(cors());

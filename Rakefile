@@ -28,8 +28,6 @@ task :default => [
 task :build => [
   :"app:lint",
   :"app:format",
-  :"functions:lint",
-  :"functions:format",
   :"tests:app:lint",
   :"tests:app:format"
 ]
@@ -37,8 +35,6 @@ task :build => [
 task :build_fix => [
   :"app:lint_fix",
   :"app:format_fix",
-  :"functions:lint_fix",
-  :"functions:format_fix",
   :"tests:app:lint_fix",
   :"tests:app:format_fix"
 ]
@@ -58,8 +54,8 @@ namespace :keys do
           output_directory: 'config/secrets/app',
           name_prefix: 'gpg',
           armor: false,
-          owner_name: 'Boson Protocol Maintainers',
-          owner_email: 'maintainers@bosonprotocol.io',
+          owner_name: 'Leptonite Maintainers',
+          owner_email: 'maintainers@leptonite.io',
           owner_comment: 'Service key'
       ) do |t|
         t.passphrase =
@@ -152,7 +148,7 @@ namespace :functions do
   namespace :dependencies do
     desc "Install all functions dependencies"
     task :install do
-      Dir.chdir('external/functions') do
+      Dir.chdir('external/lambdas') do
         sh('npm', 'install')
       end
     end
@@ -160,28 +156,28 @@ namespace :functions do
 
   desc "Lint all function sources"
   task :lint => [:'dependencies:install'] do
-    Dir.chdir('external/functions') do
+    Dir.chdir('external/lambdas') do
       sh('npm', 'run', 'functions:lint')
     end
   end
 
   desc "Lint & fix all app source"
   task :lint_fix => [:'dependencies:install'] do
-    Dir.chdir('external/functions') do
+    Dir.chdir('external/lambdas') do
       sh('npm', 'run', 'functions:lint-fix')
     end
   end
 
   desc "Format all app sources"
   task :format => [:'dependencies:install'] do
-    Dir.chdir('external/functions') do
+    Dir.chdir('external/lambdas') do
       sh('npm', 'run', 'functions:format')
     end
   end
 
   desc "Format & fix all app sources"
   task :format_fix => [:'dependencies:install'] do
-    Dir.chdir('external/functions') do
+    Dir.chdir('external/lambdas') do
       sh('npm', 'run', 'functions:format-fix')
     end
   end
@@ -625,6 +621,33 @@ namespace :ci do
     end
 
     RakeFly.define_pipeline_tasks(
+      namespace: :demo,
+      argument_names: [
+        :ci_deployment_type,
+        :ci_deployment_label
+      ]
+    ) do |t, args|
+      configuration = configuration
+        .for_scope(args.to_h.merge(role: 'demo-pipeline'))
+      ci_deployment_type = configuration.ci_deployment_identifier
+
+      t.target = configuration.concourse_team
+      t.team = configuration.concourse_team
+      t.pipeline = "reference-backend-demo"
+
+      t.config = 'pipelines/demo/pipeline.yaml'
+
+      t.vars = configuration.vars
+      t.var_files = [
+        'config/secrets/pipeline/constants.yaml',
+        "config/secrets/pipeline/#{ci_deployment_type}.yaml"
+      ]
+
+      t.non_interactive = true
+      t.home_directory = 'build/fly'
+    end
+
+    RakeFly.define_pipeline_tasks(
       namespace: :builder,
       argument_names: [
         :ci_deployment_type,
@@ -710,6 +733,7 @@ namespace :ci do
     desc "Push all pipelines"
     task :push, [:ci_deployment_type, :ci_deployment_label] do |_, args|
       Rake::Task[:"ci:pipeline:develop:push"].invoke(*args)
+      Rake::Task[:"ci:pipeline:demo:push"].invoke(*args)
       Rake::Task[:"ci:pipeline:builder:push"].invoke(*args)
     end
   end

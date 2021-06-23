@@ -51,7 +51,7 @@ class Random {
 
   static signingDomain() {
     return {
-      name: "Boson Protocol",
+      name: "Leptonite",
       version: "1",
       chainId: Random.chainId(),
       verifyingContract: "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
