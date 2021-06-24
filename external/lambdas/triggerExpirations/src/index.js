@@ -2,14 +2,13 @@ const ethers = require("ethers");
 const axios = require("axios").default;
 
 const getConfigParams = require('./configs')
-const SecretIdDev = "keepersServiceSMSecrets"
 const BN = ethers.BigNumber.from;
 
 const VoucherKernel = require("./abis/VoucherKernel.json");
 const utils = require("./utils");
 
 exports.handler = async (event) => {
-    const config = await getConfigParams(SecretIdDev, "dev");  
+    const config = await getConfigParams(process.env.SSM_SECRET, "cloud");
     const executor = new ethers.Wallet(config.EXECUTOR_PRIVATE_KEY, config.PROVIDER);
 
     axios.defaults.headers.common = {

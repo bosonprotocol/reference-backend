@@ -1,5 +1,5 @@
 locals {
-  container_name = var.service_name
+  container_name = "${var.service_name}-${var.deployment_identifier}"
 }
 
 data "template_file" "image" {
@@ -40,7 +40,7 @@ module "service" {
 
   service_role = aws_iam_role.service_role.arn
 
-  service_name = var.service_name
+  service_name = "${var.service_name}-${var.deployment_identifier}"
   service_image = data.template_file.image.rendered
   service_port = var.container_http_port
 
