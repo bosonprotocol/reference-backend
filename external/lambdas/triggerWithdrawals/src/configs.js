@@ -29,7 +29,7 @@ const configs = {
       PROVIDER: new ethers.providers.JsonRpcProvider(),
     }
   },
-  dev: secrets => {
+  cloud: secrets => {
     const apiUrl = secrets.apiurl;
 
     return {
@@ -40,25 +40,6 @@ const configs = {
       ALL_VOUCHERS_URL: `${apiUrl}/vouchers/all`,
       UPDATE_STATUS_URL: `${apiUrl}/vouchers/update-status-from-keepers`,
       WITHDRAW_VOUCHER_URL: `${apiUrl}/payments/create-payment`,
-      GCLOUD_SECRET: secrets.gcloudsecret,
-      GAS_LIMIT: "6000000",
-      PROVIDER: ethers.getDefaultProvider(secrets.networkname, {
-        etherscan: secrets.etherscanapikey,
-        infura: secrets.infuraapikey,
-      })
-    }
-  },
-  demo: secrets => {
-    const demoApiUrl = secrets.apiurl;
-
-    return {
-      VOUCHER_KERNEL_ADDRESS: secrets.voucherkerneladdress,
-      CASHIER_ADDRESS: secrets.cashieraddress,
-      EXECUTOR_PRIVATE_KEY: secrets.executorsecret,
-      API_URL: demoApiUrl,
-      ALL_VOUCHERS_URL: `${demoApiUrl}/vouchers/all`,
-      UPDATE_STATUS_URL: `${demoApiUrl}/vouchers/update-status-from-keepers`,
-      WITHDRAW_VOUCHER_URL: `${demoApiUrl}/payments/create-payment`,
       GCLOUD_SECRET: secrets.gcloudsecret,
       GAS_LIMIT: "6000000",
       PROVIDER: ethers.getDefaultProvider(secrets.networkname, {
