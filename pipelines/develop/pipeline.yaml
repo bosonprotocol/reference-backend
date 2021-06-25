@@ -39,25 +39,13 @@ resources:
     source:
       repository: ((node_builder_image_repository_url))
 
-  - name: version-service
+  - name: version
     type: semver
     source:
       driver: s3
       initial_version: 0.1.0
       bucket: ((storage_bucket_name))
-      key: reference-backend/metadata/version-service
-      region_name: ((storage_bucket_region))
-      server_side_encryption: ((storage_bucket_encryption))
-      access_key_id: ((aws_access_key_id))
-      secret_access_key: ((aws_secret_access_key))
-
-  - name: version-keepers
-    type: semver
-    source:
-      driver: s3
-      initial_version: 0.1.0
-      bucket: ((storage_bucket_name))
-      key: reference-backend/metadata/version-keepers
+      key: reference-backend/metadata/version
       region_name: ((storage_bucket_region))
       server_side_encryption: ((storage_bucket_encryption))
       access_key_id: ((aws_access_key_id))
@@ -206,7 +194,7 @@ jobs:
             passed:
               - provision-keepers-image-repository
               - provision-image-repository
-          - put: version-service
+          - put: version
             params:
               pre: rc
           - get: node-builder-image
@@ -239,9 +227,7 @@ jobs:
             passed:
               - provision-keepers-image-repository
               - provision-image-repository
-          - put: version-keepers
-            params:
-              pre: rc
+              - publish-image
           - get: node-builder-image
       - task: publish-image-keepers
         image: node-builder-image
@@ -319,7 +305,7 @@ jobs:
             trigger: true
             passed:
               - provision-development-plutonium-image-storage-bucket
-          - get: version-service
+          - get: version
           - get: node-builder-image
       - task: provision-service
         image: node-builder-image
@@ -343,7 +329,7 @@ jobs:
             trigger: true
             passed:
               - provision-development-plutonium-service
-          - get: version-keepers
+          - get: version
           - get: node-builder-image
       - task: provision-keepers-service
         image: node-builder-image

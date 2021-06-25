@@ -227,7 +227,7 @@ jobs:
             passed:
               - provision-keepers-image-repository
               - provision-image-repository
-          - get: version
+              - publish-image
           - get: node-builder-image
       - task: publish-image-keepers
         image: node-builder-image
@@ -259,7 +259,6 @@ jobs:
             passed:
               - publish-image
               - publish-image-keepers
-          - get: version
           - get: node-builder-image
       - task: provision-database
         image: node-builder-image
@@ -283,7 +282,6 @@ jobs:
             trigger: true
             passed:
               - provision-demo-mendelevium-database
-          - get: version
           - get: node-builder-image
       - task: provision-image-storage-bucket
         image: node-builder-image
@@ -355,7 +353,6 @@ jobs:
             trigger: true
             passed:
               - provision-demo-mendelevium-keepers-service
-          - get: version
           - get: node-builder-image
       - task: provision-functions
         image: node-builder-image
