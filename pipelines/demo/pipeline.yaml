@@ -45,7 +45,7 @@ resources:
       driver: s3
       initial_version: 0.1.0
       bucket: ((storage_bucket_name))
-      key: reference-backend/metadata/version
+      key: reference-backend/metadata/demo/version
       region_name: ((storage_bucket_region))
       server_side_encryption: ((storage_bucket_encryption))
       access_key_id: ((aws_access_key_id))
