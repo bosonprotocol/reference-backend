@@ -227,6 +227,7 @@ jobs:
             passed:
               - provision-keepers-image-repository
               - provision-image-repository
+              - publish-image
           - get: version
           - get: node-builder-image
       - task: publish-image-keepers
@@ -259,7 +260,6 @@ jobs:
             passed:
               - publish-image
               - publish-image-keepers
-          - get: version
           - get: node-builder-image
       - task: provision-database
         image: node-builder-image
