@@ -283,6 +283,7 @@ jobs:
             trigger: true
             passed:
               - provision-demo-mendelevium-database
+          - get: version
           - get: node-builder-image
       - task: provision-image-storage-bucket
         image: node-builder-image
@@ -354,6 +355,7 @@ jobs:
             trigger: true
             passed:
               - provision-demo-mendelevium-keepers-service
+          - get: version
           - get: node-builder-image
       - task: provision-functions
         image: node-builder-image
