@@ -16,10 +16,10 @@ database_type: "deployed"
 
 image_upload_storage_engine: "AWS"
 
-voucher_kernel_address: "0x7fA35fdF51804cBACEc47502616A2f265d8B8ac0"
-token_contact_address: "0x54D25c26a0d74CDcD26A4682767d82eE94cEb490"
-boson_router_contact_address: "0x9CBb5bDc5f9aB1f7A97F7b5A0A470BDd20AfCf5b"
-cashier_address: "0x6B1141fFF79a96496bbB0673009424BAE1418fa2"
+voucher_kernel_address: "0x6ae1FCe8b0BcEe14d498C043D64b6a4a19c0E4A8"
+token_contact_address: "0x5c70A0c47440128eAAA66801B0ec04E9d8C3a570"
+boson_router_contact_address: "0xe2AfF6a81Aa47149AAd39a0c320B5895E6f266D0"
+cashier_address: "0xa49925E6064CeB7E0777BD9E864a71518Cd141A8"
 
 # State
 domain_state_bucket_name: "bsn-aws-application-account-bsn-development-potassium"
