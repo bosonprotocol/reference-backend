@@ -14,19 +14,7 @@ const getSecrets = async (SecretId) => {
 
 const configs = {
   local: () => {
-    const apiUrl = "http://localhost:3000";
-    return {
-      VOUCHER_KERNEL_ADDRESS: '0x...',
-      CASHIER_ADDRESS: '0x...',
-      EXECUTOR_PRIVATE_KEY: '0x...',
-      API_URL: apiUrl,
-      ALL_VOUCHERS_URL: `${apiUrl}/vouchers/all`,
-      UPDATE_STATUS_URL: `${apiUrl}/vouchers/update-status-from-keepers`,
-      WITHDRAW_VOUCHER_URL: `${apiUrl}/payments/create-payment`,
-      GCLOUD_SECRET: "tokensecret",
-      GAS_LIMIT: "6000000",
-      PROVIDER: new ethers.providers.JsonRpcProvider(),
-    }
+    throw new Error('Local run is expected to use config defined in a specific module')
   },
   cloud: secrets => {
     const apiUrl = secrets.apiurl;
