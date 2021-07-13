@@ -71,7 +71,7 @@ class ConfigurationService {
     return (
       this.overrides.imageUploadStorageEngine ||
       coerceUndefined(process.env.IMAGE_UPLOAD_STORAGE_ENGINE) ||
-      "GCP"
+      "AWS"
     );
   }
 

@@ -18,6 +18,9 @@ This reference app may be used as a template for building your own marketplace p
   - [Build](#build)
   - [Run](#run)
   - [Test](#test)
+    - [Unit Tests](#unit-tests)
+    - [Component Tests](#component-tests)
+    - [Persistence Tests](#persistence-tests)
   - [Code Linting & Formatting](#code-linting--formatting)
 - [Contributing](#contributing)
 - [License](#license)
@@ -85,17 +88,80 @@ To fetch dependencies:
 
 ---
 ### Run
-A task has been created which will:
- - Install any necessary dependencies
- - Provision a local database
- - Run the server locally
- - Run a local keepers service (dependent on local contracts deployment as described in the [`contracts`](https://github.com/bosonprotocol/contracts) repository - see "Run" section).
- - Run local event listeners (dependent on local contracts deployment as described in the [`contracts`](https://github.com/bosonprotocol/contracts) repository - see "Run" section).
+You will need to:
+ - Run a MongoDB database instance (can be local or cloud hosted, like MongoDb Atlas). Be sure the deployed instance is secured with authentication enforced (https://docs.mongodb.com/guides/server/auth/)
+ 
+ * Create a file './.env' on the basis of './.env.example' with the following information:
+    ```
+    DB_CONNECTION_STRING=mongodb://localhost:27017
+    DB_NAME=api
+    DB_USERNAME=admin
+    DB_PASSWORD=secret
 
-This can be executed by running the following from the project root directory:
-```shell
-./go app:run
-```
+    TOKEN_SECRET=1fdd5ab2823e118ee997219330c7abc37a56a5093b753b545ab40e5f216491eec5d400f121e678d6c5b03b01f2e56e1fd14b79afd5c0fdd61477ce469472a8a6
+    GCLOUD_SECRET=1f123ce56aeec5d400b2823e7abc121e6756e1f4b118ee
+
+    VOUCHERS_BUCKET="vouchers-upload-images-bucket"
+    ```
+    Where:
+    * DB_CONNECTION_STRING: the connection string to the DB
+    * DB_NAME: the name of the DB (will be created)
+    * DB_USERNAME/DB_PASSWORD: login/password to access the database
+    * TOKEN_SECRET: see §Configuration above
+    * GCLOUD_SECRET: see §Configuration above
+ * Run the API server:
+    ```shell
+    npm install
+    set PORT=3333
+    npm run start
+    ```
+ * Create a file './external/keepers/src/.env' on the basis of './external/keepers/src/.env.example' with the following information:
+    ```
+    TOKENS_CONTRACT_ADDRESS="0x..."
+    BOSON_ROUTER_CONTRACT_ADDRESS="0x..."
+    VOUCHER_KERNEL_ADDRESS="0x..."
+    API_URL="http://localhost:3333"
+    GCLOUD_SECRET="GENERATED_TOKEN"
+    ALCHEMY_URL="https://eth-desired-network.alchemyapi.io/v2/your-api-key"
+    ```
+    Where:
+    * TOKENS_CONTRACT_ADDRESS: the address of the ERC1155721 contract
+    * BOSON_ROUTER_CONTRACT_ADDRESS: the address of the BosonRouter contract
+    * VOUCHER_KERNEL_ADDRESS: the address of the VoucherKernel contract
+    * API_URL: the URL of the backend API server (started above)
+    * GCLOUD_SECRET: generated on http://jwtbuilder.jamiekurtz.com with payload = {token: <GCLOUD_SECRET>} and key=<TOKEN_SECRET>, where GCLOUD_SECRET and TOKEN_SECRET values are defined in the env var of the API server
+    * ALCHEMY_URL: URL of the blockchain entry node (Alchemy, Infura, ...). If omitted will fallback to local rpc at port 8545 (default)
+ * Run the Keepers service:
+    ```shell
+    npm run start:local:keepers
+    ```
+ * Create a file './external/lambdas/.env' on the basis of './external/lambdas/.env.example' with the following information:
+    ```
+    TOKENS_CONTRACT_ADDRESS="0x..."
+    BOSON_ROUTER_CONTRACT_ADDRESS="0x..."
+    CASHIER_ADDRESS="0x..."
+    VOUCHER_KERNEL_ADDRESS="0x..."
+    EXECUTOR_PRIVATE_KEY="0x..."
+    API_URL="http://localhost:3333"
+    GCLOUD_SECRET="GENERATED_TOKEN"
+    PROVIDER_URL="https://eth-desired-network.alchemyapi.io/v2/your-api-key"
+    #If the provider requires a secret authorization field in the request header (like Infura)
+    PROVIDER_SECRET=
+    ```
+    Where:
+    * TOKENS_CONTRACT_ADDRESS: the address of the ERC1155721 contract
+    * BOSON_ROUTER_CONTRACT_ADDRESS: the address of the BosonRouter contract
+    * CASHIER_ADDRESS: the address of the Cashier contract
+    * VOUCHER_KERNEL_ADDRESS: the address of the VoucherKernel contract
+    * EXECUTOR_PRIVATE_KEY: the private key of the wallet to be used to interact with the contracts
+    * API_URL: the URL of the backend API server (started above)
+    * GCLOUD_SECRET: generated on http://jwtbuilder.jamiekurtz.com with payload = {token: <GCLOUD_SECRET>} and key=<TOKEN_SECRET>, where GCLOUD_SECRET and TOKEN_SECRET values are defined in the env var of the API server
+    * PROVIDER_URL: URL of the blockchain entry node (Alchemy, Infura, ...). If omitted will fallback to local rpc at port 8545 (default)
+    * PROVIDER_SECRET: (optional) if the provider requires a secret authorization field in the request header (like Infura)
+ * Run the Triggers service:
+    ```shell
+    npm run start:local:triggers
+    ```
 
 ---
 ### Test

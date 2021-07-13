@@ -207,10 +207,10 @@ describe("ConfigurationService", () => {
       });
     });
 
-    it("returns GCP when no environment variable or override", () => {
+    it("returns AWS when no environment variable or override", () => {
       const configurationService = new ConfigurationService();
 
-      expect(configurationService.imageUploadStorageEngine).to.eql("GCP");
+      expect(configurationService.imageUploadStorageEngine).to.eql("AWS");
     });
   });
 
