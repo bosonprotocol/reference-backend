@@ -36,7 +36,11 @@ class VouchersRepository {
 
     if (!voucher) {
       throw new Error(
-        `No Voucher found for supplyID: ${metadata._tokenIdSupply} holder: ${metadata._holder.toLowerCase()} correlationId: ${metadata._correlationId}`
+        `No Voucher found for supplyID: ${
+          metadata._tokenIdSupply
+        } holder: ${metadata._holder.toLowerCase()} correlationId: ${
+          metadata._correlationId
+        }`
       );
     }
 
