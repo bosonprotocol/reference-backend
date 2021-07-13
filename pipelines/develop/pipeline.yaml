@@ -1,0 +1,372 @@
+resource_types:
+  - name: slack-notification
+    type: docker-image
+    source:
+      repository: cfcommunity/slack-notification-resource
+      tag: latest
+
+resources:
+  - name: source
+    type: git
+    source:
+      uri: ((source_repository_url))
+      branch: ((source_repository_branch))
+      private_key: ((git_ssh_key))
+
+  - name: updated-source
+    type: git
+    source:
+      uri: ((source_repository_url))
+      branch: ((source_repository_branch))
+      private_key: ((git_ssh_key))
+
+  - name: app-image
+    type: docker-image
+    source:
+      repository: ((app_image_repository_url))
+      aws_access_key_id: ((aws_access_key_id))
+      aws_secret_access_key: ((aws_secret_access_key))
+
+  - name: keepers-image
+    type: docker-image
+    source:
+      repository: ((keepers_image_repository_url))
+      aws_access_key_id: ((aws_access_key_id))
+      aws_secret_access_key: ((aws_secret_access_key))
+
+  - name: node-builder-image
+    type: docker-image
+    source:
+      repository: ((node_builder_image_repository_url))
+
+  - name: version
+    type: semver
+    source:
+      driver: s3
+      initial_version: 0.1.0
+      bucket: ((storage_bucket_name))
+      key: reference-backend/metadata/develop/version
+      region_name: ((storage_bucket_region))
+      server_side_encryption: ((storage_bucket_encryption))
+      access_key_id: ((aws_access_key_id))
+      secret_access_key: ((aws_secret_access_key))
+
+  - name: notify-success
+    type: slack-notification
+    source:
+      url: ((slack_builds_webhook_url))
+
+  - name: notify-failure
+    type: slack-notification
+    source:
+      url: ((slack_engineering_webhook_url))
+
+groups:
+  - name: ci
+    jobs:
+      - build
+      - test
+      - provision-keepers-image-repository
+      - provision-image-repository
+      - publish-image
+      - publish-image-keepers
+  - name: development-plutonium
+    jobs:
+      - provision-development-plutonium-database
+      - provision-development-plutonium-image-storage-bucket
+      - provision-development-plutonium-service
+      - provision-development-plutonium-keepers-service
+      - provision-development-plutonium-functions
+
+jobs:
+  - name: build
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+          - get: node-builder-image
+      - task: build
+        image: node-builder-image
+        file: source/pipelines/shared/build/task.yaml
+
+    on_success: &on_success
+      put: notify-success
+      params:
+        text: ((slack_success_message))
+        channel: ((slack_success_channel))
+
+    on_failure: &on_failure
+      put: notify-failure
+      params:
+        text: ((slack_failure_message))
+        channel: ((slack_failure_channel))
+
+    on_error: &on_error
+      put: notify-failure
+      params:
+        text: ((slack_error_message))
+        channel: ((slack_error_channel))
+
+    on_abort: &on_abort
+      put: notify-failure
+      params:
+        text: ((slack_abort_message))
+        channel: ((slack_abort_channel))
+
+  - name: test
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - build
+          - get: updated-source
+          - get: node-builder-image
+      - task: test
+        image: node-builder-image
+        file: source/pipelines/shared/coverage/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((ci_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((ci_deployment_type))
+          DEPLOYMENT_LABEL: ((ci_deployment_label))
+      - put: updated-source
+        params:
+          repository: source
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-keepers-image-repository
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - test
+          - get: node-builder-image
+      - task: provision-keepers-image-repository
+        image: node-builder-image
+        file: source/pipelines/develop/provision-keepers-image-repository/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((ci_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((ci_deployment_type))
+          DEPLOYMENT_LABEL: ((ci_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-image-repository
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - test
+          - get: node-builder-image
+      - task: provision-image-repository
+        image: node-builder-image
+        file: source/pipelines/develop/provision-image-repository/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((ci_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((ci_deployment_type))
+          DEPLOYMENT_LABEL: ((ci_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: publish-image
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - provision-keepers-image-repository
+              - provision-image-repository
+          - put: version
+            params:
+              pre: rc
+          - get: node-builder-image
+      - task: publish-image
+        image: node-builder-image
+        file: source/pipelines/develop/publish-image/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((ci_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((ci_deployment_type))
+          DEPLOYMENT_LABEL: ((ci_deployment_label))
+      - put: app-image
+        params:
+          build: image-build-directory
+          cache: true
+          cache_tag: latest
+          tag: image-build-directory/TAG
+          tag_as_latest: true
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: publish-image-keepers
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - provision-keepers-image-repository
+              - provision-image-repository
+              - publish-image
+          - get: version
+          - get: node-builder-image
+      - task: publish-image-keepers
+        image: node-builder-image
+        file: source/pipelines/develop/publish-image-keepers/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((ci_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((ci_deployment_type))
+          DEPLOYMENT_LABEL: ((ci_deployment_label))
+      - put: keepers-image
+        params:
+          build: image-build-directory
+          cache: true
+          cache_tag: latest
+          tag: image-build-directory/TAG
+          tag_as_latest: true
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-development-plutonium-database
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - publish-image
+              - publish-image-keepers
+          - get: node-builder-image
+      - task: provision-database
+        image: node-builder-image
+        file: source/pipelines/develop/provision-database/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
+          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-development-plutonium-image-storage-bucket
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - provision-development-plutonium-database
+          - get: version
+          - get: node-builder-image
+      - task: provision-image-storage-bucket
+        image: node-builder-image
+        file: source/pipelines/develop/provision-image-storage-bucket/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
+          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-development-plutonium-service
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - provision-development-plutonium-image-storage-bucket
+          - get: version
+          - get: node-builder-image
+      - task: provision-service
+        image: node-builder-image
+        file: source/pipelines/develop/provision-service/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
+          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-development-plutonium-keepers-service
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - provision-development-plutonium-service
+          - get: version
+          - get: node-builder-image
+      - task: provision-keepers-service
+        image: node-builder-image
+        file: source/pipelines/develop/provision-keepers-service/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
+          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort
+
+  - name: provision-development-plutonium-functions
+    serial: true
+    plan:
+      - in_parallel:
+          - get: source
+            trigger: true
+            passed:
+              - provision-development-plutonium-keepers-service
+          - get: version
+          - get: node-builder-image
+      - task: provision-functions
+        image: node-builder-image
+        file: source/pipelines/develop/provision-functions/task.yaml
+        params:
+          GPG_KEY: ((gpg_key))
+          PROVISIONING_ROLE_ARN: ((development_plutonium_provisioning_role_arn))
+          DEPLOYMENT_TYPE: ((development_plutonium_deployment_type))
+          DEPLOYMENT_LABEL: ((development_plutonium_deployment_label))
+
+    on_success: *on_success
+    on_failure: *on_failure
+    on_error: *on_error
+    on_abort: *on_abort

@@ -1,0 +1,20 @@
+{
+  "name": "event-listeners",
+  "version": "1.0.0",
+  "description": "Redemeeum event listeners to trace events emitted from smart contracts",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "env-cmd -f .env.dev node index.js",
+    "start:demo": "env-cmd -f .env.demo node index.js",
+    "start:playground": "env-cmd -f .env.playground node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "LimeChain",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "dotenv": "^8.2.0",
+    "env-cmd": "^10.1.0",
+    "ethers": "^5.0.4"
+  }
+}

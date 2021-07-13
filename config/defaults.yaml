@@ -1,0 +1,32 @@
+---
+# General
+region: "eu-west-2"
+
+component: "reference-backend"
+deployment_identifier: "%{deployment_type}-%{deployment_label}"
+
+source_repository_name: "bosonprotocol/reference-backend"
+source_repository_url: "git@github.com:%{hiera('source_repository_name')}.git"
+source_repository_branch: "develop"
+
+image_repository_name: "bsn/reference-backend"
+keepers_image_repository_name: "bsn/keepers"
+
+storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}"
+storage_bucket_encryption: "AES256"
+
+secrets_bucket_name: "%{hiera('storage_bucket_name')}"
+
+image_storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}-image-storage"
+image_storage_user_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}-image-storage-user"
+image_storage_user_public_gpg_key_path: "%{cwd}/config/secrets/app/gpg.public"
+
+admin_role_name: "cross-account-admin-role"
+
+rdm_management_account_id: "031036423983"
+
+bsn_parent_account_id: "915981965568"
+bsn_development_potassium_account_id: "384010198059"
+bsn_production_lutetium_account_id: "371854298993"
+
+bsn_parent_account_admin_role: "arn:aws:iam::%{hiera('bsn_parent_account_id')}:role/%{hiera('admin_role_name')}"

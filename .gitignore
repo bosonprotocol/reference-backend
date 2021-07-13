@@ -1,9 +1,31 @@
-.env
-.env.prod
-/node_modules/
-package-lock.json
-.DS_Store
-yarn.lock
-/tests
+# See https://help.github.com/ignore-files/ for more about ignoring files.
 
-.idea
+# Node / NPM / Yarn
+node_modules
+
+# Build
+/local
+/build
+/run
+/vendor
+
+# Secrets
+.secret
+**/.env
+.env.prod
+
+# OS
+.DS_Store
+
+# IntelliJ IDEA
+*.iml
+*.iws
+*.ipr
+.idea/
+
+# Test Coverage
+/coverage*
+.nyc_output
+
+# Personal Preferences
+.vscode

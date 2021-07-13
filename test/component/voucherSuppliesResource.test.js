@@ -1,0 +1,1276 @@
+const { expect } = require("chai");
+
+const Random = require("../shared/helpers/Random");
+const Database = require("../shared/helpers/Database");
+
+const TestServer = require("./helpers/TestServer");
+const Prerequisites = require("./helpers/Prerequisites");
+const API = require("./helpers/API");
+
+describe("Voucher Supplies Resource", () => {
+  let server;
+  let database;
+  let prerequisites;
+  let api;
+
+  const tokenSecret = Random.tokenSecret();
+  const gcloudSecret = Random.gcloudSecret();
+
+  before(async () => {
+    database = await Database.connect();
+    server = await new TestServer()
+      .onAnyPort()
+      .addConfigurationOverrides({ tokenSecret, gcloudSecret })
+      .start();
+    api = new API(server.address);
+    prerequisites = new Prerequisites(api);
+  });
+
+  afterEach(async () => {
+    await Database.truncate();
+  });
+
+  after(async () => {
+    server.stop();
+    database.disconnect();
+  });
+
+  context("on POST", () => {
+    it("createVoucherSupply - returns 201 and the created voucher supply", async () => {
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(201);
+    });
+
+    it("createVoucherSupply - returns 400 if record with same user and correlationId already exits", async () => {
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      //CREATE VOUCHER SUPPLY
+      await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      //TRY TO CREATE VOUCHER SUPPLY WITH SAME METADATA TO ENFORCE FAILURE
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when invalid mime-type", async () => {
+      let [
+        token,
+        voucherSupplyData,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/malicious-fake-image.html";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when image size too small (<10KB)", async () => {
+      let [
+        token,
+        voucherSupplyData,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/less-than-10KB.png";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when image size too large (>5MB)", async () => {
+      let [
+        token,
+        voucherSupplyData,
+      ] = await prerequisites.createVoucherSupplyData();
+      const filePath = "test/fixtures/greater-than-5MB.jpg";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, filePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when invalid dates (start and/or end)", async () => {
+      let [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      voucherSupplyData.startDate = "FAKE_INVALID_START_DATE"; // force failure
+      voucherSupplyData.endDate = "FAKE_INVALID_END_DATE"; // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(voucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when invalid voucher supply data", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const fakeVoucherSupplyData = {}; // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(fakeVoucherSupplyData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when empty string for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: "",
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when empty object for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify({}),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when empty array for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify([]),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when null for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify(null),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when invalid properties for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify({
+          country: "country",
+          city: "city",
+          addressLineOne: "addressLineOne",
+          addressLineTwo: "addressLineTwo",
+          fail: "FAIL",
+        }),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("createVoucherSupply - returns 400 when more properties for location provided", async () => {
+      const [
+        token,
+        ,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const invalidLocationData = Random.voucherSupplyMetadata({
+        location: JSON.stringify({
+          country: "country",
+          city: "city",
+          address_line_one: "address_line_one",
+          address_line_two: "address_line_two",
+          postcode: "metadata.location.postcode",
+          additionalProp: "cause failure",
+        }),
+      }); // force failure
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .post(invalidLocationData, imageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+  });
+
+  context("on GET", () => {
+    it("getAllVoucherSupplies - returns 200 and all voucher supplies", async () => {
+      const response = await api.voucherSupplies().getAll();
+      const expectedPropertyName = "voucherSupplies";
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      const voucherSuppliesProperty = response.body[expectedPropertyName];
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(Array.isArray(voucherSuppliesProperty)).to.eql(true);
+    });
+
+    it("getVoucherSupplyById - returns 200 and the requested voucher supply (by ID)", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // QUERY FOR VOUCHER
+      const response = await api.voucherSupplies().getById(voucherSupplyId);
+
+      expect(response.status).to.eql(200);
+      expect(response.body.voucherSupply._id).to.eql(voucherSupplyId); // check if queried id matches created id
+    });
+
+    it("getVoucherSupplyById - returns 400 and voucher doesn't exist", async () => {
+      const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
+
+      // QUERY FOR VOUCHER
+      const response = await api
+        .voucherSupplies()
+        .getById(randomVoucherSupplyId);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("getVoucherSupplyStatusesByOwner - returns 200 and the statuses of all voucher supplies for the given address", async () => {
+      const expectedPropertyNames = ["active", "inactive"];
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .getStatuses();
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include.members(expectedPropertyNames);
+    });
+
+    it("getActiveVoucherSuppliesByOwner - returns 200 and the active voucher supplies for the given address", async () => {
+      const expectedPropertyName = "voucherSupplies";
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+
+      const response = await api.withToken(token).voucherSupplies().getActive();
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+    });
+
+    it("getInactiveVoucherSuppliesByOwner - returns 200 and the inactive voucher supplies for the given address", async () => {
+      const expectedPropertyName = "voucherSupplies";
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .getInactive();
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+    });
+
+    it("getVoucherSuppliesForSeller - returns 200 and the voucher supplies for the given seller", async () => {
+      const expectedPropertyName = "voucherSupplies";
+      const account = Random.account();
+      const voucherSupplyOwner = account.address;
+
+      const response = await api
+        .voucherSupplies()
+        .getBySeller(voucherSupplyOwner);
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+    });
+
+    it("getVoucherSuppliesForBuyer - returns 200 and the voucher supplies for the given buyer", async () => {
+      const expectedPropertyName = "voucherSupplies";
+      const account = Random.account();
+      const voucherSupplyOwner = account.address;
+
+      const response = await api
+        .voucherSupplies()
+        .getByBuyer(voucherSupplyOwner);
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+    });
+  });
+
+  context("on Patch", () => {
+    it("updateVoucherSupply - returns 200 and the voucher supply update status", async () => {
+      const expectedPropertyName = "success";
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/update-image.png";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, voucherSupplyData, newImageFilePath);
+
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
+    });
+
+    it("updateVoucherSupply - returns 400 when invalid mime-type", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/malicious-fake-image.html";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, voucherSupplyData, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupply - returns 400 when image size too small (<10KB)", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/less-than-10KB.png";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, voucherSupplyData, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupply - returns 400 when image size too large (>5MB)", async () => {
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // UPDATE VOUCHER WITH NEW IMAGE
+      const newImageFilePath = "test/fixtures/greater-than-5MB.jpg";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .update(voucherSupplyId, voucherSupplyData, newImageFilePath);
+      // END OF UPDATE
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupply - returns 400 with voucher supply does not exist (i.e. invalid ID)", async () => {
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+      const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
+      const newImageFilePath = "test/fixtures/update-image.png";
+
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .update(randomVoucherSupplyId, {}, newImageFilePath);
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("setVoucherSupplyMetaData - returns 200 and the success status", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // GET VOUCHER SUPPLY
+      const responseVoucherSupply = await api
+        .voucherSupplies()
+        .getById(voucherSupplyId);
+      const voucherSupply = responseVoucherSupply.body.voucherSupply;
+      // END GET VOUCHER SUPPLY
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .setMetadata(voucherSupply);
+
+      const expectedPropertyName = "success";
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    //TODO if we are to support updates outside reference app, we should not have this test
+    xit("setVoucherSupplyMetaData - returns 400 and voucher supply doesn't exist", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // GET VOUCHER SUPPLY
+      const responseVoucherSupply = await api
+        .voucherSupplies()
+        .getById(voucherSupplyId);
+      const voucherSupply = responseVoucherSupply.body.voucherSupply;
+      // END GET VOUCHER SUPPLY
+
+      voucherSupply.voucherOwner = null; // force failure
+      voucherSupply._correlationId = null; // force failure
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .setMetadata(voucherSupply);
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("setVoucherSupplyMetaData - returns 400 when supply token id is missing", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // GET VOUCHER SUPPLY
+      const responseVoucherSupply = await api
+        .voucherSupplies()
+        .getById(voucherSupplyId);
+      const voucherSupply = responseVoucherSupply.body.voucherSupply;
+      // END GET VOUCHER SUPPLY
+
+      delete voucherSupply._tokenIdSupply; /// force failure
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .setMetadata(voucherSupply);
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("setVoucherSupplyMetaData - returns 400 when voucher supply data is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      const voucherSupply = null; // force failure
+
+      // SET VOUCHER SUPPLY METADATA
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .setMetadata(voucherSupply);
+      // SET VOUCHER SUPPLY METADATA
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 200 and the success status", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId,
+        voucherSupplyOwner,
+        qty,
+        supplyTokenId,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = [supplyTokenId];
+      const quantities = [qty];
+      const voucherOwner = voucherMetadata._holder;
+
+      const data = prerequisites.createSupplyUpdateTransferData(
+        voucherMetadata,
+        voucherSupplies,
+        quantities,
+        voucherOwner
+      );
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnTransfer(data);
+
+      const expectedPropertyName = "success";
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    it("updateVoucherSupplyOnTransfer - batch - returns 200 and the success status", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLIES
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+
+      const [
+        token1,
+        voucherSupplyData1,
+        imageFilePath1,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId1,
+        voucherSupplyOwner1,
+        qty1,
+        supplyTokenId1,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      const [
+        ,
+        ,
+        qty2,
+        supplyTokenId2,
+      ] = await prerequisites.createVoucherSupply(
+        token1,
+        voucherSupplyData1,
+        imageFilePath1
+      );
+      // END CREATE VOUCHER SUPPLIES
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner1
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId1,
+        voucherMetadata
+      );
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = [supplyTokenId1, supplyTokenId2];
+      const quantities = [qty1, qty2];
+      const voucherOwner = voucherMetadata._holder;
+
+      const data = prerequisites.createSupplyUpdateTransferData(
+        voucherMetadata,
+        voucherSupplies,
+        quantities,
+        voucherOwner
+      );
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnTransfer(data);
+
+      const expectedPropertyName = "success";
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 400 when metadata is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId,
+        voucherSupplyOwner,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnTransfer(null); // force failure
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherOwner is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId,
+        voucherSupplyOwner,
+        qty,
+        supplyTokenId,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = [supplyTokenId];
+      const quantities = [qty];
+      const voucherOwner = null; // force failure
+
+      const data = prerequisites.createSupplyUpdateTransferData(
+        voucherMetadata,
+        voucherSupplies,
+        quantities,
+        voucherOwner
+      );
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnTransfer(data); // force failure
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherSupplies is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId,
+        voucherSupplyOwner,
+        qty,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = null; // force failure
+      const quantities = [qty];
+      const voucherOwner = voucherMetadata._holder;
+
+      const data = prerequisites.createSupplyUpdateTransferData(
+        voucherMetadata,
+        voucherSupplies,
+        quantities,
+        voucherOwner
+      );
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnTransfer(data); // force failure
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnTransfer - singular - returns 400 when voucherSupplies is empty", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [
+        voucherSupplyId,
+        voucherSupplyOwner,
+        qty,
+      ] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // COMMIT TO BUY
+      const voucherMetadata = prerequisites.createVoucherMetadata(
+        voucherSupplyOwner
+      );
+      await prerequisites.createVoucher(
+        token,
+        voucherSupplyId,
+        voucherMetadata
+      );
+      voucherMetadata._promiseId = Random.promiseId();
+      // END COMMIT TO BUY
+
+      const voucherSupplies = []; // force failure
+      const quantities = [qty];
+      const voucherOwner = voucherMetadata._holder;
+
+      const data = prerequisites.createSupplyUpdateTransferData(
+        voucherMetadata,
+        voucherSupplies,
+        quantities,
+        voucherOwner
+      );
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnTransfer(data); // force failure
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnCancel - returns 200 and the success status", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      const data = {
+        _tokenIdSupply: voucherSupplyData._tokenIdSupply,
+        voucherOwner: voucherSupplyData.voucherOwner,
+        qty: voucherSupplyData.qty,
+      };
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnCancel(data);
+
+      const expectedPropertyName = "success";
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true);
+    });
+
+    it("updateVoucherSupplyOnCancel - returns 400 when request body is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      const data = null; // force failure
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnCancel(data);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnCancel - returns 400 when token supply id is null", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      const data = {
+        _tokenIdSupply: null, // force failure
+        voucherOwner: voucherSupplyData.voucherOwner,
+        qty: voucherSupplyData.qty,
+      };
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnCancel(data);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("updateVoucherSupplyOnCancel - returns 404 and voucher not found", async () => {
+      const gcloudToken = await prerequisites.getGCloudToken(
+        gcloudSecret,
+        tokenSecret
+      );
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      const data = {
+        _tokenIdSupply: Random.uint256(), // force failure
+        voucherOwner: voucherSupplyData.voucherOwner,
+        qty: voucherSupplyData.qty,
+      };
+
+      // UPDATE VOUCHER SUPPLY ON CANCEL
+      const response = await api
+        .withToken(gcloudToken)
+        .voucherSupplies()
+        .updateOnCancel(data);
+      // END UPDATE VOUCHER SUPPLY ON CANCEL
+
+      expect(response.status).to.eql(404);
+    });
+  });
+
+  context("on DELETE", () => {
+    it("deleteVoucherSupply - returns 200 and deletes the voucher supply", async () => {
+      const expectedPropertyName = "success";
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      // DELETE VOUCHER SUPPLY
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .delete(voucherSupplyId);
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END OF DELETE
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
+    });
+
+    it("deleteVoucherSupply - returns 400 and voucher supply can't be deleted as it doesn't exist", async () => {
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+      const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
+
+      // DELETE VOUCHER SUPPLY
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .delete(randomVoucherSupplyId);
+      // END OF DELETE
+
+      expect(response.status).to.eql(400);
+    });
+
+    it("deleteVoucherSupplyImage - returns 200 and deletes the voucher supply image", async () => {
+      const expectedPropertyName = "success";
+
+      // CREATE VOUCHER SUPPLY
+      const [
+        token,
+        voucherSupplyData,
+        imageFilePath,
+      ] = await prerequisites.createVoucherSupplyData();
+      const [voucherSupplyId] = await prerequisites.createVoucherSupply(
+        token,
+        voucherSupplyData,
+        imageFilePath
+      );
+      // END CREATE VOUCHER SUPPLY
+
+      const imageFilePathTokens = imageFilePath.split("/");
+      const imageName = imageFilePathTokens[imageFilePathTokens.length - 1];
+      const imageUrl = `https://boson.example.com/${imageName}`;
+
+      // DELETE VOUCHER SUPPLY IMAGE
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .deleteImage(voucherSupplyId, imageUrl);
+      const propertyNames = Object.getOwnPropertyNames(response.body);
+      // END OF DELETE
+
+      // QUERY FOR VOUCHER - After Delete
+      const responseVoucherQuery2 = await api
+        .voucherSupplies()
+        .getById(voucherSupplyId);
+      const vsImagesAfter = responseVoucherQuery2.body.voucherSupply.imagefiles;
+      const vsImageUrlsAfterDelete = vsImagesAfter.map((image) => image.url); // extract Url for expect comparison with image Url
+      // END QUERY - After Delete
+
+      expect(response.status).to.eql(200);
+      expect(propertyNames).to.include(expectedPropertyName);
+      expect(response.body[expectedPropertyName]).to.eql(true); // expect success = true
+      expect(vsImageUrlsAfterDelete).not.include(imageUrl); // expect image Urls to not include the image Url after deletion
+    });
+
+    it("deleteVoucherSupplyImage - returns 400 and image can't be deleted because voucher supply doesn't exist", async () => {
+      const account = Random.account();
+      const token = await prerequisites.getUserToken(account);
+      const randomVoucherSupplyId = Random.voucherSupplyId(); // create random instead of extracting
+
+      // DELETE VOUCHER SUPPLY
+      const response = await api
+        .withToken(token)
+        .voucherSupplies()
+        .deleteImage(randomVoucherSupplyId);
+      // END OF DELETE
+
+      expect(response.status).to.eql(400);
+    });
+  });
+});

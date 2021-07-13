@@ -1,0 +1,16 @@
+---
+ci_provisioning_role_arn: "arn:aws:iam::%{hiera('rdm_management_account_id')}:role/cross-account-admin-role"
+ci_deployment_type: "%{ci_deployment_type}"
+ci_deployment_label: "%{ci_deployment_label}"
+
+development_plutonium_provisioning_role_arn: "arn:aws:iam::%{hiera('bsn_development_potassium_account_id')}:role/cross-account-admin-role"
+development_plutonium_deployment_type: "bsn-development"
+development_plutonium_deployment_label: "plutonium"
+
+demo_mendelevium_provisioning_role_arn: "arn:aws:iam::%{hiera('bsn_development_potassium_account_id')}:role/cross-account-admin-role"
+demo_mendelevium_deployment_type: "bsn-demo"
+demo_mendelevium_deployment_label: "mendelevium"
+
+production_oganesson_provisioning_role_arn: "arn:aws:iam::%{hiera('bsn_production_lutetium_account_id')}:role/cross-account-admin-role"
+production_oganesson_deployment_type: "bsn-production"
+production_oganesson_deployment_label: "oganesson"

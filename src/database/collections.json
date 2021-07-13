@@ -1,6 +1,7 @@
 {
     "USER": "User",
+    "VOUCHER_SUPPLY": "VoucherSupply",
     "VOUCHER": "Voucher",
-    "USER_VOUCHER": "UserVoucher",
-    "PAYMENT": "Payment"
+    "PAYMENT": "Payment",
+    "EVENT": "Event"
 }
