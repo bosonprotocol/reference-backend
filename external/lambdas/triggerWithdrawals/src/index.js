@@ -9,8 +9,10 @@ const Cashier = require("./abis/Cashier.json");
 
 const utils = require("./utils");
 
-exports.handler = async (event) => {
-    const config = await getConfigParams(process.env.SSM_SECRET, "cloud");
+exports.handler = async (config) => {
+    if (!config) {
+      config = await getConfigParams(process.env.SSM_SECRET, "cloud");
+    }
     const executor = new ethers.Wallet(config.EXECUTOR_PRIVATE_KEY, config.PROVIDER);
 
     axios.defaults.headers.common = {
