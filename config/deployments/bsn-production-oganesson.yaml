@@ -16,10 +16,10 @@ database_type: "deployed"
 
 image_upload_storage_engine: "AWS"
 
-voucher_kernel_address: "0x43A3Df919d5918bbB6300Fd2c20cCBF54221972e"
-token_contact_address: "0x3efc136c2F352bB0768029c115f9e518C61E6902"
-boson_router_contact_address: "0x55C7461087e476a1EE094847EE2401B26559FADC"
-cashier_address: "0xc5701331cf35EED5950CF770fd3316c1402C57f3"
+voucher_kernel_address: "0x72ed3a45303D5102B92b6F837162684673c40477"
+token_contact_address: "0x94588Ba858c7F67B60a0a079FE2131c4C0351fB9"
+boson_router_contact_address: "0x6D7f06CC2F2583A44226A9077Bea8C5f646B5095"
+cashier_address: "0x5aF8E92541Ce126d2BfF69A03F301a7E16943A9c"
 
 # State
 domain_state_bucket_name: "bsn-aws-application-account-bsn-production-lutetium"
