@@ -16,8 +16,7 @@ This reference app may be used as a template for building your own marketplace p
   - [Prerequisites](#prerequisites)
   - [Configuration](#configuration)
   - [Build](#build)
-  - [Run (Linux / Mac OS X)](#run-linux--mac-os-x)
-  - [Run (Windows)](#run-windows)
+  - [Run](#run)
   - [Test](#test)
     - [Unit Tests](#unit-tests)
     - [Component Tests](#component-tests)
@@ -88,22 +87,7 @@ To fetch dependencies:
 ```
 
 ---
-### Run (Linux / Mac OS X)
-A task has been created which will:
- - Install any necessary dependencies
- - Provision a local database
- - Run the server locally
- - Run a local keepers service (dependent on local contracts deployment as described in the [`contracts`](https://github.com/bosonprotocol/contracts) repository - see "Run" section).
- - Run local event listeners (dependent on local contracts deployment as described in the [`contracts`](https://github.com/bosonprotocol/contracts) repository - see "Run" section).
-
-This can be executed by running the following from the project root directory:
-```shell
-./go app:run
-```
-
----
-### Run (Windows)
-On Windows, the 'go' script is not supported.
+### Run
 You will need to:
  - Run a MongoDB database instance (can be local or cloud hosted, like MongoDb Atlas). Be sure the deployed instance is secured with authentication enforced (https://docs.mongodb.com/guides/server/auth/)
  
