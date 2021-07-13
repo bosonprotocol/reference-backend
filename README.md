@@ -14,7 +14,6 @@ This reference app may be used as a template for building your own marketplace p
 - [Design & Architecture](#design--architecture)
 - [Local Development](#local-development)
   - [Prerequisites](#prerequisites)
-  - [Configuration](#configuration)
   - [Build](#build)
   - [Run](#run)
   - [Test](#test)
@@ -57,12 +56,6 @@ At a minimum, you'll need:
 For instructions on how to get set up with these specific versions:
 * See the [OS X guide](docs/setup/osx.md) if you are on a Mac.
 * See the [Linux guide](docs/setup/linux.md) if you use a Linux distribution.
-
----
-### Configuration
-Prior to running the application, you must set up a `.env` file in the project's root directory with the following environment variables:
-- `TOKEN_SECRET` - The token used to authenticate the user. Based on the verification with the secret, we derive the user's address.
-- `GCLOUD_SECRET` - The token used to authenticate requests from the Event Listeners and Keepers.
 
 ---
 ### Build
