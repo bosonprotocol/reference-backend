@@ -687,7 +687,7 @@ namespace :ci do
 
       t.target = configuration.concourse_team
       t.team = configuration.concourse_team
-      t.pipeline = "reference-backend-production"
+      t.pipeline = "reference-backend-ethcc"
 
       t.config = 'pipelines/ethcc/pipeline.yaml'
 
