@@ -1,0 +1,8 @@
+---
+platform: linux
+
+inputs:
+  - name: source
+run:
+  dir: /source
+  path: ./pipelines/ethcc/provision-keepers-image-repository/task.sh

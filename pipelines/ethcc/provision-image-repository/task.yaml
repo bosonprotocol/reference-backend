@@ -1,0 +1,8 @@
+---
+platform: linux
+
+inputs:
+  - name: source
+run:
+  dir: /source
+  path: ./pipelines/ethcc/provision-image-repository/task.sh
