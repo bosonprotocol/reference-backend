@@ -675,7 +675,7 @@ namespace :ci do
     end
 
     RakeFly.define_pipeline_tasks(
-      namespace: :production,
+      namespace: :ethcc,
       argument_names: [
         :ci_deployment_type,
         :ci_deployment_label
