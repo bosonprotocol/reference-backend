@@ -21,6 +21,8 @@ token_contact_address: "0x94588Ba858c7F67B60a0a079FE2131c4C0351fB9"
 boson_router_contact_address: "0x6D7f06CC2F2583A44226A9077Bea8C5f646B5095"
 cashier_address: "0x5aF8E92541Ce126d2BfF69A03F301a7E16943A9c"
 
+host_http_port: "3000"
+
 # State
 domain_state_bucket_name: "bsn-aws-application-account-bsn-production-lutetium"
 domain_state_key: "common/deployment-state/default.tfstate"

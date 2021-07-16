@@ -21,6 +21,8 @@ token_contact_address: "0x66c02B4C0f1b8205B090AEB0266577557167AF47"
 boson_router_contact_address: "0xe2AfF6a81Aa47149AAd39a0c320B5895E6f266D0"
 cashier_address: "0xa49925E6064CeB7E0777BD9E864a71518Cd141A8"
 
+host_http_port: "3000"
+
 # State
 domain_state_bucket_name: "bsn-aws-application-account-bsn-development-potassium"
 domain_state_key: "common/deployment-state/default.tfstate"

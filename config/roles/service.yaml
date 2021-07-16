@@ -12,7 +12,7 @@ vars:
 
   service_name: "reference-backend"
   container_http_port: "3000"
-  host_http_port: "3000"
+  host_http_port: "%{hiera('host_http_port')}"
 
   token_secret: "%{hiera('token_secret')}"
   gcloud_secret: "%{hiera('gcloud_secret')}"
