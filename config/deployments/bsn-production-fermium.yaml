@@ -17,7 +17,7 @@ database_type: "deployed"
 image_upload_storage_engine: "AWS"
 
 voucher_kernel_address: "0x82a33733c2f8696F7fd61D0874351cbb8Ea61EBc"
-token_contact_address: "0x1b48e27D7ABaDf2f5A5f14975Cb9D4E457dF5111"
+token_contact_address: "0x654FA4C10C0F66c4D94B4AD458236A260888AB5a"
 boson_router_contact_address: "0x29C9361920785F4B2175Ba61c177cEdC6A99542A"
 cashier_address: "0x0bfF7B7A04C1eB19DeA63f0FF4D884914edB61E8"
 
