@@ -1,0 +1,35 @@
+name: Demo Branch Backend Build and Deploy to GAE
+on:
+  push:
+    branches:
+      - demo
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: build backend
+        run: |
+          npm install
+      - uses: actions-hub/gcloud@master
+        name: copy environment variables
+        env:
+          PROJECT_ID: ${{secrets.APP_ENGINE_PROJECT_ID_DEV}}
+          APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG_DEV}}
+          CLI: gsutil
+        with:
+          args: cp gs://boson-variables-dev/demo/.env .
+      - uses: actions-hub/gcloud@master
+        name: deploy service
+        env:
+          PROJECT_ID: ${{secrets.APP_ENGINE_PROJECT_ID_DEV}}
+          APPLICATION_CREDENTIALS: ${{secrets.APP_ENGINE_CONFIG_DEV}}
+        with:
+          args: app deploy app-demo.yaml
