@@ -17,6 +17,7 @@ const AdministratorAuthenticationMiddleware = require("./src/api/middlewares/Adm
 const UserAuthenticationMiddleware = require("./src/api/middlewares/UserAuthenticationMiddleware");
 
 const UsersModule = require("./src/modules/UsersModule");
+const ChatModule = require("./src/modules/ChatModule");
 const VoucherSuppliesModule = require("./src/modules/VoucherSuppliesModule");
 const VouchersModule = require("./src/modules/VouchersModule");
 const PaymentsModule = require("./src/modules/PaymentsModule");
@@ -68,6 +69,7 @@ const dependencies = {
 
 const healthModule = new HealthModule(dependencies);
 const usersModule = new UsersModule(dependencies);
+const chatModule = new ChatModule(dependencies);
 const voucherSuppliesModule = new VoucherSuppliesModule(dependencies);
 const vouchersModule = new VouchersModule(dependencies);
 const paymentsModule = new PaymentsModule(dependencies);
@@ -78,6 +80,7 @@ new Server()
   .withMongooseClient(mongooseClient)
   .withModule(healthModule)
   .withModule(usersModule)
+  .withModule(chatModule)
   .withModule(voucherSuppliesModule)
   .withModule(vouchersModule)
   .withModule(paymentsModule)

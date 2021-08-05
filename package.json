@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.1.1",
+    "@slack/web-api": "^6.3.0",
     "aws-sdk": "^2.907.0",
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",

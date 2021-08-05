@@ -133,6 +133,18 @@ class ConfigurationService {
       coerceUndefined(process.env.SUPERADMIN_PASSWORD)
     );
   }
+
+  get slackToken() {
+    return (
+      this.overrides.slackToken || coerceUndefined(process.env.SLACK_TOKEN)
+    );
+  }
+
+  get slackChannel() {
+    return (
+      this.overrides.slackChannel || coerceUndefined(process.env.SLACK_CHANNEL)
+    );
+  }
 }
 
 module.exports = ConfigurationService;
