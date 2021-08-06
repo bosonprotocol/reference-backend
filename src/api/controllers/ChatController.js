@@ -6,18 +6,23 @@ class ChatController {
     this.web = new WebClient(config.slackToken);
     this.channel = config.channelId;
     this.chatMetaData = new Map();
+    this.buyersRepository = config.buyersChatRepository;
   }
 
   async relayMessageToSlack(req, res, next) {
     // Post the message to the slack channel
     try {
       let thread_ts = "";
-      const existingMetaData = this.chatMetaData.get(
-        [req.body.voucherId, req.body.address].join(",")
-      );
+
+      const existingMetaData = await this.buyersRepository.getThread([req.body.voucherId, req.body.address].join(","));
+      console.log(existingMetaData + 'HERE DATA relayMessageToSlack 18')
+
       if (existingMetaData) {
         thread_ts = existingMetaData.thread_ts;
       }
+
+      console.log(req.body.message);
+      console.log(this.channel);
 
       const result = await this.web.chat.postMessage({
         text: req.body.message,
@@ -25,6 +30,9 @@ class ChatController {
         username: req.body.address,
         thread_ts: thread_ts,
       });
+
+      console.log('result channel: ' + result.channel);
+      console.log('result channel: ' + +result.ts);
 
       req.body.output = {
         key: {
@@ -47,25 +55,25 @@ class ChatController {
   async storeChatMetaDataIfNew(req, res, next) {
     // store ts & channel in a map where key is voucherId & address
     const data = req.body.output;
-
-    const existingMetaData = this.chatMetaData.get(
-      [data.key.voucherId, data.key.address].join(",")
-    );
+    const existingMetaData = await this.buyersRepository.getThread([data.key.voucherId, data.key.address].join(","));
 
     if (!existingMetaData) {
-      this.chatMetaData.set(
-        [data.key.voucherId, data.key.address].join(","),
-        data.metadata
-      );
+      const newT = await this.buyersRepository.createThread({
+        chatId: [data.key.voucherId, data.key.address].join(","),
+        thread_ts: data.metadata.thread_ts,
+        channel: data.metadata.channel
+      });
+      console.log(newT + ' **WRITTEN THREAD**');
     }
 
     next();
   }
 
   async getSlackThread(req, res, next) {
-    const existingMetaData = this.chatMetaData.get(
-      [req.params.voucherId, req.params.address].join(",")
-    );
+    const existingMetaData = await this.buyersRepository.getThread([req.params.voucherId, req.params.address].join(","));
+    
+    console.log(existingMetaData + ' **META DATA**');
+
     if (!existingMetaData) {
       req.body.output = null;
     } else {
@@ -74,8 +82,11 @@ class ChatController {
           channel: existingMetaData.channel,
           ts: existingMetaData.thread_ts,
         });
-
+        
+        console.log('**MESSAGE FROM THREAD**')
+        console.log(result.messages);
         req.body.output = result.messages;
+
       } catch (e) {
         console.log(e);
         return next(new ApiError(502, "Bad Gateway."));

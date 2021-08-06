@@ -1,5 +1,6 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const ChatController = require("../api/controllers/ChatController");
+const BuyersChatRepository = require("../database/BuyersChat/BuyersChatRepository");
 
 class ChatModule {
   constructor({ configurationService }) {
@@ -7,6 +8,7 @@ class ChatModule {
     this.chatController = new ChatController({
       slackToken: configurationService.slackToken,
       channelId: configurationService.slackChannel,
+      buyersChatRepository: new BuyersChatRepository(),
     });
   }
 

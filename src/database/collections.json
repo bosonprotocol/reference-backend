@@ -3,5 +3,6 @@
     "VOUCHER_SUPPLY": "VoucherSupply",
     "VOUCHER": "Voucher",
     "PAYMENT": "Payment",
-    "EVENT": "Event"
+    "EVENT": "Event",
+    "BUYERS_CHAT": "BuyersChat"
 }

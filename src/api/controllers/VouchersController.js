@@ -12,7 +12,6 @@ class VouchersController {
   async getVouchers(req, res, next) {
     const voucherData = [];
     const address = res.locals.address;
-
     try {
       const promises = [];
       const userVouchers = await this.vouchersRepository.getAllVouchersByHolder(
@@ -27,7 +26,8 @@ class VouchersController {
           )
         );
       });
-
+      console.log('here voucher');
+      console.log(userVouchers);
       await Promise.all(promises);
     } catch (error) {
       console.log(

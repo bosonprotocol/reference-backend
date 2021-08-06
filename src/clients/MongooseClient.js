@@ -24,8 +24,8 @@ class MongooseClient {
     return mongoose.connect(this.databaseConnectionString, {
       ...options,
       dbName: this.databaseName,
-      user: this.databaseUsername,
-      pass: this.databasePassword,
+      // user: this.databaseUsername,
+      // pass: this.databasePassword,
     });
   }
 }

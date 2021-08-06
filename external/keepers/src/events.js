@@ -23,7 +23,7 @@ async function init() {
     VK = new ethers.Contract(process.env.VOUCHER_KERNEL_ADDRESS, VoucherKernel.abi, provider);
     BR = new ethers.Contract(process.env.BOSON_ROUTER_CONTRACT_ADDRESS, BosonRouter.abi, provider);
     ERC1155721 = new ethers.Contract(process.env.TOKENS_CONTRACT_ADDRESS, ERC1155ERC721.abi, provider)
-
+    console.log(process.env.VOUCHER_KERNEL_ADDRESS);
     axios.defaults.headers.common = {
         Authorization: `Bearer ${process.env.GCLOUD_SECRET}`
     }
