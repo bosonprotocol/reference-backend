@@ -26,7 +26,7 @@ class VouchersController {
           )
         );
       });
-      console.log('here voucher');
+      console.log("here voucher");
       console.log(userVouchers);
       await Promise.all(promises);
     } catch (error) {

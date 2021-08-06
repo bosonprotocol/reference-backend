@@ -2,9 +2,9 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const collections = require("../collections.json");
-const BUYERS_CHAT = collections.BUYERS_CHAT;
+const BUYERS_CHAT = collections.CHAT;
 
-const buyersChatSchema = new Schema({
+const chatSchema = new Schema({
   chatId: {
     type: String,
     required: true,
@@ -16,7 +16,7 @@ const buyersChatSchema = new Schema({
   thread_ts: {
     type: String,
     required: true,
-  }
+  },
 });
 
-module.exports = mongoose.model(BUYERS_CHAT, buyersChatSchema);
+module.exports = mongoose.model(BUYERS_CHAT, chatSchema);

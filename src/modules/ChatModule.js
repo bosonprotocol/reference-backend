@@ -1,6 +1,6 @@
 const ErrorHandlingMiddleware = require("../api/middlewares/ErrorHandlingMiddleware");
 const ChatController = require("../api/controllers/ChatController");
-const BuyersChatRepository = require("../database/BuyersChat/BuyersChatRepository");
+const ChatRepository = require("../database/Chat/ChatRepository");
 
 class ChatModule {
   constructor({ configurationService }) {
@@ -8,7 +8,7 @@ class ChatModule {
     this.chatController = new ChatController({
       slackToken: configurationService.slackToken,
       channelId: configurationService.slackChannel,
-      buyersChatRepository: new BuyersChatRepository(),
+      chatRepository: new ChatRepository(),
     });
   }
 
@@ -22,9 +22,8 @@ class ChatModule {
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.chatController.relayMessageToSlack(req, res, next)
       ),
-      ErrorHandlingMiddleware.globalErrorHandler(
-        (req, res, next) =>
-          this.chatController.storeChatMetaDataIfNew(req, res, next) // keep track of "ts" to be used for "thread_ts" in replies
+      ErrorHandlingMiddleware.globalErrorHandler((req, res) =>
+        this.chatController.storeChatMetaDataIfNew(req, res)
       )
     );
 

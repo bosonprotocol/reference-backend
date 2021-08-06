@@ -20,8 +20,8 @@ class UsersRepository {
     });
 
     let userSaved = await user.save();
-    console.log(userSaved)
-    return userSaved
+    console.log(userSaved);
+    return userSaved;
   }
 
   async setUserToAdmin(address) {

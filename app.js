@@ -12,7 +12,7 @@ const VouchersRepository = require("./src/database/Voucher/VouchersRepository");
 const VoucherSuppliesRepository = require("./src/database/VoucherSupply/VoucherSuppliesRepository");
 const PaymentsRepository = require("./src/database/Payment/PaymentsRepository");
 const EventRepository = require("./src/database/Event/EventsRepository");
-const BuyersChatRepository = require("./src/database/BuyersChat/BuyersChatRepository");
+const ChatRepository = require("./src/database/Chat/ChatRepository");
 
 const AdministratorAuthenticationMiddleware = require("./src/api/middlewares/AdministratorAuthenticationMiddleware");
 const UserAuthenticationMiddleware = require("./src/api/middlewares/UserAuthenticationMiddleware");
@@ -44,7 +44,7 @@ const vouchersRepository = new VouchersRepository();
 const voucherSuppliesRepository = new VoucherSuppliesRepository();
 const paymentsRepository = new PaymentsRepository();
 const eventsRepository = new EventRepository();
-const buyersChatRepository = new BuyersChatRepository();
+const chatRepository = new ChatRepository();
 
 const administratorAuthenticationMiddleware = new AdministratorAuthenticationMiddleware(
   authenticationService,
@@ -64,7 +64,7 @@ const dependencies = {
   voucherSuppliesRepository,
   paymentsRepository,
   eventsRepository,
-  buyersChatRepository,
+  chatRepository,
 
   administratorAuthenticationMiddleware,
   userAuthenticationMiddleware,
