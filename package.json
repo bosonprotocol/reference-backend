@@ -14,7 +14,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "nodemon app.js",
     "start:local:triggers": "node external/lambdas/localTriggers.js",
     "start:local:keepers": "cd external/keepers/src && node index.js",
     "app:lint": "eslint app.js \"src/**/*.js\"",
@@ -68,9 +68,10 @@
     "mongoose-update-if-current": "^1.4.0",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",
+    "nodemon": "^2.0.12",
     "npm": "^7.6.3",
-    "uuid": "^8.3.2",
-    "ws": "^8.0.0"
+    "socket.io": "^4.1.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",

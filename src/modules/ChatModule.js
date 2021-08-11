@@ -17,24 +17,11 @@ class ChatModule {
   }
 
   addRoutesTo(router) {
-    router.post(
-      "/:voucherId/send",
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.chatController.relayMessageToSlack(req, res, next)
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res) =>
-        this.chatController.storeChatMetaDataIfNew(req, res)
-      )
-    );
-
     router.get(
       "/:voucherId/:address",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.chatController.getSlackThread(req, res, next)
+        this.chatController.openWS(req, res, next)
       ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res) =>
-        this.chatController.formatMessages(req, res)
-      )
     );
 
     return router;

@@ -11,6 +11,7 @@ const chatSchema = new Schema({
   },
   channel: {
     type: String,
+    
     required: true,
   },
   thread_ts: {
