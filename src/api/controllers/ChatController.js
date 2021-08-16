@@ -38,7 +38,7 @@ class ChatController {
     const addressRequest = req.params.address;
     const roomIdRequest = [voucherIdRequest, addressRequest].join(",");
     const existingMetaDataRequest = await this.chatRepository.getThread(roomIdRequest);
-    const connections = [] 
+
     this.io.on("connection", async (socket) => {
       console.log('CONNECT')
       
@@ -48,12 +48,9 @@ class ChatController {
       const existingMetaData = await this.chatRepository.getThread(roomId);
 
       if (existingMetaData !== null) {
-
-        connections.push(existingMetaData.thread_ts)
-        console.log(connections.length)
         
         // Join a room
-        console.log('thread_ts: ' + existingMetaData.thread_ts)
+        console.log('case 1 thread_ts: ' + existingMetaData.thread_ts)
         socket.join(existingMetaData.thread_ts);
         // Get messages from thread
         const messagesData = { ...await this.getSlackThread(existingMetaData.channel, existingMetaData.thread_ts), address };
@@ -87,7 +84,7 @@ class ChatController {
           await this.storeChatMetaDataIfNew(initialMessageResponse);
 
           const existingMetaData = await this.chatRepository.getThread(roomId);
-
+          console.log('case 2 thread_ts: ' + existingMetaData.thread_ts)
           socket.join(existingMetaData.thread_ts);
 
           const messagesData = { ...await this.getSlackThread(existingMetaData.channel, existingMetaData.thread_ts), address };
