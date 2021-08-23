@@ -3,7 +3,19 @@ require('dotenv').config()
 const axios = require('axios').default;
 const ethers = require('ethers');
 const provider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_URL ? process.env.ALCHEMY_URL : ''); //if no url is provided, fallbacks to localhost:8545 
- 
+
+
+const async = require('async');
+const queue = async.queue(async (task, completed) => {
+    await task()
+    completed(null, {})
+})
+
+//TODO 
+// 1. set tx on each listener
+// 2. sent tx hash on updating events
+// 3. discuss whether queue is actually required? We might send request in parallel - there will be more rejects from the backend, but we handle them with retries, or we might send them from a queue in a FIFO fashion
+
 const ERC1155ERC721 = require("./abis/ERC1155ERC721.json");
 const VoucherKernel = require("./abis/VoucherKernel.json");
 const BosonRouter = require("./abis/BosonRouter.json")
@@ -32,7 +44,7 @@ async function init() {
 const RETRIES = 5
 
 function retryUpdateWithSuccess(axiosMethod, route, metadata, retries) {
-    return new Promise((resolve, _) => {
+    return new Promise((resolve) => {
         setTimeout(async () => {
             console.log('RETRIES LEFT: ', retries);
 
@@ -47,7 +59,6 @@ function retryUpdateWithSuccess(axiosMethod, route, metadata, retries) {
                     return resolve(true)
                 }
             } catch (error) {
-
                 const apiOutage = error.code == errors.ECONNREFUSED
                 const recordNotFound = !!(error.response && error.response.status == errors.NOT_FOUND)
                 const badRequest = !!(error.response && error.response.status == errors.BAD_REQUEST)
@@ -59,7 +70,7 @@ function retryUpdateWithSuccess(axiosMethod, route, metadata, retries) {
                 return resolve(false)
             }
 
-        }, 5000);
+        }, 200);
     })
 }
 
@@ -80,8 +91,7 @@ function logFinish(event, id, errorObj) {
 }
 
 async function logOrderCreated() {
-    BR.on(eventNames.LOG_ORDER_CREATED, async (_tokenIdSupply, _voucherOwner, _quantity, _paymentType, _correlationId) => {
-
+    BR.on(eventNames.LOG_ORDER_CREATED, async (_tokenIdSupply, _voucherOwner, _quantity, _paymentType, _correlationId, tx) => {
         let errObj = {hasError: false}
         let metadata;
 
@@ -103,7 +113,8 @@ async function logOrderCreated() {
                 validTo: (ethers.BigNumber.from(promiseDetails[3]).mul(1000)).toString(),
                 price: orderCosts[0].toString(),
                 sellerDeposit: orderCosts[1].toString(),
-                buyerDeposit: orderCosts[2].toString()
+                buyerDeposit: orderCosts[2].toString(),
+                txHash: tx.transactionHash,
             }
 
             await axios.patch(`${routes.setSupplyMeta}`, metadata)
@@ -119,25 +130,25 @@ async function logOrderCreated() {
             }
         }
 
-        try {
-            metadata = {
-                name: eventNames.LOG_ORDER_CREATED,
-                _correlationId: _correlationId.toString(),
-                address: _voucherOwner.toLowerCase()
-            }
+        // try {
+        //     metadata = {
+        //         name: eventNames.LOG_ORDER_CREATED,
+        //         _correlationId: _correlationId.toString(),
+        //         address: _voucherOwner.toLowerCase()
+        //     }
 
-            await axios.patch(routes.updateEventByCorrId, metadata)
-        } catch (error) {
-            if (!await retryUpdateWithSuccess('patch', routes.updateEventByCorrId, metadata, RETRIES)) {
-                errObj = {
-                    hasError: true,
-                    error
-                }
+        //     await axios.patch(routes.updateEventByCorrId, metadata)
+        // } catch (error) {
+        //     if (!await retryUpdateWithSuccess('patch', routes.updateEventByCorrId, metadata, RETRIES)) {
+        //         errObj = {
+        //             hasError: true,
+        //             error
+        //         }
 
-                logFinish(eventNames.LOG_ORDER_CREATED, _tokenIdSupply, errObj)
-                return
-            }
-        }
+        //         logFinish(eventNames.LOG_ORDER_CREATED, _tokenIdSupply, errObj)
+        //         return
+        //     }
+        // }
 
         logFinish(eventNames.LOG_ORDER_CREATED, _tokenIdSupply, errObj);
     })
@@ -194,62 +205,62 @@ async function logVoucherSetFaultCancel() {
     })
 }
 
+
 async function logVoucherDelivered() {
-    VK.on(eventNames.LOG_VOUCHER_DELIVERED, async (_tokenIdSupply, _tokenIdVoucher, _issuer, _holder, _promiseId, _correlationId) => {
+    VK.on(eventNames.LOG_VOUCHER_DELIVERED, async (_tokenIdSupply, _tokenIdVoucher, _issuer, _holder, _promiseId, _correlationId, tx) => {
+        queue.push(async () => {
+            let errObj = {hasError: false}
+            let metadata;
 
-        let errObj = {hasError: false}
-        let metadata;
+            logStart(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher)
 
-        logStart(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher)
-
-        try {
-            metadata = {
-                _tokenIdSupply: _tokenIdSupply.toString(),
-                _tokenIdVoucher: _tokenIdVoucher.toString(),
-                _issuer: _issuer.toLowerCase(),
-                _holder: _holder.toLowerCase(),
-                _promiseId: _promiseId.toString(),
-                _correlationId: _correlationId.toString(),
-            }
-
-            await axios.patch(routes.updateVoucherDelivered, metadata)
-
-        } catch (error) {
-
-            if (!await retryUpdateWithSuccess('patch', routes.updateVoucherDelivered, metadata, RETRIES)) {
-                errObj = {
-                    hasError: true,
-                    error
+            try {
+                metadata = {
+                    _tokenIdSupply: _tokenIdSupply.toString(),
+                    _tokenIdVoucher: _tokenIdVoucher.toString(),
+                    _issuer: _issuer.toLowerCase(),
+                    _holder: _holder.toLowerCase(),
+                    _promiseId: _promiseId.toString(),
+                    _correlationId: _correlationId.toString(),
+                    txHash: tx.transactionHash,
                 }
 
-                logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj)
-                return
-            }
-        }
+                await axios.patch(routes.updateVoucherDelivered, metadata)
 
-        try {
-            metadata = {
-                name: eventNames.LOG_VOUCHER_DELIVERED,
-                _correlationId: _correlationId.toString(),
-                address: _holder.toLowerCase()
-            }
+            } catch (error) {
+                if (!await retryUpdateWithSuccess('patch', routes.updateVoucherDelivered, metadata, RETRIES)) {
+                    errObj = {
+                        hasError: true,
+                        error
+                    }
 
-            await axios.patch(routes.updateEventByCorrId, metadata)
-        } catch (error) {
-            if (!await retryUpdateWithSuccess('patch', routes.updateEventByCorrId, metadata, RETRIES)) {
-                errObj = {
-                    hasError: true,
-                    error
+                    logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj)
+                    return
                 }
-
-                logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj)
-                return
             }
-        }
 
+            // try {
+            //     metadata = {
+            //         name: eventNames.LOG_VOUCHER_DELIVERED,
+            //         _correlationId: _correlationId.toString(),
+            //         address: _holder.toLowerCase()
+            //     }
 
-        logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj);
+            //     await axios.patch(routes.updateEventByCorrId, metadata)
+            // } catch (error) {
+            //     if (!await retryUpdateWithSuccess('patch', routes.updateEventByCorrId, metadata, RETRIES)) {
+            //         errObj = {
+            //             hasError: true,
+            //             error
+            //         }
 
+            //         logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj)
+            //         return
+            //     }
+            // }
+
+            logFinish(eventNames.LOG_VOUCHER_DELIVERED, _tokenIdVoucher, errObj);
+        })
     })
 }
 
@@ -619,6 +630,7 @@ async function logTransferBatch1155() {
 
         // TODO this will need a little rework if we are to support this from the reference app. (Event Statistics related)
         // This is not the most accurate way for detecting the record, as the corrId might change (if new tx is mined for this user) in the mean time before we get the one this relates to
+        // TODO upper case will be resolved with txHash. In this case txHash must not be set to be unique in the model as it is currently. There could be couple of vouchers on a batch transaction with the same txHash
         try {
             const oldOwnerCorrelationId = await BR.getCorrelationId(oldSupplyOwner);
             metadata = {

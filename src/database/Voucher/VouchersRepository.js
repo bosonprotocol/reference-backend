@@ -19,6 +19,7 @@ class VouchersRepository {
       [voucherStatuses.EXPIRED]: null,
       [voucherStatuses.FINALIZED]: null,
       voucherOwner: metadata._issuer.toLowerCase(),
+      txHash: metadata.txHash,
       actionDate: new Date().getTime(),
       _correlationId: metadata._correlationId,
       blockchainAnchored: false,
@@ -29,18 +30,12 @@ class VouchersRepository {
 
   async updateVoucherDelivered(metadata) {
     const voucher = await Voucher.findOne({
-      _correlationId: metadata._correlationId,
-      _holder: metadata._holder.toLowerCase(),
-      _tokenIdSupply: metadata._tokenIdSupply,
+      txHash: metadata.txHash,
     });
 
     if (!voucher) {
       throw new Error(
-        `No Voucher found for supplyID: ${
-          metadata._tokenIdSupply
-        } holder: ${metadata._holder.toLowerCase()} correlationId: ${
-          metadata._correlationId
-        }`
+        `No Voucher found for transaction hash: ${metadata.txHash}`
       );
     }
 

@@ -66,6 +66,12 @@ const voucherSchema = new Schema({
   blockchainAnchored: {
     type: Boolean,
   },
+  txHash: {
+    type: String,
+    index: {
+      unique: true,
+    },
+  },
 });
 
 voucherSchema.plugin(updateIfCurrentPlugin);

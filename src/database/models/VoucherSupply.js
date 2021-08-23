@@ -124,6 +124,12 @@ const voucherSchema = new Schema({
   blockchainAnchored: {
     type: Boolean,
   },
+  txHash: {
+    type: String,
+    index: {
+      unique: true, //todo this might not need to be unique (ref: transferBatch)
+    },
+  },
 });
 
 voucherSchema.plugin(updateIfCurrentPlugin);

@@ -40,6 +40,7 @@ class VoucherSuppliesRepository {
       },
       contact: metadata.contact,
       conditions: metadata.conditions,
+      txHash: metadata.txHash,
       voucherOwner: voucherOwner,
       visible: true,
       blockchainAnchored: false,
@@ -116,21 +117,32 @@ class VoucherSuppliesRepository {
     );
   }
 
-  async decrementVoucherSupplyQty(supplyId) {
-    const voucherSupply = await this.getVoucherSupplyBySupplyTokenId(supplyId);
+  async decrementVoucherSupplyQty(supplyId, session = null) {
+    const voucherSupply = await this.getVoucherSupplyBySupplyTokenId(
+      supplyId,
+      session
+    );
+
     if (!voucherSupply) {
       throw new Error("Voucher supply not found");
     }
 
-    voucherSupply.qty = --voucherSupply.qty;
 
-    return await voucherSupply.save();
+    return await VoucherSupply.findOneAndUpdate(
+      { txHash: voucherSupply.txHash },
+      {
+        $set: {
+          qty: voucherSupply.qty - 1,
+        },
+      },
+      { runValidators: true, session: session }
+    );
+
   }
 
   async setVoucherSupplyMeta(metadata) {
     let voucherSupply = await VoucherSupply.findOne({
-      voucherOwner: metadata.voucherOwner,
-      _correlationId: metadata._correlationId,
+      txHash: metadata.txHash,
     });
 
     if (!voucherSupply) {
@@ -227,8 +239,10 @@ class VoucherSuppliesRepository {
     });
   }
 
-  async getVoucherSupplyBySupplyTokenId(supplyTokenId) {
-    return VoucherSupply.findOne({ _tokenIdSupply: supplyTokenId });
+  async getVoucherSupplyBySupplyTokenId(supplyTokenId, session) {
+    return VoucherSupply.findOne({ _tokenIdSupply: supplyTokenId }, null, {
+      session: session,
+    });
   }
 
   async getAllVoucherSupplies() {

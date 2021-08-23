@@ -1,5 +1,6 @@
 // @ts-nocheck
 const ApiError = require("../ApiError");
+const mongoose = require("mongoose");
 
 const voucherUtils = require("../../utils/voucherUtils");
 
@@ -151,12 +152,22 @@ class VouchersController {
   async updateVoucherDelivered(req, res, next) {
     let voucher;
 
+    // TODO get session from the mongooseClient, and if it worth it to be brought down the chain up to here?
+
+    let session;
+
     try {
       voucher = await this.vouchersRepository.updateVoucherDelivered(req.body);
 
+      session = await mongoose.startSession();
+
+      session.startTransaction();
+
       await this.voucherSuppliesRepository.decrementVoucherSupplyQty(
-        req.body._tokenIdSupply
+        req.body._tokenIdSupply,
+        session
       );
+      await session.commitTransaction();
     } catch (error) {
       console.log(error);
       return next(
@@ -166,6 +177,8 @@ class VouchersController {
         )
       );
     }
+
+    await session.endSession();
 
     res.status(200).send({ voucher: voucher.id });
   }

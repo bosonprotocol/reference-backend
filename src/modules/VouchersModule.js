@@ -52,13 +52,6 @@ class VouchersModule {
         this.userValidationMiddleware.validateMetadata(req, res, next)
       ),
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
-        this.voucherValidationMiddleware.validateVoucherByCorrelationIdDoesNotExist(
-          req,
-          res,
-          next
-        )
-      ),
-      ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.vouchersController.commitToBuy(req, res, next)
       )
     );
