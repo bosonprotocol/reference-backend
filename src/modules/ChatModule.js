@@ -21,7 +21,7 @@ class ChatModule {
       "/:voucherId/:address",
       ErrorHandlingMiddleware.globalErrorHandler((req, res, next) =>
         this.chatController.openWS(req, res, next)
-      ),
+      )
     );
 
     return router;

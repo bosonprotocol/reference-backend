@@ -20,7 +20,7 @@ class UsersRepository {
     });
 
     let userSaved = await user.save();
-    console.log(userSaved);
+
     return userSaved;
   }
 

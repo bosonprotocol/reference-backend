@@ -25,6 +25,7 @@ const PaymentsModule = require("./src/modules/PaymentsModule");
 const EventsModule = require("./src/modules/EventsModule");
 const AdministrationModule = require("./src/modules/AdministrationModule");
 const HealthModule = require("./src/modules/HealthModule");
+const SlackEventsModule = require("./src/modules/SlackEventsModule");
 
 const configurationService = new ConfigurationService();
 
@@ -73,6 +74,7 @@ const dependencies = {
 const healthModule = new HealthModule(dependencies);
 const usersModule = new UsersModule(dependencies);
 const chatModule = new ChatModule(dependencies);
+const slackEventsModule = new SlackEventsModule(dependencies);
 const voucherSuppliesModule = new VoucherSuppliesModule(dependencies);
 const vouchersModule = new VouchersModule(dependencies);
 const paymentsModule = new PaymentsModule(dependencies);
@@ -89,4 +91,5 @@ new Server()
   .withModule(paymentsModule)
   .withModule(eventsModule)
   .withModule(administrationModule)
+  .withModule(slackEventsModule)
   .start(process.env.PORT || 3000);

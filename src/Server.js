@@ -6,7 +6,7 @@ const ErrorHandlingMiddleware = require("./api/middlewares/ErrorHandlingMiddlewa
 class Server {
   constructor() {
     this.app = express();
-    
+
     this.app.use(express.json());
     this.app.use(function (req, res, next) {
       next();
