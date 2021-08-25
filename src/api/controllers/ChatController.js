@@ -1,5 +1,8 @@
 const { WebClient } = require("@slack/web-api");
+const VouchersRepository = require("../../database/Voucher/VouchersRepository");
+const VoucherSuppliesRepository = require("../../database/VoucherSupply/VoucherSuppliesRepository");
 const { setSocketConnections } = require("../../utils/socketConnections");
+const { shortenAddress } = require("../../utils/shortenAddress");
 // const e = require("cors");
 // const ApiError = require("../ApiError");
 
@@ -12,6 +15,8 @@ class ChatController {
     this.io;
     this.createWebSocketService();
     this.socketConnections = new Map();
+    this.vouchersRepository = new VouchersRepository();
+    this.voucherSuppliesRepository = new VoucherSuppliesRepository();
   }
 
   createWebSocketService() {
@@ -27,7 +32,7 @@ class ChatController {
     });
   }
 
-  async socketOperations(socket, existingMetaData, address) {
+  async socketOperations(socket, existingMetaData, title, address, voucherURL) {
     const thread = existingMetaData.thread_ts;
 
     // Join a room
@@ -57,6 +62,8 @@ class ChatController {
 
     // Listen for new messages
     socket.on(this.NEW_CHAT_MESSAGE_EVENT, async (data) => {
+      data.title = title;
+      data.voucherURL = voucherURL;
       // Emit newest message
       this.relayMessageOperations(existingMetaData, data);
     });
@@ -92,6 +99,10 @@ class ChatController {
       roomIdRequest
     );
 
+    const voucherURL = `${req.headers.origin}/voucher-sets/${voucherIdRequest}/details?direct=1`;
+    const { supplyID } = await this.vouchersRepository.getVoucherById(voucherIdRequest);
+    const { title } = await this.voucherSuppliesRepository.getVoucherSupplyById(supplyID);
+
     this.io.on("connection", async (socket) => {
       console.log("CONNECTION");
 
@@ -117,7 +128,7 @@ class ChatController {
 
         console.log("CASE 1 thread_ts: " + existingMetaData.thread_ts);
 
-        await this.socketOperations(socket, existingMetaData, address);
+        await this.socketOperations(socket, existingMetaData, title, address, voucherURL);
 
       } else {
 
@@ -130,6 +141,8 @@ class ChatController {
             address,
             voucherId,
             message,
+            title,
+            voucherURL
           };
 
           const initialMessageResponse = await this.relayMessageToSlack(
@@ -162,9 +175,9 @@ class ChatController {
       const thread_ts = existingMetaData ? existingMetaData.thread_ts : "";
 
       const result = await this.web.chat.postMessage({
-        text: data.message,
+        text: existingMetaData ? data.message : `${data.voucherURL}\n${data.message}`,
         channel: this.channel,
-        username: data.address,
+        username: `${shortenAddress(data.address)} - ${data.title}`,
         thread_ts: thread_ts,
         icon_emoji: ":information_desk_person:",
       });
@@ -178,7 +191,9 @@ class ChatController {
           channel: result.channel,
           thread_ts: result.ts,
         },
+
       };
+
     } catch (e) {
       console.log(e);
     }
@@ -200,6 +215,7 @@ class ChatController {
 
   async getSlackThread(channel, thread) {
     if (channel && thread) {
+
       try {
         const result = await this.web.conversations.replies({
           channel,
@@ -210,11 +226,13 @@ class ChatController {
         console.log(e);
         // return next(new ApiError(502, "Bad Gateway."));
       }
+
     }
   }
 
   formatMessages(messagesData) {
     let messages = [];
+
     if (messagesData) {
       for (let message of messagesData) {
         const data = {
@@ -226,6 +244,7 @@ class ChatController {
         messages.push(data);
       }
     }
+
     return messages;
   }
 

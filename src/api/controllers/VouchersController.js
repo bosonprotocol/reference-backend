@@ -69,6 +69,7 @@ class VouchersController {
       const userVoucher = await this.vouchersRepository.getVoucherById(
         voucherID
       );
+      
       const voucherSupply = await this.voucherSuppliesRepository.getVoucherSupplyById(
         userVoucher.supplyID
       );

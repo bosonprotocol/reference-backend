@@ -3,7 +3,7 @@ const { getSocketConnections } = require("../../utils/socketConnections");
 class SlackEventsController {
 
     async messageEventListenerSlack(req, res) {
-        
+
         const NEW_CHAT_MESSAGE_EVENT = "message";
         const message = req.body;
         const thread = message.event.thread_ts;
@@ -20,7 +20,7 @@ class SlackEventsController {
 
                 const socketConnectionInstance = getSocketConnections(thread);
                 const formattedMessage = this.formatMessage(message);
-              
+
                 if (socketConnectionInstance) {
 
                     socketConnectionInstance
