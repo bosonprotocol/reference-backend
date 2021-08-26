@@ -6,15 +6,16 @@ class SlackEventsController {
 
         const NEW_CHAT_MESSAGE_EVENT = "message";
         const message = req.body;
-        const thread = message.event.thread_ts;
-
-        res.sendStatus(200);
 
         if (message.challenge) {
 
             res.send(message.challenge);
 
         } else if (message.event.type === 'message' && message.event.subtype !== 'message_changed') {
+ 
+            res.sendStatus(200);
+
+            const thread = message.event.thread_ts;
 
             if (!message.event.subtype) {
 
