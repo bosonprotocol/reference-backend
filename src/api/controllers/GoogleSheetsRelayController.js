@@ -24,11 +24,12 @@ class GoogleSheetsRelayController {
         range,
         authScopes,
         constants.GetSellerWhitelist.valueRenderOption,
-        constants.GetSellerWhitelist.dateTimeRenderOption
-      );
+        constants.GetSellerWhitelist.dateTimeRenderOption,
+        constants.GetSellerWhitelist.majorDimension
+      ); // array of array of strings (i.e. array of row arrays - in this case each single due to whitelist format)
 
       if (sheetData) {
-        whitelist = sheetData.map((x) => x.toLowerCase()); // format to lowercase
+        whitelist = sheetData.map((x) => x[0].toLowerCase()); // format to lowercase and reformat to array of strings (from 2d array)
       }
     } catch (e) {
       console.log(e);
@@ -75,9 +76,16 @@ class GoogleSheetsRelayController {
    * @param scopes The scopes as a string array
    * @param valueRenderOption
    * @param dateTimeRenderOption
+   * @param majorDimension
    * @returns {Promise<any[]>} Contents of requested range as an array
    */
-  async getSheetData(range, scopes, valueRenderOption, dateTimeRenderOption) {
+  async getSheetData(
+    range,
+    scopes,
+    valueRenderOption,
+    dateTimeRenderOption,
+    majorDimension
+  ) {
     const authClient = await this.authorize(constants.Auth.keyFilePath, scopes);
     const googleSheetsInstance = google.sheets({
       version: "v4",
@@ -89,6 +97,7 @@ class GoogleSheetsRelayController {
       range: range, // The A1 notation of the values to retrieve.
       valueRenderOption: valueRenderOption, // How values should be represented in the output.
       dateTimeRenderOption: dateTimeRenderOption, // The default dateTime render option is [DateTimeRenderOption.SERIAL_NUMBER].
+      majorDimension: majorDimension,
       auth: authClient,
     };
 
@@ -98,7 +107,7 @@ class GoogleSheetsRelayController {
       );
       // const sheetCellRange = response.data.range; // todo this will be needed for POST/UPDATE requests
 
-      return response.data.values[0];
+      return response.data.values;
     } catch (err) {
       console.error(err);
     }

@@ -13,6 +13,7 @@ const GoogleSheetsConstants = {
     ],
     valueRenderOption: "UNFORMATTED_VALUE",
     dateTimeRenderOption: "SERIAL_NUMBER",
+    majorDimension: "ROWS",
   },
 };
 
