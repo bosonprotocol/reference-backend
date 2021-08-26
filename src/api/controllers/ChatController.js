@@ -45,10 +45,7 @@ class ChatController {
 
     // Get messages from thread
     const messagesData = {
-      ...(await this.getSlackThread(
-        existingMetaData.channel,
-        thread
-      )),
+      ...(await this.getSlackThread(existingMetaData.channel, thread)),
       address,
     };
 
@@ -56,9 +53,7 @@ class ChatController {
     const messages = this.formatMessages(messagesData.messages);
 
     // Emit all messages after successful connection
-    this.io
-      .in(thread)
-      .emit(this.NEW_CHAT_MESSAGE_EVENT, messages);
+    this.io.in(thread).emit(this.NEW_CHAT_MESSAGE_EVENT, messages);
 
     // Listen for new messages
     socket.on(this.NEW_CHAT_MESSAGE_EVENT, async (data) => {
@@ -100,8 +95,12 @@ class ChatController {
     );
 
     const voucherURL = `${req.headers.origin}/voucher-sets/${voucherIdRequest}/details?direct=1`;
-    const { supplyID } = await this.vouchersRepository.getVoucherById(voucherIdRequest);
-    const { title } = await this.voucherSuppliesRepository.getVoucherSupplyById(supplyID);
+    const { supplyID } = await this.vouchersRepository.getVoucherById(
+      voucherIdRequest
+    );
+    const { title } = await this.voucherSuppliesRepository.getVoucherSupplyById(
+      supplyID
+    );
 
     this.io.on("connection", async (socket) => {
       console.log("CONNECTION");
@@ -116,8 +115,9 @@ class ChatController {
       const existingMetaData = await this.chatRepository.getThread(roomId);
 
       if (existingMetaData !== null) {
-
-        const ifConnection = this.socketConnections.has(existingMetaData.thread_ts);
+        const ifConnection = this.socketConnections.has(
+          existingMetaData.thread_ts
+        );
 
         if (ifConnection) {
           this.socketConnections.delete(existingMetaData.thread_ts);
@@ -128,13 +128,16 @@ class ChatController {
 
         console.log("CASE 1 thread_ts: " + existingMetaData.thread_ts);
 
-        await this.socketOperations(socket, existingMetaData, title, address, voucherURL);
-
+        await this.socketOperations(
+          socket,
+          existingMetaData,
+          title,
+          address,
+          voucherURL
+        );
       } else {
-
         // If we don't have existing metadata (we haven't posted any message till that moment) and we have a message attached to our query in WS params
         if (message) {
-
           console.log("OPENING MESSAGE");
 
           const requestData = {
@@ -142,7 +145,7 @@ class ChatController {
             voucherId,
             message,
             title,
-            voucherURL
+            voucherURL,
           };
 
           const initialMessageResponse = await this.relayMessageToSlack(
@@ -156,7 +159,6 @@ class ChatController {
           existingMetaDataRequest = true;
 
           await this.socketOperations(socket, existingMetaData, address);
-
         }
       }
     });
@@ -175,7 +177,9 @@ class ChatController {
       const thread_ts = existingMetaData ? existingMetaData.thread_ts : "";
 
       const result = await this.web.chat.postMessage({
-        text: existingMetaData ? data.message : `${data.voucherURL}\n${data.message}`,
+        text: existingMetaData
+          ? data.message
+          : `${data.voucherURL}\n${data.message}`,
         channel: this.channel,
         username: `${shortenAddress(data.address)} - ${data.title}`,
         thread_ts: thread_ts,
@@ -191,9 +195,7 @@ class ChatController {
           channel: result.channel,
           thread_ts: result.ts,
         },
-
       };
-
     } catch (e) {
       console.log(e);
     }
@@ -215,7 +217,6 @@ class ChatController {
 
   async getSlackThread(channel, thread) {
     if (channel && thread) {
-
       try {
         const result = await this.web.conversations.replies({
           channel,
@@ -226,7 +227,6 @@ class ChatController {
         console.log(e);
         // return next(new ApiError(502, "Bad Gateway."));
       }
-
     }
   }
 
@@ -247,7 +247,6 @@ class ChatController {
 
     return messages;
   }
-
 }
 
 module.exports = ChatController;

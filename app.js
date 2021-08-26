@@ -18,6 +18,7 @@ const AdministratorAuthenticationMiddleware = require("./src/api/middlewares/Adm
 const UserAuthenticationMiddleware = require("./src/api/middlewares/UserAuthenticationMiddleware");
 
 const UsersModule = require("./src/modules/UsersModule");
+const GoogleSheetsRelayModule = require("./src/modules/GoogleSheetsRelayModule");
 const ChatModule = require("./src/modules/ChatModule");
 const VoucherSuppliesModule = require("./src/modules/VoucherSuppliesModule");
 const VouchersModule = require("./src/modules/VouchersModule");
@@ -73,6 +74,7 @@ const dependencies = {
 
 const healthModule = new HealthModule(dependencies);
 const usersModule = new UsersModule(dependencies);
+const googleSheetsRelayModule = new GoogleSheetsRelayModule(dependencies);
 const chatModule = new ChatModule(dependencies);
 const slackEventsModule = new SlackEventsModule(dependencies);
 const voucherSuppliesModule = new VoucherSuppliesModule(dependencies);
@@ -85,6 +87,7 @@ new Server()
   .withMongooseClient(mongooseClient)
   .withModule(healthModule)
   .withModule(usersModule)
+  .withModule(googleSheetsRelayModule)
   .withModule(chatModule)
   .withModule(voucherSuppliesModule)
   .withModule(vouchersModule)
