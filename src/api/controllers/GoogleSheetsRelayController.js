@@ -15,7 +15,7 @@ class GoogleSheetsRelayController {
    */
   async getSellerWhitelist(req, res) {
     const range = constants.GetSellerWhitelist.range;
-    const authScopes = constants.GetSellerWhitelist.scopes;
+    const authScopes = constants.Scopes.read;
 
     let whitelist = [];
 
@@ -41,13 +41,48 @@ class GoogleSheetsRelayController {
   /**
    * Retrieves entries from the google sheet which
    * satisfy the following criteria: ready to process
-   * and creation status must be "NULL" - formatted as
-   * an array of objects, each containing the fields from
-   * the respective google sheets entry.
+   * must be true and creation status must be "NULL" -
+   * formatted as an array of objects, each containing
+   * the fields from the respective google sheets entry.
    * @returns [{}] Array of draft listings
    */
-  getDraftListings() {
-    //todo implement
+  async getDraftListings(req, res) {
+    const range = constants.GetDraftListings.range;
+    const authScopes = constants.Scopes.read;
+
+    let products = [];
+
+    try {
+      const sheetData = await this.getSheetData(
+        range,
+        authScopes,
+        constants.GetDraftListings.valueRenderOption,
+        constants.GetDraftListings.dateTimeRenderOption,
+        constants.GetDraftListings.majorDimension
+      ); // array of rows (arrays)
+
+      const heading = sheetData.shift(); // split heading from entries
+
+      for (let i = 0; i < sheetData.length; i++) {
+        // if not empty row AND Ready To Process is true AND Creation Status is NULL
+        if (
+          sheetData[i][0] !== "" &&
+          sheetData[i][12] === true &&
+          sheetData[i][13] === "NULL"
+        ) {
+          let productObject = {}; // create object first to use variables for keys
+          for (let j = 0; j < heading.length; j++) {
+            productObject[heading[j]] = sheetData[i][j]; // create an object entry with the corresponding heading as the key
+          }
+
+          products.push(productObject);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+    res.send(JSON.stringify(products));
   }
 
   /**
