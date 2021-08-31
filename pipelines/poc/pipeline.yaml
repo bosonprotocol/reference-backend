@@ -13,12 +13,12 @@ resources:
       branch: chat-service
       private_key: ((git_ssh_key))
 
-  - name: updated-source
-    type: git
-    source:
-      uri: ((source_repository_url))
-      branch: chat-service
-      private_key: ((git_ssh_key))
+#  - name: updated-source
+#    type: git
+#    source:
+#      uri: ((source_repository_url))
+#      branch: chat-service
+#      private_key: ((git_ssh_key))
 
   - name: app-image
     type: docker-image
@@ -65,7 +65,7 @@ groups:
   - name: ci
     jobs:
       - build
-      - test
+#      - test
       - provision-keepers-image-repository
       - provision-image-repository
       - publish-image
@@ -114,31 +114,31 @@ jobs:
         text: ((slack_abort_message))
         channel: ((slack_abort_channel))
 
-  - name: test
-    plan:
-      - in_parallel:
-          - get: source
-            trigger: true
-            passed:
-              - build
-          - get: updated-source
-          - get: node-builder-image
-      - task: test
-        image: node-builder-image
-        file: source/pipelines/shared/coverage/task.yaml
-        params:
-          GPG_KEY: ((gpg_key))
-          PROVISIONING_ROLE_ARN: ((ci_provisioning_role_arn))
-          DEPLOYMENT_TYPE: ((ci_deployment_type))
-          DEPLOYMENT_LABEL: ((ci_deployment_label))
-      - put: updated-source
-        params:
-          repository: source
-
-    on_success: *on_success
-    on_failure: *on_failure
-    on_error: *on_error
-    on_abort: *on_abort
+#  - name: test
+#    plan:
+#      - in_parallel:
+#          - get: source
+#            trigger: true
+#            passed:
+#              - build
+#          - get: updated-source
+#          - get: node-builder-image
+#      - task: test
+#        image: node-builder-image
+#        file: source/pipelines/shared/coverage/task.yaml
+#        params:
+#          GPG_KEY: ((gpg_key))
+#          PROVISIONING_ROLE_ARN: ((ci_provisioning_role_arn))
+#          DEPLOYMENT_TYPE: ((ci_deployment_type))
+#          DEPLOYMENT_LABEL: ((ci_deployment_label))
+#      - put: updated-source
+#        params:
+#          repository: source
+#
+#    on_success: *on_success
+#    on_failure: *on_failure
+#    on_error: *on_error
+#    on_abort: *on_abort
 
   - name: provision-keepers-image-repository
     serial: true
@@ -147,7 +147,7 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - test
+              - build
           - get: node-builder-image
       - task: provision-keepers-image-repository
         image: node-builder-image
@@ -170,7 +170,7 @@ jobs:
           - get: source
             trigger: true
             passed:
-              - test
+              - build
           - get: node-builder-image
       - task: provision-image-repository
         image: node-builder-image
