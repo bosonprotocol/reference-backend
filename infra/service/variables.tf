@@ -21,6 +21,11 @@ variable "image_upload_storage_bucket_name" {}
 variable "superadmin_username" {}
 variable "superadmin_password" {}
 
+variable "slack_signing_secret" {}
+variable "slack_token" {}
+variable "slack_bot_token" {}
+variable "slack_channel" {}
+
 variable "database_username" {}
 variable "database_password" {}
 variable "database_name" {}

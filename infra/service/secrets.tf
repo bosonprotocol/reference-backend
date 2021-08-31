@@ -28,6 +28,11 @@ data "template_file" "env_file" {
     database_username = var.database_username
     database_password = var.database_password
     database_name = var.database_name
+
+    slack_signing_secret = var.slack_signing_secret
+    slack_token = var.slack_token
+    slack_bot_token = var.slack_bot_token
+    slack_channel = var.slack_channel
   }
 }
 
