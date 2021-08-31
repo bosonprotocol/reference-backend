@@ -27,10 +27,10 @@ vars:
   database_password: "%{hiera('database_password')}"
   database_name: "%{hiera('database_name')}"
 
-  slack_signing_secret: "%{hiera('storage_bucket_name')}"
-  slack_token: "functions/deployment-state/default.tfstate"
-  slack_bot_token: "%{hiera('region')}"
-  slack_channel: "true"
+  slack_signing_secret: "%{hiera('slack_signing_secret')}"
+  slack_token: "%{hiera('slack_token')}"
+  slack_bot_token: "%{hiera('slack_bot_token')}"
+  slack_channel: "%{hiera('slack_channel')}"
 
   domain_state_bucket_region: "%{hiera('domain_state_bucket_region')}"
   domain_state_bucket_name: "%{hiera('domain_state_bucket_name')}"
