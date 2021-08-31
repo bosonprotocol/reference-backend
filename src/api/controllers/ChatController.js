@@ -30,7 +30,13 @@ class ChatController {
     });
   }
 
-  async executeSocketOperations(socket, existingMetaData, title, address, voucherURL) {
+  async executeSocketOperations(
+    socket,
+    existingMetaData,
+    title,
+    address,
+    voucherURL
+  ) {
     const thread = existingMetaData.thread_ts;
     // Join a room
     socket.join(thread);
@@ -78,10 +84,10 @@ class ChatController {
   }
 
   /**
-    * Get the parameters coming from the request object and
-    * check if thread with the unique room ID exists. 
-    * @returns metadata/null (success/failure)
-  */
+   * Get the parameters coming from the request object and
+   * check if thread with the unique room ID exists.
+   * @returns metadata/null (success/failure)
+   */
   async openWS(req, res) {
     const voucherIdRequest = req.params.voucherId;
     const addressRequest = req.params.address;
@@ -119,7 +125,10 @@ class ChatController {
           console.log("REMOVE SOCKET INSTANCE AND LEAVE ALL JOINED ROOMS");
         }
 
-        console.log("EXECUTING ACTION ON ALREADY CREATED THREAD: " + existingMetaData.thread_ts);
+        console.log(
+          "EXECUTING ACTION ON ALREADY CREATED THREAD: " +
+            existingMetaData.thread_ts
+        );
 
         await this.executeSocketOperations(
           socket,
@@ -128,14 +137,12 @@ class ChatController {
           address,
           voucherURL
         );
-
       } else {
-
         /**
-        * @param message String
-        * If we don't have existing metadata (we haven't posted any message till that moment) 
-        * and we have a message attached to our query in WS params
-        */
+         * @param message String
+         * If we don't have existing metadata (we haven't posted any message till that moment)
+         * and we have a message attached to our query in WS params
+         */
         if (message) {
           console.log("OPENING THREAD MESSAGE");
 
@@ -169,10 +176,16 @@ class ChatController {
    * @param address Address of user
    * @param message String
    * @param voucherURL URL address pointing to voucher set details page
-   * @param title String 
+   * @param title String
    * @returns Object
    */
-  async relayMessageToSlack({ voucherId, address, message, voucherURL, title }) {
+  async relayMessageToSlack({
+    voucherId,
+    address,
+    message,
+    voucherURL,
+    title,
+  }) {
     // Post the message to the slack channel
     try {
       const existingMetaData = await this.chatRepository.getThread(
@@ -181,9 +194,7 @@ class ChatController {
       const thread_ts = existingMetaData ? existingMetaData.thread_ts : "";
 
       const result = await this.web.chat.postMessage({
-        text: existingMetaData
-          ? message
-          : `${voucherURL}\n${message}`,
+        text: existingMetaData ? message : `${voucherURL}\n${message}`,
         channel: this.channel,
         username: `${shortenAddress(address)} - ${title}`,
         thread_ts: thread_ts,
@@ -200,7 +211,6 @@ class ChatController {
           thread_ts: result.ts,
         },
       };
-
     } catch (e) {
       console.log(e);
     }
@@ -218,7 +228,6 @@ class ChatController {
         channel: data.metadata.channel,
       });
     }
-
   }
 
   async getSlackThread(channel, thread) {

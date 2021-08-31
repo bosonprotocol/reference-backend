@@ -7,6 +7,10 @@ development_plutonium_provisioning_role_arn: "arn:aws:iam::%{hiera('bsn_developm
 development_plutonium_deployment_type: "bsn-development"
 development_plutonium_deployment_label: "plutonium"
 
+poc_sposite_provisioning_role_arn: "arn:aws:iam::%{hiera('bsn_development_potassium_account_id')}:role/cross-account-admin-role"
+poc_sposite_deployment_type: "bsn-poc"
+poc_sposite_deployment_label: "sposite"
+
 demo_mendelevium_provisioning_role_arn: "arn:aws:iam::%{hiera('bsn_development_potassium_account_id')}:role/cross-account-admin-role"
 demo_mendelevium_deployment_type: "bsn-demo"
 demo_mendelevium_deployment_label: "mendelevium"
