@@ -18,7 +18,7 @@ class ChatController {
   }
 
   createWebSocketService() {
-    const webSocketPORT = 4000;
+    const webSocketPORT = process.env.WS_PORT;
     const server = require("http").createServer();
     this.io = require("socket.io")(server, {
       cors: {
