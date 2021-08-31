@@ -16,7 +16,6 @@ COPY docker-entrypoint.sh /opt/reference-backend/bin/docker-entrypoint.sh
 RUN chmod +x /opt/reference-backend/bin/docker-entrypoint.sh
 
 # Add sources
-COPY config/secrets/keys.json /opt/reference-backend/keys.json
 COPY package.json /opt/reference-backend/package.json
 COPY package-lock.json /opt/reference-backend/package-lock.json
 COPY app.js /opt/reference-backend/dist/app.js
