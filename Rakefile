@@ -428,7 +428,8 @@ namespace :image do
       'src/',
       'app.js',
       'package.json',
-      'package-lock.json'
+      'package-lock.json',
+      'config/secrets/keys.json',
     ]
     t.create_spec = [
       { content: version.to_s, to: 'VERSION' },
