@@ -18,7 +18,7 @@ const GoogleSheetsConstants = {
     majorDimension: "ROWS",
   },
   GetDraftListings: {
-    range: "Products!A1:N25",
+    range: "DraftListings!A1:N25",
     valueRenderOption: "UNFORMATTED_VALUE",
     dateTimeRenderOption: "SERIAL_NUMBER",
     majorDimension: "ROWS",
