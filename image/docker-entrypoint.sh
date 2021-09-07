@@ -21,12 +21,12 @@ eval $(aws s3 cp \
     --region "$AWS_S3_BUCKET_REGION" \
     "$AWS_S3_ENV_FILE_OBJECT_PATH" - | sed 's/^/export /')
 
-aws s3 cp \
+eval $(aws s3 cp \
     --sse AES256 \
     --region "$AWS_S3_BUCKET_REGION" \
-    "service/environments/keys.json"
+    "s3://bsn-reference-backend-bsn-poc-sposite/service/environments/keys.json")
 
-mv keys.json /opt/reference-backend/keys.json
+eval $(mv keys.json /opt/reference-backend/keys.json)
 
 # Run service
 cd /opt/reference-backend
