@@ -28,6 +28,7 @@ resource "aws_s3_bucket_object" "file_upload" {
   bucket = var.lambda_function_bucket_name
   key    = "functions/${var.lambda_function_name}.zip"
   source = data.archive_file.file.output_path
+  server_side_encryption = "AES256"
 }
 
 resource "aws_lambda_function" "lambda" {
