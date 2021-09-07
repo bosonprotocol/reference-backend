@@ -9,7 +9,7 @@ resource "null_resource" "null_resource" {
     npm install
     EOF
 
-    working_dir = var.lambda_code_source_dir
+    working_dir = format("%s/layer/nodejs", var.lambda_code_root_dir)
   }
 }
 
@@ -17,10 +17,24 @@ data "archive_file" "file" {
   type        = "zip"
   source_dir  = var.lambda_code_source_dir
   output_path = var.lambda_code_output_path
+}
+
+data "archive_file" "layer_zip" {
+  type        = "zip"
+  source_dir  = format("%s/layer", var.lambda_code_root_dir)
+  output_path = format("%s/layer.zip", var.lambda_code_root_dir)
 
   depends_on = [
     null_resource.null_resource
   ]
+}
+
+resource "aws_lambda_layer_version" "this" {
+  layer_name          = "${var.lambda_function_name}-layer"
+  filename            = data.archive_file.layer_zip.output_path
+  source_code_hash    = data.archive_file.layer_zip.output_base64sha256
+  description         = "${var.lambda_function_name} lambda layer"
+  compatible_runtimes = [var.lambda_runtime]
 }
 
 # upload zip to s3 and then update lamda function from s3
@@ -37,6 +51,8 @@ resource "aws_lambda_function" "lambda" {
 
   s3_bucket = var.lambda_function_bucket_name
   s3_key = aws_s3_bucket_object.file_upload.key
+
+  layers = [aws_lambda_layer_version.this.arn]
 
   handler          = var.lambda_handler
   runtime          = var.lambda_runtime
@@ -64,7 +80,7 @@ resource "aws_lambda_function" "lambda" {
   }
 
   depends_on = [
-    null_resource.null_resource,
-    data.archive_file.file
+    data.archive_file.file,
+    data.archive_file.layer_zip
   ]
 }

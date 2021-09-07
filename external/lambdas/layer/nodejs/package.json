@@ -1,0 +1,9 @@
+{
+ "dependencies": {
+  "@aws-sdk/client-s3": "^3.3.0",
+  "@aws-sdk/node-http-handler": "^3.3.0",
+  "aws-sdk": "^2.903.0",
+  "axios": "^0.20.0",
+  "ethers": "^5.0.14"
+ }
+}

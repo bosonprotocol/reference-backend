@@ -82,6 +82,11 @@ variable "tags" {
   default     = {}
 }
 
+variable "lambda_code_root_dir" {
+  description = "The location where the generated zip file should be stored"
+  type        = string
+}
+
 variable "lambda_code_source_dir" {
   description = "The location where the generated zip file should be stored"
   type        = string
