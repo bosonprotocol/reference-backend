@@ -5,6 +5,8 @@ vars:
   component: "%{hiera('component')}"
   deployment_identifier: "%{hiera('deployment_identifier')}"
 
+  lambda_function_bucket_name: "%{hiera('secrets_bucket_name')}"
+
   voucher_kernel_address: "%{hiera('voucher_kernel_address')}"
   cashier_address: "%{hiera('cashier_address')}"
   gcloud_keepers_secret: "%{hiera('gcloud_keepers_secret')}"

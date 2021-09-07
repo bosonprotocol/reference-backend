@@ -22,6 +22,11 @@ variable "deployment_identifier" {
 
 # Lambda Settings
 
+variable "lambda_function_bucket_name" {
+  description = "S3 bucket to upload lambda functions"
+  type        = string
+}
+
 variable "lambda_function_name" {
   description = "The name to use for the lambda function"
   type        = string

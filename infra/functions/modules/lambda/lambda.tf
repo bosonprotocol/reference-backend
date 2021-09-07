@@ -23,11 +23,20 @@ data "archive_file" "file" {
   ]
 }
 
+# upload zip to s3 and then update lamda function from s3
+resource "aws_s3_bucket_object" "file_upload" {
+  bucket = var.lambda_function_bucket_name
+  key    = "functions/${var.lambda_function_name}.zip"
+  source = data.archive_file.file.output_path
+}
+
 resource "aws_lambda_function" "lambda" {
   function_name = var.lambda_function_name
   description   = var.lambda_description
 
-  filename         = data.archive_file.file.output_path
+  s3_bucket = var.lambda_function_bucket_name
+  s3_key = "functions/${var.lambda_function_name}.zip"
+
   handler          = var.lambda_handler
   runtime          = var.lambda_runtime
   source_code_hash = data.archive_file.file.output_base64sha256

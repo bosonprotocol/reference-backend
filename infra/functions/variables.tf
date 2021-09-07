@@ -9,6 +9,8 @@ variable "etherscan_apikey" {}
 variable "infura_apikey" {}
 variable "voucher_kernel_address" {}
 
+variable "lambda_function_bucket_name" {}
+
 variable "service_state_bucket_name" {}
 variable "service_state_key" {}
 variable "service_state_bucket_region" {}
