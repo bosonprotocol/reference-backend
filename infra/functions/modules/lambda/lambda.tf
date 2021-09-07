@@ -35,7 +35,7 @@ resource "aws_lambda_function" "lambda" {
   description   = var.lambda_description
 
   s3_bucket = var.lambda_function_bucket_name
-  s3_key = "functions/${var.lambda_function_name}.zip"
+  s3_key = aws_s3_bucket_object.file_upload.key
 
   handler          = var.lambda_handler
   runtime          = var.lambda_runtime
