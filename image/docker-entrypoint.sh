@@ -24,9 +24,7 @@ eval $(aws s3 cp \
 eval $(aws s3 cp \
     --sse AES256 \
     --region "$AWS_S3_BUCKET_REGION" \
-    "s3://bsn-reference-backend-bsn-poc-sposite/service/environments/keys.json")
-
-eval $(mv $pwd/keys.json /opt/reference-backend/keys.json)
+    "s3://bsn-reference-backend-bsn-poc-sposite/service/environments/keys.json" - | mv $pwd/keys.json /opt/reference-backend/keys.json)
 
 # Run service
 cd /opt/reference-backend
