@@ -547,7 +547,6 @@ namespace :image_triggers do
 
     t.copy_spec = [
       'image-triggers/Dockerfile',
-      'image-triggers/docker-entrypoint.sh',
       'external/triggers/abis/',
       'external/triggers/config/',
       'external/triggers/local/',
