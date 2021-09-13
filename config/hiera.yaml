@@ -9,6 +9,7 @@
 :hierarchy:
   - "roles/%{role}"
   - "deployments/%{deployment_type}-%{deployment_label}"
+  - "deployments/rdm-management-default"
   - "pipelines/defaults"
   - "ci/%{ci_deployment_type}-%{ci_deployment_label}"
   - "secrets/gcp/%{deployment_type}-%{deployment_label}"
