@@ -17,7 +17,6 @@ storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')
 storage_bucket_encryption: "AES256"
 
 secrets_bucket_name: "%{hiera('storage_bucket_name')}"
-lambda_function_bucket_name: "%{hiera('storage_bucket_name')}"
 
 image_storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}-image-storage"
 image_storage_user_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}-image-storage-user"
