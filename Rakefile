@@ -561,7 +561,16 @@ namespace :image_triggers do
     ]
 
     t.repository_name = configuration.triggers_image_repository_name
-    t.repository_url = '031036423983.dkr.ecr.eu-west-2.amazonaws.com/bsn/triggers'
+    t.repository_url = "dynamic do
+      JSON.parse(
+        RubyTerraform::Output.for(
+          name: 'repository_url',
+          source_directory: 'infra/triggers-image-repository',
+          work_directory: 'build',
+          backend_config: configuration.backend_config
+        )
+      )
+    end"
 
     t.credentials = dynamic do
       RakeDocker::Authentication::ECR.new do |c|
