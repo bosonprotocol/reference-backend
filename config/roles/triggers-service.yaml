@@ -1,0 +1,46 @@
+---
+vars:
+  region: "%{hiera('region')}"
+  component: "triggers"
+  deployment_identifier: "%{hiera('deployment_identifier')}"
+
+  service_desired_count: 1
+
+  secrets_bucket_name: "%{hiera('secrets_bucket_name')}"
+
+  version_number: "%{hiera('version_number')}"
+
+  service_name: "triggers"
+  container_http_port: "3001"
+
+  token_contact_address: "%{hiera('token_contact_address')}"
+  boson_router_contact_address: "%{hiera('boson_router_contact_address')}"
+  voucher_kernel_address: "%{hiera('voucher_kernel_address')}"
+  alchemy_url: "%{hiera('alchemy_url')}"
+  gcloud_triggers_secret: "%{hiera('gcloud_triggers_secret')}"
+
+  network_state_bucket_region: "%{hiera('network_state_bucket_region')}"
+  network_state_bucket_name: "%{hiera('network_state_bucket_name')}"
+  network_state_bucket_is_encrypted: "%{hiera('network_state_bucket_is_encrypted')}"
+  network_state_key: "%{hiera('network_state_key')}"
+
+  cluster_state_bucket_region: "%{hiera('cluster_state_bucket_region')}"
+  cluster_state_bucket_name: "%{hiera('cluster_state_bucket_name')}"
+  cluster_state_bucket_is_encrypted: "%{hiera('cluster_state_bucket_is_encrypted')}"
+  cluster_state_key: "%{hiera('cluster_state_key')}"
+
+  image_repository_state_bucket_region: "%{hiera('triggers_image_repository_state_bucket_region')}"
+  image_repository_state_bucket_name: "%{hiera('triggers_image_repository_state_bucket_name')}"
+  image_repository_state_bucket_is_encrypted: "%{hiera('triggers_image_repository_state_bucket_is_encrypted')}"
+  image_repository_state_key: "%{hiera('triggers_image_repository_state_key')}"
+
+  service_state_bucket_region: "%{hiera('service_state_bucket_region')}"
+  service_state_bucket_name: "%{hiera('service_state_bucket_name')}"
+  service_state_bucket_is_encrypted: "%{hiera('service_state_bucket_is_encrypted')}"
+  service_state_key: "%{hiera('service_state_key')}"
+
+backend_config:
+  region: "%{hiera('triggers_service_state_bucket_region')}"
+  bucket: "%{hiera('triggers_service_state_bucket_name')}"
+  encrypt: "%{hiera('triggers_service_state_bucket_is_encrypted')}"
+  key: "%{hiera('triggers_service_state_key')}"

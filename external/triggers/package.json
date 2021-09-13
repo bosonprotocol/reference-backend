@@ -1,0 +1,20 @@
+{
+ "name": "aws-lambda-functions",
+ "version": "1.0.0",
+ "main": "index.js",
+ "scripts": {
+  "test": "node -e \"(async () => console.log(await require('./index').handler({})))();\"",
+  "start:local": "env-cmd -f local/.env.local node local/localTriggers.js",
+  "start:dev": "env-cmd --silent -f .env.dev node index.js",
+  "start:staging": "env-cmd --silent -f .env.staging node index.js"
+ },
+ "dependencies": {
+  "@aws-sdk/client-s3": "^3.3.0",
+  "@aws-sdk/node-http-handler": "^3.3.0",
+  "aws-sdk": "^2.903.0",
+  "axios": "^0.20.0",
+  "ethers": "^5.4.5",
+  "dotenv": "^8.2.0",
+  "env-cmd": "^10.1.0"
+ }
+}

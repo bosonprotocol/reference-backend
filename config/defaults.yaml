@@ -11,6 +11,7 @@ source_repository_branch: "develop"
 
 image_repository_name: "bsn/reference-backend"
 keepers_image_repository_name: "bsn/keepers"
+triggers_image_repository_name: "bsn/triggers"
 
 storage_bucket_name: "bsn-%{hiera('component')}-%{hiera('deployment_identifier')}"
 storage_bucket_encryption: "AES256"
