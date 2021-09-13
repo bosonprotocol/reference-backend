@@ -1,5 +1,5 @@
 locals {
-  env_file_object_key = "keepers-service/environments/default.env"
+  env_file_object_key = "triggers-service/environments/default.env"
 }
 
 data "template_file" "env_file_object_path" {
