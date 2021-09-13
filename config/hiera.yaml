@@ -9,7 +9,6 @@
 :hierarchy:
   - "roles/%{role}"
   - "deployments/%{deployment_type}-%{deployment_label}"
-  - "deployments/rdm-management-default"
   - "pipelines/defaults"
   - "ci/%{ci_deployment_type}-%{ci_deployment_label}"
   - "secrets/gcp/%{deployment_type}-%{deployment_label}"
@@ -17,4 +16,5 @@
   - "secrets/mongodbatlas/credentials"
   - "secrets/database/%{deployment_type}-%{deployment_label}"
   - "secrets/pipeline/%{ci_deployment_type}-%{ci_deployment_label}"
+  - "deployments/rdm-management-default"
   - "defaults"
