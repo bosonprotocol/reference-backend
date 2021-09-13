@@ -553,15 +553,15 @@ namespace :image_triggers do
       'external/triggers/local/',
       'external/triggers/src/',
       'external/triggers/index.js',
-      'external/keepers/package.json',
-      'external/keepers/package-lock.json'
+      'external/triggers/package.json',
+      'external/triggers/package-lock.json'
     ]
     t.create_spec = [
       { content: version.to_s, to: 'VERSION' },
       { content: version.to_docker_tag, to: 'TAG' }
     ]
 
-    t.repository_name = configuration.keepers_image_repository_name
+    t.repository_name = configuration.triggers_image_repository_name
     t.repository_url = dynamic do
       JSON.parse(
         RubyTerraform::Output.for(
@@ -580,7 +580,7 @@ namespace :image_triggers do
           JSON.parse(
             RubyTerraform::Output.for(
               name: 'registry_id',
-              source_directory: 'infra/keepers-image-repository',
+              source_directory: 'infra/triggers-image-repository',
               work_directory: 'build',
               backend_config: configuration.backend_config
             )
