@@ -11,11 +11,11 @@ variable "version_number" {}
 variable "service_name" {}
 variable "container_http_port" {}
 
-variable "token_contact_address" {}
-variable "boson_router_contact_address" {}
-variable "voucher_kernel_address" {}
-variable "alchemy_url" {}
+variable "executor_secret" {}
 variable "gcloud_keepers_secret" {}
+variable "alchemy_url" {}
+variable "etherscan_apikey" {}
+variable "infura_apikey" {}
 
 variable "network_state_bucket_name" {}
 variable "network_state_key" {}

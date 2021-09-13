@@ -15,11 +15,11 @@ data "template_file" "env_file" {
   template = file("${path.root}/envfiles/service.env.tpl")
 
   vars = {
-    token_contact_address        = var.token_contact_address
-    boson_router_contact_address = var.boson_router_contact_address
-    voucher_kernel_address       = var.voucher_kernel_address
-    gcloud_keepers_secret        = var.gcloud_keepers_secret
-    alchemy_url                  = var.alchemy_url
+    executor_secret       = var.executor_secret
+    gcloud_keepers_secret = var.gcloud_keepers_secret
+    alchemy_url           = var.alchemy_url
+    etherscan_apikey      = var.etherscan_apikey
+    infura_apikey         = var.infura_apikey
   }
 }
 

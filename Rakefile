@@ -645,6 +645,25 @@ namespace :service_keepers do
   end
 end
 
+namespace :service_triggers do
+  RakeTerraform.define_command_tasks(
+    configuration_name: 'triggers',
+    argument_names: %i[deployment_type deployment_label]
+  ) do |t, args|
+    version_configuration = { version_number: version.to_docker_tag }
+    service_configuration =
+      configuration
+        .for_overrides(version_configuration)
+        .for_scope(args.to_h.merge(role: 'triggers-service'))
+
+    t.source_directory = 'infra/triggers-service'
+    t.work_directory = 'build'
+
+    t.backend_config = service_configuration.backend_config
+    t.vars = service_configuration.vars
+  end
+end
+
 namespace :ci do
   RakeFly.define_authentication_tasks(
     namespace: :authentication,

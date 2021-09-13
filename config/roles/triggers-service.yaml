@@ -13,11 +13,11 @@ vars:
   service_name: "triggers"
   container_http_port: "3001"
 
-  token_contact_address: "%{hiera('token_contact_address')}"
-  boson_router_contact_address: "%{hiera('boson_router_contact_address')}"
-  voucher_kernel_address: "%{hiera('voucher_kernel_address')}"
+  executor_secret: "%{hiera('executor_secret')}"
+  gcloud_keepers_secret: "%{hiera('gcloud_keepers_secret')}"
   alchemy_url: "%{hiera('alchemy_url')}"
-  gcloud_triggers_secret: "%{hiera('gcloud_triggers_secret')}"
+  etherscan_apikey: "%{hiera('etherscan_apikey')}"
+  infura_apikey: "%{hiera('infura_apikey')}"
 
   network_state_bucket_region: "%{hiera('network_state_bucket_region')}"
   network_state_bucket_name: "%{hiera('network_state_bucket_name')}"
