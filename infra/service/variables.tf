@@ -25,6 +25,7 @@ variable "slack_signing_secret" {}
 variable "slack_token" {}
 variable "slack_bot_token" {}
 variable "slack_channel" {}
+variable "google_sheets_sheet_id" {}
 
 variable "database_username" {}
 variable "database_password" {}

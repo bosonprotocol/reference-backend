@@ -16,3 +16,5 @@ SLACK_SIGNING_SECRET="${slack_signing_secret}"
 SLACK_TOKEN="${slack_token}"
 SLACK_BOT_TOKEN="${slack_bot_token}"
 SLACK_CHANNEL="${slack_channel}"
+
+GOOGLE_SHEETS_SHEET_ID="${google_sheets_sheet_id}"

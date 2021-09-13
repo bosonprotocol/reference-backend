@@ -33,6 +33,7 @@ data "template_file" "env_file" {
     slack_token = var.slack_token
     slack_bot_token = var.slack_bot_token
     slack_channel = var.slack_channel
+    google_sheets_sheet_id = var.google_sheets_sheet_id
   }
 }
 

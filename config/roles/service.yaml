@@ -31,6 +31,7 @@ vars:
   slack_token: "%{hiera('slack_token')}"
   slack_bot_token: "%{hiera('slack_bot_token')}"
   slack_channel: "%{hiera('slack_channel')}"
+  google_sheets_sheet_id: "%{hiera('google_sheets_sheet_id')}"
 
   domain_state_bucket_region: "%{hiera('domain_state_bucket_region')}"
   domain_state_bucket_name: "%{hiera('domain_state_bucket_name')}"
