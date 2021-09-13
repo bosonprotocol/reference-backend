@@ -47,6 +47,11 @@ keepers_image_repository_state_key: "keepers-image-repository/deployment-state/d
 keepers_image_repository_state_bucket_region: "%{hiera('region')}"
 keepers_image_repository_state_bucket_is_encrypted: "true"
 
+triggers_image_repository_state_bucket_name: "bsn-%{hiera('component')}-rdm-management-default"
+triggers_image_repository_state_key: "triggers-image-repository/deployment-state/default.tfstate"
+triggers_image_repository_state_bucket_region: "%{hiera('region')}"
+triggers_image_repository_state_bucket_is_encrypted: "true"
+
 image_storage_bucket_state_bucket_name: "%{hiera('storage_bucket_name')}"
 image_storage_bucket_state_key: "image-storage-bucket/deployment-state/default.tfstate"
 image_storage_bucket_state_bucket_region: "%{hiera('region')}"
@@ -66,6 +71,11 @@ keepers_service_state_bucket_name: "%{hiera('storage_bucket_name')}"
 keepers_service_state_key: "keepers-service/deployment-state/default.tfstate"
 keepers_service_state_bucket_region: "%{hiera('region')}"
 keepers_service_state_bucket_is_encrypted: "true"
+
+triggers_service_state_bucket_name: "%{hiera('storage_bucket_name')}"
+triggers_service_state_key: "triggers-service/deployment-state/default.tfstate"
+triggers_service_state_bucket_region: "%{hiera('region')}"
+triggers_service_state_bucket_is_encrypted: "true"
 
 functions_state_bucket_name: "%{hiera('storage_bucket_name')}"
 functions_state_key: "functions/deployment-state/default.tfstate"
