@@ -11,7 +11,7 @@ vars:
   version_number: "%{hiera('version_number')}"
 
   service_name: "triggers"
-  container_http_port: "3001"
+  container_http_port: "3002"
 
   executor_secret: "%{hiera('executor_secret')}"
   gcloud_keepers_secret: "%{hiera('gcloud_keepers_secret')}"
