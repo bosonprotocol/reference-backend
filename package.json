@@ -55,7 +55,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "eslint-plugin-import": "^2.22.1",
-    "ethers": "^5.0.24",
+    "ethers": "^5.4.7",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
     "form-data": "^4.0.0",
