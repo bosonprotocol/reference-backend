@@ -1,4 +1,4 @@
-FROM node:12.20-buster
+FROM node:erbium-buster
 
 # Install AWS CLI
 RUN apt-get update \
