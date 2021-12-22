@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reference-backend.fullname" . }}
+  labels:
+    {{- include "reference-backend.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.backend.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "reference-backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.keepers.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "reference-backend.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.backend.serviceAccount.name }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          env:
+            - name: AWS_S3_BUCKET_REGION
+              value: {{ .Values.backend.envFileRegion }}
+            - name: AWS_S3_ENV_FILE_OBJECT_PATH
+              value: {{ .Values.backend.envFilePath }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "reference-backend.fullname" . }}-keepers
+  labels:
+    {{- include "reference-backend-keepers.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.keepers.autoscaling.enabled }}
+  replicas: {{ .Values.keepers.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "reference-backend-keepers.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.keepers.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "reference-backend-keepers.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Values.keepers.serviceAccount.name }}
+      containers:
+        - name: {{ .Chart.Name }}-keepers
+          image: "{{ .Values.keepers.image.repository }}:{{ .Values.keepers.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.keepers.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          env:
+            - name: AWS_S3_BUCKET_REGION
+              value: {{ .Values.keepers.envFileRegion }}
+            - name: AWS_S3_ENV_FILE_OBJECT_PATH
+              value: {{ .Values.keepers.envFilePath }}
+            - name: API_URL
+              value: {{ .Values.keepers.apiUrl }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
