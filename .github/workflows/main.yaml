@@ -1,0 +1,125 @@
+name: Build and Deploy leptonite.io
+
+on:
+  push:
+    branches:
+      - radu/migration
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  api:
+    name: API related tasks
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY: 031036423983.dkr.ecr.eu-west-2.amazonaws.com
+    services:
+      mongodb:
+        image: mongo:4.4.8
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: admin
+          MONGO_INITDB_ROOT_PASSWORD: secret
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+          cache: 'npm'
+      - run: npm install
+      - run: npm run app:lint
+      - run: npm run app:format
+      - run: npm run tests:app:lint
+      - run: npm run tests:app:format
+      - run: npm run tests:app:unit:coverage
+      - run: npm run tests:app:persistence:coverage
+      - run: npm run tests:app:persistence
+      - run: npm run tests:app:component:coverage
+      - run: npm run tests:app:component
+      - run: npm run tests:coverage:badge
+      - name: Configure AWS credentials
+        if: ${{ github.event_name == 'push' }}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: Login to Amazon ECR
+        if: ${{ github.event_name == 'push' }}
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build and push
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          docker build --tag $REGISTRY/bsn/reference-backend:$GITHUB_SHA .
+
+  keepers:
+    name: Keepers related tasks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./external/keepers"
+    env:
+      REGISTRY: 031036423983.dkr.ecr.eu-west-2.amazonaws.com
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12'
+          cache: 'npm'
+      - run: npm install
+      - name: Configure AWS credentials
+        if: ${{ github.event_name == 'push' }}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: Login to Amazon ECR
+        if: ${{ github.event_name == 'push' }}
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Build and push
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          docker build --tag $REGISTRY/bsn/keepers:$GITHUB_SHA .
+
+  triggers:
+    name: Triggers related tasks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./terraform/functions"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_wrapper: false
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check -recursive
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config=$TF_BACKEND_BUCKET -backend-config=$TF_BACKEND_STATE_KEY -backend-config='region=eu-west-2' -backend-config='encrypt=true'
+        env:
+          TF_BACKEND_BUCKET: ${{ secrets.TF_BACKEND_BUCKET }}
+          TF_BACKEND_STATE_KEY: ${{ secrets.TF_BACKEND_STATE_KEY }}
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+      - run: 'echo "$TFVARS" > terraform.tfvars'
+        shell: bash
+        env:
+          TFVARS: ${{ secrets.TFVARS }}
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color

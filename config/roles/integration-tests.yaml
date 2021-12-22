@@ -1,9 +1,0 @@
-environment:
-  AWS_IMAGE_UPLOAD_STORAGE_BUCKET_NAME: "%{hiera('image_storage_bucket_name')}"
-  AWS_REGION: "%{hiera('region')}"
-  AWS_ACCESS_KEY_ID: "%{hiera('aws_image_storage_user_access_key_id')}"
-  AWS_SECRET_ACCESS_KEY: "%{hiera('aws_image_storage_user_secret_access_key')}"
-
-  GCP_IMAGE_UPLOAD_STORAGE_BUCKET_NAME: "%{hiera('gcp_image_upload_storage_bucket_name')}"
-
-  GOOGLE_APPLICATION_CREDENTIALS: "%{hiera('google_application_credentials')}"
