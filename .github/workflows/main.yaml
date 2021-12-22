@@ -2,8 +2,8 @@ name: Build and Deploy leptonite.io
 
 on:
   push:
-    branches:
-      - radu/migration
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - main
@@ -50,10 +50,14 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+      - name: Export TAG value
+        if: ${{ github.event_name == 'push' }}
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
       - name: Build and push
         if: ${{ github.event_name == 'push' }}
         run: |
-          docker build --tag $REGISTRY/bsn/reference-backend:$GITHUB_SHA .
+          docker build --tag $REGISTRY/bsn/reference-backend:$TAG .
+          docker push $REGISTRY /bsn/reference-backend:$TAG
 
   keepers:
     name: Keepers related tasks
@@ -81,10 +85,14 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+      - name: Export TAG value
+        if: ${{ github.event_name == 'push' }}
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
       - name: Build and push
         if: ${{ github.event_name == 'push' }}
         run: |
-          docker build --tag $REGISTRY/bsn/keepers:$GITHUB_SHA .
+          docker build --tag $REGISTRY/bsn/keepers:$TAG .
+          docker push $REGISTRY /bsn/keepers:$TAG
 
   triggers:
     name: Triggers related tasks
@@ -123,3 +131,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -no-color
+      - name: Terraform Apply
+        if: ${{ github.event_name == 'push' }}
+        id: apply
+        run: terraform apply -auto-approve
