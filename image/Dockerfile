@@ -1,4 +1,4 @@
-FROM node:12.20-buster
+FROM node:12.22.7-buster
 
 # Install AWS CLI
 RUN apt-get update \
