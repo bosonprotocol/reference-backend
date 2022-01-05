@@ -5,7 +5,7 @@ RUN apt-get update \
     && apt-get -y install python3 curl unzip \
     && cd /tmp \
     && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-    && unzip awscliv2.zip \
+    && unzip -q awscliv2.zip \
     && ./aws/install \
     && rm awscliv2.zip \
     && rm -rf aws
