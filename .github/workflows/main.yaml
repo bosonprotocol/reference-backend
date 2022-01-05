@@ -46,10 +46,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
-      - name: Login to Amazon ECR
+      - id: install-aws-cli
         if: ${{ github.event_name == 'push' }}
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+      - name: ECR login
+        if: ${{ github.event_name == 'push' }}
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin $REGISTRY
       - name: Export TAG value
         if: ${{ github.event_name == 'push' }}
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
@@ -81,10 +85,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
-      - name: Login to Amazon ECR
+      - id: install-aws-cli
         if: ${{ github.event_name == 'push' }}
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2
+      - name: ECR login
+        if: ${{ github.event_name == 'push' }}
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin $REGISTRY
       - name: Export TAG value
         if: ${{ github.event_name == 'push' }}
         run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
