@@ -85,7 +85,7 @@ module "expirations_lambda" {
 
   lambda_runtime          = "nodejs14.x"
   lambda_code_output_path = "${path.module}/.terraform/archive_files/triggerExpirations.zip"
-  lambda_code_source_dir  = "${path.cwd}/external/lambdas/triggerExpirations/src"
+  lambda_code_source_dir  = "${path.cwd}/../../external/lambdas/triggerExpirations/src"
 
   lambda_timeout     = 900
   lambda_memory_size = 128
@@ -137,7 +137,7 @@ module "finalizations_lambda" {
 
   lambda_runtime          = "nodejs14.x"
   lambda_code_output_path = "${path.module}/.terraform/archive_files/triggerFinalizations.zip"
-  lambda_code_source_dir  = "${path.cwd}/external/lambdas/triggerFinalizations/src"
+  lambda_code_source_dir  = "${path.cwd}/../../external/lambdas/triggerFinalizations/src"
 
   lambda_timeout     = 900
   lambda_memory_size = 128
@@ -189,7 +189,7 @@ module "withdrawals_lambda" {
 
   lambda_runtime          = "nodejs14.x"
   lambda_code_output_path = "${path.module}/.terraform/archive_files/triggerWithdrawals.zip"
-  lambda_code_source_dir  = "${path.cwd}/external/lambdas/triggerWithdrawals/src"
+  lambda_code_source_dir  = "${path.cwd}/../../external/lambdas/triggerWithdrawals/src"
 
   lambda_timeout     = 900
   lambda_memory_size = 256
