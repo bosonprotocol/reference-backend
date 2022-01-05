@@ -57,7 +57,7 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         run: |
           docker build --tag $REGISTRY/bsn/reference-backend:$TAG .
-          docker push $REGISTRY /bsn/reference-backend:$TAG
+          docker push $REGISTRY/bsn/reference-backend:$TAG
 
   keepers:
     name: Keepers related tasks
@@ -92,11 +92,12 @@ jobs:
         if: ${{ github.event_name == 'push' }}
         run: |
           docker build --tag $REGISTRY/bsn/keepers:$TAG .
-          docker push $REGISTRY /bsn/keepers:$TAG
+          docker push $REGISTRY/bsn/keepers:$TAG
 
   triggers:
     name: Triggers related tasks
     runs-on: ubuntu-latest
+    needs: [api, keepers]
     defaults:
       run:
         working-directory: "./terraform/functions"
