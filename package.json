@@ -63,7 +63,7 @@
     "jsonwebtoken": "^8.5.1",
     "mock-express-request": "^0.2.2",
     "mongodb": "^3.5.8",
-    "mongoose": "^5.9.19",
+    "mongoose": "^6.4.6",
     "mongoose-update-if-current": "^1.4.0",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",
