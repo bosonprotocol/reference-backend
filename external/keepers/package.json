@@ -12,9 +12,9 @@
   "author": "LimeChain",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.3",
     "dotenv": "^8.2.0",
     "env-cmd": "^10.1.0",
-    "ethers": "^5.4.5"
+    "ethers": "^5.4.7"
   }
 }
